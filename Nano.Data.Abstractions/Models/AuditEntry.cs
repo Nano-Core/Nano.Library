@@ -1,8 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using Nano.Data.Abstractions.Annotations;
 using Nano.Data.Abstractions.Models.Abstractions;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using Nano.Data.Abstractions.Models.Enums;
 
 namespace Nano.Data.Abstractions.Models;
 
@@ -13,14 +15,21 @@ public class AuditEntry : AuditEntry<Guid>;
 /// A class representing an audit entry.
 /// </summary>
 /// <typeparam name="TIdentity">The identity type.</typeparam>
-public class AuditEntry<TIdentity> : BaseEntity<TIdentity>
+public class AuditEntry<TIdentity> : BaseEntity<TIdentity>, IEntityAuditableNegated
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
     /// Gets or sets the user who created the audited entity.
     /// </summary>
+    [Required]
     [MaxLength(256)]
-    public virtual string? CreatedBy { get; set; }
+    public virtual string CreatedBy { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the Key of the audited entity.
+    /// </summary>
+    [Required]
+    public virtual TIdentity EntityKey { get; set; } = default!;
 
     /// <summary>
     /// Gets or sets the EF entity set name.
@@ -31,19 +40,16 @@ public class AuditEntry<TIdentity> : BaseEntity<TIdentity>
     /// <summary>
     /// Gets or sets the EF entity type name.
     /// </summary>
+    [Required]
     [MaxLength(256)]
-    public virtual string? EntityTypeName { get; set; }
+    public virtual string EntityTypeName { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the entity state as integer (Added, Modified, Deleted).
     /// </summary>
-    public virtual int State { get; set; }
-
-    /// <summary>
-    /// Gets or sets the name of the entity state (Added, Modified, Deleted).
-    /// </summary>
-    [MaxLength(256)]
-    public virtual string? StateName { get; set; }
+    [Required]
+    [DefaultValue(0)]
+    public virtual AuditState EntityState { get; set; } = AuditState.Added;
 
     /// <summary>
     /// Gets or sets the request identifier associated with this audit entry.
@@ -54,6 +60,7 @@ public class AuditEntry<TIdentity> : BaseEntity<TIdentity>
     /// <summary>
     /// Gets or sets the collection of property-level audit entries.
     /// </summary>
+    [Required]
     [Include]
     public virtual ICollection<AuditEntryProperty<TIdentity>> Properties { get; set; } = [];
 }

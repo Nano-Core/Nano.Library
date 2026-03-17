@@ -9,6 +9,7 @@ using Nano.Data.Abstractions.Eventing;
 using Nano.Data.Abstractions.Identity.Extensions;
 using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
+using Nano.Data.Abstractions.Models.Enums;
 using Nano.Data.Eventing;
 using Nano.Data.Identity.Authentication.Extensions;
 using Nano.Data.Identity.Extensions;
@@ -76,7 +77,7 @@ public static class ServiceCollectionExtensions
 
         services
             .AddContext<TProvider, TContext>(options)
-            .AddAudit<TIdentity>()
+            .AddAudit<TIdentity>(options)
             .AddIdentity<TContext, TIdentity>(options.Identity);
 
         services
@@ -128,58 +129,86 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
-    private static IServiceCollection AddAudit<TIdentity>(this IServiceCollection services)
+    private static IServiceCollection AddAudit<TIdentity>(this IServiceCollection services, DataOptions options)
         where TIdentity : IEquatable<TIdentity>
     {
         ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(options);
+
+        AuditManager.DefaultConfiguration.Include<IEntityAuditable>();
+        AuditManager.DefaultConfiguration.IncludeDataAnnotation();
+        AuditManager.DefaultConfiguration.IncludeIdentity<TIdentity>();
+        AuditManager.DefaultConfiguration.Exclude<IEntityAuditableNegated>();
+        AuditManager.DefaultConfiguration.ExcludeDataAnnotation();
+        AuditManager.DefaultConfiguration.ExcludeIdentity<TIdentity>();
 
         AuditManager.DefaultConfiguration.UseUtcDateTime = true;
-        AuditManager.DefaultConfiguration.Include<IEntityAuditable>();
-        AuditManager.DefaultConfiguration.IncludeProperty<IEntityAuditable>();
-        AuditManager.DefaultConfiguration.IncludeDataAnnotation();
-        AuditManager.DefaultConfiguration.ExcludeDataAnnotation();
+        AuditManager.DefaultConfiguration.AutoSavePreAction = AutoSavePreAction<TIdentity>;
+        
+        return services;
+    }
 
-        AuditManager.DefaultConfiguration.AutoSavePreAction = (dbContext, audit) =>
+
+    private static void AutoSavePreAction<TIdentity>(DbContext dbContext, Audit audit)
+        where TIdentity : IEquatable<TIdentity>
+    {
+        ArgumentNullException.ThrowIfNull(dbContext);
+        ArgumentNullException.ThrowIfNull(audit);
+
+        var httpContextAccessor = dbContext
+            .GetService<IHttpContextAccessor>();
+
+        var requestId = httpContextAccessor.HttpContext?.TraceIdentifier;
+
+        string? createdBy = null;
+        if (httpContextAccessor.HttpContext != null)
         {
-            var httpContextAccessor = dbContext
-                .GetService<IHttpContextAccessor>();
-
-            var requestId = httpContextAccessor.HttpContext?.TraceIdentifier;
-
-            var createdBy = httpContextAccessor.HttpContext?
+            createdBy = httpContextAccessor.HttpContext
                 .GetJwtUserId()?
                 .ToString();
 
-            var auditEntries = audit.Entries
-                .Where(x => x.AuditEntryID == 0)
-                .Select(x =>
+            createdBy ??= "Anonymous";
+        }
+
+        var auditEntries = audit.Entries
+            .Where(x => x.AuditEntryID == 0)
+            .Select(x =>
+            {
+                var keyName = x.Entry
+                    .GetKeyName();
+
+                var entityKey = x.Entry
+                    .GetKeyValue<TIdentity>();
+
+                var entityState = x is { State: AuditEntryState.EntityDeleted, Entity: IEntitySoftDeletable { IsDeleted: > 0L } }
+                    ? AuditState.SoftDeleted
+                    : x.State.ToAuditState();
+
+                return new AuditEntry<TIdentity>
                 {
-                    return new AuditEntry<TIdentity>
-                    {
-                        CreatedBy = createdBy ?? x.CreatedBy,
-                        EntitySetName = x.EntitySetName,
-                        EntityTypeName = x.EntityTypeName,
-                        State = (int)x.State,
-                        StateName = x.StateName,
-                        RequestId = requestId,
-                        Properties = x.Properties
-                            .Select(y => new AuditEntryProperty<TIdentity>
-                            {
-                                PropertyName = y.PropertyName,
-                                RelationName = y.RelationName,
-                                NewValue = y.NewValueFormatted,
-                                OldValue = y.OldValueFormatted
-                            })
-                            .ToArray()
-                    };
-                });
+                    CreatedBy = createdBy ?? x.CreatedBy,
+                    EntityKey = entityKey!,
+                    EntitySetName = x.EntitySetName,
+                    EntityTypeName = x.EntityTypeName,
+                    EntityState = entityState,
+                    RequestId = requestId,
+                    Properties = x.Properties
+                        .Select(y => new AuditEntryProperty<TIdentity>
+                        {
+                            PropertyName = y.PropertyName,
+                            RelationName = y.RelationName,
+                            NewValue = y.NewValueFormatted,
+                            OldValue = y.OldValueFormatted
+                        })
+                        .Where(y => 
+                            y.NewValue != y.OldValue &&
+                            y.PropertyName != keyName)
+                        .ToArray()
+                };
+            });
 
-            dbContext
-                .Set<AuditEntry<TIdentity>>()
-                .AddRange(auditEntries);
-        };
-        AuditManager.DefaultConfiguration.SoftDeleted<IEntitySoftDeletable>(x => x.IsDeleted > 0L);
-
-        return services;
+        dbContext
+            .Set<AuditEntry<TIdentity>>()
+            .AddRange(auditEntries);
     }
 }

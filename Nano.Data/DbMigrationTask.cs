@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Config;
+using Nano.Data.Abstractions.Config.Enums;
 using Nano.Data.Abstractions.Identity.Consts;
 
 namespace Nano.Data;
@@ -29,22 +30,22 @@ internal sealed class DbMigrationTask<TIdentity>(ILogger<DbMigrationTask<TIdenti
     }
 
 
-    private async Task EnsureCreatedAsync(CancellationToken cancellationToken = default)
+    private Task EnsureCreatedAsync(CancellationToken cancellationToken = default)
     {
-        if (!this.options.CurrentValue.UseCreateDatabase)
+        if (this.options.CurrentValue.StartupAction != DatabaseStartupAction.Create)
         {
-            return;
+            return Task.CompletedTask;
         }
 
         this.logger
             .LogInformation("Creating Database at start-up.");
 
-        await this.dbContext.Database
+        return this.dbContext.Database
             .EnsureCreatedAsync(cancellationToken);
     }
     private Task EnsureMigratedAsync(CancellationToken cancellationToken = default)
     {
-        if (!this.options.CurrentValue.UseMigrateDatabase || this.options.CurrentValue.UseCreateDatabase)
+        if (this.options.CurrentValue.StartupAction != DatabaseStartupAction.Migrate)
         {
             return Task.CompletedTask;
         }

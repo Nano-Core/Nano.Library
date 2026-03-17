@@ -43,25 +43,18 @@ public class DataOptions
     public virtual int QueryRetryCount { get; set; } = 0;
 
     /// <summary>
+    /// Gets or sets the startup action for the database.
+    /// Defaults to <c>None</c>.
+    /// </summary>
+    [Required]
+    public virtual DatabaseStartupAction StartupAction { get; set; } = DatabaseStartupAction.None;
+
+    /// <summary>
     /// Gets or sets a value indicating whether lazy loading is enabled.
     /// Defaults to <c>true</c>.
     /// </summary>
     [Required]
     public virtual bool UseLazyLoading { get; set; } = false;
-
-    /// <summary>
-    /// Gets or sets a value indicating whether the database should be created automatically.
-    /// Defaults to <c>false</c>.
-    /// </summary>
-    [Required]
-    public virtual bool UseCreateDatabase { get; set; } = false;
-
-    /// <summary>
-    /// Gets or sets a value indicating whether database migrations should be applied automatically.
-    /// Defaults to <c>true</c>.
-    /// </summary>
-    [Required]
-    public virtual bool UseMigrateDatabase { get; set; } = false;
 
     /// <summary>
     /// Gets or sets a value indicating whether sensitive data logging is enabled.

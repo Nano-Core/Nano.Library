@@ -1,6 +1,6 @@
+using Nano.Data.Abstractions.Models.Abstractions;
 using System;
 using System.ComponentModel.DataAnnotations;
-using Nano.Data.Abstractions.Models.Abstractions;
 
 namespace Nano.Data.Abstractions.Models;
 
@@ -10,7 +10,7 @@ public class AuditEntryProperty : AuditEntryProperty<Guid>;
 /// <summary>
 /// Represents a property-level audit entry for EF entities.
 /// </summary>
-public class AuditEntryProperty<TIdentity> : BaseEntity<TIdentity>
+public class AuditEntryProperty<TIdentity> : BaseEntity<TIdentity>, IEntityAuditableNegated
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
@@ -32,10 +32,11 @@ public class AuditEntryProperty<TIdentity> : BaseEntity<TIdentity>
     public virtual string PropertyName { get; set; } = null!;
 
     /// <summary>
-    /// Gets or sets the name of the related property audited (if applicable).
+    /// Gets or sets the relation name of the property audited.
     /// </summary>
+    [Required]
     [MaxLength(256)]
-    public virtual string? RelationName { get; set; }
+    public virtual string RelationName { get; set; } = null!;
 
     /// <summary>
     /// Gets or sets the new value of the property formatted as string.

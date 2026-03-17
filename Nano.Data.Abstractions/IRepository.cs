@@ -968,6 +968,38 @@ public interface IRepository : IDisposable
         where TEntity : class, IEntity;
 
     /// <summary>
+    /// Execute a stored procedure and return the first row mapped to <typeparamref name="TResult"/>.
+    /// </summary>
+    /// <typeparam name="TResult">The type of the result.</typeparam>
+    /// <param name="procedureName">The stored procedure name.</param>
+    /// <param name="parameters">The name/value parameters to add to the stored procedure call.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The result of type <typeparamref name="TResult"/> of the stored procedure.</returns>
+    Task<TResult?> ExecuteProcedureAsync<TResult>(string procedureName, Dictionary<string, object?>? parameters = null, CancellationToken cancellationToken = default)
+        where TResult : class, new();
+
+    /// <summary>
+    /// Execute a stored procedure and return a list of <typeparamref name="TResult"/>.
+    /// </summary>
+    /// <typeparam name="TResult">The type of the results.</typeparam>
+    /// <param name="procedureName">The stored procedure name.</param>
+    /// <param name="parameters">The name/value parameters to add to the stored procedure call.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The results of type <typeparamref name="TResult"/> of the stored procedure.</returns>
+    Task<List<TResult>> ExecuteProcedureListAsync<TResult>(string procedureName, Dictionary<string, object?>? parameters = null, CancellationToken cancellationToken = default)
+        where TResult : class, new();
+
+    /// <summary>
+    /// Execute a stored procedure and return a scalar value.
+    /// </summary>
+    /// <typeparam name="TResult">The type of the scalar result.</typeparam>
+    /// <param name="procedureName">The stored procedure name.</param>
+    /// <param name="parameters">The name/value parameters to add to the stored procedure call.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>The scalar result of type <typeparamref name="TResult"/> of the stored procedure.</returns>
+    Task<TResult> ExecuteProcedureScalarAsync<TResult>(string procedureName, Dictionary<string, object?>? parameters = null, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Persists all pending changes to the underlying data store.
     /// </summary>
     /// <param name="cancellationToken">Optional <see cref="CancellationToken"/> to cancel the operation.</param>

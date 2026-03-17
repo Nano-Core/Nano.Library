@@ -2,6 +2,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Nano.Data.Abstractions.Models;
+using Nano.Data.Abstractions.Models.Enums;
 using Nano.Data.Consts;
 
 namespace Nano.Data.Mappings;
@@ -25,10 +26,15 @@ public class AuditEntryMapping<TIdentity> : BaseEntityIdentityMapping<AuditEntry
 
         builder
             .Property(x => x.CreatedBy)
-            .HasMaxLength(256);
+            .HasMaxLength(256)
+            .IsRequired();
 
         builder
             .HasIndex(y => y.CreatedBy);
+
+        builder
+            .Property(x => x.EntityKey)
+            .IsRequired();
 
         builder
             .Property(x => x.EntitySetName)
@@ -36,25 +42,19 @@ public class AuditEntryMapping<TIdentity> : BaseEntityIdentityMapping<AuditEntry
 
         builder
             .Property(x => x.EntityTypeName)
-            .HasMaxLength(256);
+            .HasMaxLength(256)
+            .IsRequired();
 
         builder
             .HasIndex(y => y.EntityTypeName);
 
         builder
-            .Property(x => x.StateName)
-            .HasMaxLength(256);
-
-        builder
-            .Property(x => x.State);
-
-        builder
-            .HasIndex(y => y.State);
-
-        builder
-            .HasMany(x => x.Properties)
-            .WithOne(x => x.Parent)
+            .Property(x => x.EntityState)
+            .HasDefaultValue(AuditState.Added)
             .IsRequired();
+
+        builder
+            .HasIndex(y => y.EntityState);
 
         builder
             .Property(y => y.RequestId)
@@ -62,5 +62,10 @@ public class AuditEntryMapping<TIdentity> : BaseEntityIdentityMapping<AuditEntry
 
         builder
             .HasIndex(y => y.RequestId);
+
+        builder
+            .HasMany(x => x.Properties)
+            .WithOne(x => x.Parent)
+            .IsRequired();
     }
 }

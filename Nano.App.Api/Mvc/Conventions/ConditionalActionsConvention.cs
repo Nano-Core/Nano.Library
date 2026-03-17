@@ -39,7 +39,6 @@ public sealed class ConditionalActionsConvention : IControllerModelConvention
         ArgumentNullException.ThrowIfNull(controller);
 
         this.DisableAuthControllerActions(controller);
-        this.DisableAuditControllerActions(controller);
         this.DisableIdentityControllerActions(controller);
     }
 
@@ -158,23 +157,6 @@ public sealed class ConditionalActionsConvention : IControllerModelConvention
                     .Remove(action);
             }
         }
-    }
-    private void DisableAuditControllerActions(ControllerModel controller)
-    {
-        ArgumentNullException.ThrowIfNull(controller);
-
-        var isAuditController = controller.ControllerType
-            .IsTypeOf(typeof(BaseAuditController<>));
-
-        if (!isAuditController)
-        {
-            return;
-        }
-
-        controller.ApiExplorer.IsVisible = false;
-
-        controller.Actions
-            .Clear();
     }
     private void DisableIdentityControllerActions(ControllerModel controller)
     {

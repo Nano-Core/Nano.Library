@@ -54,7 +54,7 @@ public class AuditEntryQueryCriteria : BaseQueryCriteria
         if (this.State != null)
         {
             expression
-                .Equal(nameof(AuditEntry<>.State), this.State);
+                .Equal(nameof(AuditEntry<>.EntityState), this.State);
         }
 
         if (this.RequestId != null)

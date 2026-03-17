@@ -5,9 +5,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Options;
-using Nano.Common.Extensions;
 using Nano.Data.Abstractions.Config;
-using Nano.Data.Abstractions.Eventing.Annotations;
 using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Data.Abstractions.Models.Identity;
@@ -15,13 +13,11 @@ using Nano.Data.Identity.Extensions;
 using Nano.Data.Mappings;
 using Nano.Data.Mappings.Extensions;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Z.EntityFramework.Plus;
 
 namespace Nano.Data;
@@ -64,35 +60,43 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
     {
         ArgumentNullException.ThrowIfNull(entity);
 
-        var isAuditEnabled = true;
+        var isAuditable = entity is IEntityAuditable;
 
-        var publishAnnotation = entity
-            .GetType()
-            .GetCustomAttribute<PublishAttribute>(true);
-
-        var hasPublishProperties = publishAnnotation != null && publishAnnotation.PropertyNames.Any();
-
-        if (!isAuditEnabled && !hasPublishProperties)
+        if (!isAuditable)
         {
             return base.Update(entity);
         }
 
-        var existingEntry = this.ChangeTracker
-            .Entries()
-            .FirstOrDefault(x => x.Entity == entity);
+        var entry = this.Entry(entity);
+        var entityType = entity.GetType();
 
-        if (existingEntry != null)
+        if (entry.State != EntityState.Detached)
         {
             return base.Update(entity);
         }
+
+        var key = this.Model
+            .FindEntityType(entityType)!
+            .FindPrimaryKey()!;
+
+        var keyValues = key.Properties
+            .Select(x => entry.Property(x.Name).CurrentValue)
+            .ToArray();
 
         var dbSet = this.SetDynamic(entity.GetType().Name);
 
-        var tracked = dbSet
+        var untracked = dbSet
             .AsNoTracking()
-            .SingleOrDefault(x => x == entity);
+            .Cast<object>()
+            .FirstOrDefault(x => EF.Property<object>(x, key.Properties[0].Name).Equals(keyValues[0]));
 
-        this.SetOriginalValues(entity, tracked);
+        if (untracked != null)
+        {
+            entry.OriginalValues
+                .SetValues(untracked);
+
+            UpdateGeneratedProperties(entity);
+        }
 
         return base.Update(entity);
     }
@@ -108,37 +112,59 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
     {
         ArgumentNullException.ThrowIfNull(entity);
 
-        var isAuditEnabled = true;
+        var isAuditable = entity is IEntityAuditable;
 
-        var publishAnnotation = entity
-            .GetType()
-            .GetCustomAttribute<PublishAttribute>(true);
-
-        var hasPublishProperties = publishAnnotation != null && publishAnnotation.PropertyNames.Any();
-
-        if (!isAuditEnabled && !hasPublishProperties)
+        if (!isAuditable)
         {
             return base.Update(entity);
         }
 
-        var existingEntry = this.ChangeTracker
-            .Entries()
-            .FirstOrDefault(x => x.Entity == entity);
+        var entry = this.Entry(entity);
 
-        if (existingEntry != null)
+        if (entry.State != EntityState.Detached)
         {
             return base.Update(entity);
         }
 
-        var dbSet = this.Set<TEntity>();
+        var entityType = this.Model
+            .FindEntityType(entity.GetType());
+        
+        var key = entityType!
+            .FindPrimaryKey();
 
-        var tracked = dbSet
+        var keyValues = key!
+            .Properties
+            .Select(x => entry.Property(x.Name).CurrentValue)
+            .ToArray();
+
+        var untracked = this
+            .Set<TEntity>()
             .AsNoTracking()
-            .SingleOrDefault(x => x == entity);
+            .FirstOrDefault(x => EF.Property<TIdentity>(x, key.Properties[0].Name).Equals(keyValues[0]));
 
-        this.SetOriginalValues(entity, tracked);
+        if (untracked != null)
+        {
+            entry.OriginalValues
+                .SetValues(untracked);
+        
+            UpdateGeneratedProperties(entity);
+        }
 
         return base.Update(entity);
+    }
+
+    /// <summary>
+    /// Updates a range of entities in the context.
+    /// </summary>
+    /// <param name="entities">The entities to update.</param>
+    public override void UpdateRange(IEnumerable<object> entities)
+    {
+        ArgumentNullException.ThrowIfNull(entities);
+
+        foreach (var entity in entities)
+        {
+            this.Update(entity);
+        }
     }
 
     /// <summary>
@@ -149,42 +175,6 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
     {
         ArgumentNullException.ThrowIfNull(entities);
 
-        var isAuditEnabled = true;
-
-        var firstEntity = entities
-            .First();
-
-        var publishAnnotation = firstEntity
-            .GetType()
-            .GetCustomAttribute<PublishAttribute>(true);
-
-        var hasPublishProperties = publishAnnotation != null && publishAnnotation.PropertyNames.Any();
-
-        if (isAuditEnabled || hasPublishProperties)
-        {
-            var nonExistingEntries = this.ChangeTracker
-                .Entries()
-                .Where(x => entities.Any(y => y != x.Entity))
-                .ToArray();
-
-            if (nonExistingEntries.Any())
-            {
-                var dbSet = this.SetDynamic(firstEntity.GetType().Name);
-
-                var trackeds = dbSet
-                    .AsNoTracking()
-                    .Where(x => nonExistingEntries
-                        .Any(y => x == y.Entity));
-
-                foreach (var entity in trackeds)
-                {
-                    var tracked = trackeds
-                        .SingleOrDefault(x => x == entity);
-
-                    this.SetOriginalValues(entity, tracked);
-                }
-            }
-        }
         foreach (var entity in entities)
         {
             this.Update(entity);
@@ -215,9 +205,9 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
         }
 
         var keyProperties = this.Model
-            .FindEntityType(typeof(TEntity))
-            ?.FindPrimaryKey()
-            ?.Properties;
+            .FindEntityType(typeof(TEntity))?
+            .FindPrimaryKey()?
+            .Properties;
 
         if (keyProperties == null || keyProperties.Count == 0)
         {
@@ -270,19 +260,17 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
         audit
             .PreSaveChanges(this);
 
-        var rowAffecteds = this.SaveChangesWithTriggers(base.SaveChanges); 
+        var rowAffecteds = this.SaveChangesWithTriggers(base.SaveChanges);
 
         audit
             .PostSaveChanges();
 
-        var autoSavePreAction = AuditManager.DefaultConfiguration.AutoSavePreAction;
-
-        if (autoSavePreAction != null && audit.Entries.Count > 0)
+        if (audit.Entries.Count > 0)
         {
-            autoSavePreAction
+            AuditManager.DefaultConfiguration.AutoSavePreAction
                 .Invoke(this, audit);
 
-            this.SaveChanges();
+            base.SaveChanges();
         }
 
         return rowAffecteds;
@@ -300,19 +288,17 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
         audit
             .PreSaveChanges(this);
 
-        var rowAffecteds = await this.SaveChangesWithTriggersAsync(base.SaveChangesAsync, cancellationToken); 
+        var rowAffecteds = await this.SaveChangesWithTriggersAsync(base.SaveChangesAsync, cancellationToken);
 
         audit
             .PostSaveChanges();
 
-        var autoSavePreAction = AuditManager.DefaultConfiguration.AutoSavePreAction;
-
-        if (autoSavePreAction != null && audit.Entries.Count > 0)
+        if (audit.Entries.Count > 0)
         {
-            autoSavePreAction
+            AuditManager.DefaultConfiguration.AutoSavePreAction
                 .Invoke(this, audit);
 
-            await this.SaveChangesAsync(cancellationToken)
+            await base.SaveChangesAsync(cancellationToken)
                 .ConfigureAwait(false);
         }
 
@@ -343,76 +329,41 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
     }
 
 
-    private void SetOriginalValues(object entity, object? tracked = null, EntityEntry? owner = null, string? propertName = null)
+    private void UpdateGeneratedProperties<TEntity>(TEntity entity)
+        where TEntity : class
     {
-        ArgumentNullException.ThrowIfNull(entity);
+        var entry = this.Entry(entity);
+        var entityType = entry.Metadata;
 
-        if (tracked == null)
+        if (entry.State != EntityState.Detached)
         {
             return;
         }
 
-        this.ChangeTracker.LazyLoadingEnabled = false;
-
-        try
+        var dbValues = entry
+            .GetDatabaseValues();
+        
+        if (dbValues == null)
         {
-            var entry = owner == null
-                ? this.Entry(entity)
-                : propertName == null
-                    ? this.Entry(entity)
-                    : owner.Reference(propertName).TargetEntry;
-
-            if (entry == null)
-            {
-                return;
-            }
-
-            var properties = entity
-                .GetType()
-                .GetProperties();
-
-            foreach (var propertyInfo in properties)
-            {
-                if (propertyInfo.SetMethod == null)
-                {
-                    continue;
-                }
-
-                var hasNotMappedAttribute = propertyInfo
-                    .GetCustomAttribute<NotMappedAttribute>();
-
-                if (hasNotMappedAttribute != null)
-                {
-                    continue;
-                }
-
-                var valueTracked = propertyInfo
-                    .GetValue(tracked);
-
-                if (propertyInfo.PropertyType.IsValueType || propertyInfo.PropertyType == typeof(string))
-                {
-                    entry
-                        .Property(propertyInfo.Name).OriginalValue = valueTracked;
-                }
-                else if (!propertyInfo.PropertyType.IsTypeOf(typeof(IEnumerable)) && !propertyInfo.PropertyType.IsTypeOf(typeof(IEntity)))
-                {
-                    var value = propertyInfo
-                        .GetValue(entity);
-
-                    if (value == null)
-                    {
-                        continue;
-                    }
-
-                    this.SetOriginalValues(value, valueTracked, entry, propertyInfo.Name);
-                }
-            }
+            return;
         }
-        finally
+
+        foreach (var property in entityType.GetProperties())
         {
-            if (this.options.CurrentValue.UseLazyLoading)
+            if (property.IsPrimaryKey() || property.IsShadowProperty() || entityType.FindNavigation(property.Name) != null)
             {
-                this.ChangeTracker.LazyLoadingEnabled = true;
+                continue;
+            }
+
+            var valueGenerated = property.ValueGenerated;
+            var afterSaveBehavior = property.GetAfterSaveBehavior();
+
+            if (valueGenerated == ValueGenerated.OnAdd || valueGenerated == ValueGenerated.OnAddOrUpdate || afterSaveBehavior == PropertySaveBehavior.Ignore)
+            {
+                entry
+                    .Property(property.Name).CurrentValue = dbValues[property.Name];
+
+                entry.OriginalValues[property.Name] = dbValues[property.Name];
             }
         }
     }

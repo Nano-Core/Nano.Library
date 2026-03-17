@@ -54,6 +54,9 @@ public static class ConfigManager
         ArgumentNullException.ThrowIfNull(path);
         ArgumentNullException.ThrowIfNull(environment);
 
+        // BUG: 000: its not possible to enable a section like this "Documentation": { }, empty won't work. fix that
+        // also update readme for conif. Consider linking from all ## Configuration sections to the general config in Nano.App readme
+
         const string APP_SETTINGS = "appsettings";
 
         var baseJsonPath = Path.Combine(path, $"{APP_SETTINGS}.json");

@@ -39,7 +39,8 @@ databases in a consistent and structured way.
 To enable data support in a Nano application, a few core components must be implemented and registered. First, a **[Data Providers](#data-providers)** must be selected. Next, 
 the application must define a database context by deriving implementations from `BaseDbContext` and `BaseDbContextFactory`.  
 
-Once the context has been implemented, data services must be registered during application startup by invoking `AddDataContext<TProvider, TContext>()` in `program.cs`.  
+Once the context has been implemented, the data provider and the data context must be registered during application startup by invoking `AddDataContext<TProvider, TContext>()` 
+in `program.cs`.  
 
 After registration, the application can define entity models derived from `BaseEntity`, along with their corresponding mappings derived from `BaseEntityMapping<TEntity>`.  
 
@@ -85,25 +86,24 @@ Nano abstractions.
 ## Configuration
 The `Data` section in the configuration defines the data provider and related settings used by the application.
 
-| Setting                         | Type   | Default     | Description                                                                                                                                                     |
-| ------------------------------- | ------ | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-|  `BatchSize`                    | int    | 25          | The maximum batch size for queries.                                                                                                                             |
-|  `BulkBatchSize`                | int    | 500         | The maximum batch size for bulk operations.                                                                                                                     |
-|  `BulkBatchDelay`               | int    | 1000        | The delay (in milliseconds) between bulk batches.                                                                                                               |
-|  `QueryRetryCount`              | int    | 0           | The number of times a query will retry on failure.                                                                                                              |
-|  `UseLazyLoading`               | bool   | false       | A value indicating whether lazy loading is enabled. See [Lazy Loading](#lazy-loading). ⚠️ Not recommended, use [Nano Include Annotation](#include-annotation).  |
-|  `UseCreateDatabase`            | bool   | false       | A value indicating whether the database should be created automatically using just the mappings, bypassing migrations.                                          |
-|  `UseMigrateDatabase`           | bool   | false       | A value indicating whether database migrations should be applied automatically.                                                                                 |
-|  `UseSensitiveDataLogging`      | bool   | false       | A value indicating whether sensitive data logging is enabled.                                                                                                   |
-|  `QuerySplittingBehavior`       | enum   | SingleQuery | The default query splitting behavior for EF Core queries.                                                                                                       |              
-|  `DefaultCollation`             | string | null        | The default collation for the database. ⚠️ Note: Changing this setting affects only new migrations and will not modify existing tables or columns.              |
-|  `ConnectionString`             | string | null        | Required. The connection string for the database.                                                                                                               |
-|  `Repository`                   | object | default     | The cache configuration options. See [Repositories](#repositories).                                                                                             |
-|  `Repository.UseAutoSave`       | bool   | true        | A value indicating whether automatic saving of changes in repositories is enabled. See [Autosave](#autosave)                                                    |
-|  `Repository.QueryIncludeDepth` | int    | 4           | The maximum depth for query includes. See [Include Annotation](#include-annotation).                                                                            |
-|  `ConnectionPool`               | object | null        | The connection pool configuration options. See [Connection Pool](#connection-pool).                                                                             |
-|  `Identity`                     | object | null        | The identity configuration options. See [Identity](#identity).                                                                                                  |
-|  `HealthCheck`                  | object | null        | The options for configuring health checks. See [Health Check](#health-check). _Only relevant for `NanoApiApplication` and `NanoWebApplication`_.                |
+| Setting                         | Type   | Default     | Description                                                                                                                                                             |
+| ------------------------------- | ------ | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+|  `BatchSize`                    | int    | 25          | The maximum batch size for queries.                                                                                                                                     |
+|  `BulkBatchSize`                | int    | 500         | The maximum batch size for bulk operations.                                                                                                                             |
+|  `BulkBatchDelay`               | int    | 1000        | The delay (in milliseconds) between bulk batches.                                                                                                                       |
+|  `QueryRetryCount`              | int    | 0           | The number of times a query will retry on failure.                                                                                                                      |
+|  `UseLazyLoading`               | bool   | false       | A value indicating whether lazy loading is enabled. See **[Lazy Loading](#lazy-loading)**. ⚠️ Not recommended, use **[Nano Include Annotation](#include-annotation)**.  |
+|  `StartupAction`                | enum   | None        | The startup action for the database. Allowed Values: `None`, `Create` or `Migrate`. Defaults to `None`.                                                                 |
+|  `UseSensitiveDataLogging`      | bool   | false       | A value indicating whether sensitive data logging is enabled.                                                                                                           |
+|  `QuerySplittingBehavior`       | enum   | SingleQuery | The default query splitting behavior for EF Core queries.                                                                                                               |              
+|  `DefaultCollation`             | string | null        | The default collation for the database. ⚠️ Note: Changing this setting affects only new migrations and will not modify existing tables or columns.                      |
+|  `ConnectionString`             | string | null        | Required. The connection string for the database.                                                                                                                       |
+|  `Repository`                   | object | default     | The cache configuration options. See **[Repositories](#repositories)**.                                                                                                 |
+|  `Repository.UseAutoSave`       | bool   | true        | A value indicating whether automatic saving of changes in repositories is enabled. See **[Autosave](#autosave)**.                                                       |
+|  `Repository.QueryIncludeDepth` | int    | 4           | The maximum depth for query includes. See **[Include Annotation](#include-annotation)**.                                                                                |
+|  `ConnectionPool`               | object | null        | The connection pool configuration options. See **[Connection Pool](#connection-pool)**.                                                                                 |
+|  `Identity`                     | object | null        | The identity configuration options. See **[Identity](#identity)**.                                                                                                      |
+|  `HealthCheck`                  | object | null        | The options for configuring health checks. See **[Health Check](#health-check)**. _Only relevant for `NanoApiApplication` and `NanoWebApplication`_.                    |
 
 ```json
 "Data": {
@@ -112,8 +112,7 @@ The `Data` section in the configuration defines the data provider and related se
   "BulkBatchDelay": 1000,
   "QueryRetryCount": 0,
   "UseLazyLoading": false,
-  "UseCreateDatabase": false,
-  "UseMigrateDatabase": false,
+  "StartupAction": None,
   "UseSensitiveDataLogging": false,
   "QuerySplittingBehavior": "SingleQuery",
   "DefaultCollation": null,
@@ -140,11 +139,10 @@ and reduce allocation overhead.
 Identity configures the data store used for authentication and authorization. It manages users, roles, and related security data required for signing in and enforcing 
 access control.  
 
-> ⚠️ Even when Identity is not configured, the tables are still created to preserve the data model in case Identity is enabled later.
-
 | Setting                                | Type     | Default         | Description                                                                                     |
 | -------------------------------------- | -------- | --------------- | ----------------------------------------------------------------------------------------------- |
 |  `TokensExpirationInHours`             | TimeSpan | 24:00:00        | The expiration time for tokens in hours.                                                        |
+|  `UseIdentityAudit`                    | bool     | false           | Whether to audit identity user, roles, claims and external logins.                              |
 |  `User`                                | object   | default         | Options for user-specific settings.                                                             |
 |  `User.IsUniqueEmailAddressRequired`   | bool     | true            | A value indicating whether each user must have a unique email address.                          |
 |  `User.IsUniquePhoneNumberRequired`    | bool     | false           | A value indicating whether each user must have a unique phone number.                           |
@@ -171,6 +169,7 @@ access control.
 "Data": {
   "Identity": { 
     "TokensExpiration": "24:00:00",
+    "UseIdentityAudit": false,
     "User": {
       "IsUniqueEmailAddressRequired": true,
       "IsUniquePhoneNumberRequired": false,
@@ -204,6 +203,7 @@ access control.
 }
 ```
 
+// BUG
 When identity has been configured the following roles are automatically added.  
 
 | Name          | Description                          |
@@ -217,8 +217,8 @@ When identity has been configured the following roles are automatically added.
 | Administrator | Full access to everything.           | 
 
 Identity in Nano involves more than just configuration. An identity data model and corresponding mappings must also be implemented to define how identity data is stored and accessed. 
-Read more about [Identity Data Models](#data-models) and [Identity Data Mappings](#data-mappings). Nano also provides a repository for working with identity-related functionality. 
-See [Repositories](#repositories) for more details.
+Read more about **[Identity Data Models](#data-models)** and **[Identity Data Mappings](#data-mappings)**. Nano also provides a repository for working with identity-related 
+functionality. See **[Repositories](#repositories)** for more details.
 
 Nano also provides a public `SecurePasswordGenerator` class for creating strong, secure passwords.  
 
@@ -263,11 +263,11 @@ Once implemented, the provider can be added to the application during startup co
 
 The following data providers are currently supported in Nano.  
 
-* [Nano.Data.InMemory](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.InMemory)
-* [Nano.Data.MySql](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.MySql)
-* [Nano.Data.PostgreSQL](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.PostgreSQL)
-* [Nano.Data.SqLite](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.SqLite)
-* [Nano.Data.SqlServer](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.SqlServer)
+* **[Nano.Data.InMemory](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.InMemory)**
+* **[Nano.Data.MySql](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.MySql)**
+* **[Nano.Data.PostgreSQL](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.PostgreSQL)**
+* **[Nano.Data.SqLite](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.SqLite)**
+* **[Nano.Data.SqlServer](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.SqlServer)**
 
 ## Data Context
 Nano provides built-in management for the `DbContext` while still letting you use it as you normally would.  
@@ -278,15 +278,19 @@ To integrate your database, simply derive a class from `BaseDbContext` or `BaseD
 public class MyDbContext(DbContextOptions contextOptions, IOptionsMonitor<DataOptions> dataOptions)
     : BaseDbContext(contextOptions, dataOptions);
 ```
-You don’t need to implement any additional logic in `MyDbContext`. Entity Framework only requires that the `DbContext` exists in the entry assembly, where `program.cs` is 
-located. Nano will automatically detect and configure all [Data Mappings](#data-mappings), so overriding the `OnModelCreating(...)` method is unnecessary.
+
+You don’t need to implement any additional logic in `MyDbContext`. Entity Framework just requires that the derived `DbContext` exists in the entry assembly, where `program.cs` is 
+located. Nano will automatically detect and configure all **[Data Mappings](#data-mappings)**, so overriding the `OnModelCreating(...)` method is unnecessary.
 
 > ⚠️ If you override any methods from `BaseDbContext`, always call the `base` method to ensure Nano functions correctly.
+
+It is recommended to use the **[Repositories](#repositories)** to interact with the entity model in your data context. However, if the repository functionality does not 
+cover your needs, you can always inject the data context directly.  
 
 In addition, you must derive a concrete implementation from `BaseDbContextFactory`.  
 
 ```csharp
-public class MySqlDbContextFactory : BaseDbContextFactory<MySqlProvider, MySqlDbContext>;
+public class MySqlDbContextFactory : BaseDbContextFactory<MySqlProvider, MySqlDb**Context>;
 ```
 
 No further implementation is required. The factory class simply needs to exist in your application project alongside `program.cs`, similar to the `BaseDbContext` implementation.
@@ -294,14 +298,14 @@ No further implementation is required. The factory class simply needs to exist i
 ## Data Models
 Models in Nano, also referred to as entities, represent the tables in your database.
 
-To create a model, derive a non-generic class from `BaseEntity` or `BaseEntity<TIdentity>` if you want to use a custom primary key type. By inheriting from `BaseEntity`, your model 
-automatically includes several built-in properties.  
+To create a entity model, derive a non-generic class from `BaseEntity` or `BaseEntity<TIdentity>` if you want to use a custom primary key type. By inheriting from `BaseEntity`, 
+your model automatically includes several built-in properties.  
 
 | Property      | Type            | Description                                                                                     |
 | ------------- | --------------- | ----------------------------------------------------------------------------------------------- |
 | `Id`          | TIdentity       | The primary key of the model. _Automatically assigned for new instances._                       |
 | `CreatedAt`   | DateTimeOffset  | The timestamp when the model was created. _Automatically set to `UtcNow` for new instances._    |
-| `IsDeleted`   | int             | Used only when [Soft Delete](#soft-delete) is enabled. _Defaults to 0._                         |
+| `IsDeleted`   | int             | Used only when **[Soft Delete](#soft-delete)** is enabled. _Defaults to 0._                     |
 
 ```csharp
 public class MyEntity : BaseEntity
@@ -310,7 +314,7 @@ public class MyEntity : BaseEntity
 }
 ```
 
-If you specify a `TIdentity` type during data [Registration](#registration) and in your [Data Context](#data-context), you must use the same type when deriving your 
+If you specify a `TIdentity` type during data **[Registration](#registration)** and in your **[Data Context](#data-context)**, you must use the same type when deriving your 
 concrete entities.
 
 Alternatively, you can derive your entity model from one of the specialized CRUD base classes: `BaseEntityReadOnly`, `BaseEntityCreatable`, `BaseEntityCreatableAndUpdatable`, 
@@ -326,25 +330,47 @@ must implement the corresponding interfaces: `IEntityReadOnly`, `IEntityWritable
 > ⚠️ For simplicity and maintainability, it is recommended to derive entity models from `BaseEntity` or one of the specific base classes rather than 
 implementing the interfaces directly.  
 
-Nano also contains another important base entity model. The `BaseEntityUser` and `BaseEntityUser<TIdentity>`. When identity has been configured for an application, the entity user
-base classes defines the user model of the application and are having `IdentityUser` associated. The base class itself derives from `BaseEntity`, and behaves in the same way as regular 
-entities. It contains a single navigation property, `IdentityUser` that is included using a [Include Annotation](#include-annotation) when retreiving the user entity. This allows 
-interaction with identity functionality for the implemented user entity model. 
+Try it out yourself using the **[Api.Data.Mysql](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Mysql)** or  
+**[Console.Data.Mysql](https://github.com/Nano-Core/Nano.Lessons/tree/master/Console.Data.Mysql)** examples. Similar examples are available for other data providers as well.  
+
+Nano also contains another important base entity model. The `BaseEntityUser` and `BaseEntityUser<TIdentity>`. When **[Identity](#identity)** has been configured for an application, 
+the entity user base classes defines the user model of the application and are having `IdentityUser` associated. The base class itself derives from `BaseEntity`, and behaves in the 
+same way as regular entities. It contains a single navigation property, `IdentityUser` that is included using an **[Include Annotation](#include-annotation)** when retreiving the 
+user entity. This allows you to access identity data without having to deal directly with the underlying identity data when working with the model.  
 
 ```csharp
 public class MyEntityUser : BaseEntityUser
 {
-    // Properties
+    public virtual IdentityUserEx<TIdentity> IdentityUser { get; set; } = null!;
+    
+    // Custom Properties
 }
 ```
 
-This allows you to use an entity user model without having to deal directly with the underlying identity data when working with the model.  
+The following entity identity models are available in Nano.  
 
-Try it out yourself using the **[Api.Data.Mysql](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Mysql)** or  
-**[Console.Data.Mysql](https://github.com/Nano-Core/Nano.Lessons/tree/master/Console.Data.Mysql)** examples. Similar examples are available for other data providers as well.  
+| Entity Model                           | Table                           | Description                                                                    |
+| -------------------------------------- | ------------------------------- | ------------------------------------------------------------------------------ |
+| `IdentityUserEx<TIdentity>`            | `__EFIdentityUser`              | The identity user.                                                             |
+| `IdentityUserRole<TIdentity>`          | `__EFIdentityUserRole`          | Roles associated with identity users.                                          |
+| `IdentityUserClaim<TIdentity>`         | `__EFIdentityUserClaim`         | Claims associated with identity users                                          |
+| `IdentityUserLogin<TIdentity>`         | `__EFIdentityUserLogin`         | External user logins for identity users.                                       |
+| `IdentityUserToken<TIdentity>`         | `__EFIdentityUserToken`         | User tokens created for change email, confirm email, etc. for identity users.  |
+| `IdentityUserChangeData<TIdentity>`    | `__EFIdentityUserChangeData`    | Email and phone number temporary change data for identity users.               |
+| `IdentityUserRefreshToken<TIdentity>`  | `__EFIdentityUserRefreshToken`  | Refresh tokens for identity                                                    |
+| `IdentityRole<TIdentity>`              | `__EFIdentityRole`              | The identity Roles.                                                            |
+| `IdentityRoleClaim<TIdentity>`         | `__EFIdentityRoleClaim`         | Claims associated with identity roles.                                         |
+| `IdentityApiKey<TIdentity>`            | `__EFIdentityApiKey`            | Api keys for identity users.                                                   |
 
-Nano also supports defining views in the entity model.  
-The `BaseEntityView` entity class can be used to define a model for a SQL view. 
+> ⚠️ Even when Identity is not configured, the tables are still created to preserve the data model in case Identity is enabled later.
+
+Generally, you do not need to interact with the identity models directly. Use the **[Identity Repository](#Repositories)** to work with identity instead. If direct access is required, 
+the identity models are available through the **[Data Context](#data-context)** like any other entity. Bypassing the `IIdentityRepository` is not recommended, as it may 
+unintentionally bypass critical identity logic.
+
+Try it out yourself using the **[Api.Data.Identity](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity)** example.  
+
+Nano also supports defining views in the entity model. The `BaseEntityView` entity class can be used to define a model for a SQL view.  
 
 ```csharp
 public class MyEntityView : BaseEntityView
@@ -410,17 +436,14 @@ public class MyEntityViewMapping : BaseEntityViewMapping<MyEntity>
 }
 ```
 
-> ⚠️ Entity Framework does not automatically support database views in migrations. Views must be created or modified manually within a migration.
-
-Entity Framework does not provide direct native support for stored procedures. Nano includes an example demonstrating best practices for integrating stored procedures into 
-your application. You can explore the example in [Api.Data.MySql.StoredProcedures](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.MySql.StoredProcedures).
+Try it out views yourself using the **[Api.Data.MySql.Views](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.MySql.Views)** example.  
 
 Nano automatically updates all unique index mappings to include the `IsDeleted` property. This ensures that soft-deleted entities can coexist without violating 
 uniqueness constraints.  
 
 Mapping of spatial types varies between data providers. Refer to your provider's spatial documentation for details.  
 
-Try it out advanced mappings yourself using the **[Api.Data.MySql.Mappings](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.MySql.Mappings)** example.  
+Explore spatial and other advanced mappings using the **[Api.Data.MySql.Mappings](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.MySql.Mappings)** example.  
 
 ## Migrations
 Migrations in Nano work the same way as standard Entity Framework migrations.  
@@ -431,9 +454,9 @@ Before creating migrations, ensure you have implemented a `BaseDbContextFactory<
 dotnet ef migrations add Initial --project {project}
 ```
 
-Migrations are not applied automatically unless the `UseMigrations` option is enabled in the configuration.
+Migrations are not applied automatically unless the `StartupAction` option is set to `Migrate` in the configuration.
 
-> ⚠️ It is recommended to enable `UseMigrations` **only** in `Development` environments.
+> ⚠️ It is recommended to enable migrations only in `Development` environments.
 
 In `Staging` and `Production`, migrations are applied during deployment, via GitHub Actions.
 
@@ -444,7 +467,10 @@ dotnet ef database update `
   --connection "$env:MYSQL_MIGRATION_CONNECTIONSTRING";
 ```
 
-> ⚠️ Entity Framework does not handle views, stored procedures, or functions in migrations, they must be added or modified manually.
+> ⚠️ Entity Framework does not handle views, stored procedures, or functions in migrations, they must be added or modified manually to migrations. 
+
+To manage views or stored procedures in migrations take a look at the **[Api.Data.MySql.Views](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.MySql.Views)** or 
+**[Api.Data.MySql.StoredProcedures](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.MySql.StoredProcedures)** example for best practices.  
 
 > 📖 Learn more about **[EF Migrations](https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/?tabs=dotnet-core-cli)**.
 
@@ -463,46 +489,49 @@ is constrained to models implementing `IEntityCreatable`.
 
 The following table lists the methods available in `IRepository` along with their parameters, generic constraints, and a brief description.  
 
-| Method                                      | Parameters                                                | TEntity Constraint                | Description                                                                               |
-| ------------------------------------------- | --------------------------------------------------------- | --------------------------------- |------------------------------------------------------------------------------------------ |
-| `GetAsync<TEntity, TKey>`                   | key, includeDepth                                         | IEntityIdentity                   | Gets an entity by its unique key including related entities to a specified depth.         |
-| `GetFirstAsync<TEntity, TCriteria>`         | criteria, includeDepth                                    | IEntity                           | Gets the first entity matching the specified criteria.                                    |
-| `GetFirstAsync<TEntity>`                    | where, ordering, includeDepth                             | IEntity                           | Gets the first entity matching the predicate.                                             |
-| `GetManyAsync<TEntity, TKey>`               | keys, includeDepth                                        | IEntityIdentity                   | Gets entities matching the specified keys.                                                |
-| `GetManyAsync<TEntity>`                     | query, includeDepth                                       | IEntity                           | Gets entities matching the specified query.                                               |
-| `GetManyAsync<TEntity, TCriteria>`          | criteria, includeDepth                                    | IEntity                           | Gets entities matching the specified criteria.                                            |
-| `GetManyAsync<TEntity>`                     | where, pagination, ordering, includeDepth                 | IEntity                           | Gets entities matching a predicate with pagination and ordering.                          |
-| `GetManyAsync<TEntity, TKey>`               | where, pagination, includeDepth, orderBy, orderDirection  | IEntityIdentity                   | Gets entities matching a predicate ordered by a key selector with pagination.             |
-| `AddAsync<TEntity>`                         | entity                                                    | IEntityCreatable                  | Adds a single entity.                                                                     |
-| `AddOrGetAsync<TEntity, TKey>`              | entity                                                    | IEntityCreatable, IEntityIdentity | Adds an entity and reloads it including related entities. ⚠️ _Always uses autosave._      |
-| `AddAndGetAsync<TEntity, TKey>`             | entity                                                    | IEntityCreatable, IEntityIdentity | Adds or retreives an entity including related entities. ⚠️ _Always uses autosave._      |
-| `AddManyAsync<TEntity>`                     | entities                                                  | IEntityCreatable                  | Adds multiple entities.                                                                   |
-| `AddManyBulkAsync<TEntity>`                 | entities                                                  | IEntityCreatable                  | Bulk adds multiple entities using EF Plus Enterprise.                                     |
-| `UpdateAsync<TEntity>`                      | entity                                                    | IEntityUpdatable                  | Updates a single entity.                                                                  |
-| `UpdateAndGetAsync<TEntity, TKey>`          | entity                                                    | IEntityUpdatable, IEntityIdentity | Updates an entity and reloads it including related entities. ⚠️ _Always uses autosave._   |
-| `UpdateManyAsync<TEntity>`                  | entities                                                  | IEntityUpdatable                  | Updates multiple entities.                                                                |
-| `UpdateManyAsync<TEntity>`                  | where, propertyUpdates                                    | IEntityUpdatable                  | Updates entities matching a predicate.                                                    |
-| `UpdateManyAsync<TEntity, TCriteria>`       | criteria, propertyUpdates                                 | IEntityUpdatable                  | Updates entities based on specified criteria.                                             |
-| `UpdateManyBulkAsync<TEntity>`              | entities                                                  | IEntityUpdatable                  | Bulk updates multiple entities using EF Plus Enterprise.                                  |
-| `UpdateManyBulkAsync<TEntity>`              | where, propertyUpdates                                    | IEntityUpdatable                  | Bulk updates entities matching a predicate.                                               |
-| `UpdateManyBulkAsync<TEntity, TCriteria>`   | criteria, propertyUpdates                                 | IEntityUpdatable                  | Bulk updates entities based on specified criteria.                                        |
-| `AddOrUpdateAsync<TEntity>`                 | entity                                                    | IEntityCreatableAndUpdatable      | Adds or updates a single entity.                                                          |
-| `AddOrUpdateManyAsync<TEntity>`             | entities                                                  | IEntityCreatableAndUpdatable      | Adds or updates multiple entities.                                                        |
-| `DeleteAsync<TEntity, TKey>`                | id                                                        | IEntityDeletable, IEntityIdentity | Deletes an entity by its key.                                                             |
-| `DeleteAsync<TEntity>`                      | entity                                                    | IEntityDeletable                  | Deletes a specific entity instance.                                                       |
-| `DeleteManyAsync<TEntity, TKey>`            | ids                                                       | IEntityDeletable, IEntityIdentity | Deletes multiple entities by their keys.                                                  |
-| `DeleteManyAsync<TEntity>`                  | entities                                                  | IEntityDeletable                  | Deletes multiple entities.                                                                |
-| `DeleteManyAsync<TEntity, TCriteria>`       | criteria                                                  | IEntityDeletable                  | Deletes entities matching specified criteria.                                             |
-| `DeleteManyAsync<TEntity>`                  | expression                                                | IEntityDeletable                  | Deletes entities matching a filter expression.                                            |
-| `DeleteManyBulkAsync<TEntity, TKey>`        | ids                                                       | IEntityDeletable, IEntityIdentity | Bulk deletes entities with specified keys.                                                |
-| `DeleteManyBulkAsync<TEntity>`              | entities                                                  | IEntityDeletable                  | Bulk deletes specified entities.                                                          |
-| `DeleteManyBulkAsync<TEntity, TCriteria>`   | criteria                                                  | IEntityDeletable                  | Bulk deletes entities matching specified criteria.                                        |
-| `DeleteManyBulkAsync<TEntity>`              | expression                                                | IEntityDeletable                  | Bulk deletes entities matching a filter expression.                                       |
-| `CountAsync<TEntity, TCriteria>`            | criteria                                                  | IEntity                           | Returns the number of entities matching the criteria.                                     |
-| `CountAsync<TEntity>`                       | expression                                                | IEntity                           | Returns the number of entities matching a filter expression.                              |
-| `SumAsync<TEntity>`                         | whereExpr, sumExpr                                        | IEntity                           | Calculates the sum of a numeric expression for matching entities.                         |
-| `AverageAsync<TEntity>`                     | whereExpr, avgExpr                                        | IEntity                           | Calculates the average of a numeric expression for matching entities.                     |
-| `SaveChangesAsync`                          | -                                                         | -                                 | Persists all pending changes to the data store.                                           | 
+| Method                                      | Parameters                                                | TEntity Constraint                    | Description                                                                               |
+| ------------------------------------------- | --------------------------------------------------------- | ------------------------------------- |------------------------------------------------------------------------------------------ |
+| `GetAsync<TEntity, TKey>`                   | key, includeDepth                                         | `IEntityIdentity`                     | Gets an entity by its unique key including related entities to a specified depth.         |
+| `GetFirstAsync<TEntity, TCriteria>`         | criteria, includeDepth                                    | `IEntity`                             | Gets the first entity matching the specified criteria.                                    |
+| `GetFirstAsync<TEntity>`                    | where, ordering, includeDepth                             | `IEntity`                             | Gets the first entity matching the predicate.                                             |
+| `GetManyAsync<TEntity, TKey>`               | keys, includeDepth                                        | `IEntityIdentity`                     | Gets entities matching the specified keys.                                                |
+| `GetManyAsync<TEntity>`                     | query, includeDepth                                       | `IEntity`                             | Gets entities matching the specified query.                                               |
+| `GetManyAsync<TEntity, TCriteria>`          | criteria, includeDepth                                    | `IEntity`                             | Gets entities matching the specified criteria.                                            |
+| `GetManyAsync<TEntity>`                     | where, pagination, ordering, includeDepth                 | `IEntity`                             | Gets entities matching a predicate with pagination and ordering.                          |
+| `GetManyAsync<TEntity, TKey>`               | where, pagination, includeDepth, orderBy, orderDirection  | `IEntityIdentity`                     | Gets entities matching a predicate ordered by a key selector with pagination.             |
+| `AddAsync<TEntity>`                         | entity                                                    | `IEntityCreatable`                    | Adds a single entity.                                                                     |
+| `AddOrGetAsync<TEntity, TKey>`              | entity                                                    | `IEntityCreatable`, `IEntityIdentity` | Adds an entity and reloads it including related entities. ⚠️ _Always uses autosave._      |
+| `AddAndGetAsync<TEntity, TKey>`             | entity                                                    | `IEntityCreatable`, `IEntityIdentity` | Adds or retreives an entity including related entities. ⚠️ _Always uses autosave._        |
+| `AddManyAsync<TEntity>`                     | entities                                                  | `IEntityCreatable`                    | Adds multiple entities.                                                                   |
+| `AddManyBulkAsync<TEntity>`                 | entities                                                  | `IEntityCreatable`                    | Bulk adds multiple entities using EF Plus Enterprise.                                     |
+| `UpdateAsync<TEntity>`                      | entity                                                    | `IEntityUpdatable`                    | Updates a single entity.                                                                  |
+| `UpdateAndGetAsync<TEntity, TKey>`          | entity                                                    | `IEntityUpdatable`, `IEntityIdentity` | Updates an entity and reloads it including related entities. ⚠️ _Always uses autosave._   |
+| `UpdateManyAsync<TEntity>`                  | entities                                                  | `IEntityUpdatable`                    | Updates multiple entities.                                                                |
+| `UpdateManyAsync<TEntity>`                  | where, propertyUpdates                                    | `IEntityUpdatable`                    | Updates entities matching a predicate.                                                    |
+| `UpdateManyAsync<TEntity, TCriteria>`       | criteria, propertyUpdates                                 | `IEntityUpdatable`                    | Updates entities based on specified criteria.                                             |
+| `UpdateManyBulkAsync<TEntity>`              | entities                                                  | `IEntityUpdatable`                    | Bulk updates multiple entities using EF Plus Enterprise.                                  |
+| `UpdateManyBulkAsync<TEntity>`              | where, propertyUpdates                                    | `IEntityUpdatable`                    | Bulk updates entities matching a predicate.                                               |
+| `UpdateManyBulkAsync<TEntity, TCriteria>`   | criteria, propertyUpdates                                 | `IEntityUpdatable`                    | Bulk updates entities based on specified criteria.                                        |
+| `AddOrUpdateAsync<TEntity>`                 | entity                                                    | `IEntityCreatableAndUpdatable`        | Adds or updates a single entity.                                                          |
+| `AddOrUpdateManyAsync<TEntity>`             | entities                                                  | `IEntityCreatableAndUpdatable`        | Adds or updates multiple entities.                                                        |
+| `DeleteAsync<TEntity, TKey>`                | id                                                        | `IEntityDeletable`, `IEntityIdentity` | Deletes an entity by its key.                                                             |
+| `DeleteAsync<TEntity>`                      | entity                                                    | `IEntityDeletable`                    | Deletes a specific entity instance.                                                       |
+| `DeleteManyAsync<TEntity, TKey>`            | ids                                                       | `IEntityDeletable`, `IEntityIdentity` | Deletes multiple entities by their keys.                                                  |
+| `DeleteManyAsync<TEntity>`                  | entities                                                  | `IEntityDeletable`                    | Deletes multiple entities.                                                                |
+| `DeleteManyAsync<TEntity, TCriteria>`       | criteria                                                  | `IEntityDeletable`                    | Deletes entities matching specified criteria.                                             |
+| `DeleteManyAsync<TEntity>`                  | expression                                                | `IEntityDeletable`                    | Deletes entities matching a filter expression.                                            |
+| `DeleteManyBulkAsync<TEntity, TKey>`        | ids                                                       | `IEntityDeletable`, `IEntityIdentity` | Bulk deletes entities with specified keys.                                                |
+| `DeleteManyBulkAsync<TEntity>`              | entities                                                  | `IEntityDeletable`                    | Bulk deletes specified entities.                                                          |
+| `DeleteManyBulkAsync<TEntity, TCriteria>`   | criteria                                                  | `IEntityDeletable`                    | Bulk deletes entities matching specified criteria.                                        |
+| `DeleteManyBulkAsync<TEntity>`              | expression                                                | `IEntityDeletable`                    | Bulk deletes entities matching a filter expression.                                       |
+| `CountAsync<TEntity, TCriteria>`            | criteria                                                  | `IEntity`                             | Returns the number of entities matching the criteria.                                     |
+| `CountAsync<TEntity>`                       | expression                                                | `IEntity`                             | Returns the number of entities matching a filter expression.                              |
+| `SumAsync<TEntity>`                         | whereExpr, sumExpr                                        | `IEntity`                             | Calculates the sum of a numeric expression for matching entities.                         |
+| `AverageAsync<TEntity>`                     | whereExpr, avgExpr                                        | `IEntity`                             | Calculates the average of a numeric expression for matching entities.                     |
+| `ExecuteProcedureAsync<TResult>`            | procedureName, parameters                                 | -                                     | Execute a stored procedure and return a single result.                                    |
+| `ExecuteProcedureScalarAsync<TResult>`      | procedureName, parameters                                 | -                                     | Execute a stored procedure and return a list results.                                     |
+| `ExecuteProcedureAsync<TResult>`            | procedureName, parameters                                 | -                                     | Execute a stored procedure and return a scalar value.                                     |
+| `SaveChangesAsync`                          | -                                                         | -                                     | Persists all pending changes to the data store.                                           | 
 
 Several methods include overloads, which have been merged here for simplicity.  
 
@@ -622,30 +651,23 @@ can easily be overridden through the various `IRepository` methods.
 Try it out yourself using the **[Api.Data.Repository.Includes](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Repository.Includes)**.  
 
 ## Audit
-Audit is enabled by default, but first when you let your entity models implement the interface `IEntityAuditable` interface and the entity and all properties will be 
-tracked for audit logging. You can disable audit for certain properties using the ????? annotations.
+Audit logging is enabled by default in Nano. To enable auditing for an entity, the entity model must implement the `IEntityAuditable` interface. When implemented, the entity and all 
+of its properties will be tracked for audit logging. Individual properties can be excluded from auditing using the `[AuditExclude]` annotation.  
 
+When an auditable entity is updated, Nano records only the properties that have changed in the audit log. If an entity is updated while detached from the `DbContext`, Nano 
+automatically retrieves the current database values to ensure that both the original and updated values are correctly captured.  
 
+Even if auditing is not enabled for any entities, Nano still maps the audit entity models and their corresponding tables. This ensures the database schema remains consistent and 
+allows auditing to be enabled later without requiring schema changes.
 
-When audit is enabled in the data section of the configuration, changes to all entities deriving from ```IEntity``` will be tracked. 
-Auditting happens automatically and is executed asynchronously, to avoid impacting the response time.  
+Nano provides two built-in audit entities: `AuditEntry` (or `AuditEntry<TIdentity>`) and `AuditEntryProperty` (or `AuditEntryProperty<TIdentity>`). These are mapped to the 
+tables `__EFAudit` and `__EFAuditProperties`. An `AuditEntry` has a one-to-many relationship with `AuditEntryProperty`, which stores the individual property changes. The 
+`AuditEntryProperty` collection is automatically included when retrieving `AuditEntry` entities through the use of the **[Include Annotation](#include-annotation)**, ensuring property 
+changes are always available with the audit entry. Each audit entry stores the a `RequestId` if available, and the `CreatedBy` user. When a request is executed within an HTTP context, the authenticated user is recorded automatically. If 
+no HTTP context is available, the `CreatedBy` value defaults to `"Anonymous"`.  
 
-Nano comes with built-in audit entity models. The `AuditEntry` (table: __EFAudit) and with a one-to-many collection reference to the `AuditEntryProperty` (table: __EFAuditProperties), 
-which is annotated with [Include Anntation](#include-annotation). So retreiving an audit entry automically includes the audit properties.  
-
-The entity models are registered and the tables created, even when audit is not enabled. This is to ensure the data model is correct, should audit later be enabled. 
-
-
-WHAT ABOUT IDENTITY AUDIT LOGGING, HOW TO DEFINE THAT
-
-
-    To include a model for audit, just implement the empty interface ```IEntityAuditable```. Though normally this isn't required explicitly as all models is included when deriving 
-    from ```DefaultEntity``` and auditing is enabled for the application. To exclude models implement the ```IEntityAuditableNegated``` or ```ExcludeAttribute```
-
-    Write about that we do a select when updating an audit is enabled. 
-
-
-
+Audit integrates seamlessly with both **[Soft Delete](#soft-delete)** and entity **[Triggers](#triggers)**. Any changes made to an entity during before-save triggers are captured in the audit log, and for 
+soft-deleted entities, the audit reflects the soft-delete state rather than a regular deletion state.  
 
 The audit implementation is based on the **[EntityFramework Plus](https://github.com/zzzprojects/EntityFramework-Plus)** project.  
 
@@ -697,8 +719,8 @@ Nano supports the following trigger events.
 | `OnDeleted`       | After     | Triggered after the entity is deleted.                  |
 | `OnDeleteFailed`  | -         | Triggered if an error occurs when deleting the entity.  |
 
-Each entity model can have one or more triggers associated with it. To add a trigger, define the action delegate in the [Data Mapping](#data-mapping), 
-as shown below for `OnInserting`.  
+Each entity model can have one or more triggers associated with it, and the same trigger type may also be configured for the same entity model. To add a trigger, define 
+the action delegate in the [Data Mapping](#data-mapping), as shown below for `OnInserting`.  
 
 ```csharp
 builder

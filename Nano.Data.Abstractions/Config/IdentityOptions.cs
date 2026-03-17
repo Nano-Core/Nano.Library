@@ -17,6 +17,11 @@ public class IdentityOptions
     public virtual TimeSpan TokensExpiration { get; set; } = TimeSpan.FromHours(24);
 
     /// <summary>
+    /// Get or sets whether to audit identity user, roles, claims and external logins.
+    /// </summary>
+    public virtual bool UseIdentityAudit { get; set; } = false;
+
+    /// <summary>
     /// Gets or sets the user-related options, such as uniqueness requirements and default roles.
     /// </summary>
     [Required]
@@ -45,3 +50,4 @@ public class IdentityOptions
     /// </summary>
     public virtual ApiKeyOptions? ApiKey { get; set; }
 }
+

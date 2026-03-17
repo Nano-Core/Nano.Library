@@ -1682,14 +1682,14 @@ or transformed into generic failures.
 ## Controllers
 Nano provides several base controller classes that concrete API controllers are expected to inherit from.
 
-All controllers must inherit from `BaseController`, either directly or indirectly. This base class establishes the fundamental API behavior in Nano, 
-including routing, versioning, model validation, authorization, and shared response handling. 
+All controllers must inherit from `BaseController`, either directly or indirectly. This base class establishes the fundamental API behavior in Nano, including routing, versioning, 
+model validation, authorization, and shared response handling. 
 
 > ⚠️ Skipping this inheritance can lead to inconsistent behavior or parts of Nano not functioning as intended.
 
 Nano controls the base route for all controllers and applies the following structure: `http(s)://{host}:{port}/{root}/{controller}`.  
 
-This base route is defined by `BaseController` and must not be overridden. Concrete controllers should therefore **not** declare a `[Route]` attribute at the 
+This base route is defined by `BaseController` and must not be overridden. Concrete controllers should therefore not declare a `[Route]` attribute at the 
 controller level, as doing so may interfere with Nano’s routing configuration. Action methods, however, must define their own route templates. The `[Route]` (or HTTP verb) 
 attribute on actions can specify any route segment as needed by the consumer. This ensures consistent API structure across the application while still allowing 
 flexibility at the action level.
@@ -1714,7 +1714,7 @@ CRUD operations depending on their intended responsibility, as shown below.
 Derive you concrete entity controllers classes from one of these base classes, and choose the most restrictive controller that satisfies the domain requirements 
 to keep the API surface minimal and explicit.  
 
-When exposing entity models mapped from SQL views, use `BaseEntityViewController` or a higher-level base class.  
+When exposing entity models mapped from SQL views, use `BaseEntityViewController` base class.  
 
 > ⚠️ Entity controllers require **[Nano.Data](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data)** to be configured for the application.
 
@@ -1819,18 +1819,16 @@ When everything is configured and registered, the following endpoints becomes av
 | `/api/{entity}s/delete/query`      | POST, DELETE  | criteria                         | deleter | Deletes entities matching the specified criteria.                            |
 | `/api/{entity}s/delete/query/bulk` | POST, DELETE  | criteria                         | deleter | Deletes entities matching the specified criteria in bulk.                    |
 
-> ⚠️ Do not set `includeDepth` higher than the configured include depth. [Response Serialization](#response-serialization) will only consider the configured value.
+> ⚠️ Do not set `includeDepth` higher than the configured include depth. **[Response Serialization](#response-serialization)** will only consider the configured value.
 
 Try it yourself using one of the **[Api.Data Lessons](https://github.com/Nano-Core/Nano.Lessons)**, such as **[Api.Data.MySql](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.MySql)**, 
 or any of the other data provider examples.
 
 When **[Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#identity)** is enabled, Nano provides a specialized base controller for managing 
 entity identities. The `BaseIdentityController<TEntity, TCriteria>` offers a rich set of methods for creating, updating, and managing user identities within your application. 
-To use it, derive a concrete implementation of this controller to expose identity-related actions for your application. It behaves similarly to other entity controllers but 
-includes additional actions tailored for identity management, such as handling usernames, passwords, emails, phone numbers, external logins, claims, roles, and API keys.  
-
-The `TEntity` generic parameter must inherit not just from `BaseEntity`, but specifically from `BaseEntityUser` or `BaseEntityUser<TIdentity>`. Your user entity model 
-is connected through the `IdentityUser` property on the base class and can otherwise be used like any other entity model in Nano.
+To use it, derive a concrete implementation of this controller to expose identity-related actions for your application, using a user entity model derived from `BaseEntityUser` or 
+`BaseEntityUser<TIdentity>`. It behaves similarly to other entity controllers but includes additional actions tailored for identity management, such as handling usernames, passwords, 
+emails, phone numbers, external logins, claims, roles, and API keys.  
 
 The following endpoints are available in the `BaseIdentityController<TEntity, TCriteria>` for managing user identities. Not all identity features might be configured. Nano only 
 exposes endpoints that match the current configuration; any features not configured will not be registered or available in the controller.
@@ -1895,24 +1893,23 @@ exposes endpoints that match the current configuration; any features not configu
 
 > 📖 Learn more about **[Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#identity)**.
 
-Try it yourself using the **[Api.Data.MySql.Identity](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.MySql.Identity)**, or any of the other data provider examples.
+Try it yourself using the **[Api.Data.Identity](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity)** example.  
 
-Another specialized base entity controller is provided for **[Data Audit](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#audit)**. If audit is not configured,
-the controller will not be available. You can expose audit data by deriving from `BaseAuditController` or `BaseAuditController<TIdentity>`. These controllers derive 
-from `BaseEntityReadOnlyController` and automatically provide read-only actions for querying audit records.  
+Another specialized base entity controller is provided for audit data. You can expose audit data by deriving from `BaseAuditController` or `BaseAuditController<TIdentity>`. These 
+controllers derive from `BaseEntityReadOnlyController` and automatically provide read-only actions for querying audit records.  
 
 > ⚠️ The `BaseAuditController` requires the _adminstrator_ role assigned.
 
 > 📖 Learn more about **[Data Audit](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#audit)**.
 
-Try it yourself using the **[Api.Data.MySql.Audit](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.MySql.Audit)**, or any of the other data provider examples.
+Try it yourself using the **[Api.Data.Audit](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Audit)**, or any of the other data provider examples.
 
 Nano provides the `BaseAuthController` and `BaseAuthController<TIdentity>` for authentication-related operations. A concrete implementation, `AuthController`, is already included 
-with Nano. Unless you have specific requirements, there is usually no need to override it. The `AuthController` is only exposed if **[Authentication](#authentication)** has been 
-configured and if the configuration option `HideAuthController` is not set to `true`.  
+with Nano. Unless you have specific requirements, there is usually no need to override it. The `AuthController` is only exposed if authentication has been configured and if the 
+configuration option `HideAuthController` is not set to `true`.  
 
-The following endpoints are available in the `BaseAuthController` for managing authentication. Note that not all authentication features may be configured. Nano only exposes 
-endpoints that match the current configuration; any features that are not configured will not be registered or available in the controller.  
+The following endpoints are available in the `BaseAuthController` for managing authentication. Nano only exposes endpoints that match the current configuration; any features that 
+are not configured will not be registered or available in the controller.  
 
 | Endpoint                                  | Method | Role      | Description                                                                          |
 | ----------------------------------------- | ------ | --------- | ------------------------------------------------------------------------------------ |

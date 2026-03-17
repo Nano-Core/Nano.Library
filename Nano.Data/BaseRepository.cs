@@ -4,6 +4,7 @@ using DynamicExpression.Extensions;
 using DynamicExpression.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Query;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Options;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Config;
@@ -11,6 +12,8 @@ using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Data.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
@@ -1119,6 +1122,64 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
+    public async Task<T?> ExecuteProcedureAsync<T>(string procedureName, Dictionary<string, object?>? parameters = null, CancellationToken cancellationToken = default)
+        where T : class, new()
+    {
+        ArgumentNullException.ThrowIfNull(procedureName);
+
+        var list = await ExecuteProcedureListAsync<T>(procedureName, parameters, cancellationToken);
+
+        if (list.Count == 0)
+        {
+            return null;
+        }
+
+        return list[0];
+    }
+
+    /// <inheritdoc />
+    public async Task<List<T>> ExecuteProcedureListAsync<T>(string procedureName, Dictionary<string, object?>? parameters = null, CancellationToken cancellationToken = default)
+        where T : class, new()
+    {
+        ArgumentNullException.ThrowIfNull(procedureName);
+
+        await using var command = await this.CreateCommandAsync(procedureName, parameters, cancellationToken);
+
+        await using var reader = await command.ExecuteReaderAsync(cancellationToken);
+
+        var results = new List<T>();
+
+        while (await reader.ReadAsync(cancellationToken))
+        {
+            var result = reader
+                .Map<T>();
+
+            results
+                .Add(result);
+        }
+
+        return results;
+    }
+
+    /// <inheritdoc />
+    public async Task<T> ExecuteProcedureScalarAsync<T>(string procedureName, Dictionary<string, object?>? parameters = null, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(procedureName);
+
+        await using var command = await this.CreateCommandAsync(procedureName, parameters, cancellationToken);
+
+        var result = await command
+            .ExecuteScalarAsync(cancellationToken);
+
+        if (result is null or DBNull)
+        {
+            return default!;
+        }
+
+        return (T)Convert.ChangeType(result, typeof(T));
+    }
+
+    /// <inheritdoc />
     public virtual async Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         await this.dbContext
@@ -1204,5 +1265,43 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         }
 
         return Expression.Lambda<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>>(expression, parameter);
+    }
+    private async ValueTask<DbCommand> CreateCommandAsync(string procedureName, Dictionary<string, object?>? parameters = null, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(procedureName);
+
+        var connection = this.dbContext.Database.GetDbConnection();
+
+        if (connection.State != ConnectionState.Open)
+        {
+            await connection
+                .OpenAsync(cancellationToken);
+        }
+
+        var command = connection
+            .CreateCommand();
+
+        command.CommandText = procedureName;
+        command.CommandType = CommandType.StoredProcedure;
+
+        if (this.dbContext.Database.CurrentTransaction != null)
+        {
+            command.Transaction = this.dbContext.Database.CurrentTransaction
+                .GetDbTransaction();
+        }
+
+        if (parameters != null)
+        {
+            foreach (var kvp in parameters)
+            {
+                var dbParameter = command
+                    .CreateParameter(kvp.Key, kvp.Value);
+
+                command.Parameters
+                    .Add(dbParameter);
+            }
+        }
+
+        return command;
     }
 }

@@ -2,6 +2,8 @@ using EntityFrameworkCore.Triggers;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Nano.Data.Abstractions.Models.Abstractions;
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 
 namespace Nano.Data.Mappings.Extensions;
 
@@ -10,6 +12,8 @@ namespace Nano.Data.Mappings.Extensions;
 /// </summary>
 public static class EntityTypeBuilderExtensions
 {
+    private static readonly ConcurrentDictionary<Type, HashSet<Delegate>> registeredTriggers = new();
+
     /// <summary>
     /// Adds an inserted event trigger to the model.
     /// The passed <paramref name="action"/> will be invoked, after the entity of type <typeparamref name="TEntity"/> is inserted.
@@ -23,7 +27,7 @@ public static class EntityTypeBuilderExtensions
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(action);
 
-        Triggers<TEntity>.Inserted += action;
+        AddOnce<TEntity>(action, x => Triggers<TEntity>.Inserted += (Action<IInsertedEntry<TEntity>>)x);
     }
 
     /// <summary>
@@ -39,7 +43,7 @@ public static class EntityTypeBuilderExtensions
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(action);
 
-        Triggers<TEntity>.Inserting += action;
+        AddOnce<TEntity>(action, x => Triggers<TEntity>.Inserting += (Action<IInsertingEntry<TEntity>>)x);
     }
 
     /// <summary>
@@ -55,7 +59,7 @@ public static class EntityTypeBuilderExtensions
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(action);
 
-        Triggers<TEntity>.InsertFailed += action;
+        AddOnce<TEntity>(action, x => Triggers<TEntity>.InsertFailed += (Action<IInsertFailedEntry<TEntity>>)x);
     }
 
     /// <summary>
@@ -71,7 +75,7 @@ public static class EntityTypeBuilderExtensions
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(action);
 
-        Triggers<TEntity>.Updated += action;
+        AddOnce<TEntity>(action, x => Triggers<TEntity>.Updated += (Action<IUpdatedEntry<TEntity>>)x);
     }
 
     /// <summary>
@@ -87,7 +91,7 @@ public static class EntityTypeBuilderExtensions
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(action);
 
-        Triggers<TEntity>.Updating += action;
+        AddOnce<TEntity>(action, x => Triggers<TEntity>.Updating += (Action<IUpdatingEntry<TEntity>>)x);
     }
 
     /// <summary>
@@ -103,7 +107,7 @@ public static class EntityTypeBuilderExtensions
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(action);
 
-        Triggers<TEntity>.UpdateFailed += action;
+        AddOnce<TEntity>(action, x => Triggers<TEntity>.UpdateFailed += (Action<IUpdateFailedEntry<TEntity>>)x);
     }
 
     /// <summary>
@@ -119,7 +123,7 @@ public static class EntityTypeBuilderExtensions
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(action);
 
-        Triggers<TEntity>.Deleted += action;
+        AddOnce<TEntity>(action, x => Triggers<TEntity>.Deleted += (Action<IDeletedEntry<TEntity>>)x);
     }
 
     /// <summary>
@@ -135,7 +139,7 @@ public static class EntityTypeBuilderExtensions
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(action);
 
-        Triggers<TEntity>.Deleting += action;
+        AddOnce<TEntity>(action, x => Triggers<TEntity>.Deleting += (Action<IDeletingEntry<TEntity>>)x);
     }
 
     /// <summary>
@@ -151,6 +155,30 @@ public static class EntityTypeBuilderExtensions
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(action);
 
-        Triggers<TEntity>.DeleteFailed += action;
+        AddOnce<TEntity>(action, x => Triggers<TEntity>.DeleteFailed += (Action<IDeleteFailedEntry<TEntity>>)x);
+    }
+
+
+    private static void AddOnce<TEntity>(Delegate action, Action<Delegate> addAction)
+        where TEntity : class
+    {
+        ArgumentNullException.ThrowIfNull(action);
+        ArgumentNullException.ThrowIfNull(addAction);
+
+        var entityType = typeof(TEntity);
+ 
+        var delegates = registeredTriggers
+            .GetOrAdd(entityType, _ => []);
+
+        lock (delegates)
+        {
+            if (!delegates.Contains(action))
+            {
+                addAction(action);
+
+                delegates
+                    .Add(action);
+            }
+        }
     }
 }
