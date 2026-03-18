@@ -44,7 +44,7 @@ public class AuthJwtRepository(JwtAuthenticationOptions options) : IAuthJwtRepos
         var expireAt = DateTimeOffset.UtcNow.Add(this.options.Expiration);
 
         var rsaSecurityKey = this.options.PrivateKey?
-            .CreateRsaSecurityKey();
+            .CreatePrivateRsaSecurityKey();
 
         var signingCredentials = new SigningCredentials(rsaSecurityKey, SecurityAlgorithms.RsaSha512);
         var securityToken = new JwtSecurityToken(this.options.Issuer, this.options.Audience, claims, notBeforeAt.DateTime, expireAt.DateTime, signingCredentials);
@@ -79,7 +79,7 @@ public class AuthJwtRepository(JwtAuthenticationOptions options) : IAuthJwtRepos
     public virtual void ValidateTokenForRefresh(string refreshToken)
     {
         var rsaSecurityKey = this.options.PublicKey
-            .CreateRsaSecurityKey();
+            .CreatePublicRsaSecurityKey();
 
         var validationParameters = new TokenValidationParameters
         {

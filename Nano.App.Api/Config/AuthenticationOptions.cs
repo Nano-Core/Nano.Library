@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace Nano.App.Api.Config;
 
 /// <summary>
@@ -7,12 +5,6 @@ namespace Nano.App.Api.Config;
 /// </summary>
 public class AuthenticationOptions
 {
-    /// <summary>
-    /// Hide authentication controller.
-    /// </summary>
-    [Required]
-    public virtual bool HideAuthController { get; set; } = false;
-
     /// <summary>
     /// JWT authentication options.
     /// </summary>

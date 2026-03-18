@@ -1,13 +1,13 @@
 using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity;
 using Nano.App.Api.Mvc.Authentication.Abstractions;
 using Nano.App.ApiClient.Requests.Auth.Models;
 using Nano.App.Config;
 using Nano.Data.Abstractions.Identity.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Nano.Data.Abstractions.Identity.Consts;
+using Nano.Data.Abstractions.Identity.Exceptions;
 
 namespace Nano.App.Api.Mvc.Authentication;
 
@@ -36,18 +36,9 @@ public class AuthRootRepository : IAuthRootRepository
 
         await Task.CompletedTask;
 
-        if (logInRoot.Username != this.options.Username)
+        if (logInRoot.Username != this.options.Username || logInRoot.Password != this.options.Password)
         {
-            var identityError = new IdentityErrorDescriber().InvalidUserName(logInRoot.Username);
-
-            throw new AggregateException(identityError.Description);
-        }
-
-        if (logInRoot.Password != this.options.Password)
-        {
-            var identityError = new IdentityErrorDescriber().PasswordMismatch();
-
-            throw new AggregateException(identityError.Description);
+            throw new UnauthorizedException();
         }
 
         var accessToken = this.authJwtRepository

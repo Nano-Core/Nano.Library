@@ -21,10 +21,10 @@ using Nano.Data.Abstractions.Identity.Consts;
 namespace Nano.App.Api.Controllers;
 
 /// <inheritdoc />
-public class BaseAuthController : BaseAuthController<Guid>
+public abstract class BaseAuthController : BaseAuthController<Guid>
 {
     /// <inheritdoc />
-    public BaseAuthController(ILogger<BaseAuthController> logger, IIdentityAuthRepository? identityAuthRepository = null, IAuthTransientRepository? authTransientRepository = null, IAuthRootRepository? authRootRepository = null, IAuthExternalRepository? authExternalRepository = null)
+    protected BaseAuthController(ILogger<BaseAuthController> logger, IIdentityAuthRepository? identityAuthRepository = null, IAuthTransientRepository? authTransientRepository = null, IAuthRootRepository? authRootRepository = null, IAuthExternalRepository? authExternalRepository = null)
         : base(logger, identityAuthRepository, authTransientRepository, authRootRepository, authExternalRepository)
     {
     }

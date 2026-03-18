@@ -22,7 +22,7 @@ internal static class AuthenticationBuilderExtensions
         }
 
         var rsaSecurityKey = options.PublicKey
-            .CreateRsaSecurityKey();
+            .CreatePublicRsaSecurityKey();
 
         builder
             .AddJwtBearer(AuthenticationSchemes.JWT, x =>

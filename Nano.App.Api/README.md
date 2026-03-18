@@ -1496,7 +1496,6 @@ The following configuration is available for authentication.
 
 | Setting                   | Type     | Default   | Description                                                                                         |
 | ------------------------- | -------- | --------- | --------------------------------------------------------------------------------------------------- |
-|  `HideAuthController`     | bool     | false     | Controls whether the `AuthController` should be visible when authentication is enabled.             |
 |  `Jwt`                    | object   | null      | Optional JWT authentication configuration.                                                          |
 |  `Jwt.Issuer`             | string   | null      | Required. JWT issuer.                                                                               |
 |  `Jwt.Audience`           | string   | null      | Required. JWT audience.                                                                             |
@@ -1510,14 +1509,13 @@ The following configuration is available for authentication.
 ```json
 "App": {
   "Authentication": {
-    "HideAuthController": false,
     "Jwt": {
       "Issuer": null,
       "Audience": null,
       "PublicKey": null,
       "PrivateKey": null,
-      "Expiration": 00:60:00,
-      "RefreshExpiration": 72:00:00
+      "Expiration": "00:60:00",
+      "RefreshExpiration": "72:00:00"
     }
   }
 }
@@ -1531,6 +1529,20 @@ a specific user account available for login. This login type is transient and do
 | ------------- | -------- | --------- | ------------------------------------------- |
 |  `Username`   | string   | null      | The username used for root authentication.  |
 |  `Password`   | string   | null      | The password used for root authentication.  |
+
+```json
+"App": {
+  "Authentication": {
+    "Jwt": {
+      "RootLogin": {
+        "Username": null,
+        "Password": null
+    }
+  }
+}
+```
+
+When logged in as root, the administrator role is automatically assigned, providing full permissions across the application.  
 
 The supported `ExternalLogins` in Nano are Facebook, Google, and Microsoft. Nano allows you to use external logins either alongside 
 **[Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#identity)** or as transient logins without an identity store.  
@@ -1590,9 +1602,9 @@ The configuration is defined as follows.
 
 > ⚠️ The external provider application must be configured with at least the following scopes: `id`, `email`, and `username`.
 
-The `AuthController` (See **[Controllers](#controllers)**) exposes endpoints for all configured authentication methods. Each method allows specifying an `AppId`, a unique string 
-that identifies the application or platform the user is authenticating from. This enables logins to be managed independently per application. If no `AppId` is provided, it 
-defaults to `Default`. All authentication methods also return a consistent `AccessToken` in the response, with default values as shown below.  
+The `BaseAuthController` (see **[Controllers](#controllers)**) exposes endpoints for all configured authentication methods. Each method allows specifying an `AppId`, 
+a unique string that identifies the application or platform the user is authenticating from. This enables logins to be managed independently per application. If no `AppId` 
+is provided, it defaults to `Default`. All authentication methods also return a consistent `AccessToken` in the response, with default values as shown below.  
 
 ```json
 {
@@ -1653,6 +1665,8 @@ or examples with identity store configured.
 * **[Api.Data.Identity.Authentication.External.Facebook](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Authentication.External.Facebook)** 
 * **[Api.Data.Identity.Authentication.External.Google](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Authentication.External.Google)** 
 * **[Api.Data.Identity.Authentication.External.Microsoft](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Authentication.External.Microsoft)** 
+* **[Api.Data.Identity.Authentication.ApiKey](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Authentication.Jwt)** 
+* **[Api.Data.Identity.Authentication.Custom](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Authentication.Custom)** 
 
 ## Authorization
 Nano supports authorization using either a JWT token or an API key. JWT tokens are provided in the `Authorization` header, while API keys are provided in 
@@ -1899,35 +1913,14 @@ exposes endpoints that match the current configuration; any features not configu
 
 Try it yourself using the **[Api.Data.Identity](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity)** example.  
 
-Another specialized base entity controller is provided for audit data. You can expose audit data by deriving from `BaseAuditController` or `BaseAuditController<TIdentity>`. These 
-controllers derive from `BaseEntityReadOnlyController` and automatically provide read-only actions for querying audit records.  
-
-> ⚠️ The `BaseAuditController` requires the _adminstrator_ role assigned.
-
-The following endpoints are available.  
-
-| Endpoint                       | Method        | Paramters                        | Role    | Description                                                                  |
-| ------------------------------ | ------------- | -------------------------------- | ------- | ---------------------------------------------------------------------------- |
-| `/api/audit/{id}/details`      | GET           | id, includeDepth                 | reader  | Gets a single entity by its identifier.                                      |
-| `/api/audit/details/many`      | GET, POST     | ids, includeDepth                | reader  | Gets multiple entities by their identifiers.                                 |
-| `/api/audit/index`             | GET, POST     | query, includeDepth              | reader  | Gets all entities matching the specified query.                              |
-| `/api/audit/query`             | GET, POST     | query, criteria, includeDepth    | reader  | Queries entities matching the specified criteria.                            |
-| `/api/audit/query/first`       | GET, POST     | query, criteria, includeDepth    | reader  | Retrieves the first entity matching the specified criteria.                  |
-| `/api/audit/query/count`       | GET, POST     | criteria, includeDepth           | reader  | Gets the total count of entities matching the specified criteria.            |
-
-> 📖 Learn more about **[Data Audit](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#audit)**.
-
-Try it yourself using the **[Api.Data.Audit](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Audit)**, or any of the other data provider examples.
-
-Nano provides the `BaseAuthController` and `BaseAuthController<TIdentity>` for authentication-related operations. A concrete implementation, `AuthController`, is already included 
-with Nano. Unless you have specific requirements, there is usually no need to override it. The `AuthController` is only exposed if authentication has been configured and if the 
-configuration option `HideAuthController` is not set to `true`.  
+Nano includes the `BaseAuthController` and `BaseAuthController<TIdentity>` classes to handle authentication-related operations. To expose authentication endpoints in your API, 
+simply derive a concrete controller from one of these base classes. There is no need to implement any actions in your derived controller, as all necessary functionality is provided.
 
 The following endpoints are available in the `BaseAuthController` for managing authentication. Nano only exposes endpoints that match the current configuration; any features that 
 are not configured will not be registered or available in the controller.  
 
 | Endpoint                                    | Method | Role      | Description                                                                          |
-| ---------------------------------------..-- | ------ | --------- | ------------------------------------------------------------------------------------ |
+| ------------------------------------------- | ------ | --------- | ------------------------------------------------------------------------------------ |
 | `/auth/login`                               | POST   | Anonymous | Authenticates a user and returns an access token (JWT).                              |
 | `/auth/login-root`                          | POST   | Anonymous | Authenticates the root user from configuration and returns an access token.          |
 | `/auth/login-external-direct`               | POST   | Anonymous | Signs in a user via direct external authentication data.                             |
@@ -1946,6 +1939,27 @@ are not configured will not be registered or available in the controller.
 | `/auth/external-microsoft-data`             | POST   | Anonymous | Retrieves external login data from Microsoft authentication provider.                |
 
 > 📖 Learn more about **[Authentication](#authentication)**.
+
+Another specialized base entity controller is provided for audit data. You can expose audit data by deriving from `BaseAuditController` or `BaseAuditController<TIdentity>`. These 
+controllers derive from `BaseEntityReadOnlyController` and automatically provide read-only actions for querying audit records. In order to use the audit controller, a data provider must
+be registerd with the application.  
+
+> ⚠️ The `BaseAuditController` requires the _adminstrator_ role assigned.
+
+The following endpoints are available.  
+
+| Endpoint                       | Method        | Paramters                        | Role    | Description                                                                  |
+| ------------------------------ | ------------- | -------------------------------- | ------- | ---------------------------------------------------------------------------- |
+| `/api/audit/{id}/details`      | GET           | id, includeDepth                 | reader  | Gets a single entity by its identifier.                                      |
+| `/api/audit/details/many`      | GET, POST     | ids, includeDepth                | reader  | Gets multiple entities by their identifiers.                                 |
+| `/api/audit/index`             | GET, POST     | query, includeDepth              | reader  | Gets all entities matching the specified query.                              |
+| `/api/audit/query`             | GET, POST     | query, criteria, includeDepth    | reader  | Queries entities matching the specified criteria.                            |
+| `/api/audit/query/first`       | GET, POST     | query, criteria, includeDepth    | reader  | Retrieves the first entity matching the specified criteria.                  |
+| `/api/audit/query/count`       | GET, POST     | criteria, includeDepth           | reader  | Gets the total count of entities matching the specified criteria.            |
+
+> 📖 Learn more about **[Data Audit](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#audit)**.
+
+Try it yourself using the **[Api.Data.Audit](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Audit)**, or any of the other data provider examples.
 
 ## Request Validation
 When deriving a controller from `BaseController`, model validation is automatically enabled. Validation is based on the attributes applied to model properties. If 
