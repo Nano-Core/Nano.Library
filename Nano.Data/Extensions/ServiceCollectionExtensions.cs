@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -9,7 +10,6 @@ using Nano.Data.Abstractions.Eventing;
 using Nano.Data.Abstractions.Identity.Extensions;
 using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
-using Nano.Data.Abstractions.Models.Enums;
 using Nano.Data.Eventing;
 using Nano.Data.Identity.Authentication.Extensions;
 using Nano.Data.Identity.Extensions;
@@ -140,6 +140,7 @@ public static class ServiceCollectionExtensions
         AuditManager.DefaultConfiguration.IncludeIdentity<TIdentity>(options.Identity);
         AuditManager.DefaultConfiguration.Exclude<AuditEntry<TIdentity>>();
         AuditManager.DefaultConfiguration.Exclude<AuditEntryProperty<TIdentity>>();
+        AuditManager.DefaultConfiguration.Exclude<DataProtectionKey>();
         AuditManager.DefaultConfiguration.ExcludeDataAnnotation();
 
         AuditManager.DefaultConfiguration.UseUtcDateTime = true;
@@ -147,8 +148,7 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
-
-
+ 
     private static void AutoSavePreAction<TIdentity>(DbContext dbContext, Audit audit)
         where TIdentity : IEquatable<TIdentity>
     {
@@ -159,38 +159,25 @@ public static class ServiceCollectionExtensions
             .GetService<IHttpContextAccessor>();
 
         var requestId = httpContextAccessor.HttpContext?.TraceIdentifier;
-
-        string? createdBy = null;
-        if (httpContextAccessor.HttpContext != null)
-        {
-            createdBy = httpContextAccessor.HttpContext
-                .GetJwtUserId()?
-                .ToString();
-
-            createdBy ??= "Anonymous";
-        }
+        var createdBy = httpContextAccessor.HttpContext == null 
+            ? null 
+            : httpContextAccessor.HttpContext.GetJwtUserId()?.ToString() ?? "Anonymous";
 
         var auditEntries = audit.Entries
             .Where(x => x.AuditEntryID == 0)
             .Select(x =>
             {
-                var keyName = x.Entry
-                    .GetKeyName();
-
-                var entityKey = x.Entry
-                    .GetKeyValue<TIdentity>();
-
-                var entityState = x is { State: AuditEntryState.EntityDeleted, Entity: IEntitySoftDeletable { IsDeleted: > 0L } }
-                    ? AuditState.SoftDeleted
-                    : x.State.ToAuditState();
+                var entityKey = x.GetEntityKey<TIdentity>();
+                var entityState = x.GetEntityState();
+                var entityTypeName = x.GetEntityTypeName();
 
                 return new AuditEntry<TIdentity>
                 {
                     CreatedBy = createdBy ?? x.CreatedBy,
-                    EntityKey = entityKey!,
-                    EntitySetName = x.EntitySetName,
-                    EntityTypeName = x.EntityTypeName,
+                    EntityKey = entityKey,
                     EntityState = entityState,
+                    EntitySetName = x.EntitySetName,
+                    EntityTypeName = entityTypeName,
                     RequestId = requestId,
                     Properties = x.Properties
                         .Select(y => new AuditEntryProperty<TIdentity>
@@ -202,7 +189,7 @@ public static class ServiceCollectionExtensions
                         })
                         .Where(y =>
                             y.NewValue != y.OldValue &&
-                            y.PropertyName != keyName)
+                            y.PropertyName != x.Entry.GetKeyName())
                         .ToArray()
                 };
             });

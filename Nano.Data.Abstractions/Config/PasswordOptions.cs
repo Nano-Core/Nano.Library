@@ -12,40 +12,40 @@ public class PasswordOptions
     /// Defaults to <c>false</c>.
     /// </summary>
     [Required]
-    public virtual bool RequireDigit { get; set; } = false;
+    public virtual bool RequireDigit { get; set; } = true;
 
     /// <summary>
     /// Gets or sets a value indicating whether the password must contain at least one non-alphanumeric character.
     /// Defaults to <c>false</c>.
     /// </summary>
     [Required]
-    public virtual bool RequireNonAlphanumeric { get; set; } = false;
+    public virtual bool RequireNonAlphanumeric { get; set; } = true;
 
     /// <summary>
     /// Gets or sets a value indicating whether the password must contain at least one lowercase letter.
     /// Defaults to <c>false</c>.
     /// </summary>
     [Required]
-    public virtual bool RequireLowercase { get; set; } = false;
+    public virtual bool RequireLowercase { get; set; } = true;
 
     /// <summary>
     /// Gets or sets a value indicating whether the password must contain at least one uppercase letter.
     /// Defaults to <c>false</c>.
     /// </summary>
     [Required]
-    public virtual bool RequireUppercase { get; set; } = false;
+    public virtual bool RequireUppercase { get; set; } = true;
 
     /// <summary>
     /// Gets or sets the minimum required length of the password.
     /// Defaults to <c>5</c>.
     /// </summary>
     [Required]
-    public virtual int RequiredLength { get; set; } = 5;
+    public virtual int RequiredLength { get; set; } = 12;
 
     /// <summary>
     /// Gets or sets the number of unique characters required in the password.
     /// Defaults to <c>0</c>.
     /// </summary>
     [Required]
-    public virtual int RequiredUniqueCharacters { get; set; } = 0;
+    public virtual int RequiredUniqueCharacters { get; set; } = 3;
 }

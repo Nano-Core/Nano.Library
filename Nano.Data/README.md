@@ -158,12 +158,12 @@ access control.
 |  `Lockout.MaxFailedAccessAttempts`     | int      | 3               | The maximum number of failed access attempts before a user is locked out.                                                |
 |  `Lockout.DefaultLockoutTimeSpan`      | TImeSpan | 00:30:00        | The default lockout duration for a user.                                                                                 |
 |  `Password`                            | object   | default         | Options for password complexity requirements.                                                                            |
-|  `Password.RequireDigit`               | bool     | false           | A value indicating whether the password must contain at least one digit.                                                 |
-|  `Password.RequireNonAlphanumeric`     | bool     | false           | A value indicating whether the password must contain at least one non-alphanumeric character.                            |
-|  `Password.RequireLowercase`           | bool     | false           | A value indicating whether the password must contain at least one lowercase letter.                                      |
-|  `Password.RequirUppercase`            | bool     | false           | A value indicating whether the password must contain at least one uppercase letter.                                      |
-|  `Password.RequiredLength`             | bool     | false           | The minimum required length of the password.                                                                             |
-|  `Password.RequiredUniqueCharacters`   | bool     | false           | The number of unique characters required in the password.                                                                |
+|  `Password.RequireDigit`               | bool     | true            | A value indicating whether the password must contain at least one digit.                                                 |
+|  `Password.RequireNonAlphanumeric`     | bool     | true            | A value indicating whether the password must contain at least one non-alphanumeric character.                            |
+|  `Password.RequireLowercase`           | bool     | true            | A value indicating whether the password must contain at least one lowercase letter.                                      |
+|  `Password.RequirUppercase`            | bool     | true            | A value indicating whether the password must contain at least one uppercase letter.                                      |
+|  `Password.RequiredLength`             | int      | 12              | The minimum required length of the password.                                                                             |
+|  `Password.RequiredUniqueCharacters`   | int      | 3               | The number of unique characters required in the password.                                                                |
 |  `ApiKey`                              | object   | default         | Optional. Options for API keys.                                                                                          |
 |  `ApiKey.Secret`                       | string   | null            | Required. The secret key used to create and validate API keys.                                                           |
 
@@ -194,7 +194,6 @@ access control.
       "RequireNonAlphanumeric": false,
       "RequireLowercase": false,
       "RequirUppercase": false,
-      "RequireDigit": false,
       "RequiredLength": 5,
       "RequiredUniqueCharacters": 5
     },

@@ -88,7 +88,7 @@ internal class ActionRoutes
     internal const string IDENTITY_ROLES = "roles";
     internal const string IDENTITY_ROLES_CREATE = "roles/create";
     internal const string IDENTITY_ROLES_DELETE = "roles/delete";
-    internal const string IDENTITY_ROLES_USER = "{userId]/roles";
+    internal const string IDENTITY_ROLES_USER = "{userId}/roles";
     internal const string IDENTITY_ROLES_USER_REMOVE = "roles/user/remove";
     internal const string IDENTITY_ROLES_USER_ASSIGN = "roles/user/assign";
     internal const string IDENTITY_ROLES_CLAIMS = "roles/{roleId}/claims";

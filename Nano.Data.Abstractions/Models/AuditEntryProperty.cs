@@ -33,9 +33,8 @@ public class AuditEntryProperty<TIdentity> : BaseEntity<TIdentity>
     /// <summary>
     /// Gets or sets the relation name of the property audited.
     /// </summary>
-    [Required]
     [MaxLength(256)]
-    public virtual string RelationName { get; set; } = null!;
+    public virtual string? RelationName { get; set; }
 
     /// <summary>
     /// Gets or sets the new value of the property formatted as string.
