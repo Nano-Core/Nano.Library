@@ -95,7 +95,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
             entry.OriginalValues
                 .SetValues(untracked);
 
-            UpdateGeneratedProperties(entity);
+            this.UpdateGeneratedProperties(entity);
         }
 
         return base.Update(entity);
@@ -128,7 +128,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
 
         var entityType = this.Model
             .FindEntityType(entity.GetType());
-        
+
         var key = entityType!
             .FindPrimaryKey();
 
@@ -146,8 +146,8 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
         {
             entry.OriginalValues
                 .SetValues(untracked);
-        
-            UpdateGeneratedProperties(entity);
+
+            this.UpdateGeneratedProperties(entity);
         }
 
         return base.Update(entity);
@@ -342,7 +342,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
 
         var dbValues = entry
             .GetDatabaseValues();
-        
+
         if (dbValues == null)
         {
             return;

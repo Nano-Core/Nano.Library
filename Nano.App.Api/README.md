@@ -135,12 +135,14 @@ The `App` section in the configuration defines behavior related to the applicati
 }
 ```
 
+> 💡 Learn more about **[Application Configuration](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#configuration)** here.  
+
 ## Hosting
 Hosting configuration specifies how the API is hosted on the Kestrel web server, defining endpoint exposure as well as request handling limits.  
 
 | Setting                  | Type    | Default  | Description                                                                                       |
 | ------------------------ | ------- | -------- | ------------------------------------------------------------------------------------------------- |
-|  `Root`                  | string  | api      | Root route for the application endpoints.                                                         |
+|  `Root`                  | string  | api      | Root route prefix for the application endpoints.                                                  |
 |  `Http`                  | object  | default  | Options for HTTP. See **[Http](#http)**.                                                          |
 |  `Https`                 | object  | null     | Options for HTTPS. See **[Https](#https)**.                                                       |
 |  `MultipartLimits`       | object  | null     | Multipart upload limits. See **[MultiPart Limits](#multipart-limits)**.                           |
@@ -1588,9 +1590,9 @@ The configuration is defined as follows.
 
 > ⚠️ The external provider application must be configured with at least the following scopes: `id`, `email`, and `username`.
 
-The `AuthController` exposes endpoints for all configured authentication methods. Each method allows specifying an `AppId`, a unique string that identifies the application 
-or platform the user is authenticating from. This enables logins to be managed independently per application. If no `AppId` is provided, it defaults to `Default`. All 
-authentication methods also return a consistent `AccessToken` in the response, with default values as shown below.  
+The `AuthController` (See **[Controllers](#controllers)**) exposes endpoints for all configured authentication methods. Each method allows specifying an `AppId`, a unique string 
+that identifies the application or platform the user is authenticating from. This enables logins to be managed independently per application. If no `AppId` is provided, it 
+defaults to `Default`. All authentication methods also return a consistent `AccessToken` in the response, with default values as shown below.  
 
 ```json
 {
@@ -1647,10 +1649,10 @@ Try out transient authentication yourself using one of these examples.
 
 or examples with identity store configured.  
 
-* **[Api.Data.MySql.Identity.Authentication.Jwt](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.MySql.Identity.Authentication.Jwt)** 
-* **[Api.Data.MySql.Identity.Authentication.External.Facebook](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.MySql.Identity.Authentication.External.Facebook)** 
-* **[Api.Data.MySql.Identity.Authentication.External.Google](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.MySql.Identity.Authentication.External.Google)** 
-* **[Api.Data.MySql.Identity.Authentication.External.Microsoft](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.MySql.Identity.Authentication.External.Microsoft)** 
+* **[Api.Data.Identity.Authentication.Jwt](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Authentication.Jwt)** 
+* **[Api.Data.Identity.Authentication.External.Facebook](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Authentication.External.Facebook)** 
+* **[Api.Data.Identity.Authentication.External.Google](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Authentication.External.Google)** 
+* **[Api.Data.Identity.Authentication.External.Microsoft](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Authentication.External.Microsoft)** 
 
 ## Authorization
 Nano supports authorization using either a JWT token or an API key. JWT tokens are provided in the `Authorization` header, while API keys are provided in 
@@ -1736,10 +1738,12 @@ actions through the controller.
 > ⚠️ By convention, concrete entity controllers **must** be named pluralized relative to the entity model, e.g. `MyEntity` to `MyEntitysController`.   
 
 Second, the query criteria model defines how consumers can query the entity. Its properties determine the search criteria that can be applied to the underlying entity model, 
-and entity controllers also support ordering and pagination. A query criteria model is created by deriving from `BaseQueryCriteria`. For each property of the corresponding 
-entity that should be queryable, add a property to the derived criteria class. You must also override the base method `GetExpressions()` and implement the logic to generate the 
-necessary expressions for each property. The `BaseQueryCriteria` class already includes properties and implementation for querying the start and end dates 
-of `BaseEntity.CreatedAt`, so don't forget to call `base.GetExpressions()`.
+and entity controllers also support ordering and pagination. A query criteria model is created by deriving from `BaseQueryCriteria`. The base class includes default query 
+parameters for `BaseEntity.CreatedAt`, allowing filtering with `CreateBefore` and `CreateAfter`. For each property of the corresponding entity that should be queryable, 
+add a property to the derived criteria class.  
+
+You must also override the base method `GetExpressions()` and implement the logic to generate the necessary expressions for each property, and don't forget 
+to call `base.GetExpressions()`.  
 
 ```csharp 
 public class MyEntityQueryCriteria : BaseQueryCriteria
@@ -1793,31 +1797,31 @@ public class MyEntitysController(ILogger<MyEntitysController> logger, IRepositor
 
 When everything is configured and registered, the following endpoints becomes available for each entity controller.
 
-| Endpoint                           | Method        | Paramters                        | Role    | Description                                                                  |
-| ---------------------------------- | ------------- | -------------------------------- | ------- | ---------------------------------------------------------------------------- |
-| `/api/{entity}s/create`            | POST          | entity                           | creator | Creates a single model instance.                                             |
-| `/api/{entity}s/create/get`        | POST          | entity                           | creator | Creates or retrieves a single model instance.                                |
-| `/api/{entity}s/create/reload`     | POST          | entity                           | creator | Creates a single model instance and retrieves it with included navigations.  |
-| `/api/{entity}s/create/edit`       | POST          | entity                           | creator | Creates or edits (upsert) a single model instance.                           |
-| `/api/{entity}s/create/many`       | POST          | entities                         | creator | Creates multiple model instances.                                            |
-| `/api/{entity}s/create/many/bulk`  | POST          | entities                         | creator | Creates multiple model instances in bulk.                                    |
-| `/api/{entity}s/{id}/details`      | GET           | id, includeDepth                 | reader  | Gets a single entity by its identifier.                                      |
-| `/api/{entity}s/details/many`      | GET, POST     | ids, includeDepth                | reader  | Gets multiple entities by their identifiers.                                 |
-| `/api/{entity}s/index`             | GET, POST     | query, includeDepth              | reader  | Gets all entities matching the specified query.                              |
-| `/api/{entity}s/query`             | GET, POST     | query, criteria, includeDepth    | reader  | Queries entities matching the specified criteria.                            |
-| `/api/{entity}s/query/first`       | GET, POST     | query, criteria, includeDepth    | reader  | Retrieves the first entity matching the specified criteria.                  |
-| `/api/{entity}s/query/count`       | GET, POST     | criteria, includeDepth           | reader  | Gets the total count of entities matching the specified criteria.            |
-| `/api/{entity}s/edit`              | PUT, POST     | entity                           | editor  | Edits a single model instance.                                               |
-| `/api/{entity}s/edit/reload`       | PUT, POST     | entity                           | editor  | Edits a single model instance and retrieves it with included navigations.    |
-| `/api/{entity}s/edit/many`         | PUT, POST     | entities                         | editor  | Edits multiple model instances.                                              |
-| `/api/{entity}s/edit/many/bulk`    | PUT, POST     | entities                         | editor  | Edits multiple model instances in bulk.                                      |
-| `/api/{entity}s/edit/query`        | PUT, POST     | update-query, criteria           | editor  | Edits entities that match the specified criteria.                            |
-| `/api/{entity}s/edit/query/bulk`   | PUT, POST     | update-query, criteria           | editor  | Edits entities that match the specified criteria in bulk.                    |
-| `/api/{entity}s/{id}/delete`       | POST, DELETE  | id                               | deleter | Deletes a single entity by its identifier.                                   |
-| `/api/{entity}s/delete/many`       | POST, DELETE  | ids                              | deleter | Deletes multiple entities by their identifiers.                              |
-| `/api/{entity}s/delete/many/bulk`  | POST, DELETE  | ids                              | deleter | Deletes multiple entities by their identifiers in bulk.                      |
-| `/api/{entity}s/delete/query`      | POST, DELETE  | criteria                         | deleter | Deletes entities matching the specified criteria.                            |
-| `/api/{entity}s/delete/query/bulk` | POST, DELETE  | criteria                         | deleter | Deletes entities matching the specified criteria in bulk.                    |
+| Endpoint                       | Method        | Paramters                        | Role    | Description                                                                  |
+| ------------------------------ | ------------- | -------------------------------- | ------- | ---------------------------------------------------------------------------- |
+| `/{entity}s/create`            | POST          | entity                           | creator | Creates a single model instance.                                             |
+| `&{entity}s/create/get`        | POST          | entity                           | creator | Creates or retrieves a single model instance.                                |
+| `/{entity}s/create/reload`     | POST          | entity                           | creator | Creates a single model instance and retrieves it with included navigations.  |
+| `/{entity}s/create/edit`       | POST          | entity                           | creator | Creates or edits (upsert) a single model instance.                           |
+| `/{entity}s/create/many`       | POST          | entities                         | creator | Creates multiple model instances.                                            |
+| `/{entity}s/create/many/bulk`  | POST          | entities                         | creator | Creates multiple model instances in bulk.                                    |
+| `/{entity}s/{id}/details`      | GET           | id, includeDepth                 | reader  | Gets a single entity by its identifier.                                      |
+| `/{entity}s/details/many`      | GET, POST     | ids, includeDepth                | reader  | Gets multiple entities by their identifiers.                                 |
+| `/{entity}s/index`             | GET, POST     | query, includeDepth              | reader  | Gets all entities matching the specified query.                              |
+| `/{entity}s/query`             | GET, POST     | query, criteria, includeDepth    | reader  | Queries entities matching the specified criteria.                            |
+| `/{entity}s/query/first`       | GET, POST     | query, criteria, includeDepth    | reader  | Retrieves the first entity matching the specified criteria.                  |
+| `/{entity}s/query/count`       | GET, POST     | criteria, includeDepth           | reader  | Gets the total count of entities matching the specified criteria.            |
+| `/{entity}s/edit`              | PUT, POST     | entity                           | editor  | Edits a single model instance.                                               |
+| `/{entity}s/edit/reload`       | PUT, POST     | entity                           | editor  | Edits a single model instance and retrieves it with included navigations.    |
+| `/{entity}s/edit/many`         | PUT, POST     | entities                         | editor  | Edits multiple model instances.                                              |
+| `/{entity}s/edit/many/bulk`    | PUT, POST     | entities                         | editor  | Edits multiple model instances in bulk.                                      |
+| `/{entity}s/edit/query`        | PUT, POST     | update-query, criteria           | editor  | Edits entities that match the specified criteria.                            |
+| `/{entity}s/edit/query/bulk`   | PUT, POST     | update-query, criteria           | editor  | Edits entities that match the specified criteria in bulk.                    |
+| `/{entity}s/{id}/delete`       | POST, DELETE  | id                               | deleter | Deletes a single entity by its identifier.                                   |
+| `/{entity}s/delete/many`       | POST, DELETE  | ids                              | deleter | Deletes multiple entities by their identifiers.                              |
+| `/{entity}s/delete/many/bulk`  | POST, DELETE  | ids                              | deleter | Deletes multiple entities by their identifiers in bulk.                      |
+| `/{entity}s/delete/query`      | POST, DELETE  | criteria                         | deleter | Deletes entities matching the specified criteria.                            |
+| `/{entity}s/delete/query/bulk` | POST, DELETE  | criteria                         | deleter | Deletes entities matching the specified criteria in bulk.                    |
 
 > ⚠️ Do not set `includeDepth` higher than the configured include depth. **[Response Serialization](#response-serialization)** will only consider the configured value.
 
@@ -1900,6 +1904,17 @@ controllers derive from `BaseEntityReadOnlyController` and automatically provide
 
 > ⚠️ The `BaseAuditController` requires the _adminstrator_ role assigned.
 
+The following endpoints are available.  
+
+| Endpoint                       | Method        | Paramters                        | Role    | Description                                                                  |
+| ------------------------------ | ------------- | -------------------------------- | ------- | ---------------------------------------------------------------------------- |
+| `/api/audit/{id}/details`      | GET           | id, includeDepth                 | reader  | Gets a single entity by its identifier.                                      |
+| `/api/audit/details/many`      | GET, POST     | ids, includeDepth                | reader  | Gets multiple entities by their identifiers.                                 |
+| `/api/audit/index`             | GET, POST     | query, includeDepth              | reader  | Gets all entities matching the specified query.                              |
+| `/api/audit/query`             | GET, POST     | query, criteria, includeDepth    | reader  | Queries entities matching the specified criteria.                            |
+| `/api/audit/query/first`       | GET, POST     | query, criteria, includeDepth    | reader  | Retrieves the first entity matching the specified criteria.                  |
+| `/api/audit/query/count`       | GET, POST     | criteria, includeDepth           | reader  | Gets the total count of entities matching the specified criteria.            |
+
 > 📖 Learn more about **[Data Audit](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#audit)**.
 
 Try it yourself using the **[Api.Data.Audit](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Audit)**, or any of the other data provider examples.
@@ -1911,24 +1926,24 @@ configuration option `HideAuthController` is not set to `true`.
 The following endpoints are available in the `BaseAuthController` for managing authentication. Nano only exposes endpoints that match the current configuration; any features that 
 are not configured will not be registered or available in the controller.  
 
-| Endpoint                                  | Method | Role      | Description                                                                          |
-| ----------------------------------------- | ------ | --------- | ------------------------------------------------------------------------------------ |
-| /auth/login                               | POST   | Anonymous | Authenticates a user and returns an access token (JWT).                              |
-| /auth/login-root                          | POST   | Anonymous | Authenticates the root user from configuration and returns an access token.          |
-| /auth/login-external-direct               | POST   | Anonymous | Signs in a user via direct external authentication data.                             |
-| /auth/login-external-direct-transient     | POST   | Anonymous | Signs in a transient user via direct external authentication data.                   |
-| /auth/login-external-facebook             | POST   | Anonymous | Signs in a user via external Facebook authentication.                                |
-| /auth/login-external-facebook-transient   | POST   | Anonymous | Signs in a transient user via external Facebook authentication.                      |
-| /auth/login-external-google               | POST   | Anonymous | Signs in a user via external Google authentication.                                  |
-| /auth/login-external-google-transient     | POST   | Anonymous | Signs in a transient user via external Google authentication.                        |
-| /auth/login-external-microsoft            | POST   | Anonymous | Signs in a user via external Microsoft authentication (auth-code flow).              |
-| /auth/login-external-microsoft-transient  | POST   | Anonymous | Signs in a transient user via external Microsoft authentication (auth-code flow).    |
-| /auth/login-refresh                       | POST   | Anonymous | Refreshes an existing access token.                                                  |
-| /auth/logout                              | POST   | Anonymous | Logs out the current user and clears external authentication cookies.                |
-| /auth/external-schemes                    | GET    | Anonymous | Retrieves all configured external authentication schemes (e.g., Google, Facebook).   |
-| /auth/external-facebook-data              | POST   | Anonymous | Retrieves external login data from Facebook authentication provider.                 |
-| /auth/external-google-data                | POST   | Anonymous | Retrieves external login data from Google authentication provider.                   |
-| /auth/external-microsoft-data             | POST   | Anonymous | Retrieves external login data from Microsoft authentication provider.                |
+| Endpoint                                    | Method | Role      | Description                                                                          |
+| ---------------------------------------..-- | ------ | --------- | ------------------------------------------------------------------------------------ |
+| `/auth/login`                               | POST   | Anonymous | Authenticates a user and returns an access token (JWT).                              |
+| `/auth/login-root`                          | POST   | Anonymous | Authenticates the root user from configuration and returns an access token.          |
+| `/auth/login-external-direct`               | POST   | Anonymous | Signs in a user via direct external authentication data.                             |
+| `/auth/login-external-direct-transient`     | POST   | Anonymous | Signs in a transient user via direct external authentication data.                   |
+| `/auth/login-external-facebook`             | POST   | Anonymous | Signs in a user via external Facebook authentication.                                |
+| `/auth/login-external-facebook-transient`   | POST   | Anonymous | Signs in a transient user via external Facebook authentication.                      |
+| `/auth/login-external-google`               | POST   | Anonymous | Signs in a user via external Google authentication.                                  |
+| `/auth/login-external-google-transient`     | POST   | Anonymous | Signs in a transient user via external Google authentication.                        |
+| `/auth/login-external-microsoft`            | POST   | Anonymous | Signs in a user via external Microsoft authentication (auth-code flow).              |
+| `/auth/login-external-microsoft-transient`  | POST   | Anonymous | Signs in a transient user via external Microsoft authentication (auth-code flow).    |
+| `/auth/login-refresh`                       | POST   | Anonymous | Refreshes an existing access token.                                                  |
+| `/auth/logout`                              | POST   | Anonymous | Logs out the current user and clears external authentication cookies.                |
+| `/auth/external-schemes`                    | GET    | Anonymous | Retrieves all configured external authentication schemes (e.g., Google, Facebook).   |
+| `/auth/external-facebook-data`              | POST   | Anonymous | Retrieves external login data from Facebook authentication provider.                 |
+| `/auth/external-google-data`                | POST   | Anonymous | Retrieves external login data from Google authentication provider.                   |
+| `/auth/external-microsoft-data`             | POST   | Anonymous | Retrieves external login data from Microsoft authentication provider.                |
 
 > 📖 Learn more about **[Authentication](#authentication)**.
 

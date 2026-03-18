@@ -68,6 +68,8 @@ The ```Logging``` section in the configuration defines the logging provider and 
 }
 ```
 
+> 💡 Learn more about **[Application Configuration](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#configuration)** here.  
+
 ## Logging Providers
 Nano provides several logging providers, so usually there is no need to implement a custom provider for your application.  
 

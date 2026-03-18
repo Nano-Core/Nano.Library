@@ -68,9 +68,10 @@ The order of precedence for configuration sources is as follows (later items ove
 3. Environment Variables  
 4. User Secrets (`Development` environment only)
 
-Nano handles `appsettings.{environment}.json` overrides slightly differently from standard .NET configuration. In regular .NET configuration, setting an entire JSON section 
-to null is ignored. Nano supports this scenario, allowing a section defined in `appsettings.json` to be set to null in an environment-specific configuration file, 
-effectively removing that configuration for the environment.  
+Nano handles empty configuration sections, differently than the regular .NET configuration. Empty sections are mapped with all default configuration values, in contrary to 
+setting the whole section to null in the configuration. Another improvements is how Nano handles `appsettings.{environment}.json` overrides. In regular .NET configuration, 
+setting an entire JSON section to null is ignored. Nano supports this scenario, allowing a section defined in `appsettings.json` to be set to null in an environment-specific 
+configuration file, effectively overriding and removing that configuration for the environment. 
 
 ## Null Logger
 Nano automatically registers a `NullLogger`, ensuring that `ILogger` and related logging services are available even if no logging provider has been configured.  
@@ -81,7 +82,9 @@ This is intended as a safety fallback.
 > 📖 Learn more about [Nano Logging Providers](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging).  
 
 ## Api Clients
-HOW DO WE HANDLE AUDIT AND AUTH FOR API. THEY ARE SPECIAL RUOTES: Auth and Audits
+AUDIT AND AUTH HAS FIXED ROUTES, CONSIDER HOW WE CAN COBMINE EVERYTHING IN ONE API. Maybe make compounds inside api-client to group methods better.
+
+HOW DO WE HANDLE AUDIT AND AUTH FOR API. THEY ARE SPECIAL RUOTES: Auth and Audits.
 
 Nano provides a generic api-client implementation, that can be used by other services to seamlessly connect and communicate with your micro-service. The implementation consists of an 
 abstract ```BaseApi``` class implementation, from which the concrete and specific implementation of the micro-service can be derived. The base class provides methods for accessing all 

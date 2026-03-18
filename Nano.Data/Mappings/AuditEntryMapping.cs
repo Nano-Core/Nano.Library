@@ -37,6 +37,9 @@ public class AuditEntryMapping<TIdentity> : BaseEntityIdentityMapping<AuditEntry
             .IsRequired();
 
         builder
+            .HasIndex(x => x.EntityKey);
+
+        builder
             .Property(x => x.EntitySetName)
             .HasMaxLength(256);
 

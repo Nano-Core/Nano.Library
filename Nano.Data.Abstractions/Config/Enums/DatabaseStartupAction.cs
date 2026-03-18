@@ -18,5 +18,5 @@ public enum DatabaseStartupAction
     /// <summary>
     /// Database migrations will be applied automatically at startup.
     /// </summary>
-    Migrate = 1
+    Migrate = 2
 }

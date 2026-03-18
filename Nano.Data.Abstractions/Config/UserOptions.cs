@@ -1,4 +1,4 @@
-using Nano.Data.Abstractions.Identity.Consts;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Data.Abstractions.Config;
@@ -31,9 +31,5 @@ public class UserOptions
     /// <summary>
     /// Gets or sets the default roles assigned to a new user.
     /// </summary>
-    [Required]
-    public virtual string[] DefaultRoles { get; set; } =
-    [
-        BuiltInUserRoles.ADMINISTRATOR
-    ];
+    public virtual List<string>? DefaultRoles { get; set; } = null;
 }

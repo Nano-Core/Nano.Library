@@ -1,8 +1,8 @@
-using System;
-using System.Collections.Generic;
 using DynamicExpression;
 using DynamicExpression.Interfaces;
 using Nano.Data.Abstractions.Models;
+using System;
+using System.Collections.Generic;
 
 namespace Nano.App.Api.Controllers.Criteria;
 
@@ -12,14 +12,14 @@ namespace Nano.App.Api.Controllers.Criteria;
 public abstract class BaseQueryCriteria : IQueryCriteria
 {
     /// <summary>
-    /// Filter for records created after this date and time (inclusive).
+    /// Only include records that is created after this date and time (inclusive).
     /// </summary>
-    public virtual DateTimeOffset? AfterAt { get; set; }
+    public virtual DateTimeOffset? CreatedAfter { get; set; }
 
     /// <summary>
-    /// Filter for records created before this date and time (inclusive).
+    /// Only include records that is created before this date and time (inclusive).
     /// </summary>
-    public virtual DateTimeOffset? BeforeAt { get; set; }
+    public virtual DateTimeOffset? CreatedBefore { get; set; }
 
     /// <summary>
     /// Builds the list of <see cref="CriteriaExpression"/> instances based on the properties of this query.
@@ -31,16 +31,16 @@ public abstract class BaseQueryCriteria : IQueryCriteria
 
         var expression = new CriteriaExpression();
 
-        if (this.BeforeAt.HasValue)
+        if (this.CreatedBefore.HasValue)
         {
             expression
-                .LessThanOrEqual(nameof(BaseEntity.CreatedAt), this.BeforeAt);
+                .LessThanOrEqual(nameof(BaseEntity.CreatedAt), this.CreatedBefore);
         }
 
-        if (this.AfterAt.HasValue)
+        if (this.CreatedAfter.HasValue)
         {
             expression
-                .GreaterThanOrEqual(nameof(BaseEntity.CreatedAt), this.AfterAt);
+                .GreaterThanOrEqual(nameof(BaseEntity.CreatedAt), this.CreatedAfter);
         }
 
         expressions

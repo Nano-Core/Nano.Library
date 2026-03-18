@@ -1,18 +1,21 @@
+using System;
 using System.Collections.Generic;
 using DynamicExpression;
 using Nano.Data.Abstractions.Models;
+using Nano.Data.Abstractions.Models.Enums;
 
 namespace Nano.App.Api.Controllers.Criteria;
 
 /// <summary>
 /// Query criteria specifically for audit entries, extending <see cref="BaseQueryCriteria"/>.
 /// </summary>
-public class AuditEntryQueryCriteria : BaseQueryCriteria
+public class AuditEntryQueryCriteria<TIdentity> : BaseQueryCriteria
+    where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// Filter by the creator of the audit entry.
+    /// Filter by the entity key of the audit entry.
     /// </summary>
-    public virtual string? CreatedBy { get; set; }
+    public virtual TIdentity? EntityKey { get; set; }
 
     /// <summary>
     /// Filter by the entity type name of the audited entity.
@@ -22,7 +25,12 @@ public class AuditEntryQueryCriteria : BaseQueryCriteria
     /// <summary>
     /// Filter by the state of the audited entity.
     /// </summary>
-    public virtual string? State { get; set; }
+    public virtual AuditState? State { get; set; }
+
+    /// <summary>
+    /// Filter by the creator of the audit entry.
+    /// </summary>
+    public virtual string? CreatedBy { get; set; }
 
     /// <summary>
     /// Filter by the request identifier associated with the audit entry.
@@ -39,10 +47,10 @@ public class AuditEntryQueryCriteria : BaseQueryCriteria
 
         var expression = new CriteriaExpression();
 
-        if (this.CreatedBy != null)
+        if (!EqualityComparer<TIdentity>.Default.Equals(this.EntityKey!, default!))
         {
             expression
-                .Equal(nameof(AuditEntry<>.CreatedBy), this.CreatedBy);
+                .Equal(nameof(AuditEntry<>.EntityKey), this.EntityKey!);
         }
 
         if (this.EntityTypeName != null)
@@ -55,6 +63,12 @@ public class AuditEntryQueryCriteria : BaseQueryCriteria
         {
             expression
                 .Equal(nameof(AuditEntry<>.EntityState), this.State);
+        }
+
+        if (this.CreatedBy != null)
+        {
+            expression
+                .Equal(nameof(AuditEntry<>.CreatedBy), this.CreatedBy);
         }
 
         if (this.RequestId != null)

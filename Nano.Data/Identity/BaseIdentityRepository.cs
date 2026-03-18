@@ -4,7 +4,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Nano.Data.Abstractions.Config;
 using Nano.Data.Abstractions.Identity;
+using Nano.Data.Abstractions.Identity.Authentication.Models;
+using Nano.Data.Abstractions.Identity.Consts;
+using Nano.Data.Abstractions.Identity.Exceptions;
+using Nano.Data.Abstractions.Identity.Extensions;
 using Nano.Data.Abstractions.Identity.Models;
+using Nano.Data.Abstractions.Models.Abstractions;
+using Nano.Data.Abstractions.Models.Identity;
 using Nano.Data.Identity.DataProtection.Consts;
 using Nano.Data.Identity.Extensions;
 using Nano.Data.Identity.Helpers;
@@ -16,11 +22,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Nano.Data.Abstractions.Identity.Authentication.Models;
-using Nano.Data.Abstractions.Identity.Exceptions;
-using Nano.Data.Abstractions.Identity.Extensions;
-using Nano.Data.Abstractions.Models.Abstractions;
-using Nano.Data.Abstractions.Models.Identity;
 using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 
 namespace Nano.Data.Identity;
@@ -1732,7 +1733,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
         ArgumentNullException.ThrowIfNull(identityUser);
 
         var allRoles = roles?
-            .Union(this.options.CurrentValue.Identity?.User.DefaultRoles ?? [])
+            .Union(this.options.CurrentValue.Identity?.User.DefaultRoles ?? [BuiltInUserRoles.ADMINISTRATOR])
             .Distinct()
             .ToList() ?? [];
 

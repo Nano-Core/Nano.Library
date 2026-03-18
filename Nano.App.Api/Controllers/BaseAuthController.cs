@@ -35,6 +35,8 @@ public class BaseAuthController : BaseAuthController<Guid>
 /// Handles login, logout, token refresh, and external authentication.
 /// </summary>
 /// <typeparam name="TIdentity"></typeparam>
+[Route(ControllerRoutes.AUTH_CONTROLLER_ROUTE)]
+[Route($"{ControllerRoutes.ROUTE_VERSION_PREFIX}/{ControllerRoutes.AUTH_CONTROLLER_ROUTE}")]
 [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.CREATOR + "," + BuiltInUserRoles.EDITOR + "," + BuiltInUserRoles.DELETER + "," + BuiltInUserRoles.READER)]
 public abstract class BaseAuthController<TIdentity> : BaseController
     where TIdentity : IEquatable<TIdentity>

@@ -30,7 +30,8 @@ public static class ConfigManager
         ArgumentNullException.ThrowIfNull(environment);
 
         var path = Directory.GetCurrentDirectory();
-        var stream = ConfigManager.LoadConfigurationStream(path, environment);
+
+        using var stream = ConfigManager.LoadConfigurationStream(path, environment);
 
         var configurationBuilder = new ConfigurationBuilder()
             .SetBasePath(path)
@@ -54,9 +55,6 @@ public static class ConfigManager
         ArgumentNullException.ThrowIfNull(path);
         ArgumentNullException.ThrowIfNull(environment);
 
-        // BUG: 000: its not possible to enable a section like this "Documentation": { }, empty won't work. fix that
-        // also update readme for conif. Consider linking from all ## Configuration sections to the general config in Nano.App readme
-
         const string APP_SETTINGS = "appsettings";
 
         var baseJsonPath = Path.Combine(path, $"{APP_SETTINGS}.json");
@@ -64,6 +62,8 @@ public static class ConfigManager
 
         var baseJson = File.ReadAllText(baseJsonPath);
         var baseObj = JObject.Parse(baseJson);
+
+        EnsureNonEmptyObjects(baseObj);
 
         if (File.Exists(envJsonPath))
         {
@@ -78,8 +78,30 @@ public static class ConfigManager
 
         return stream;
     }
+    private static void EnsureNonEmptyObjects(JObject jObject)
+    {
+        ArgumentNullException.ThrowIfNull(jObject);
+
+        foreach (var property in jObject.Properties())
+        {
+            if (property.Value is JObject child)
+            {
+                if (!child.HasValues)
+                {
+                    child["__placeholder"] = true;
+
+                    continue;
+                }
+
+                EnsureNonEmptyObjects(child);
+            }
+        }
+    }
     private static void RemoveNulls(JObject baseJson, JObject overrideJson)
     {
+        ArgumentNullException.ThrowIfNull(baseJson);
+        ArgumentNullException.ThrowIfNull(overrideJson);
+
         foreach (var property in overrideJson.Properties())
         {
             var overrideValue = property.Value;
@@ -92,11 +114,24 @@ public static class ConfigManager
                 continue;
             }
 
-            if (overrideValue is JObject overrideObj && baseJson[property.Name] is JObject baseObj)
+            if (overrideValue is JObject overrideObj)
             {
-                RemoveNulls(baseObj, overrideObj);
+                if (!overrideObj.HasValues)
+                {
+                    baseJson[property.Name] = new JObject
+                    {
+                        ["__empty"] = true
+                    };
 
-                continue;
+                    continue;
+                }
+
+                if (baseJson[property.Name] is JObject baseObj)
+                {
+                    RemoveNulls(baseObj, overrideObj);
+
+                    continue;
+                }
             }
 
             baseJson[property.Name] = overrideValue.DeepClone();

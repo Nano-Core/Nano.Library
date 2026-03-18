@@ -83,6 +83,8 @@ The ```Eventing``` section in the configuration defines the eventing provider an
 }
 ```
 
+> 💡 Learn more about **[Application Configuration](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#configuration)** here.  
+
 ## Health Checks
 When health checks are enabled in the eventing configuration, Nano automatically registers a health check for the configured eventing provider.  
 

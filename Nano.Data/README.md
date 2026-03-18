@@ -127,6 +127,8 @@ The `Data` section in the configuration defines the data provider and related se
 }
 ```
 
+> 💡 Learn more about **[Application Configuration](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#configuration)** here.  
+
 ## Connection Pool
 Nano supports optional connection pooling for the underlying Entity Framework data provider. When enabled, database contexts are reused from a pool, which can improve performance 
 and reduce allocation overhead.  
@@ -139,37 +141,37 @@ and reduce allocation overhead.
 Identity configures the data store used for authentication and authorization. It manages users, roles, and related security data required for signing in and enforcing 
 access control.  
 
-| Setting                                | Type     | Default         | Description                                                                                     |
-| -------------------------------------- | -------- | --------------- | ----------------------------------------------------------------------------------------------- |
-|  `TokensExpirationInHours`             | TimeSpan | 24:00:00        | The expiration time for tokens in hours.                                                        |
-|  `UseIdentityAudit`                    | bool     | false           | Whether to audit identity user, roles, claims and external logins.                              |
-|  `User`                                | object   | default         | Options for user-specific settings.                                                             |
-|  `User.IsUniqueEmailAddressRequired`   | bool     | true            | A value indicating whether each user must have a unique email address.                          |
-|  `User.IsUniquePhoneNumberRequired`    | bool     | false           | A value indicating whether each user must have a unique phone number.                           |
-|  `User.AllowedUserNameCharacters`      | string   | abcde...        | The allowed characters for usernames.                                                           |
-|  `User.DefaultRoles`                   | array    | [administrator] | The allowed characters for usernames.                                                           |
-|  `SignIn`                              | object   | default         | Options for sign-in requirements.                                                               |
-|  `SignIn.RequireConfirmedEmail`        | bool     | False           | A value indicating whether users must have a confirmed email to sign in.                        |
-|  `SignIn.RequireConfirmedPhoneNumber`  | bool     | false           | A value indicating whether users must have a confirmed phone number to sign in.                 |
-|  `Lockout`                             | object   | default         | Options for account lockout policies.                                                           |
-|  `Lockout.AllowedForNewUsers`          | bool     | true            | A value indicating whether lockout is allowed for new users.                                    |
-|  `Lockout.MaxFailedAccessAttempts`     | int      | 3               | The maximum number of failed access attempts before a user is locked out.                       |
-|  `Lockout.DefaultLockoutTimeSpan`      | TImeSpan | 00:30:00        | The default lockout duration for a user.                                                        |
-|  `Password`                            | object   | default         | Options for password complexity requirements.                                                   |
-|  `Password.RequireDigit`               | bool     | false           | A value indicating whether the password must contain at least one digit.                        |
-|  `Password.RequireNonAlphanumeric`     | bool     | false           | A value indicating whether the password must contain at least one non-alphanumeric character.   |
-|  `Password.RequireLowercase`           | bool     | false           | A value indicating whether the password must contain at least one lowercase letter.             |
-|  `Password.RequirUppercase`            | bool     | false           | A value indicating whether the password must contain at least one uppercase letter.             |
-|  `Password.RequiredLength`             | bool     | false           | The minimum required length of the password.                                                    |
-|  `Password.RequiredUniqueCharacters`   | bool     | false           | The number of unique characters required in the password.                                       |
-|  `ApiKey`                              | object   | default         | Optional. Options for API keys.                                                                 |
-|  `ApiKey.Secret`                       | string   | null            | Required. The secret key used to create and validate API keys.                                  |
+| Setting                                | Type     | Default         | Description                                                                                                              |
+| -------------------------------------- | -------- | --------------- | ------------------------------------------------------------------------------------------------------------------------ |
+|  `TokensExpirationInHours`             | TimeSpan | 24:00:00        | The expiration time for tokens in hours.                                                                                 |
+|  `UseAudit`                            | enum     | None            | Defines which intitity models to to audit. Allows multiple values. See possible values below.                            |
+|  `User`                                | object   | default         | Options for user-specific settings.                                                                                      |
+|  `User.IsUniqueEmailAddressRequired`   | bool     | true            | A value indicating whether each user must have a unique email address.                                                   |
+|  `User.IsUniquePhoneNumberRequired`    | bool     | false           | A value indicating whether each user must have a unique phone number.                                                    |
+|  `User.AllowedUserNameCharacters`      | string   | abcde...        | The allowed characters for usernames.                                                                                    |
+|  `User.DefaultRoles`                   | array    | [administrator] | The default roles assigned to a new user. If `null`, new users will automatically be assigned the _Administrator_ role.  |
+|  `SignIn`                              | object   | default         | Options for sign-in requirements.                                                                                        |
+|  `SignIn.RequireConfirmedEmail`        | bool     | False           | A value indicating whether users must have a confirmed email to sign in.                                                 |
+|  `SignIn.RequireConfirmedPhoneNumber`  | bool     | false           | A value indicating whether users must have a confirmed phone number to sign in.                                          |
+|  `Lockout`                             | object   | default         | Options for account lockout policies.                                                                                    |
+|  `Lockout.AllowedForNewUsers`          | bool     | true            | A value indicating whether lockout is allowed for new users.                                                             |
+|  `Lockout.MaxFailedAccessAttempts`     | int      | 3               | The maximum number of failed access attempts before a user is locked out.                                                |
+|  `Lockout.DefaultLockoutTimeSpan`      | TImeSpan | 00:30:00        | The default lockout duration for a user.                                                                                 |
+|  `Password`                            | object   | default         | Options for password complexity requirements.                                                                            |
+|  `Password.RequireDigit`               | bool     | false           | A value indicating whether the password must contain at least one digit.                                                 |
+|  `Password.RequireNonAlphanumeric`     | bool     | false           | A value indicating whether the password must contain at least one non-alphanumeric character.                            |
+|  `Password.RequireLowercase`           | bool     | false           | A value indicating whether the password must contain at least one lowercase letter.                                      |
+|  `Password.RequirUppercase`            | bool     | false           | A value indicating whether the password must contain at least one uppercase letter.                                      |
+|  `Password.RequiredLength`             | bool     | false           | The minimum required length of the password.                                                                             |
+|  `Password.RequiredUniqueCharacters`   | bool     | false           | The number of unique characters required in the password.                                                                |
+|  `ApiKey`                              | object   | default         | Optional. Options for API keys.                                                                                          |
+|  `ApiKey.Secret`                       | string   | null            | Required. The secret key used to create and validate API keys.                                                           |
 
 ```json
 "Data": {
   "Identity": { 
     "TokensExpiration": "24:00:00",
-    "UseIdentityAudit": false,
+    "UseAudit": false,
     "User": {
       "IsUniqueEmailAddressRequired": true,
       "IsUniquePhoneNumberRequired": false,
@@ -197,16 +199,32 @@ access control.
       "RequiredUniqueCharacters": 5
     },
     "ApiKey": {
-      "Secret": null,
+      "Secret": null
     }
   }
 }
 ```
 
-// BUG
+The following values can be used for the `UseAudit` configuration setting. Multiple values can be specified as a comma-separated list in `appsettings.json`.
+
+| Value        | Description                                                     |
+| ------------ | --------------------------------------------------------------- |
+| `None`       | No identity model audited.                                      | 
+| `Standard`   | Standard idenity models are audited (User, UserRole, ApiKey).   | 
+| `All`        | All identity models are audited.                                | 
+| `User`       | The identity user model is audited.                             | 
+| `UserRole`   | The identity user role model is audited.                        | 
+| `UserClaim`  | The identity user claim model is audited.                       | 
+| `UserLogin`  | The identity user login model is audited.                       | 
+| `Role`       | The identity role model is audited.                             | 
+| `RoleClaim`  | The identity role claim model is audited.                       | 
+| `ApiKey`     | The identity apikey model is audited.                           | 
+
+> ⚠️ All sensitive properties, as well as properties used internally for non-business, technical, or derived purposes, are automatically excluded.
+
 When identity has been configured the following roles are automatically added.  
 
-| Name          | Description                          |
+| Role          | Description                          |
 | ------------- | ------------------------------------ |
 | reader        | Authorized to read.                  | 
 | writer        | Authorized to read and write.        | 

@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Nano.App.Extensions;
 using Nano.App.Api.Mvc.Authentication.Consts;
+using Nano.App.Consts;
+using Nano.App.Extensions;
 
 namespace Nano.App.Api.Controllers;
 
@@ -11,7 +12,7 @@ namespace Nano.App.Api.Controllers;
 /// </summary>
 [ApiController]
 [Route("[controller]")]
-[Route("v{v:apiVersion}/[controller]")]
+[Route($"{ControllerRoutes.ROUTE_VERSION_PREFIX}/[controller]")]
 [Authorize(Policy = AuthorizationPolicies.DEFAULT)]
 public abstract class BaseController : Controller
 {

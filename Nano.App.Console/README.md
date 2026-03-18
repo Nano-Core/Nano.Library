@@ -72,6 +72,8 @@ The `App` section in the configuration defines behavior related to the applicati
 }
 ```
 
+> 💡 Learn more about **[Application Configuration](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#configuration)** here.  
+
 ## Localization
 The Nano configuration supports specifying a default `CultureInfo` for console applications, ensuring that culture-sensitive operations 
 such as date, number, and currency formatting—are applied consistently across the entire application lifecycle.  

@@ -1,4 +1,3 @@
-using Nano.Data.Abstractions.Models.Abstractions;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -10,7 +9,7 @@ public class AuditEntryProperty : AuditEntryProperty<Guid>;
 /// <summary>
 /// Represents a property-level audit entry for EF entities.
 /// </summary>
-public class AuditEntryProperty<TIdentity> : BaseEntity<TIdentity>, IEntityAuditableNegated
+public class AuditEntryProperty<TIdentity> : BaseEntity<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>

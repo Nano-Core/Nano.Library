@@ -1,5 +1,4 @@
 using Nano.Data.Abstractions.Annotations;
-using Nano.Data.Abstractions.Models.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,7 +14,7 @@ public class AuditEntry : AuditEntry<Guid>;
 /// A class representing an audit entry.
 /// </summary>
 /// <typeparam name="TIdentity">The identity type.</typeparam>
-public class AuditEntry<TIdentity> : BaseEntity<TIdentity>, IEntityAuditableNegated
+public class AuditEntry<TIdentity> : BaseEntity<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>

@@ -15,8 +15,8 @@ namespace Nano.Data.Interceptors;
 // 2. When SaveChanges then check if any property names are affected (e.g. User.IdentityUser.Email is changed, then User needs to be fetched and published)
 // NB: Maybe make startup validation of Publish properties and use of include ???
 // also we need to detect if there are changes compared to original values, because only then we should publish update events
-
-// BUG: ENTITY EVENT: Should use property values from entities when publishing not pre-save, test with Triggers
+// Should use property values from entities when publishing not pre-save. Move all set properites to post save in publish except setting Id, CreatedAt and State
+// Test with Triggers
 
 internal sealed class EntityEventingSaveChangesInterceptor(IEventing eventing) : SaveChangesInterceptor
 {

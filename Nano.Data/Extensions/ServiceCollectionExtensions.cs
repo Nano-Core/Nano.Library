@@ -137,14 +137,14 @@ public static class ServiceCollectionExtensions
 
         AuditManager.DefaultConfiguration.Include<IEntityAuditable>();
         AuditManager.DefaultConfiguration.IncludeDataAnnotation();
-        AuditManager.DefaultConfiguration.IncludeIdentity<TIdentity>();
-        AuditManager.DefaultConfiguration.Exclude<IEntityAuditableNegated>();
+        AuditManager.DefaultConfiguration.IncludeIdentity<TIdentity>(options.Identity);
+        AuditManager.DefaultConfiguration.Exclude<AuditEntry<TIdentity>>();
+        AuditManager.DefaultConfiguration.Exclude<AuditEntryProperty<TIdentity>>();
         AuditManager.DefaultConfiguration.ExcludeDataAnnotation();
-        AuditManager.DefaultConfiguration.ExcludeIdentity<TIdentity>();
 
         AuditManager.DefaultConfiguration.UseUtcDateTime = true;
         AuditManager.DefaultConfiguration.AutoSavePreAction = AutoSavePreAction<TIdentity>;
-        
+
         return services;
     }
 
@@ -200,7 +200,7 @@ public static class ServiceCollectionExtensions
                             NewValue = y.NewValueFormatted,
                             OldValue = y.OldValueFormatted
                         })
-                        .Where(y => 
+                        .Where(y =>
                             y.NewValue != y.OldValue &&
                             y.PropertyName != keyName)
                         .ToArray()

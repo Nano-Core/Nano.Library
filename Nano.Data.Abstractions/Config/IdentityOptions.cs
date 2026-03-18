@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using Nano.Data.Abstractions.Config.Enums;
 
 namespace Nano.Data.Abstractions.Config;
 
@@ -17,9 +18,10 @@ public class IdentityOptions
     public virtual TimeSpan TokensExpiration { get; set; } = TimeSpan.FromHours(24);
 
     /// <summary>
-    /// Get or sets whether to audit identity user, roles, claims and external logins.
+    /// Controls which Identity models are audited. Defaults to <see cref="AuditIdentityFlags.None"/>.
+    /// Multiple tables can be combined using bitwise OR.
     /// </summary>
-    public virtual bool UseIdentityAudit { get; set; } = false;
+    public virtual AuditIdentityFlags UseAudit { get; set; } = AuditIdentityFlags.None;
 
     /// <summary>
     /// Gets or sets the user-related options, such as uniqueness requirements and default roles.
@@ -50,4 +52,3 @@ public class IdentityOptions
     /// </summary>
     public virtual ApiKeyOptions? ApiKey { get; set; }
 }
-
