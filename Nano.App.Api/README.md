@@ -1922,21 +1922,21 @@ are not configured will not be registered or available in the controller.
 | Endpoint                                    | Method | Role      | Description                                                                          |
 | ------------------------------------------- | ------ | --------- | ------------------------------------------------------------------------------------ |
 | `/auth/login`                               | POST   | Anonymous | Authenticates a user and returns an access token (JWT).                              |
-| `/auth/login-root`                          | POST   | Anonymous | Authenticates the root user from configuration and returns an access token.          |
-| `/auth/login-external-direct`               | POST   | Anonymous | Signs in a user via direct external authentication data.                             |
-| `/auth/login-external-direct-transient`     | POST   | Anonymous | Signs in a transient user via direct external authentication data.                   |
-| `/auth/login-external-facebook`             | POST   | Anonymous | Signs in a user via external Facebook authentication.                                |
-| `/auth/login-external-facebook-transient`   | POST   | Anonymous | Signs in a transient user via external Facebook authentication.                      |
-| `/auth/login-external-google`               | POST   | Anonymous | Signs in a user via external Google authentication.                                  |
-| `/auth/login-external-google-transient`     | POST   | Anonymous | Signs in a transient user via external Google authentication.                        |
-| `/auth/login-external-microsoft`            | POST   | Anonymous | Signs in a user via external Microsoft authentication (auth-code flow).              |
-| `/auth/login-external-microsoft-transient`  | POST   | Anonymous | Signs in a transient user via external Microsoft authentication (auth-code flow).    |
-| `/auth/login-refresh`                       | POST   | Anonymous | Refreshes an existing access token.                                                  |
+| `/auth/login/root`                          | POST   | Anonymous | Authenticates the root user from configuration and returns an access token.          |
+| `/auth/login/externalvdirect`               | POST   | Anonymous | Signs in a user via direct external authentication data.                             |
+| `/auth/login/external/direct/transient`     | POST   | Anonymous | Signs in a transient user via direct external authentication data.                   |
+| `/auth/login/external/facebook`             | POST   | Anonymous | Signs in a user via external Facebook authentication.                                |
+| `/auth/login/external/facebook/transient`   | POST   | Anonymous | Signs in a transient user via external Facebook authentication.                      |
+| `/auth/login/external/google`               | POST   | Anonymous | Signs in a user via external Google authentication.                                  |
+| `/auth/login/external/google/transient`     | POST   | Anonymous | Signs in a transient user via external Google authentication.                        |
+| `/auth/login/external/microsoft`            | POST   | Anonymous | Signs in a user via external Microsoft authentication (auth-code flow).              |
+| `/auth/login/external/microsoft/transient`  | POST   | Anonymous | Signs in a transient user via external Microsoft authentication (auth-code flow).    |
+| `/auth/login/refresh`                       | POST   | Anonymous | Refreshes an existing access token.                                                  |
 | `/auth/logout`                              | POST   | Anonymous | Logs out the current user and clears external authentication cookies.                |
-| `/auth/external-schemes`                    | GET    | Anonymous | Retrieves all configured external authentication schemes (e.g., Google, Facebook).   |
-| `/auth/external-facebook-data`              | POST   | Anonymous | Retrieves external login data from Facebook authentication provider.                 |
-| `/auth/external-google-data`                | POST   | Anonymous | Retrieves external login data from Google authentication provider.                   |
-| `/auth/external-microsoft-data`             | POST   | Anonymous | Retrieves external login data from Microsoft authentication provider.                |
+| `/auth/external/schemes`                    | GET    | Anonymous | Retrieves all configured external authentication schemes (e.g., Google, Facebook).   |
+| `/auth/external/facebook/data`              | POST   | Anonymous | Retrieves external login data from Facebook authentication provider.                 |
+| `/auth/external/google/data`                | POST   | Anonymous | Retrieves external login data from Google authentication provider.                   |
+| `/auth/external/microsoft/data`             | POST   | Anonymous | Retrieves external login data from Microsoft authentication provider.                |
 
 > 📖 Learn more about **[Authentication](#authentication)**.
 
