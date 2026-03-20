@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
-using Nano.App.Api.Mvc.Authentication.Consts;
 using System;
+using Nano.App.Api.Mvc.Authorization.Consts;
 
 namespace Nano.App.Api.Mvc.Authorization.Extensions;
+
+// BUG: AUTH
 
 internal static class ServiceCollectionExtensions
 {

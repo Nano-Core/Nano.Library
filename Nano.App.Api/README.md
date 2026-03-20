@@ -1431,17 +1431,18 @@ the error is logged using the configured provider.
 
 Nano provides built-in mappings between common exception types and HTTP error responses.
 
-| Exception                    | Status Code                   | Description                                                                                                                             |
-| ---------------------------- | ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| `IdentityException`          | `400` Bad Request             | Thrown when identity-related operations fail. Sets `IsTranslated=true`                                                                  |
-| `UnauthorizedException`      | `401` Unauthorized            | Thrown when authentication fails.                                                                                                       |
-| `PermissionDeniedException`  | `403` Forbidden               | Thrown when access to a resource is denied.                                                                                             |
-| `OperationCanceledException` | `408` Request Timeout         | Thrown when an operation is cancelled by the client or server.                                                                          |
-| `VirusScanException`         | `422` Unprocessable Entity    | Thrown when a virus is detected in one or more uploaded files. Sets `IsTranslated=true`                                                 |
-| `AggregateException`         | `500` Internal Server Error   | Thrown anywhere.                                                                                                                        |
-| `Exception`                  | `500` Internal Server Error   | Thrown anywhere.                                                                                                                        |
-| `ProblemDetailsException`    | `Any`                         | Used to throw a fully defined `ProblemDetails` directly.                                                                                |
+| Exception                    | Status Code                   | Description                                                                                                                                                                                  |
+| ---------------------------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `IdentityException`          | `400` Bad Request             | Thrown when identity-related operations fail. Sets `IsTranslated=true`                                                                                                                       |
+| `UnauthorizedException`      | `401` Unauthorized            | Thrown when authentication fails.                                                                                                                                                            |
+| `PermissionDeniedException`  | `403` Forbidden               | Thrown when access to a resource is denied.                                                                                                                                                  |
+| `OperationCanceledException` | `408` Request Timeout         | Thrown when an operation is cancelled by the client or server.                                                                                                                               |
+| `VirusScanException`         | `422` Unprocessable Entity    | Thrown when a virus is detected in one or more uploaded files. Sets `IsTranslated=true`                                                                                                      |
+| `AggregateException`         | -                             | Thrown when multiple errors occurs. The status code vary depending on the inner exceptions.                                                                                                  |
+| `Exception`                  | `500` Internal Server Error   | Default error handling. Fallback.                                                                                                                                                            |
+| `ProblemDetailsException`    | `Any`                         | Used to throw a fully defined `ProblemDetails` directly.                                                                                                                                     |
 | `BadRequestException`        | `400` Bad Request             | Thrown for bad request errors. Can be `IsCoded`, exposing a machine-readable error code, or `IsTranslated` exposing a server-translated message. Always appears in `ProblemDetails.Detail`.  |
+| `NotFoundException`          | `404` Not Found               | Thrown for null errors.                                                                                                                                                                      |
 
 The exceptions above may be thrown anywhere in the application, and the Nano error handling middleware will automatically construct the appropriate `ProblemDetails` response.
 
@@ -1880,6 +1881,14 @@ exposes endpoints that match the current configuration; any features not configu
 | `/{entity}s/{id}/deactivate`                 | POST / DELETE | identity      | Deactivates the user with the specified identifier.                         |
 | `/{entity}s/{id}/delete`                     | POST / DELETE | deleter       | Deletes the user with the specified identifier.                             |
 | `/{entity}s/delete/many`                     | POST / DELETE | deleter       | Deletes multiple users with the specified identifiers.                      |
+| `/{entity}s/{userId}/roles`                  | GET           | identity      | Retrieves all roles assigned to a specific user.                            |
+| `/{entity}s/roles/assign`                    | POST          | identity      | Assigns a role to a user.                                                   |
+| `/{entity}s/roles/remove`                    | POST / DELETE | identity      | Removes a role from a user.                                                 |
+| `/{entity}s/{userId}/claims`                 | GET           | identity      | Retrieves all claims assigned to a specific user.                           |
+| `/{entity}s/claims/assign`                   | POST          | identity      | Assigns a new claim to a user.                                              |
+| `/{entity}s/claims/replace`                  | PUT           | identity      | Replaces an existing claim of a user.                                       |
+| `/{entity}s/claims/assign-or-replace`        | PUT           | identity      | Assigns or replaces a claim of a user.                                      |
+| `/{entity}s/claims/remove`                   | POST / DELETE | identity      | Removes a claim from a user.                                                |
 | `/{entity}s/{userId}/external-logins`        | GET           | identity      | Retrieves the external login providers associated with a user.              |
 | `/{entity}s/external-logins/add/facebook`    | POST          | identity      | Adds a Facebook external login to a user account.                           |
 | `/{entity}s/external-logins/add/google`      | POST          | identity      | Adds a Google external login to a user account.                             |
@@ -1892,17 +1901,9 @@ exposes endpoints that match the current configuration; any features not configu
 | `/{entity}s/api-keys/create`                 | POST          | identity      | Creates a new API key for a user.                                           |
 | `/{entity}s/api-keys/edit`                   | PUT / POST    | identity      | Edits an existing API key.                                                  |
 | `/{entity}s/api-keys/{apiKeyId}/revoke`      | DELETE        | identity      | Revokes a specific API key.                                                 |
-| `/{entity}s/{userId}/claims`                 | GET           | identity      | Retrieves all claims assigned to a specific user.                           |
-| `/{entity}s/claims/assign`                   | POST          | identity      | Assigns a new claim to a user.                                              |
-| `/{entity}s/claims/replace`                  | PUT           | identity      | Replaces an existing claim of a user.                                       |
-| `/{entity}s/claims/assign-or-replace`        | PUT           | identity      | Assigns or replaces a claim of a user.                                      |
-| `/{entity}s/claims/remove`                   | POST / DELETE | identity      | Removes a claim from a user.                                                |
 | `/{entity}s/roles`                           | GET           | administrator | Retrieves all roles in the system.                                          |
 | `/{entity}s/roles/create`                    | POST          | administrator | Creates a new role.                                                         |
 | `/{entity}s/roles/delete`                    | POST / DELETE | administrator | Deletes a role from the system.                                             |
-| `/{entity}s/{userId}/roles`                  | GET           | identity      | Retrieves all roles assigned to a specific user.                            |
-| `/{entity}s/roles/user/assign`               | POST          | identity      | Assigns a role to a user.                                                   |
-| `/{entity}s/roles/user/remove`               | POST / DELETE | identity      | Removes a role from a user.                                                 |
 | `/{entity}s/roles/{roleId}/claims`           | GET           | administrator | Retrieves all claims associated with a role.                                |
 | `/{entity}s/roles/claims/assign`             | POST          | administrator | Assigns a claim to a role.                                                  |
 | `/{entity}s/roles/claims/replace`            | PUT           | administrator | Replaces a claim of a role.                                                 |
@@ -1934,7 +1935,7 @@ are not configured will not be registered or available in the controller.
 | `/auth/login/refresh`                       | POST   | Anonymous | Refreshes an existing access token.                                                  |
 | `/auth/logout`                              | POST   | Anonymous | Logs out the current user and clears external authentication cookies.                |
 | `/auth/external/schemes`                    | GET    | Anonymous | Retrieves all configured external authentication schemes (e.g., Google, Facebook).   |
-| `/auth/external/facebook/data`              | POST   | Anonymous | Retrieves external login data from Facebook authentication provider.                 |
+| `/auth/external/facebook-data`              | POST   | Anonymous | Retrieves external login data from Facebook authentication provider.                 |
 | `/auth/external/google/data`                | POST   | Anonymous | Retrieves external login data from Google authentication provider.                   |
 | `/auth/external/microsoft/data`             | POST   | Anonymous | Retrieves external login data from Microsoft authentication provider.                |
 

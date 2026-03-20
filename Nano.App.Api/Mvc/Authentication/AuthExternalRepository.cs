@@ -1,10 +1,10 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Nano.Data.Abstractions.Exceptions;
 using Nano.Data.Abstractions.Identity.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Consts;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
-using Nano.Data.Abstractions.Identity.Exceptions;
 
 namespace Nano.App.Api.Mvc.Authentication;
 
@@ -40,7 +40,7 @@ public class AuthExternalRepository : IAuthExternalRepository
             {
                 if (this.facebookRepository == null)
                 {
-                    throw new NullReferenceException(nameof(this.facebookRepository));
+                    throw new NotFoundException(nameof(this.facebookRepository));
                 }
 
                 return this.facebookRepository
@@ -50,7 +50,7 @@ public class AuthExternalRepository : IAuthExternalRepository
             {
                 if (this.googleRepository == null)
                 {
-                    throw new NullReferenceException(nameof(this.googleRepository));
+                    throw new NotFoundException(nameof(this.googleRepository));
                 }
 
                 return this.googleRepository
@@ -60,7 +60,7 @@ public class AuthExternalRepository : IAuthExternalRepository
             {
                 if (this.microsoftRepository == null)
                 {
-                    throw new NullReferenceException(nameof(this.microsoftRepository));
+                    throw new NotFoundException(nameof(this.microsoftRepository));
                 }
 
                 return this.microsoftRepository

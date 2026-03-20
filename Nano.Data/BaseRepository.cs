@@ -18,6 +18,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Nano.Data.Abstractions.Exceptions;
 
 namespace Nano.Data;
 
@@ -831,7 +832,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
 
         if (entity == null)
         {
-            throw new NullReferenceException(nameof(entity));
+            throw new NotFoundException(nameof(entity));
         }
 
         await this.DeleteAsync(entity, cancellationToken);
@@ -1248,15 +1249,10 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
 
             var setPropertyMethod = typeof(SetPropertyCalls<TEntity>)
                 .GetMethods()
-                .FirstOrDefault(x =>
+                .First(x =>
                     x is { Name: "SetProperty", IsGenericMethod: true } &&
                     x.GetParameters().Length == 2 &&
                     x.GetParameters()[0].ParameterType.GetGenericArguments()[0] == typeof(TEntity));
-
-            if (setPropertyMethod == null)
-            {
-                throw new NullReferenceException(nameof(setPropertyMethod));
-            }
 
             var genericSetPropertyMethod = setPropertyMethod
                 .MakeGenericMethod(propertyType);

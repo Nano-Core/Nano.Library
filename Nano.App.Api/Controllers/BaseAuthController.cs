@@ -16,7 +16,6 @@ using Nano.App.Consts;
 using Nano.Common.Consts;
 using Nano.Data.Abstractions.Identity.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
-using Nano.Data.Abstractions.Identity.Consts;
 
 namespace Nano.App.Api.Controllers;
 
@@ -37,7 +36,7 @@ public abstract class BaseAuthController : BaseAuthController<Guid>
 /// <typeparam name="TIdentity"></typeparam>
 [Route(ControllerRoutes.AUTH_CONTROLLER_ROUTE)]
 [Route($"{ControllerRoutes.ROUTE_VERSION_PREFIX}/{ControllerRoutes.AUTH_CONTROLLER_ROUTE}")]
-[Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.CREATOR + "," + BuiltInUserRoles.EDITOR + "," + BuiltInUserRoles.DELETER + "," + BuiltInUserRoles.READER)]
+[AllowAnonymous]
 public abstract class BaseAuthController<TIdentity> : BaseController
     where TIdentity : IEquatable<TIdentity>
 {
@@ -79,7 +78,6 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route(ActionRoutes.AUTH_LOGIN)]
-    [AllowAnonymous]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(AccessToken), (int)HttpStatusCode.OK)]
@@ -91,7 +89,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     {
         if (this.identityAuthRepository == null)
         {
-            throw new NullReferenceException(nameof(this.identityAuthRepository));
+            return this.NotFound();
         }
 
         var accessToken = await this.identityAuthRepository
@@ -113,7 +111,6 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route(ActionRoutes.AUTH_LOGIN_ROOT)]
-    [AllowAnonymous]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(AccessToken), (int)HttpStatusCode.OK)]
@@ -125,7 +122,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     {
         if (this.authRootRepository == null)
         {
-            throw new NullReferenceException(nameof(this.authRootRepository));
+            return this.NotFound();
         }
 
         var accessToken = await this.authRootRepository
@@ -147,7 +144,6 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route(ActionRoutes.AUTH_LOGIN_EXTERNAL_DIRECT)]
-    [AllowAnonymous]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(AccessToken), (int)HttpStatusCode.OK)]
@@ -159,7 +155,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     {
         if (this.identityAuthRepository == null)
         {
-            throw new NullReferenceException(nameof(this.identityAuthRepository));
+            return this.NotFound();
         }
 
         var accessToken = await this.identityAuthRepository
@@ -181,7 +177,6 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route(ActionRoutes.AUTH_LOGIN_EXTERNAL_DIRECT_TRANSIENT)]
-    [AllowAnonymous]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(AccessToken), (int)HttpStatusCode.OK)]
@@ -193,7 +188,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     {
         if (this.authTransientRepository == null)
         {
-            throw new NullReferenceException(nameof(this.authTransientRepository));
+            return this.NotFound();
         }
 
         var accessToken = await this.authTransientRepository
@@ -215,7 +210,6 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route(ActionRoutes.AUTH_LOGIN_EXTERNAL_FACEBOOK)]
-    [AllowAnonymous]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(AccessToken), (int)HttpStatusCode.OK)]
@@ -227,7 +221,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     {
         if (this.identityAuthRepository == null)
         {
-            throw new NullReferenceException(nameof(this.identityAuthRepository));
+            return this.NotFound();
         }
 
         var accessToken = await this.identityAuthRepository
@@ -249,7 +243,6 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route(ActionRoutes.AUTH_LOGIN_EXTERNAL_FACEBOOK_TRANSIENT)]
-    [AllowAnonymous]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(AccessToken), (int)HttpStatusCode.OK)]
@@ -261,7 +254,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     {
         if (this.authTransientRepository == null)
         {
-            throw new NullReferenceException(nameof(this.authTransientRepository));
+            return this.NotFound();
         }
 
         var accessToken = await this.authTransientRepository
@@ -283,7 +276,6 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route(ActionRoutes.AUTH_LOGIN_EXTERNAL_GOOGLE)]
-    [AllowAnonymous]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(AccessToken), (int)HttpStatusCode.OK)]
@@ -295,7 +287,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     {
         if (this.identityAuthRepository == null)
         {
-            throw new NullReferenceException(nameof(this.identityAuthRepository));
+            return this.NotFound();
         }
 
         var accessToken = await this.identityAuthRepository
@@ -317,7 +309,6 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route(ActionRoutes.AUTH_LOGIN_EXTERNAL_GOOGLE_TRANSIENT)]
-    [AllowAnonymous]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(AccessToken), (int)HttpStatusCode.OK)]
@@ -329,7 +320,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     {
         if (this.authTransientRepository == null)
         {
-            throw new NullReferenceException(nameof(this.authTransientRepository));
+            return this.NotFound();
         }
 
         var accessToken = await this.authTransientRepository
@@ -351,7 +342,6 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route(ActionRoutes.AUTH_LOGIN_EXTERNAL_MICROSOFT)]
-    [AllowAnonymous]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(AccessToken), (int)HttpStatusCode.OK)]
@@ -363,7 +353,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     {
         if (this.identityAuthRepository == null)
         {
-            throw new NullReferenceException(nameof(this.identityAuthRepository));
+            return this.NotFound();
         }
 
         var accessToken = await this.identityAuthRepository
@@ -385,7 +375,6 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route(ActionRoutes.AUTH_LOGIN_EXTERNAL_MICROSOFT_TRANSIENT)]
-    [AllowAnonymous]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(AccessToken), (int)HttpStatusCode.OK)]
@@ -397,7 +386,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     {
         if (this.authTransientRepository == null)
         {
-            throw new NullReferenceException(nameof(this.authTransientRepository));
+            return this.NotFound();
         }
 
         var accessToken = await this.authTransientRepository
@@ -419,7 +408,6 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route(ActionRoutes.AUTH_LOGIN_REFRESH)]
-    [AllowAnonymous]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(AccessToken), (int)HttpStatusCode.OK)]
@@ -431,7 +419,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     {
         if (this.identityAuthRepository == null)
         {
-            throw new NullReferenceException(nameof(this.identityAuthRepository));
+            return this.NotFound();
         }
 
         var accessToken = await this.identityAuthRepository
@@ -459,7 +447,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     {
         if (this.identityAuthRepository == null)
         {
-            throw new NullReferenceException(nameof(this.identityAuthRepository));
+            return this.NotFound();
         }
 
         await this.identityAuthRepository
@@ -487,7 +475,6 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     /// <response code="500">Internal server error.</response>
     [HttpGet]
     [Route(ActionRoutes.AUTH_EXTERNAL_SCHEMES)]
-    [AllowAnonymous]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(IEnumerable<ExternalLoginProvider>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -497,7 +484,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     {
         if (this.identityAuthRepository == null && this.authTransientRepository == null)
         {
-            throw new NullReferenceException($"{nameof(this.identityAuthRepository)}, {nameof(this.authTransientRepository)}");
+            return this.NotFound();
         }
 
         IEnumerable<ExternalLoginProvider>? logInProviders = null;
@@ -543,7 +530,6 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route(ActionRoutes.AUTH_EXTERNAL_FACEBOOK_DATA)]
-    [AllowAnonymous]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(ExternalLogInData), (int)HttpStatusCode.OK)]
@@ -554,7 +540,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     {
         if (this.authExternalRepository == null)
         {
-            throw new NullReferenceException(nameof(this.authExternalRepository));
+            return this.NotFound();
         }
 
         var externalLoginData = await this.authExternalRepository
@@ -575,7 +561,6 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route(ActionRoutes.AUTH_EXTERNAL_GOOGLE_DATA)]
-    [AllowAnonymous]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(ExternalLogInData), (int)HttpStatusCode.OK)]
@@ -586,7 +571,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     {
         if (this.authExternalRepository == null)
         {
-            throw new NullReferenceException(nameof(this.authExternalRepository));
+            return this.NotFound();
         }
 
         var externalLoginData = await this.authExternalRepository
@@ -607,7 +592,6 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route(ActionRoutes.AUTH_EXTERNAL_MICROSOFT_DATA)]
-    [AllowAnonymous]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(ExternalLogInData), (int)HttpStatusCode.OK)]
@@ -618,7 +602,7 @@ public abstract class BaseAuthController<TIdentity> : BaseController
     {
         if (this.authExternalRepository == null)
         {
-            throw new NullReferenceException(nameof(this.authExternalRepository));
+            return this.NotFound();
         }
 
         var externalLoginData = await this.authExternalRepository

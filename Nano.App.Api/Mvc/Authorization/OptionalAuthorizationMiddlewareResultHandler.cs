@@ -40,14 +40,17 @@ public class OptionalAuthorizationMiddlewareResultHandler : IAuthorizationMiddle
             .GetAwaiter()
             .GetResult();
 
-        if (!schemes.Any())
-        {
+        // BUG: AUTH: Also we don't have any claims in database after signup, is that righth? Check what the JWT token contains
+
+        // BUG: AUTH: Look into this. We get schemes i don't think i care about.
+        //if (!schemes.Any())
+        //{
             await next(context);
 
             return;
-        }
+        //}
 
-        await this.authorizationMiddlewareResultHandler
-            .HandleAsync(next, context, policy, authorizeResult);
+        //await this.authorizationMiddlewareResultHandler
+        //    .HandleAsync(next, context, policy, authorizeResult);
     }
 }

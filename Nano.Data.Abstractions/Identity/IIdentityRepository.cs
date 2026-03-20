@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Nano.Data.Abstractions.Identity.Exceptions;
+using Nano.Data.Abstractions.Exceptions;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Data.Abstractions.Models.Identity;
 using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
@@ -313,6 +313,14 @@ public interface IIdentityRepository<TIdentity>
     /// <exception cref="NullReferenceException">Thrown if the user cannot be found.</exception>
     Task<IdentityUserEx<TIdentity>> DeactivateIdentityUser(TIdentity id, CancellationToken cancellationToken = default);
 
+    /// <summary>
+    /// Deletes a user.
+    /// </summary>
+    /// <param name="id">The identifier of the user to delete.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
+    Task DeleteUserAsync(TIdentity id, CancellationToken cancellationToken = default);
+
     #endregion
 
 
@@ -433,11 +441,11 @@ public interface IIdentityRepository<TIdentity>
     /// Creates a new API key for a user.
     /// </summary>
     /// <param name="createApiKey">The data for creating the API key.</param>
-    /// <param name="apiKey">The generated API key value (plaintext) returned as an out parameter.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>The created <see cref="IdentityApiKey{TIdentity}"/>.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="createApiKey"/> is <c>null</c>.</exception>
     /// <exception cref="NullReferenceException">Thrown if the user or secret configuration cannot be found.</exception>
-    IdentityApiKey<TIdentity> CreateApiKeyAsync(CreateApiKey<TIdentity> createApiKey, out string apiKey);
+    Task<IdentityApiKeyCreated<TIdentity>> CreateApiKeyAsync(CreateApiKey<TIdentity> createApiKey, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Validates a provided API key and returns its associated record if valid.

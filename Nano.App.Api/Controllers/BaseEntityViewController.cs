@@ -44,7 +44,7 @@ public abstract class BaseEntityViewController<TEntity, TCriteria> : BaseEntityC
     [HttpGet]
     [Route(ActionRoutes.INDEX)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEnumerable<IEntity>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -68,7 +68,7 @@ public abstract class BaseEntityViewController<TEntity, TCriteria> : BaseEntityC
     }
 
     /// <summary>
-    /// Gets all entities matching the specified query via POST.
+    /// Gets all entities matching the specified query.
     /// </summary>
     /// <param name="query">The query used to filter entities.</param>
     /// <param name="includeDepth">Optional include depth for related entities.</param>
@@ -83,7 +83,7 @@ public abstract class BaseEntityViewController<TEntity, TCriteria> : BaseEntityC
     [Route(ActionRoutes.INDEX)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEnumerable<IEntity>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -107,7 +107,7 @@ public abstract class BaseEntityViewController<TEntity, TCriteria> : BaseEntityC
     }
 
     /// <summary>
-    /// Queries entities matching the specified <typeparamref name="TCriteria"/>.
+    /// Queries entities matching the specified criteria.
     /// </summary>
     /// <param name="query">The query model containing filters and criteria.</param>
     /// <param name="includeDepth">Optional include depth for related entities.</param>
@@ -121,7 +121,7 @@ public abstract class BaseEntityViewController<TEntity, TCriteria> : BaseEntityC
     [HttpGet]
     [Route(ActionRoutes.QUERY)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEnumerable<IEntity>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -145,7 +145,7 @@ public abstract class BaseEntityViewController<TEntity, TCriteria> : BaseEntityC
     }
 
     /// <summary>
-    /// Queries entities matching the specified <typeparamref name="TCriteria"/> via POST.
+    /// Queries entities matching the specified criteria.
     /// </summary>
     /// <param name="query">The query model containing filters and criteria.</param>
     /// <param name="includeDepth">Optional include depth for related entities.</param>
@@ -160,9 +160,9 @@ public abstract class BaseEntityViewController<TEntity, TCriteria> : BaseEntityC
     [Route(ActionRoutes.QUERY)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
+    [ProducesResponseType(typeof(IEnumerable<IEntity>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> QueryPostAsync([FromBody][Required]IQuery<TCriteria> query, [FromQuery]int? includeDepth, CancellationToken cancellationToken = default)
@@ -184,7 +184,7 @@ public abstract class BaseEntityViewController<TEntity, TCriteria> : BaseEntityC
     }
 
     /// <summary>
-    /// Retrieves the first entity matching the specified <typeparamref name="TCriteria"/>.
+    /// Retrieves the first entity matching the specified criteria.
     /// </summary>
     /// <param name="query">The query model containing filters and criteria.</param>
     /// <param name="includeDepth">Optional include depth for related entities.</param>
@@ -198,7 +198,7 @@ public abstract class BaseEntityViewController<TEntity, TCriteria> : BaseEntityC
     [HttpGet]
     [Route(ActionRoutes.QUERY_FIRST)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -227,7 +227,7 @@ public abstract class BaseEntityViewController<TEntity, TCriteria> : BaseEntityC
     }
 
     /// <summary>
-    /// Retrieves the first entity matching the specified <typeparamref name="TCriteria"/> via POST.
+    /// Retrieves the first entity matching the specified criteria.
     /// </summary>
     /// <param name="query">The query model containing filters and criteria.</param>
     /// <param name="includeDepth">Optional include depth for related entities.</param>
@@ -242,7 +242,7 @@ public abstract class BaseEntityViewController<TEntity, TCriteria> : BaseEntityC
     [Route(ActionRoutes.QUERY_FIRST)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType((int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
@@ -271,7 +271,7 @@ public abstract class BaseEntityViewController<TEntity, TCriteria> : BaseEntityC
     }
 
     /// <summary>
-    /// Gets the total count of entities matching the specified <typeparamref name="TCriteria"/>.
+    /// Gets the total count of entities matching the specified criteria.
     /// </summary>
     /// <param name="criteria">The criteria model containing filters.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
@@ -284,9 +284,9 @@ public abstract class BaseEntityViewController<TEntity, TCriteria> : BaseEntityC
     [HttpGet]
     [Route(ActionRoutes.QUERY_COUNT)]
     [Produces(HttpContentType.JSON)]
+    [ProducesResponseType(typeof(int), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType(typeof(int), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> QueryCountAsync([FromQuery][Required]TCriteria criteria, CancellationToken cancellationToken = default)
@@ -298,7 +298,7 @@ public abstract class BaseEntityViewController<TEntity, TCriteria> : BaseEntityC
     }
 
     /// <summary>
-    /// Gets the total count of entities matching the specified <typeparamref name="TCriteria"/> via POST.
+    /// Gets the total count of entities matching the specified criteria.
     /// </summary>
     /// <param name="criteria">The criteria model containing filters.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
@@ -312,9 +312,9 @@ public abstract class BaseEntityViewController<TEntity, TCriteria> : BaseEntityC
     [Route(ActionRoutes.QUERY_COUNT)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
+    [ProducesResponseType(typeof(int), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType(typeof(int), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> QueryCountPostAsync([FromBody][Required]TCriteria criteria, CancellationToken cancellationToken = default)

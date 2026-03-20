@@ -6,7 +6,6 @@ using Nano.Data.Abstractions.Config;
 using Nano.Data.Abstractions.Identity;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Nano.Data.Abstractions.Identity.Consts;
-using Nano.Data.Abstractions.Identity.Exceptions;
 using Nano.Data.Abstractions.Identity.Extensions;
 using Nano.Data.Abstractions.Identity.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
@@ -22,6 +21,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Nano.Data.Abstractions.Exceptions;
 using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 
 namespace Nano.Data.Identity;
@@ -193,29 +193,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
             PhoneNumber = signUp.PhoneNumber
         };
 
-        IdentityResult createResult;
-        try
-        {
-            createResult = await this.userManager
-                .CreateAsync(identityUser, signUp.Password);
-        }
-        catch (DbUpdateException ex)
-        {
-            const string MESSAGE = "IX___EFAuthUser_PhoneNumber";
-
-            if (ex.Message.Contains(MESSAGE) || (ex.InnerException != null && ex.InnerException.Message.Contains(MESSAGE)))
-            {
-                ThrowIdentityExceptions([new IdentityErrorDescriber().DuplicatePhoneNumber(signUp.PhoneNumber ?? "")]);
-            }
-
-            throw;
-        }
-
-        if (!createResult.Succeeded)
-        {
-            ThrowIdentityExceptions(createResult.Errors);
-        }
-
+        await this.CreateIdentityUser(identityUser, signUp.Password);
         await this.AssignSignUpRolesAndClaims(identityUser, signUp.Roles, signUp.Claims);
 
         return await this.CreateUser(signUp.User, identityUser, cancellationToken);
@@ -227,27 +205,15 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
     {
         ArgumentNullException.ThrowIfNull(signUpExternal);
 
-        var identityUser = await this.userManager
-            .FindByNameAsync(signUpExternal.Email);
-
-        if (identityUser == null)
+        var identityUser = new IdentityUserEx<TIdentity>
         {
-            identityUser = new IdentityUserEx<TIdentity>
-            {
-                Email = signUpExternal.Email,
-                UserName = signUpExternal.Email
-            };
+            Email = signUpExternal.Email,
+            UserName = signUpExternal.Email,
+            PhoneNumber = signUpExternal.PhoneNumber
+        };
 
-            var createResult = await this.userManager
-                .CreateAsync(identityUser);
-
-            if (!createResult.Succeeded)
-            {
-                ThrowIdentityExceptions(createResult.Errors);
-            }
-
-            await this.AssignSignUpRolesAndClaims(identityUser, signUpExternal.Roles, signUpExternal.Claims);
-        }
+        await this.CreateIdentityUser(identityUser);
+        await this.AssignSignUpRolesAndClaims(identityUser, signUpExternal.Roles, signUpExternal.Claims);
 
         var userLoginInfo = new UserLoginInfo(signUpExternal.ExternalProvider.LoginProvider, signUpExternal.ExternalProvider.ProviderKey, signUpExternal.ExternalProvider.LoginProvider);
 
@@ -276,7 +242,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
         var identityUser = await this.userManager
             .GetIdentityUserAsync(id, cancellationToken);
 
-        return identityUser ?? throw new NullReferenceException(nameof(identityUser));
+        return identityUser ?? throw new NotFoundException(nameof(identityUser));
     }
 
     /// <inheritdoc />
@@ -302,7 +268,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
 
         if (identityUser == null)
         {
-            throw new NullReferenceException(nameof(identityUser));
+            throw new NotFoundException(nameof(identityUser));
         }
 
         var result = await this.userManager
@@ -327,7 +293,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
 
         if (identityUser == null)
         {
-            throw new NullReferenceException(nameof(identityUser));
+            throw new NotFoundException(nameof(identityUser));
         }
 
         var result = await this.userManager
@@ -349,7 +315,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
 
         if (identityUser == null)
         {
-            throw new NullReferenceException(nameof(identityUser));
+            throw new NotFoundException(nameof(identityUser));
         }
 
         var result = await this.userManager
@@ -374,7 +340,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
 
         if (identityUser == null)
         {
-            throw new UnauthorizedException($"The user: {generateResetPasswordToken.Username} was not found or is deactivated.");
+            throw new NotFoundException(nameof(identityUser));
         }
 
         var token = await this.userManager
@@ -397,7 +363,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
 
         if (identityUser == null)
         {
-            throw new UnauthorizedException($"The user: {resetPassword.UserId} was not found or is deactivated.");
+            throw new NotFoundException(nameof(identityUser));
         }
 
         var result = await this.userManager
@@ -419,7 +385,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
 
         if (identityUser == null)
         {
-            throw new NullReferenceException(nameof(identityUser));
+            throw new NotFoundException(nameof(identityUser));
         }
 
         if (this.options.CurrentValue.Identity?.User.IsUniqueEmailAddressRequired ?? true)
@@ -480,7 +446,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
 
         if (identityUser == null)
         {
-            throw new NullReferenceException(nameof(identityUser));
+            throw new NotFoundException(nameof(identityUser));
         }
 
         var identityUserChangeData = this.dbContext
@@ -489,12 +455,12 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
 
         if (identityUserChangeData == null)
         {
-            throw new NullReferenceException(nameof(identityUserChangeData));
+            throw new NotFoundException(nameof(identityUserChangeData));
         }
 
         if (identityUserChangeData.NewEmail == null)
         {
-            throw new NullReferenceException(nameof(identityUserChangeData.NewEmail));
+            throw new NotFoundException(nameof(identityUserChangeData.NewEmail));
         }
 
         var result = await this.userManager
@@ -533,7 +499,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
 
         if (identityUser == null)
         {
-            throw new NullReferenceException(nameof(identityUser));
+            throw new NotFoundException(nameof(identityUser));
         }
 
         var token = await this.userManager
@@ -556,7 +522,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
 
         if (identityUser == null)
         {
-            throw new NullReferenceException(nameof(identityUser));
+            throw new NotFoundException(nameof(identityUser));
         }
 
         var result = await this.userManager
@@ -578,7 +544,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
 
         if (identityUser == null)
         {
-            throw new NullReferenceException(nameof(identityUser));
+            throw new NotFoundException(nameof(identityUser));
         }
 
         if (this.options.CurrentValue.Identity?.User.IsUniquePhoneNumberRequired ?? true)
@@ -638,7 +604,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
 
         if (identityUser == null)
         {
-            throw new NullReferenceException(nameof(identityUser));
+            throw new NotFoundException(nameof(identityUser));
         }
 
         var identityUserChangeData = this.dbContext
@@ -647,12 +613,12 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
 
         if (identityUserChangeData == null)
         {
-            throw new NullReferenceException(nameof(identityUserChangeData));
+            throw new NotFoundException(nameof(identityUserChangeData));
         }
 
         if (identityUserChangeData.NewPhoneNumber == null)
         {
-            throw new NullReferenceException(nameof(identityUserChangeData.NewPhoneNumber));
+            throw new NotFoundException(nameof(identityUserChangeData.NewPhoneNumber));
         }
 
         var result = await this.userManager
@@ -682,7 +648,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
 
         if (identityUser == null)
         {
-            throw new NullReferenceException(nameof(identityUser));
+            throw new NotFoundException(nameof(identityUser));
         }
 
         var token = await this.userManager
@@ -705,7 +671,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
 
         if (identityUser == null)
         {
-            throw new NullReferenceException(nameof(identityUser));
+            throw new NotFoundException(nameof(identityUser));
         }
 
         var result = await this.userManager
@@ -727,7 +693,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
 
         if (identityUser == null)
         {
-            throw new NullReferenceException(nameof(identityUser));
+            throw new NotFoundException(nameof(identityUser));
         }
 
         var token = await this.userManager
@@ -751,7 +717,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
 
         if (identityUser == null)
         {
-            throw new NullReferenceException(nameof(identityUser));
+            throw new NotFoundException(nameof(identityUser));
         }
 
         var success = await this.userManager
@@ -769,11 +735,11 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
         var identityUser = this.dbContext
             .Set<IdentityUserEx<TIdentity>>()
             .IgnoreQueryFilters()
-            .FirstOrDefault(x => x.Id.Equals(id));
+            .FirstOrDefault(x => x.Id.Equals(id)); 
 
         if (identityUser == null)
         {
-            throw new NullReferenceException(nameof(identityUser));
+            throw new NotFoundException(nameof(identityUser));
         }
 
         identityUser.IsActive = true;
@@ -793,6 +759,15 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
     /// <inheritdoc />
     public virtual async Task<IdentityUserEx<TIdentity>> DeactivateIdentityUser(TIdentity id, CancellationToken cancellationToken = default)
     {
+        var identityUser = this.dbContext
+            .Set<IdentityUserEx<TIdentity>>()
+            .FirstOrDefault(x => x.Id.Equals(id));
+
+        if (identityUser == null)
+        {
+            throw new NotFoundException(nameof(identityUser));
+        }
+
         var refreshTokens = this.dbContext
             .Set<IdentityUserRefreshToken<TIdentity>>()
             .Where(x => x.IdentityUserId.Equals(id));
@@ -802,15 +777,6 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
 
         await this.signInManager
             .SignOutAsync();
-
-        var identityUser = this.dbContext
-            .Set<IdentityUserEx<TIdentity>>()
-            .FirstOrDefault(x => x.Id.Equals(id));
-
-        if (identityUser == null)
-        {
-            throw new NullReferenceException(nameof(identityUser));
-        }
 
         identityUser.IsActive = false;
 
@@ -826,10 +792,325 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
         return entityEntry.Entity;
     }
 
+    /// <inheritdoc />
+    public virtual Task DeleteUserAsync(TIdentity id, CancellationToken cancellationToken = default)
+    {
+        var identityUser = this.dbContext
+            .Find<IdentityUserEx<TIdentity>>(id);
+
+        if (identityUser == null)
+        {
+            throw new NotFoundException(nameof(identityUser));
+        }
+
+        return this.DeleteIdentityUser(identityUser, cancellationToken);
+    }
+
     #endregion
 
 
-    #region External Logins
+    #region User Roles
+
+    /// <inheritdoc />
+    public virtual async Task<IEnumerable<string>> GetUserRolesAsync(TIdentity userId, CancellationToken cancellationToken = default)
+    {
+        var identityUser = await this.userManager
+            .GetIdentityUserAsync(userId, cancellationToken);
+
+        if (identityUser == null)
+        {
+            throw new NotFoundException(nameof(identityUser));
+        }
+
+        return await this.GetUserRolesAsync(identityUser, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<IEnumerable<string>> GetUserRolesAsync(IdentityUserEx<TIdentity> identityUser, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(identityUser);
+
+        return await this.userManager
+            .GetRolesAsync(identityUser);
+    }
+
+    /// <inheritdoc />
+    public virtual async Task AssignUserRoleAsync(AssignUserRole<TIdentity> assignUserRole, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(assignUserRole);
+
+        var identityUser = await this.userManager
+            .GetIdentityUserAsync(assignUserRole.UserId, cancellationToken);
+
+        if (identityUser == null)
+        {
+            throw new NotFoundException(nameof(identityUser));
+        }
+
+        var result = await this.userManager
+            .AddToRoleAsync(identityUser, assignUserRole.RoleName);
+
+        if (!result.Succeeded)
+        {
+            ThrowIdentityExceptions(result.Errors);
+        }
+    }
+
+    /// <inheritdoc />
+    public virtual async Task RemoveUserRoleAsync(RemoveUserRole<TIdentity> removeUserRole, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(removeUserRole);
+
+        var identityUser = await this.userManager
+            .GetIdentityUserAsync(removeUserRole.UserId, cancellationToken);
+
+        if (identityUser == null)
+        {
+            throw new NotFoundException(nameof(identityUser));
+        }
+
+        var result = await this.userManager
+            .RemoveFromRoleAsync(identityUser, removeUserRole.RoleName);
+
+        if (!result.Succeeded)
+        {
+            ThrowIdentityExceptions(result.Errors);
+        }
+    }
+
+    #endregion
+
+
+    #region User Claims
+
+    /// <inheritdoc />
+    public virtual async Task<IList<Claim>> GetAllClaims(IdentityUserEx<TIdentity> identityUser, IEnumerable<string>? transientRoles = null, IDictionary<string, string>? transientClaims = null, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(identityUser);
+
+        transientRoles ??= new List<string>();
+        transientClaims ??= new Dictionary<string, string>();
+
+        var userClaims = await this.userManager
+            .GetClaimsAsync(identityUser);
+
+        var query = from userRole in this.dbContext.Set<IdentityUserRole<TIdentity>>()
+            join role in this.dbContext.Set<IdentityRole<TIdentity>>() on userRole.RoleId equals role.Id
+            where userRole.UserId.Equals(identityUser.Id)
+            select new
+            {
+                role.Id,
+                role.Name
+            };
+
+        var roles = await query
+            .ToListAsync(cancellationToken);
+
+        var roleClaims = await this.dbContext
+            .Set<IdentityRoleClaim<TIdentity>>()
+            .Where(x => roles
+                .Select(y => y.Id).Contains(x.RoleId))
+            .Select(x => new Claim(x.ClaimType!, x.ClaimValue ?? ""))
+            .ToListAsync(cancellationToken);
+
+        var rolesAsClaims = roles
+            .Select(x => new Claim(ClaimTypes.Role, x.Name))
+            .Concat(transientRoles.Select(x => new Claim(ClaimTypes.Role, x)));
+
+        var claims = userClaims
+            .Union(roleClaims)
+            .Union(rolesAsClaims)
+            .Union(transientClaims
+                .Select(x => new Claim(x.Key, x.Value)))
+            .ToList();
+
+        return claims;
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<Claim?> GetUserClaimAsync(GetClaim<TIdentity> getClaim, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(getClaim);
+
+        var claims = await this.GetUserClaimsAsync(getClaim.UserId, cancellationToken);
+
+        return claims
+            .FirstOrDefault(x => x.Type == getClaim.ClaimType);
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<IEnumerable<Claim>> GetUserClaimsAsync(TIdentity userId, CancellationToken cancellationToken = default)
+    {
+        var identityUser = await this.userManager
+            .GetIdentityUserAsync(userId, cancellationToken);
+
+        if (identityUser == null)
+        {
+            throw new NotFoundException(nameof(identityUser));
+        }
+
+        return await this.GetUserClaimsAsync(identityUser, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<IEnumerable<Claim>> GetUserClaimsAsync(IdentityUserEx<TIdentity> identityUser, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(identityUser);
+
+        return await this.userManager
+            .GetClaimsAsync(identityUser);
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<IdentityUserClaim<TIdentity>> AssignUserClaimAsync(AssignUserClaim<TIdentity> assignUserClaim, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(assignUserClaim);
+
+        var identityUser = await this.userManager
+            .GetIdentityUserAsync(assignUserClaim.UserId, cancellationToken);
+
+        if (identityUser == null)
+        {
+            throw new NotFoundException(nameof(identityUser));
+        }
+
+        var userClaim = new IdentityUserClaim<TIdentity>
+        {
+            ClaimType = assignUserClaim.ClaimType,
+            ClaimValue = assignUserClaim.ClaimValue
+        };
+
+        var claim = userClaim
+            .ToClaim();
+
+        var result = await this.userManager
+            .AddClaimAsync(identityUser, claim);
+
+        if (!result.Succeeded)
+        {
+            ThrowIdentityExceptions(result.Errors);
+        }
+
+        return userClaim;
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<IdentityUserClaim<TIdentity>> ReplaceUserClaimAsync(ReplaceUserClaim<TIdentity> replaceUserClaim, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(replaceUserClaim);
+
+        var identityUser = await this.userManager
+            .GetIdentityUserAsync(replaceUserClaim.UserId, cancellationToken);
+
+        if (identityUser == null)
+        {
+            throw new NotFoundException(nameof(identityUser));
+        }
+
+        var existingClaim = (await this.GetUserClaimsAsync(identityUser, cancellationToken))
+            .FirstOrDefault(x => x.Type == replaceUserClaim.ClaimType);
+
+        if (existingClaim == null)
+        {
+            throw new NotFoundException(nameof(existingClaim));
+        }
+
+        var newClaim = new IdentityUserClaim<TIdentity>
+        {
+            ClaimType = replaceUserClaim.ClaimType,
+            ClaimValue = replaceUserClaim.NewClaimValue
+        };
+
+        var claim = newClaim
+            .ToClaim();
+
+        var result = await this.userManager
+            .ReplaceClaimAsync(identityUser, existingClaim, claim);
+
+        if (!result.Succeeded)
+        {
+            ThrowIdentityExceptions(result.Errors);
+        }
+
+        return newClaim;
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<IdentityUserClaim<TIdentity>> AssignOrReplaceUserClaimAsync(AssignOrReplaceUserClaim<TIdentity> assignOrReplaceUserClaim, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(assignOrReplaceUserClaim);
+
+        var identityUser = await this.userManager
+            .GetIdentityUserAsync(assignOrReplaceUserClaim.UserId, cancellationToken);
+
+        if (identityUser == null)
+        {
+            throw new NotFoundException(nameof(identityUser));
+        }
+
+        var existingClaim = (await this.GetUserClaimsAsync(identityUser, cancellationToken))
+            .FirstOrDefault(x => x.Type == assignOrReplaceUserClaim.ClaimType);
+
+        var newClaim = new IdentityUserClaim<TIdentity>
+        {
+            ClaimType = assignOrReplaceUserClaim.ClaimType,
+            ClaimValue = assignOrReplaceUserClaim.ClaimValue
+        };
+
+        var claim = newClaim
+            .ToClaim();
+
+        var result = existingClaim == null
+            ? await this.userManager
+                .AddClaimAsync(identityUser, claim)
+            : await this.userManager
+                .ReplaceClaimAsync(identityUser, existingClaim, claim);
+
+        if (!result.Succeeded)
+        {
+            ThrowIdentityExceptions(result.Errors);
+        }
+
+        return newClaim;
+    }
+
+    /// <inheritdoc />
+    public virtual async Task RemoveUserClaimAsync(RemoveUserClaim<TIdentity> removeUserClaim, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(removeUserClaim);
+
+        var identityUser = await this.userManager
+            .GetIdentityUserAsync(removeUserClaim.UserId, cancellationToken);
+
+        if (identityUser == null)
+        {
+            throw new NotFoundException(nameof(identityUser));
+        }
+
+        var claims = await this.userManager
+            .GetClaimsAsync(identityUser);
+
+        var claim = claims
+            .FirstOrDefault(x => x.Type == removeUserClaim.ClaimType);
+
+        if (claim == null)
+        {
+            throw new NotFoundException(nameof(claim));
+        }
+
+        var result = await this.userManager
+            .RemoveClaimAsync(identityUser, claim);
+
+        if (!result.Succeeded)
+        {
+            ThrowIdentityExceptions(result.Errors);
+        }
+    }
+
+    #endregion
+
+
+    #region User External Logins
 
     /// <inheritdoc />
     public virtual async Task<IEnumerable<UserLoginInfo>> GetUserExternalLoginsAsync(TIdentity userId, CancellationToken cancellationToken = default)
@@ -839,7 +1120,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
 
         if (identityUser == null)
         {
-            throw new NullReferenceException(nameof(identityUser));
+            throw new NotFoundException(nameof(identityUser));
         }
 
         return await this.GetUserExternalLoginsAsync(identityUser, cancellationToken);
@@ -864,7 +1145,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
 
         if (identityUser == null)
         {
-            throw new NullReferenceException(nameof(identityUser));
+            throw new NotFoundException(nameof(identityUser));
         }
 
         var userLoginInfo = new UserLoginInfo(externalProvider.LoginProvider, externalProvider.ProviderKey, externalProvider.LoginProvider);
@@ -890,7 +1171,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
 
         if (identityUser == null)
         {
-            throw new NullReferenceException(nameof(identityUser));
+            throw new NotFoundException(nameof(identityUser));
         }
 
         var result = await this.userManager
@@ -1014,6 +1295,255 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
     #endregion
 
 
+    #region Roles
+
+    /// <inheritdoc />
+    public virtual async Task<IEnumerable<IdentityRole<TIdentity>>> GetRolesAsync(CancellationToken cancellationToken = default)
+    {
+        var roles = this.roleManager.Roles
+            .OrderBy(x => x.Name);
+
+        return await Task.FromResult(roles);
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<IdentityRole<TIdentity>> CreateRoleAsync(string roleName, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(roleName);
+
+        var identityRole = new IdentityRole<TIdentity>(roleName);
+
+        var result = await this.roleManager
+            .CreateAsync(identityRole);
+
+        if (!result.Succeeded)
+        {
+            ThrowIdentityExceptions(result.Errors);
+        }
+
+        return identityRole;
+    }
+
+    /// <inheritdoc />
+    public virtual async Task DeleteRoleAsync(string roleName, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(roleName);
+
+        var role = await this.roleManager
+            .FindByNameAsync(roleName);
+
+        if (role == null)
+        {
+            throw new NotFoundException(nameof(role));
+        }
+
+        var result = await this.roleManager
+            .DeleteAsync(role);
+
+        if (!result.Succeeded)
+        {
+            ThrowIdentityExceptions(result.Errors);
+        }
+    }
+
+    #endregion
+
+
+    #region Role Claims
+
+    /// <inheritdoc />
+    public virtual async Task<Claim?> GetRoleClaimAsync(GetRoleClaim<TIdentity> getClaim, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(getClaim);
+
+        var claims = await this.GetRoleClaimsAsync(getClaim.RoleId, cancellationToken);
+
+        return claims
+            .FirstOrDefault(x => x.Type == getClaim.ClaimType);
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<IEnumerable<Claim>> GetRoleClaimsAsync(TIdentity roleId, CancellationToken cancellationToken = default)
+    {
+        var identityRole = await this.roleManager
+            .GetIdentityRoleAsync(roleId, cancellationToken);
+
+        if (identityRole == null)
+        {
+            throw new NotFoundException(nameof(identityRole));
+        }
+
+        return await this.GetRoleClaimsAsync(identityRole, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<IEnumerable<Claim>> GetRoleClaimsAsync(IdentityRole<TIdentity> identityRole, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(identityRole);
+
+        var claims = await this.roleManager
+            .GetClaimsAsync(identityRole);
+
+        return claims;
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<IdentityRoleClaim<TIdentity>> AssignRoleClaimAsync(AssignRoleClaim<TIdentity> assignClaim, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(assignClaim);
+
+        var identityRole = await this.roleManager
+            .GetIdentityRoleAsync(assignClaim.RoleId, cancellationToken);
+
+        if (identityRole == null)
+        {
+            throw new NotFoundException(nameof(identityRole));
+        }
+
+        var roleClaim = new IdentityRoleClaim<TIdentity>
+        {
+            ClaimType = assignClaim.ClaimType,
+            ClaimValue = assignClaim.ClaimValue
+        };
+
+        var claim = roleClaim
+            .ToClaim();
+
+        var result = await this.roleManager
+            .AddClaimAsync(identityRole, claim);
+
+        if (!result.Succeeded)
+        {
+            ThrowIdentityExceptions(result.Errors);
+        }
+
+        return roleClaim;
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<IdentityRoleClaim<TIdentity>> ReplaceRoleClaimAsync(ReplaceRoleClaim<TIdentity> replaceClaim, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(replaceClaim);
+
+        var identityRole = await this.roleManager
+            .GetIdentityRoleAsync(replaceClaim.RoleId, cancellationToken);
+
+        if (identityRole == null)
+        {
+            throw new NotFoundException(nameof(identityRole));
+        }
+
+        var existingClaim = (await this.GetRoleClaimsAsync(replaceClaim.RoleId, cancellationToken))
+            .FirstOrDefault(x => x.Type == replaceClaim.ClaimType);
+
+        if (existingClaim == null)
+        {
+            throw new NotFoundException(nameof(existingClaim));
+        }
+
+        var result = await this.roleManager
+            .RemoveClaimAsync(identityRole, existingClaim);
+
+        if (!result.Succeeded)
+        {
+            ThrowIdentityExceptions(result.Errors);
+        }
+
+        var newClaim = new IdentityRoleClaim<TIdentity>
+        {
+            ClaimType = replaceClaim.ClaimType,
+            ClaimValue = replaceClaim.NewClaimValue
+        };
+
+        var claim = newClaim
+            .ToClaim();
+
+        result = await this.roleManager
+            .AddClaimAsync(identityRole, claim);
+
+        if (!result.Succeeded)
+        {
+            ThrowIdentityExceptions(result.Errors);
+        }
+
+        return newClaim;
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<IdentityRoleClaim<TIdentity>> AssignOrReplaceRoleClaimAsync(AssignOrReplaceRoleClaim<TIdentity> assignOrReplaceRoleClaim, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(assignOrReplaceRoleClaim);
+
+        var identityRole = await this.roleManager
+            .GetIdentityRoleAsync(assignOrReplaceRoleClaim.RoleId, cancellationToken);
+
+        if (identityRole == null)
+        {
+            throw new NotFoundException(nameof(identityRole));
+        }
+
+        var existingClaim = (await this.GetRoleClaimsAsync(identityRole.Id, cancellationToken))
+            .FirstOrDefault(x => x.Type == assignOrReplaceRoleClaim.ClaimType);
+
+        IdentityRoleClaim<TIdentity> newClaim;
+        if (existingClaim == null)
+        {
+            newClaim = await this.AssignRoleClaimAsync(new AssignRoleClaim<TIdentity>
+            {
+                RoleId = identityRole.Id,
+                ClaimType = assignOrReplaceRoleClaim.ClaimType,
+                ClaimValue = assignOrReplaceRoleClaim.ClaimValue
+            }, cancellationToken);
+        }
+        else
+        {
+            newClaim = await this.ReplaceRoleClaimAsync(new ReplaceRoleClaim<TIdentity>
+            {
+                RoleId = identityRole.Id,
+                ClaimType = assignOrReplaceRoleClaim.ClaimType,
+                NewClaimValue = assignOrReplaceRoleClaim.ClaimValue
+            }, cancellationToken);
+        }
+
+        return newClaim;
+    }
+
+    /// <inheritdoc />
+    public virtual async Task RemoveRoleClaimAsync(RemoveRoleClaim<TIdentity> removeClaim, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(removeClaim);
+
+        var identityRole = await this.roleManager
+            .GetIdentityRoleAsync(removeClaim.RoleId, cancellationToken);
+
+        if (identityRole == null)
+        {
+            throw new NotFoundException(nameof(identityRole));
+        }
+
+        var claims = await this.roleManager
+            .GetClaimsAsync(identityRole);
+
+        var claim = claims
+            .FirstOrDefault(x => x.Type == removeClaim.ClaimType);
+
+        if (claim == null)
+        {
+            throw new NotFoundException(nameof(claim));
+        }
+
+        var result = await this.roleManager
+            .RemoveClaimAsync(identityRole, claim);
+
+        if (!result.Succeeded)
+        {
+            ThrowIdentityExceptions(result.Errors);
+        }
+    }
+
+    #endregion
+
+
     #region Api Keys
 
     /// <inheritdoc />
@@ -1035,7 +1565,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
     }
 
     /// <inheritdoc />
-    public virtual IdentityApiKey<TIdentity> CreateApiKeyAsync(CreateApiKey<TIdentity> createApiKey, out string apiKey)
+    public virtual async Task<IdentityApiKeyCreated<TIdentity>> CreateApiKeyAsync(CreateApiKey<TIdentity> createApiKey, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(createApiKey);
 
@@ -1044,33 +1574,34 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
 
         if (identityUser == null)
         {
-            throw new NullReferenceException(nameof(identityUser));
+            throw new NotFoundException(nameof(identityUser));
         }
 
-        apiKey = SecurePasswordGenerator.Generate(new Microsoft.AspNetCore.Identity.PasswordOptions { RequiredLength = 48 });
+        var apiKey = SecurePasswordGenerator.Generate(new Microsoft.AspNetCore.Identity.PasswordOptions { RequiredLength = 48 });
 
         var secret = this.options.CurrentValue.Identity?.ApiKey?.Secret;
 
         if (secret == null)
         {
-            throw new NullReferenceException(secret);
+            throw new NotFoundException(nameof(secret));
         }
 
         var base64Hash = apiKey
             .HmacEncrypt(secret);
 
-        var identityApiKey = new IdentityApiKey<TIdentity>
+        var identityApiKey = new IdentityApiKeyCreated<TIdentity>
         {
             IdentityUserId = identityUser.Id,
             Name = createApiKey.Name,
-            Hash = base64Hash
+            Hash = base64Hash,
+            UnencryptedHash = apiKey
         };
 
         var createdEntry = this.dbContext
             .Add(identityApiKey);
 
-        this.dbContext
-            .SaveChanges();
+        await this.dbContext
+            .SaveChangesAsync(cancellationToken);
 
         return createdEntry.Entity;
     }
@@ -1085,7 +1616,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
 
         if (secret == null)
         {
-            throw new NullReferenceException(nameof(secret));
+            throw new NotFoundException(nameof(secret));
         }
 
         var base64Hash = apiKey
@@ -1160,556 +1691,15 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
     #endregion
 
 
-    #region Claims
-
-    /// <inheritdoc />
-    public virtual async Task<IList<Claim>> GetAllClaims(IdentityUserEx<TIdentity> identityUser, IEnumerable<string>? transientRoles = null, IDictionary<string, string>? transientClaims = null, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(identityUser);
-
-        transientRoles ??= new List<string>();
-        transientClaims ??= new Dictionary<string, string>();
-
-        var userClaims = await this.userManager
-            .GetClaimsAsync(identityUser);
-
-        var query = from userRole in this.dbContext.Set<IdentityUserRole<TIdentity>>()
-            join role in this.dbContext.Set<IdentityRole<TIdentity>>() on userRole.RoleId equals role.Id
-            where userRole.UserId.Equals(identityUser.Id)
-            select new
-            {
-                role.Id,
-                role.Name
-            };
-
-        var roles = await query
-            .ToListAsync(cancellationToken);
-
-        var roleClaims = await this.dbContext
-            .Set<IdentityRoleClaim<TIdentity>>()
-            .Where(x => roles
-                .Select(y => y.Id).Contains(x.RoleId))
-            .Select(x => new Claim(x.ClaimType!, x.ClaimValue ?? ""))
-            .ToListAsync(cancellationToken);
-
-        var rolesAsClaims = roles
-            .Select(x => new Claim(ClaimTypes.Role, x.Name))
-            .Concat(transientRoles.Select(x => new Claim(ClaimTypes.Role, x)));
-
-        var claims = userClaims
-            .Union(roleClaims)
-            .Union(rolesAsClaims)
-            .Union(transientClaims
-                .Select(x => new Claim(x.Key, x.Value)))
-            .ToList();
-
-        return claims;
-    }
-
-    /// <inheritdoc />
-    public virtual async Task<Claim?> GetUserClaimAsync(GetClaim<TIdentity> getClaim, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(getClaim);
-
-        var claims = await this.GetUserClaimsAsync(getClaim.UserId, cancellationToken);
-
-        return claims
-            .FirstOrDefault(x => x.Type == getClaim.ClaimType);
-    }
-
-    /// <inheritdoc />
-    public virtual async Task<IEnumerable<Claim>> GetUserClaimsAsync(TIdentity userId, CancellationToken cancellationToken = default)
-    {
-        var identityUser = await this.userManager
-            .GetIdentityUserAsync(userId, cancellationToken);
-
-        if (identityUser == null)
-        {
-            throw new NullReferenceException(nameof(identityUser));
-        }
-
-        return await this.GetUserClaimsAsync(identityUser, cancellationToken);
-    }
-
-    /// <inheritdoc />
-    public virtual async Task<IEnumerable<Claim>> GetUserClaimsAsync(IdentityUserEx<TIdentity> identityUser, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(identityUser);
-
-        return await this.userManager
-            .GetClaimsAsync(identityUser);
-    }
-
-    /// <inheritdoc />
-    public virtual async Task<IdentityUserClaim<TIdentity>> AssignUserClaimAsync(AssignUserClaim<TIdentity> assignUserClaim, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(assignUserClaim);
-
-        var identityUser = await this.userManager
-            .GetIdentityUserAsync(assignUserClaim.UserId, cancellationToken);
-
-        if (identityUser == null)
-        {
-            throw new NullReferenceException(nameof(identityUser));
-        }
-
-        var userClaim = new IdentityUserClaim<TIdentity>
-        {
-            ClaimType = assignUserClaim.ClaimType,
-            ClaimValue = assignUserClaim.ClaimValue
-        };
-
-        var claim = userClaim
-            .ToClaim();
-
-        var result = await this.userManager
-            .AddClaimAsync(identityUser, claim);
-
-        if (!result.Succeeded)
-        {
-            ThrowIdentityExceptions(result.Errors);
-        }
-
-        return userClaim;
-    }
-
-    /// <inheritdoc />
-    public virtual async Task<IdentityUserClaim<TIdentity>> ReplaceUserClaimAsync(ReplaceUserClaim<TIdentity> replaceUserClaim, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(replaceUserClaim);
-
-        var identityUser = await this.userManager
-            .GetIdentityUserAsync(replaceUserClaim.UserId, cancellationToken);
-
-        if (identityUser == null)
-        {
-            throw new NullReferenceException(nameof(identityUser));
-        }
-
-        var existingClaim = (await this.GetUserClaimsAsync(identityUser, cancellationToken))
-            .FirstOrDefault(x => x.Type == replaceUserClaim.ClaimType);
-
-        if (existingClaim == null)
-        {
-            throw new NullReferenceException(nameof(existingClaim));
-        }
-
-        var newClaim = new IdentityUserClaim<TIdentity>
-        {
-            ClaimType = replaceUserClaim.ClaimType,
-            ClaimValue = replaceUserClaim.NewClaimValue
-        };
-
-        var claim = newClaim
-            .ToClaim();
-
-        var result = await this.userManager
-            .ReplaceClaimAsync(identityUser, existingClaim, claim);
-
-        if (!result.Succeeded)
-        {
-            ThrowIdentityExceptions(result.Errors);
-        }
-
-        return newClaim;
-    }
-
-    /// <inheritdoc />
-    public virtual async Task<IdentityUserClaim<TIdentity>> AssignOrReplaceUserClaimAsync(AssignOrReplaceUserClaim<TIdentity> assignOrReplaceUserClaim, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(assignOrReplaceUserClaim);
-
-        var identityUser = await this.userManager
-            .GetIdentityUserAsync(assignOrReplaceUserClaim.UserId, cancellationToken);
-
-        if (identityUser == null)
-        {
-            throw new NullReferenceException(nameof(identityUser));
-        }
-
-        var existingClaim = (await this.GetUserClaimsAsync(identityUser, cancellationToken))
-            .FirstOrDefault(x => x.Type == assignOrReplaceUserClaim.ClaimType);
-
-        var newClaim = new IdentityUserClaim<TIdentity>
-        {
-            ClaimType = assignOrReplaceUserClaim.ClaimType,
-            ClaimValue = assignOrReplaceUserClaim.ClaimValue
-        };
-
-        var claim = newClaim
-            .ToClaim();
-
-        var result = existingClaim == null
-            ? await this.userManager
-                .AddClaimAsync(identityUser, claim)
-            : await this.userManager
-                .ReplaceClaimAsync(identityUser, existingClaim, claim);
-
-        if (!result.Succeeded)
-        {
-            ThrowIdentityExceptions(result.Errors);
-        }
-
-        return newClaim;
-    }
-
-    /// <inheritdoc />
-    public virtual async Task RemoveUserClaimAsync(RemoveUserClaim<TIdentity> removeUserClaim, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(removeUserClaim);
-
-        var identityUser = await this.userManager
-            .GetIdentityUserAsync(removeUserClaim.UserId, cancellationToken);
-
-        if (identityUser == null)
-        {
-            throw new NullReferenceException(nameof(identityUser));
-        }
-
-        var claims = await this.userManager
-            .GetClaimsAsync(identityUser);
-
-        var claim = claims
-            .FirstOrDefault(x => x.Type == removeUserClaim.ClaimType);
-
-        if (claim == null)
-        {
-            throw new NullReferenceException(nameof(claim));
-        }
-
-        var result = await this.userManager
-            .RemoveClaimAsync(identityUser, claim);
-
-        if (!result.Succeeded)
-        {
-            ThrowIdentityExceptions(result.Errors);
-        }
-    }
-
-    #endregion
-
-
-    #region Roles
-
-    /// <inheritdoc />
-    public virtual async Task<IEnumerable<IdentityRole<TIdentity>>> GetRolesAsync(CancellationToken cancellationToken = default)
-    {
-        var roles = this.roleManager.Roles
-            .OrderBy(x => x.Name);
-
-        return await Task.FromResult(roles);
-    }
-
-    /// <inheritdoc />
-    public virtual async Task<IdentityRole<TIdentity>> CreateRoleAsync(string roleName, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(roleName);
-
-        var identityRole = new IdentityRole<TIdentity>(roleName);
-
-        var result = await this.roleManager
-            .CreateAsync(identityRole);
-
-        if (!result.Succeeded)
-        {
-            ThrowIdentityExceptions(result.Errors);
-        }
-
-        return identityRole;
-    }
-
-    /// <inheritdoc />
-    public virtual async Task DeleteRoleAsync(string roleName, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(roleName);
-
-        var role = await this.roleManager
-            .FindByNameAsync(roleName);
-
-        if (role == null)
-        {
-            throw new NullReferenceException(nameof(role));
-        }
-
-        var result = await this.roleManager
-            .DeleteAsync(role);
-
-        if (!result.Succeeded)
-        {
-            ThrowIdentityExceptions(result.Errors);
-        }
-    }
-
-    /// <inheritdoc />
-    public virtual async Task<IEnumerable<string>> GetUserRolesAsync(TIdentity userId, CancellationToken cancellationToken = default)
-    {
-        var identityUser = await this.userManager
-            .GetIdentityUserAsync(userId, cancellationToken);
-
-        if (identityUser == null)
-        {
-            throw new NullReferenceException(nameof(identityUser));
-        }
-
-        return await this.GetUserRolesAsync(identityUser, cancellationToken);
-    }
-
-    /// <inheritdoc />
-    public virtual async Task<IEnumerable<string>> GetUserRolesAsync(IdentityUserEx<TIdentity> identityUser, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(identityUser);
-
-        return await this.userManager
-            .GetRolesAsync(identityUser);
-    }
-
-    /// <inheritdoc />
-    public virtual async Task AssignUserRoleAsync(AssignUserRole<TIdentity> assignUserRole, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(assignUserRole);
-
-        var identityUser = await this.userManager
-            .GetIdentityUserAsync(assignUserRole.UserId, cancellationToken);
-
-        if (identityUser == null)
-        {
-            throw new NullReferenceException(nameof(identityUser));
-        }
-
-        var result = await this.userManager
-            .AddToRoleAsync(identityUser, assignUserRole.RoleName);
-
-        if (!result.Succeeded)
-        {
-            ThrowIdentityExceptions(result.Errors);
-        }
-    }
-
-    /// <inheritdoc />
-    public virtual async Task RemoveUserRoleAsync(RemoveUserRole<TIdentity> removeUserRole, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(removeUserRole);
-
-        var identityUser = await this.userManager
-            .GetIdentityUserAsync(removeUserRole.UserId, cancellationToken);
-
-        if (identityUser == null)
-        {
-            throw new NullReferenceException(nameof(identityUser));
-        }
-
-        var result = await this.userManager
-            .RemoveFromRoleAsync(identityUser, removeUserRole.RoleName);
-
-        if (!result.Succeeded)
-        {
-            ThrowIdentityExceptions(result.Errors);
-        }
-    }
-
-    #endregion
-
-
-    #region Role Claims
-
-    /// <inheritdoc />
-    public virtual async Task<Claim?> GetRoleClaimAsync(GetRoleClaim<TIdentity> getClaim, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(getClaim);
-
-        var claims = await this.GetRoleClaimsAsync(getClaim.RoleId, cancellationToken);
-
-        return claims
-            .FirstOrDefault(x => x.Type == getClaim.ClaimType);
-    }
-
-    /// <inheritdoc />
-    public virtual async Task<IEnumerable<Claim>> GetRoleClaimsAsync(TIdentity roleId, CancellationToken cancellationToken = default)
-    {
-        var identityRole = await this.roleManager
-            .GetIdentityRoleAsync(roleId, cancellationToken);
-
-        if (identityRole == null)
-            throw new NullReferenceException(nameof(identityRole));
-
-        return await this.GetRoleClaimsAsync(identityRole, cancellationToken);
-    }
-
-    /// <inheritdoc />
-    public virtual async Task<IEnumerable<Claim>> GetRoleClaimsAsync(IdentityRole<TIdentity> identityRole, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(identityRole);
-
-        var claims = await this.roleManager
-            .GetClaimsAsync(identityRole);
-
-        return claims;
-    }
-
-    /// <inheritdoc />
-    public virtual async Task<IdentityRoleClaim<TIdentity>> AssignRoleClaimAsync(AssignRoleClaim<TIdentity> assignClaim, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(assignClaim);
-
-        var identityRole = await this.roleManager
-            .GetIdentityRoleAsync(assignClaim.RoleId, cancellationToken);
-
-        if (identityRole == null)
-        {
-            throw new NullReferenceException(nameof(identityRole));
-        }
-
-        var roleClaim = new IdentityRoleClaim<TIdentity>
-        {
-            ClaimType = assignClaim.ClaimType,
-            ClaimValue = assignClaim.ClaimValue
-        };
-
-        var claim = roleClaim
-            .ToClaim();
-
-        var result = await this.roleManager
-            .AddClaimAsync(identityRole, claim);
-
-        if (!result.Succeeded)
-        {
-            ThrowIdentityExceptions(result.Errors);
-        }
-
-        return roleClaim;
-    }
-
-    /// <inheritdoc />
-    public virtual async Task<IdentityRoleClaim<TIdentity>> ReplaceRoleClaimAsync(ReplaceRoleClaim<TIdentity> replaceClaim, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(replaceClaim);
-
-        var identityRole = await this.roleManager
-            .GetIdentityRoleAsync(replaceClaim.RoleId, cancellationToken);
-
-        if (identityRole == null)
-        {
-            throw new NullReferenceException(nameof(identityRole));
-        }
-
-        var existingClaim = (await this.GetRoleClaimsAsync(replaceClaim.RoleId, cancellationToken))
-            .FirstOrDefault(x => x.Type == replaceClaim.ClaimType);
-
-        if (existingClaim == null)
-        {
-            throw new NullReferenceException(nameof(existingClaim));
-        }
-
-        var result = await this.roleManager
-            .RemoveClaimAsync(identityRole, existingClaim);
-
-        if (!result.Succeeded)
-        {
-            ThrowIdentityExceptions(result.Errors);
-        }
-
-        var newClaim = new IdentityRoleClaim<TIdentity>
-        {
-            ClaimType = replaceClaim.ClaimType,
-            ClaimValue = replaceClaim.NewClaimValue
-        };
-
-        var claim = newClaim
-            .ToClaim();
-
-        result = await this.roleManager
-            .AddClaimAsync(identityRole, claim);
-
-        if (!result.Succeeded)
-        {
-            ThrowIdentityExceptions(result.Errors);
-        }
-
-        return newClaim;
-    }
-
-    /// <inheritdoc />
-    public virtual async Task<IdentityRoleClaim<TIdentity>> AssignOrReplaceRoleClaimAsync(AssignOrReplaceRoleClaim<TIdentity> assignOrReplaceRoleClaim, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(assignOrReplaceRoleClaim);
-
-        var identityRole = await this.roleManager
-            .GetIdentityRoleAsync(assignOrReplaceRoleClaim.RoleId, cancellationToken);
-
-        if (identityRole == null)
-        {
-            throw new NullReferenceException(nameof(identityRole));
-        }
-
-        var existingClaim = (await this.GetRoleClaimsAsync(identityRole.Id, cancellationToken))
-            .FirstOrDefault(x => x.Type == assignOrReplaceRoleClaim.ClaimType);
-
-        IdentityRoleClaim<TIdentity> newClaim;
-        if (existingClaim == null)
-        {
-            newClaim = await this.AssignRoleClaimAsync(new AssignRoleClaim<TIdentity>
-            {
-                RoleId = identityRole.Id,
-                ClaimType = assignOrReplaceRoleClaim.ClaimType,
-                ClaimValue = assignOrReplaceRoleClaim.ClaimValue
-            }, cancellationToken);
-        }
-        else
-        {
-            newClaim = await this.ReplaceRoleClaimAsync(new ReplaceRoleClaim<TIdentity>
-            {
-                RoleId = identityRole.Id,
-                ClaimType = assignOrReplaceRoleClaim.ClaimType,
-                NewClaimValue = assignOrReplaceRoleClaim.ClaimValue
-            }, cancellationToken);
-        }
-
-        return newClaim;
-    }
-
-    /// <inheritdoc />
-    public virtual async Task RemoveRoleClaimAsync(RemoveRoleClaim<TIdentity> removeClaim, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(removeClaim);
-
-        var identityRole = await this.roleManager
-            .GetIdentityRoleAsync(removeClaim.RoleId, cancellationToken);
-
-        if (identityRole == null)
-        {
-            throw new NullReferenceException(nameof(identityRole));
-        }
-
-        var claims = await this.roleManager
-            .GetClaimsAsync(identityRole);
-
-        var claim = claims
-            .FirstOrDefault(x => x.Type == removeClaim.ClaimType);
-
-        if (claim == null)
-        {
-            throw new NullReferenceException(nameof(claim));
-        }
-
-        var result = await this.roleManager
-            .RemoveClaimAsync(identityRole, claim);
-
-        if (!result.Succeeded)
-        {
-            ThrowIdentityExceptions(result.Errors);
-        }
-    }
-
-    #endregion
-
-
     private async Task<TUser> CreateUser<TUser>(TUser user, IdentityUserEx<TIdentity> identityUser, CancellationToken cancellationToken = default)
         where TUser : class, IEntityUser<TIdentity>
     {
         ArgumentNullException.ThrowIfNull(identityUser);
 
-        user.Id = identityUser.Id.Parse<TIdentity>();
-        user.IdentityUser = identityUser;
+        user.Id = identityUser.Id;
+
+        user.IdentityUser = this.dbContext
+            .Find<IdentityUserEx<TIdentity>>(identityUser.Id)!;
 
         try
         {
@@ -1727,6 +1717,55 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
         }
 
         return user;
+    }
+    private async Task CreateIdentityUser(IdentityUserEx<TIdentity> identityUser, string? password = null)
+    {
+        ArgumentNullException.ThrowIfNull(identityUser);
+
+        IdentityResult createResult;
+        try
+        {
+            createResult = password == null
+                ? await this.userManager.CreateAsync(identityUser)
+                : await this.userManager.CreateAsync(identityUser, password);
+        }
+        catch (DbUpdateException ex)
+        {
+            const string EMAIL_INDEX_NAME = "IX___EFIdentityUser_Email";
+            const string PHONE_NUMBER_INDEX_NAME = "IX___EFAuthUser_PhoneNumber";
+
+            if (ex.Message.Contains(EMAIL_INDEX_NAME) || (ex.InnerException != null && ex.InnerException.Message.Contains(EMAIL_INDEX_NAME)))
+            {
+                ThrowIdentityExceptions([new IdentityErrorDescriber().DuplicateEmail(identityUser.Email!)]);
+            }
+
+            if (ex.Message.Contains(PHONE_NUMBER_INDEX_NAME) || (ex.InnerException != null && ex.InnerException.Message.Contains(PHONE_NUMBER_INDEX_NAME)))
+            {
+                ThrowIdentityExceptions([new IdentityErrorDescriber().DuplicatePhoneNumber(identityUser.PhoneNumber!)]);
+            }
+
+            throw;
+        }
+
+        if (!createResult.Succeeded)
+        {
+            ThrowIdentityExceptions(createResult.Errors);
+        }
+    }
+    private async Task DeleteIdentityUser(IdentityUserEx<TIdentity> identityUser, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(identityUser);
+
+        var result = await this.userManager
+            .DeleteAsync(identityUser);
+
+        if (!result.Succeeded)
+        {
+            ThrowIdentityExceptions(result.Errors);
+        }
+
+        await this.dbContext
+            .SaveChangesAsync(cancellationToken);
     }
     private async Task AssignSignUpRolesAndClaims(IdentityUserEx<TIdentity> identityUser, IEnumerable<string>? roles = null, IDictionary<string, string>? claims = null)
     {
@@ -1762,21 +1801,6 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
                 ThrowIdentityExceptions(claimAssignResult.Errors);
             }
         }
-    }
-    private async Task DeleteIdentityUser(IdentityUserEx<TIdentity> identityUser, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(identityUser);
-
-        var result = await this.userManager
-            .DeleteAsync(identityUser);
-
-        if (!result.Succeeded)
-        {
-            ThrowIdentityExceptions(result.Errors);
-        }
-
-        await this.dbContext
-            .SaveChangesAsync(cancellationToken);
     }
 
     private static void ThrowIdentityExceptions(IEnumerable<IdentityError> errors)

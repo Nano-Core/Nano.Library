@@ -3,12 +3,12 @@ using Microsoft.Net.Http.Headers;
 using Nano.App.ApiClient.Config;
 using Nano.App.ApiClient.Requests.Auth;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
-using Nano.Data.Abstractions.Identity.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Nano.Data.Abstractions.Exceptions;
 
 namespace Nano.App.ApiClient;
 

@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Nano.App.Api.Mvc.Authentication.Consts;
+using Nano.App.Api.Mvc.Authorization.Consts;
 using Nano.App.Consts;
 using Nano.App.Extensions;
 

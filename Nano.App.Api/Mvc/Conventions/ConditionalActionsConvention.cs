@@ -153,7 +153,7 @@ public sealed class ConditionalActionsConvention : IControllerModelConvention
         ArgumentNullException.ThrowIfNull(controller);
 
         var isIdentityController = controller.ControllerType
-            .IsTypeOf(typeof(BaseIdentityController<,,,>));
+            .IsTypeOf(typeof(BaseIdentityController<,,>));
 
         if (!isIdentityController)
         {
@@ -168,12 +168,12 @@ public sealed class ConditionalActionsConvention : IControllerModelConvention
                 .AddRange(controller.Actions
                     .Where(x =>
                     {
-                        if (nameof(BaseIdentityController<,,,>.AddExternalLoginFacebookAsync).ReplaceAsync() == x.ActionName)
+                        if (nameof(BaseIdentityController<,,>.AddExternalLoginFacebookAsync).ReplaceAsync() == x.ActionName)
                         {
                             return true;
                         }
 
-                        if (nameof(BaseIdentityController<,,,>.SignUpExternalFacebookAsync).ReplaceAsync() == x.ActionName)
+                        if (nameof(BaseIdentityController<,,>.SignUpExternalFacebookAsync).ReplaceAsync() == x.ActionName)
                         {
                             return true;
                         }
@@ -188,12 +188,12 @@ public sealed class ConditionalActionsConvention : IControllerModelConvention
                 .AddRange(controller.Actions
                     .Where(x =>
                     {
-                        if (nameof(BaseIdentityController<,,,>.AddExternalLoginGoogleAsync).ReplaceAsync() == x.ActionName)
+                        if (nameof(BaseIdentityController<,,>.AddExternalLoginGoogleAsync).ReplaceAsync() == x.ActionName)
                         {
                             return true;
                         }
 
-                        if (nameof(BaseIdentityController<,,,>.SignUpExternalGoogleAsync).ReplaceAsync() == x.ActionName)
+                        if (nameof(BaseIdentityController<,,>.SignUpExternalGoogleAsync).ReplaceAsync() == x.ActionName)
                         {
                             return true;
                         }
@@ -208,12 +208,12 @@ public sealed class ConditionalActionsConvention : IControllerModelConvention
                 .AddRange(controller.Actions
                     .Where(x =>
                     {
-                        if (nameof(BaseIdentityController<,,,>.AddExternalLoginMicrosoftAsync).ReplaceAsync() == x.ActionName)
+                        if (nameof(BaseIdentityController<,,>.AddExternalLoginMicrosoftAsync).ReplaceAsync() == x.ActionName)
                         {
                             return true;
                         }
 
-                        if (nameof(BaseIdentityController<,,,>.SignUpExternalMicrosoftAsync).ReplaceAsync() == x.ActionName)
+                        if (nameof(BaseIdentityController<,,>.SignUpExternalMicrosoftAsync).ReplaceAsync() == x.ActionName)
                         {
                             return true;
                         }
@@ -228,22 +228,22 @@ public sealed class ConditionalActionsConvention : IControllerModelConvention
                 .AddRange(controller.Actions
                     .Where(x =>
                     {
-                        if (nameof(BaseIdentityController<,,,>.GetApiKeysAsync).ReplaceAsync() == x.ActionName)
+                        if (nameof(BaseIdentityController<,,>.GetApiKeysAsync).ReplaceAsync() == x.ActionName)
                         {
                             return true;
                         }
 
-                        if (nameof(BaseIdentityController<,,,>.CreateApiKeyAsync).ReplaceAsync() == x.ActionName)
+                        if (nameof(BaseIdentityController<,,>.CreateApiKeyAsync).ReplaceAsync() == x.ActionName)
                         {
                             return true;
                         }
 
-                        if (nameof(BaseIdentityController<,,,>.EditApiKeyAsync).ReplaceAsync() == x.ActionName)
+                        if (nameof(BaseIdentityController<,,>.EditApiKeyAsync).ReplaceAsync() == x.ActionName)
                         {
                             return true;
                         }
 
-                        if (nameof(BaseIdentityController<,,,>.RevokeApiKeyAsync).ReplaceAsync() == x.ActionName)
+                        if (nameof(BaseIdentityController<,,>.RevokeApiKeyAsync).ReplaceAsync() == x.ActionName)
                         {
                             return true;
                         }

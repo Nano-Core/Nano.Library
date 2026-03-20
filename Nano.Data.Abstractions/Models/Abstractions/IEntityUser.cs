@@ -7,7 +7,7 @@ namespace Nano.Data.Abstractions.Models.Abstractions;
 /// Represents an entity associated with a user.
 /// </summary>
 /// <typeparam name="TIdentity">The type of the identity key.</typeparam>
-public interface IEntityUser<TIdentity> : IEntityIdentity<TIdentity>
+public interface IEntityUser<TIdentity> : IEntityIdentity<TIdentity>, IEntityUpdatable, IEntityDeletable
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>

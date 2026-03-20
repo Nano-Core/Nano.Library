@@ -31,9 +31,9 @@ public static class BuiltInUserRoles
     public const string WRITER = "writer";
 
     /// <summary>
-    /// Role for identity management (alias for reader).
+    /// Role for identity management.
     /// </summary>
-    public const string IDENTITY = "reader";
+    public const string IDENTITY = "identity";
 
     /// <summary>
     /// Role for full administrative access.

@@ -1,7 +1,3 @@
-using System;
-using System.IO;
-using System.Linq;
-using System.Xml;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.DependencyInjection;
@@ -15,6 +11,11 @@ using Nano.Common.Consts;
 using Nano.Common.Extensions;
 using Nano.Data.Abstractions.Identity.Authentication.Consts;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System;
+using System.IO;
+using System.Linq;
+using System.Xml;
+using Nano.App.Api.Mvc.Documentation.Filters.Operation;
 
 namespace Nano.App.Api.Mvc.Documentation;
 
@@ -85,6 +86,12 @@ internal class ConfigureSwaggerOptions(IOptionsMonitor<ApiOptions> apiOptions, I
 
         options
             .DocumentFilter<RemoveVersionsRoutesFilter>();
+
+        options
+            .OperationFilter<ReplaceEntityResponseTypeFilter>();
+
+        options
+            .OperationFilter<ReplaceIdentityResponseTypeGenericFilter>();
     }
 
 

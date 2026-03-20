@@ -17,13 +17,8 @@ internal static class UserManagerExtensions
         var userIdString = userId
             .ToString();
 
-        if (userIdString == null)
-        {
-            throw new NullReferenceException(nameof(userIdString));
-        }
-
         return userManager
-            .FindByIdAsync(userIdString);
+            .FindByIdAsync(userIdString!);
     }
 
     internal static Task<IdentityUserEx<TIdentity>?> FindByPhoneNumberAsync<TIdentity>(this UserManager<IdentityUserEx<TIdentity>> userManager, string phoneNumber)

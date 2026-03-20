@@ -7,12 +7,12 @@ using Nano.App.Api.Mvc.HealthChecks.Const;
 using Nano.App.Consts;
 using Nano.App.Exceptions;
 using Nano.App.Extensions;
-using Nano.Data.Abstractions.Identity.Exceptions;
 using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Nano.Data.Abstractions.Exceptions;
 using Vivet.AspNetCore.RequestVirusScan.Exceptions;
 
 namespace Nano.App.Api.Mvc.Middleware;
@@ -52,6 +52,10 @@ public sealed class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddlew
         try
         {
             await next(httpContext);
+        }
+        catch (NotFoundException)
+        {
+            httpContext.Response.StatusCode = (int)HttpStatusCode.NotFound;
         }
         catch (VirusScanException ex)
         {
@@ -127,6 +131,16 @@ public sealed class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddlew
             problemDetails.Type = "https://datatracker.ietf.org/doc/html/rfc9110-15.6.1#name-500-internal-server-error";
             problemDetails.Status = (int)HttpStatusCode.InternalServerError;
             problemDetails.Title = "Internal Server Error";
+
+            if (ex.InnerException != null)
+            {
+                if (ex.InnerException is BadRequestException || ex.InnerException is IdentityException)
+                {
+                    problemDetails.Type = "https://datatracker.ietf.org/doc/html/rfc9110-15.6.1#name-400-bad-request";
+                    problemDetails.Status = (int)HttpStatusCode.BadRequest;
+                    problemDetails.Title = "Bad Request";
+                }
+            }
         }
         catch (Exception ex)
         {

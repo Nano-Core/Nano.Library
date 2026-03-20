@@ -3,7 +3,6 @@ using Nano.Data.Abstractions.Identity;
 using Nano.Data.Abstractions.Identity.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Nano.Data.Abstractions.Identity.Consts;
-using Nano.Data.Abstractions.Identity.Exceptions;
 using Nano.Data.Abstractions.Identity.Extensions;
 using Nano.Data.Abstractions.Identity.Models;
 using System;
@@ -13,6 +12,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
+using Nano.Data.Abstractions.Exceptions;
 
 namespace Nano.Data.Identity.Authentication;
 

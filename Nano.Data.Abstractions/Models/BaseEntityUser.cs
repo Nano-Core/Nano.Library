@@ -1,7 +1,8 @@
-using System;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Nano.Data.Abstractions.Annotations;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Data.Abstractions.Models.Identity;
+using System;
 
 namespace Nano.Data.Abstractions.Models;
 
@@ -27,9 +28,10 @@ public abstract class BaseEntityUser<TIdentity> : BaseEntity<TIdentity>, IEntity
 {
     /// <summary>
     /// The associated identity user.
-    /// Marked with <see cref="IncludeAttribute"/> for EF include and <see cref="RequestIgnoreAttribute"/> to ignore during requests.
+    /// Marked with <see cref="IncludeAttribute"/> for EF include and <see cref="SwaggerRequestIgnoreAttribute"/> to ignore during requests.
     /// </summary>
     [Include]
-    [RequestIgnore]
+    [ValidateNever]
+    [SwaggerRequestIgnore]
     public virtual IdentityUserEx<TIdentity> IdentityUser { get; set; } = null!;
 }

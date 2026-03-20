@@ -3,10 +3,10 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Nano.App.Api.Config;
+using Nano.Data.Abstractions.Exceptions;
 using Nano.Data.Abstractions.Identity.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Consts;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
-using Nano.Data.Abstractions.Identity.Exceptions;
 using Newtonsoft.Json;
 
 namespace Nano.App.Api.Mvc.Authentication;
@@ -22,10 +22,6 @@ public class AuthExternalFacebookRepository(FacebookOptions options, HttpClient 
     public virtual async Task<ExternalLogInData> Authenticate(ExternalLoginProviderFacebook provider, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(provider);
-
-        if (options == null)
-            throw new ArgumentNullException(nameof(options));
-
 
         switch (provider)
         {

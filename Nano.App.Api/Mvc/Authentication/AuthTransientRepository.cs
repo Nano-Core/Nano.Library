@@ -6,9 +6,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Nano.App.Api.Config;
 using Nano.App.Api.Mvc.Authentication.Abstractions;
+using Nano.Data.Abstractions.Exceptions;
 using Nano.Data.Abstractions.Identity.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
-using Nano.Data.Abstractions.Identity.Exceptions;
 
 namespace Nano.App.Api.Mvc.Authentication;
 

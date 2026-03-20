@@ -5,10 +5,10 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Nano.App.Api.Config;
+using Nano.Data.Abstractions.Exceptions;
 using Nano.Data.Abstractions.Identity.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Consts;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
-using Nano.Data.Abstractions.Identity.Exceptions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -25,9 +25,6 @@ public class AuthExternalMicrosoftRepository(MicrosoftOptions options, HttpClien
     public virtual async Task<ExternalLogInData> Authenticate(ExternalLoginProviderMicrosoft provider, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(provider);
-
-        if (options == null)
-            throw new ArgumentNullException(nameof(options));
 
         var tokenHandler = new JwtSecurityTokenHandler();
 

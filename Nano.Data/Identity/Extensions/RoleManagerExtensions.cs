@@ -13,12 +13,7 @@ internal static class RoleManagerExtensions
         ArgumentNullException.ThrowIfNull(roleManager);
 
         var roleIdString = roleId
-            .ToString();
-
-        if (roleIdString == null)
-        {
-            throw new NullReferenceException(nameof(roleIdString));
-        }
+            .ToString()!;
 
         return roleManager
             .FindByIdAsync(roleIdString);

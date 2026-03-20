@@ -17,26 +17,6 @@ internal static class AuditEntryExtensions
         var entityKey = auditEntry.Entry
             .GetKeyValue<TIdentity>();
 
-        var entityType = auditEntry.Entry.Entity
-            .GetType();
-
-        if (entityType.IsGenericType)
-        {
-            var genericType = entityType
-                .GetGenericTypeDefinition();
-
-            if (genericType == typeof(IdentityUserLogin<>) || genericType == typeof(IdentityUserClaim<>) || genericType == typeof(IdentityRoleClaim<>))
-            {
-                entityKey = auditEntry.Entry.Entity switch
-                {
-                    IdentityUserLogin<TIdentity> userLogin => userLogin.UserId,
-                    IdentityUserClaim<TIdentity> userClaim => userClaim.UserId,
-                    IdentityRoleClaim<TIdentity> roleClaim => roleClaim.RoleId,
-                    _ => entityKey
-                };
-            }
-        }
-
         return entityKey!;
     }
 

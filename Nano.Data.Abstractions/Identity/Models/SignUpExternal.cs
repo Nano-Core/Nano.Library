@@ -1,6 +1,7 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using Nano.Common.Annotations;
 using Nano.Data.Abstractions.Models.Abstractions;
+using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Data.Abstractions.Identity.Models;
 
@@ -23,6 +24,12 @@ public class SignUpExternal<TUser, TIdentity> : BaseSignUp<TUser, TIdentity>
     [Required]
     [EmailAddress]
     public virtual string Email { get; set; } = null!;
+
+    /// <summary>
+    /// The user's phone number (optional, international format supported).
+    /// </summary>
+    [InternationalPhone]
+    public virtual string? PhoneNumber { get; set; }
 
     /// <summary>
     /// The external provider information.

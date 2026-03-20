@@ -1,3 +1,4 @@
+using Nano.Common.Annotations;
 using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Data.Abstractions.Identity.Authentication.Models;
@@ -26,6 +27,12 @@ public class ExternalLogInData
     [Required]
     [MaxLength(256)]
     public virtual string Email { get; set; } = null!;
+
+    /// <summary>
+    /// The user's phone number (optional, international format supported).
+    /// </summary>
+    [InternationalPhone]
+    public virtual string? PhoneNumber { get; set; }
 
     /// <summary>
     /// The authentication tokens associated with the external login.
