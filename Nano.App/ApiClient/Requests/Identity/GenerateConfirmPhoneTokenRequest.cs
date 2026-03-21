@@ -1,7 +1,6 @@
 ﻿using Nano.App.ApiClient.Annotations;
 using Nano.App.ApiClient.Annotations.Actions;
 using Nano.App.Consts;
-using Nano.Data.Abstractions.Identity.Models;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -19,9 +18,9 @@ public class GenerateConfirmPhoneTokenRequest<TIdentity> : BaseRequest
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// The confirm phone token information.
+    /// The user id.
     /// </summary>
     [Required]
-    [Body]
-    public virtual GenerateConfirmPhoneToken<TIdentity> ConfirmPhoneToken { get; set; } = new();
+    [Route]
+    public virtual TIdentity Id { get; set; } = default!;
 }

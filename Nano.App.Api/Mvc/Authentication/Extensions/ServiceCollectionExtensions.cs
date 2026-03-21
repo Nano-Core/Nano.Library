@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
@@ -10,7 +9,6 @@ using Nano.Data.Abstractions.Identity.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Consts;
 using System;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Net.Http;
 using AuthenticationOptions = Nano.App.Api.Config.AuthenticationOptions;
 
@@ -18,14 +16,9 @@ namespace Nano.App.Api.Mvc.Authentication.Extensions;
 
 internal static class ServiceCollectionExtensions
 {
-    internal static IServiceCollection AddNanoAuthentication(this IServiceCollection services, AuthenticationOptions? options = null)
+    internal static IServiceCollection AddNanoAuthentication(this IServiceCollection services, AuthenticationOptions options)
     {
         ArgumentNullException.ThrowIfNull(services);
-
-        if (options == null)
-        {
-            return services;
-        }
 
         JwtSecurityTokenHandler.DefaultInboundClaimTypeMap
             .Clear();
@@ -33,48 +26,24 @@ internal static class ServiceCollectionExtensions
         services
             .AddAuthentication(x =>
             {
-                x.DefaultScheme ??= AuthenticationSchemes.JWT_OR_API_KEY;
-                x.DefaultAuthenticateScheme ??= AuthenticationSchemes.JWT_OR_API_KEY;
-                x.DefaultChallengeScheme ??= AuthenticationSchemes.JWT_OR_API_KEY;
-                x.DefaultForbidScheme ??= AuthenticationSchemes.JWT_OR_API_KEY;
-                x.DefaultSignInScheme ??= AuthenticationSchemes.JWT_OR_API_KEY;
-                x.DefaultSignOutScheme ??= AuthenticationSchemes.JWT_OR_API_KEY;
+                x.DefaultScheme ??= AuthenticationSchemes.DYNAMIC_SCHEME;
             })
             .AddJwtAuthentication(options.Jwt)
-            .AddPolicyScheme(AuthenticationSchemes.JWT_OR_API_KEY, "JWT or API Key", x =>
+            .AddPolicyScheme(AuthenticationSchemes.DYNAMIC_SCHEME, "Dynamic API Scheme", x =>
             {
                 x.ForwardDefaultSelector = context =>
                 {
-                    var schemeProvider = context.RequestServices
-                        .GetRequiredService<IAuthenticationSchemeProvider>();
-
-                    var schemes = schemeProvider
-                        .GetAllSchemesAsync()
-                        .GetAwaiter()
-                        .GetResult()
-                        .ToArray();
-
-                    var hasJwt = schemes
-                        .Any(s => s.Name == AuthenticationSchemes.JWT);
-
-                    var hasApiKey = schemes
-                        .Any(s => s.Name == AuthenticationSchemes.API_KEY);
-
-                    if (hasJwt && context.Request.Headers.ContainsKey(HeaderNames.Authorization))
+                    if (context.Request.Headers.ContainsKey(HeaderNames.Authorization))
                     {
                         return AuthenticationSchemes.JWT;
                     }
 
-                    if (hasApiKey && context.Request.Headers.ContainsKey(NanoHeaderNames.X_API_KEY))
+                    if (context.Request.Headers.ContainsKey(NanoHeaderNames.X_API_KEY))
                     {
                         return AuthenticationSchemes.API_KEY;
                     }
 
-                    return hasJwt
-                        ? AuthenticationSchemes.JWT
-                        : hasApiKey
-                            ? AuthenticationSchemes.API_KEY
-                            : null;
+                    return null;
                 };
             });
 
@@ -109,7 +78,7 @@ internal static class ServiceCollectionExtensions
                 var apiOptions = x
                     .GetRequiredService<IOptionsMonitor<ApiOptions>>();
 
-                var jwtAuthenticationOptions = apiOptions.CurrentValue.Authentication?.Jwt;
+                var jwtAuthenticationOptions = apiOptions.CurrentValue.Authentication.Jwt;
 
                 return jwtAuthenticationOptions == null
                     ? throw new NullReferenceException(nameof(jwtAuthenticationOptions))
@@ -133,7 +102,7 @@ internal static class ServiceCollectionExtensions
                 var apiOptions = x
                     .GetRequiredService<IOptionsMonitor<ApiOptions>>();
 
-                var logInRootOptions = apiOptions.CurrentValue.Authentication?.Jwt?.RootLogin;
+                var logInRootOptions = apiOptions.CurrentValue.Authentication.Jwt?.RootLogin;
 
                 if (logInRootOptions == null)
                 {
@@ -163,7 +132,7 @@ internal static class ServiceCollectionExtensions
                 var apiOptions = x
                     .GetRequiredService<IOptionsMonitor<ApiOptions>>();
 
-                var externalLoginsOptions = apiOptions.CurrentValue.Authentication?.Jwt?.ExternalLogins;
+                var externalLoginsOptions = apiOptions.CurrentValue.Authentication.Jwt?.ExternalLogins;
 
                 if (externalLoginsOptions == null)
                 {
@@ -229,7 +198,7 @@ internal static class ServiceCollectionExtensions
                 var apiOptions = x
                     .GetRequiredService<IOptionsMonitor<ApiOptions>>();
 
-                var facebookOptions = apiOptions.CurrentValue.Authentication?.Jwt?.ExternalLogins.Facebook;
+                var facebookOptions = apiOptions.CurrentValue.Authentication.Jwt?.ExternalLogins.Facebook;
 
                 if (facebookOptions == null)
                 {
@@ -262,7 +231,7 @@ internal static class ServiceCollectionExtensions
                 var apiOptions = x
                     .GetRequiredService<IOptionsMonitor<ApiOptions>>();
 
-                var googleOptions = apiOptions.CurrentValue.Authentication?.Jwt?.ExternalLogins.Google;
+                var googleOptions = apiOptions.CurrentValue.Authentication.Jwt?.ExternalLogins.Google;
 
                 return googleOptions == null ? throw new NullReferenceException(nameof(googleOptions)) : new AuthExternalGoogleRepository(googleOptions);
             });
@@ -287,7 +256,7 @@ internal static class ServiceCollectionExtensions
                 var apiOptions = x
                     .GetRequiredService<IOptionsMonitor<ApiOptions>>();
 
-                var microsoftOptions = apiOptions.CurrentValue.Authentication?.Jwt?.ExternalLogins.Microsoft;
+                var microsoftOptions = apiOptions.CurrentValue.Authentication.Jwt?.ExternalLogins.Microsoft;
 
                 if (microsoftOptions == null)
                 {

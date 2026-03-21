@@ -1,5 +1,4 @@
 ﻿using Nano.Data.Abstractions.Identity.Models;
-using System;
 using System.ComponentModel.DataAnnotations;
 using Nano.App.ApiClient.Annotations;
 using Nano.App.ApiClient.Annotations.Actions;
@@ -18,5 +17,5 @@ public class SetPasswordRequest : BaseRequest
     /// </summary>
     [Required]
     [Body]
-    public virtual SetPassword<Guid> SetPassword { get; set; } = new();
+    public virtual SetPassword SetPassword { get; set; } = new();
 }

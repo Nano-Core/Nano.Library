@@ -23,5 +23,5 @@ public class ResetPasswordRequest<TIdentity> : BaseRequest
     /// </summary>
     [Required]
     [Body]
-    public virtual ResetPassword<TIdentity> ResetPassword { get; set; } = new();
+    public virtual ResetPassword ResetPassword { get; set; } = new();
 }

@@ -23,5 +23,5 @@ public class ConfirmPhoneRequest<TIdentity> : BaseRequest
     /// </summary>
     [Required]
     [Body]
-    public virtual ConfirmPhoneNumber<TIdentity> ConfirmPhone { get; set; } = new();
+    public virtual ConfirmPhoneNumber ConfirmPhone { get; set; } = new();
 }

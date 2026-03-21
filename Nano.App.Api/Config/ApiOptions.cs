@@ -73,5 +73,5 @@ public class ApiOptions : BaseAppOptions
     /// <summary>
     /// Authentication-related options.
     /// </summary>
-    public virtual AuthenticationOptions? Authentication { get; set; }
+    public virtual AuthenticationOptions Authentication { get; set; } = new();
 }

@@ -17,7 +17,7 @@ public static class AuthenticationSchemes
     public const string API_KEY = "ApiKey";
 
     /// <summary>
-    /// Combined scheme that allows either JWT or API key authentication.
+    /// Combined scheme that allows either JWT, API key or custom authentication.
     /// </summary>
-    public const string JWT_OR_API_KEY = "JwtOrApiKey";
+    public const string DYNAMIC_SCHEME = "DynamicScheme";
 }

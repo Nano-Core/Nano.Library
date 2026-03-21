@@ -22,6 +22,6 @@ public class GenerateConfirmEmailTokenRequest<TIdentity> : BaseRequest
     /// The confirm email token information.
     /// </summary>
     [Required]
-    [Body]
-    public virtual GenerateConfirmEmailToken<TIdentity> ConfirmEmailToken { get; set; } = new();
+    [Route(Order = 0)]
+    public virtual TIdentity Id { get; set; } = default!;
 }

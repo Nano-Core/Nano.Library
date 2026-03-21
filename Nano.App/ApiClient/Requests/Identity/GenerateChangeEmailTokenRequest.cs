@@ -23,5 +23,5 @@ public class GenerateChangeEmailTokenRequest<TIdentity> : BaseRequest
     /// </summary>
     [Required]
     [Body]
-    public virtual GenerateChangeEmailToken<TIdentity> ChangeEmailToken { get; set; } = new();
+    public virtual GenerateChangeEmailToken ChangeEmailToken { get; set; } = new();
 }

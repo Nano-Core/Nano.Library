@@ -3,22 +3,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Data.Abstractions.Identity.Models;
 
-/// <inheritdoc />
-public class ChangePassword : ChangePassword<Guid>;
-
 /// <summary>
 /// Represents a request to change a user's password.
 /// </summary>
-/// <typeparam name="TIdentity">The identity key type.</typeparam>
-public class ChangePassword<TIdentity>
-    where TIdentity : IEquatable<TIdentity>
+public class ChangePassword
 {
-    /// <summary>
-    /// The identifier of the user whose password is being changed.
-    /// </summary>
-    [Required]
-    public virtual TIdentity UserId { get; set; } = default!;
-
     /// <summary>
     /// The user's current password.
     /// </summary>

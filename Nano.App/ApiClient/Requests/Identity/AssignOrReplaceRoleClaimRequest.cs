@@ -23,5 +23,5 @@ public class AssignOrReplaceRoleClaimRequest<TIdentity> : BaseRequest
     /// </summary>
     [Required]
     [Body]
-    public virtual AssignOrReplaceRoleClaim<TIdentity> AssignOrReplaceRoleClaim { get; set; } = new();
+    public virtual AssignOrReplaceRoleClaim AssignOrReplaceRoleClaim { get; set; } = new();
 }

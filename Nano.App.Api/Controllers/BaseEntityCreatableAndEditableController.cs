@@ -1,18 +1,21 @@
+using DynamicExpression.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Nano.App.Api.Mvc.Authorization.Consts;
+using Nano.App.ApiClient.Requests.Models;
+using Nano.App.Consts;
+using Nano.Common.Consts;
+using Nano.Data.Abstractions;
+using Nano.Data.Abstractions.Identity.Consts;
+using Nano.Data.Abstractions.Models.Abstractions;
+using Nano.Eventing.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using DynamicExpression.Interfaces;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Nano.App.ApiClient.Requests.Models;
-using Nano.App.Consts;
-using Nano.Common.Consts;
-using Nano.Data.Abstractions;
-using Nano.Data.Abstractions.Models.Abstractions;
-using Nano.Eventing.Abstractions;
 
 namespace Nano.App.Api.Controllers;
 
@@ -57,6 +60,7 @@ public abstract class BaseEntityCreatableAndEditableController<TEntity, TIdentit
     /// <response code="500">Internal server error.</response>
     [HttpPost]
     [Route(ActionRoutes.CREATE_OR_EDIT)]
+    [Authorize(Policy = AuthorizationPolicies.ADD_OR_EDIT)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
@@ -88,6 +92,7 @@ public abstract class BaseEntityCreatableAndEditableController<TEntity, TIdentit
     [HttpPut]
     [HttpPost]
     [Route(ActionRoutes.EDIT)]
+    [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.EDITOR)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
@@ -119,6 +124,7 @@ public abstract class BaseEntityCreatableAndEditableController<TEntity, TIdentit
     [HttpPut]
     [HttpPost]
     [Route(ActionRoutes.EDIT_GET)]
+    [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.EDITOR)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
@@ -149,6 +155,7 @@ public abstract class BaseEntityCreatableAndEditableController<TEntity, TIdentit
     [HttpPut]
     [HttpPost]
     [Route(ActionRoutes.EDIT_MANY)]
+    [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.EDITOR)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -179,6 +186,7 @@ public abstract class BaseEntityCreatableAndEditableController<TEntity, TIdentit
     [HttpPut]
     [HttpPost]
     [Route(ActionRoutes.EDIT_MANY_BULK)]
+    [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.EDITOR)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -206,6 +214,7 @@ public abstract class BaseEntityCreatableAndEditableController<TEntity, TIdentit
     [HttpPut]
     [HttpPost]
     [Route(ActionRoutes.EDIT_QUERY)]
+    [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.EDITOR)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -235,6 +244,7 @@ public abstract class BaseEntityCreatableAndEditableController<TEntity, TIdentit
     [HttpPut]
     [HttpPost]
     [Route(ActionRoutes.EDIT_QUERY_BULK)]
+    [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.EDITOR)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]

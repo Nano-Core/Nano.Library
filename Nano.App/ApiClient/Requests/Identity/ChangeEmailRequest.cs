@@ -23,7 +23,7 @@ public class ChangeEmailRequest<TIdentity> : BaseRequest
     /// </summary>
     [Required]
     [Body]
-    public virtual ChangeEmail<TIdentity> ChangeEmail { get; set; } = new();
+    public virtual ChangeEmail ChangeEmail { get; set; } = new();
 
     /// <summary>
     /// Indicates whether to also set the username when changing email.

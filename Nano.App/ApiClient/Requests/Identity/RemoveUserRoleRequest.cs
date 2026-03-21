@@ -23,5 +23,5 @@ public class RemoveUserRoleRequest<TIdentity> : BaseRequest
     /// </summary>
     [Required]
     [Body]
-    public virtual RemoveUserRole<TIdentity> RemoveUserRole { get; set; } = new();
+    public virtual RemoveUserRole RemoveUserRole { get; set; } = new();
 }

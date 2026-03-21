@@ -1,11 +1,9 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Nano.App.Api.Mvc.Authorization;
 
@@ -34,23 +32,17 @@ public class OptionalAuthorizationMiddlewareResultHandler : IAuthorizationMiddle
         ArgumentNullException.ThrowIfNull(policy);
         ArgumentNullException.ThrowIfNull(authorizeResult);
 
-        var schemes = context.RequestServices
-            .GetRequiredService<IAuthenticationSchemeProvider>()
-            .GetAllSchemesAsync()
-            .GetAwaiter()
-            .GetResult();
+        var authResult = await context
+            .AuthenticateAsync();
 
-        // BUG: AUTH: Also we don't have any claims in database after signup, is that righth? Check what the JWT token contains
-
-        // BUG: AUTH: Look into this. We get schemes i don't think i care about.
-        //if (!schemes.Any())
-        //{
+        if (authResult.None)
+        {
             await next(context);
 
             return;
-        //}
+        }
 
-        //await this.authorizationMiddlewareResultHandler
-        //    .HandleAsync(next, context, policy, authorizeResult);
+        await this.authorizationMiddlewareResultHandler
+            .HandleAsync(next, context, policy, authorizeResult);
     }
 }

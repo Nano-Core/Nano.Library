@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Nano.App.ApiClient.Config;
 using Nano.App.ApiClient.Requests;
+using Nano.Data.Abstractions.Exceptions;
 using Nano.Data.Abstractions.Models.Abstractions;
 using System;
 using System.Collections.Generic;
@@ -227,7 +228,7 @@ public abstract class BaseEntityApi<TIdentity> : BaseApi
 
         var entityCreated = await this.InvokeAsync<CreateRequest, TEntity>(request, cancellationToken);
 
-        return entityCreated ?? throw new NullReferenceException(nameof(entityCreated));
+        return entityCreated ?? throw new NotFoundException(nameof(entityCreated));
     }
 
     /// <summary>
@@ -245,7 +246,7 @@ public abstract class BaseEntityApi<TIdentity> : BaseApi
 
         var entityCreated = await this.InvokeAsync<CreateAndGetRequest, TEntity>(request, cancellationToken);
 
-        return entityCreated ?? throw new NullReferenceException(nameof(entityCreated));
+        return entityCreated ?? throw new NotFoundException(nameof(entityCreated));
     }
 
     /// <summary>

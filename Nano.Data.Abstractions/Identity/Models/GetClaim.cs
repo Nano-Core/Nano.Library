@@ -14,12 +14,6 @@ public class GetClaim<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// The identifier of the user.
-    /// </summary>
-    [Required]
-    public virtual TIdentity UserId { get; set; } = default!;
-
-    /// <summary>
     /// The type of claim to retrieve.
     /// </summary>
     [Required]

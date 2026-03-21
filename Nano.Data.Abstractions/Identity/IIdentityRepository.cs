@@ -136,35 +136,38 @@ public interface IIdentityRepository<TIdentity>
     /// <summary>
     /// Updates the username of the specified user.
     /// </summary>
-    /// <param name="setUsername">The <see cref="SetUsername{TIdentity}"/> request containing the user id and new username.</param>
+    /// <param name="id">The id of the user.</param>
+    /// <param name="setUsername">The <see cref="SetUsername"/> request containing the user id and new username.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="setUsername"/> is <c>null</c>.</exception>
     /// <exception cref="NullReferenceException">Thrown if the user cannot be found.</exception>
     /// <exception cref="IdentityException">Thrown if setting the username fails.</exception>
-    Task SetUsernameAsync(SetUsername<TIdentity> setUsername, CancellationToken cancellationToken = default);
+    Task SetUsernameAsync(TIdentity id, SetUsername setUsername, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Sets a password for the specified user.
     /// </summary>
-    /// <param name="setPassword">The <see cref="SetPassword{TIdentity}"/> request containing the user id and new password.</param>
+    /// <param name="id">The id of the user.</param>
+    /// <param name="setPassword">The <see cref="SetPassword"/> request containing the user id and new password.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="setPassword"/> is <c>null</c>.</exception>
     /// <exception cref="NullReferenceException">Thrown if the user cannot be found.</exception>
     /// <exception cref="IdentityException">Thrown if adding the password fails.</exception>
-    Task SetPasswordAsync(SetPassword<TIdentity> setPassword, CancellationToken cancellationToken = default);
+    Task SetPasswordAsync(TIdentity id, SetPassword setPassword, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Changes the password of a user given the old and new passwords.
     /// </summary>
-    /// <param name="changePassword">The <see cref="ChangePassword{TIdentity}"/> request containing old and new passwords.</param>
+    /// <param name="id">The id of the user.</param>
+    /// <param name="changePassword">The <see cref="ChangePassword"/> request containing old and new passwords.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="changePassword"/> is <c>null</c>.</exception>
     /// <exception cref="NullReferenceException">Thrown if the user cannot be found.</exception>
     /// <exception cref="IdentityException">Thrown if changing the password fails.</exception>
-    Task ChangePasswordAsync(ChangePassword<TIdentity> changePassword, CancellationToken cancellationToken = default);
+    Task ChangePasswordAsync(TIdentity id, ChangePassword changePassword, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Generates a password reset token for the specified user.
@@ -179,121 +182,128 @@ public interface IIdentityRepository<TIdentity>
     /// <summary>
     /// Resets the password of a user using a valid reset token.
     /// </summary>
-    /// <param name="resetPassword">The <see cref="ResetPassword{TIdentity}"/> request containing the user id, token, and new password.</param>
+    /// <param name="id">The id of the user.</param>
+    /// <param name="resetPassword">The <see cref="ResetPassword"/> request containing the user id, token, and new password.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="resetPassword"/> is <c>null</c>.</exception>
     /// <exception cref="UnauthorizedException">Thrown if the user is not found or deactivated.</exception>
     /// <exception cref="IdentityException">Thrown if the reset fails.</exception>
-    Task ResetPasswordAsync(ResetPassword<TIdentity> resetPassword, CancellationToken cancellationToken = default);
+    Task ResetPasswordAsync(TIdentity id, ResetPassword resetPassword, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Generates a change email token for the specified user.
     /// </summary>
-    /// <param name="generateChangeEmailToken">The <see cref="GenerateChangeEmailToken{TIdentity}"/> request containing the user id and new email address.</param>
+    /// <param name="id">The id of the user.</param>
+    /// <param name="generateChangeEmailToken">The <see cref="GenerateChangeEmailToken"/> request containing the user id and new email address.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A <see cref="ChangeEmailToken{TIdentity}"/> containing the token and new email address.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="generateChangeEmailToken"/> is <c>null</c>.</exception>
     /// <exception cref="NullReferenceException">Thrown if the user cannot be found.</exception>
     /// <exception cref="IdentityException">Thrown if the new email is already taken.</exception>
-    Task<ChangeEmailToken<TIdentity>> GenerateChangeEmailTokenAsync(GenerateChangeEmailToken<TIdentity> generateChangeEmailToken, CancellationToken cancellationToken = default);
+    Task<ChangeEmailToken<TIdentity>> GenerateChangeEmailTokenAsync(TIdentity id, GenerateChangeEmailToken generateChangeEmailToken, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Changes the email address of a user using a valid token.
     /// </summary>
-    /// <param name="changeEmail">The <see cref="ChangeEmail{TIdentity}"/> request containing the user id and token.</param>
+    /// <param name="id">The id of the user.</param>
+    /// <param name="changeEmail">The <see cref="ChangeEmail"/> request containing the user id and token.</param>
     /// <param name="setUsername">If <c>true</c>, the username will also be updated to match the new email.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="changeEmail"/> is <c>null</c>.</exception>
     /// <exception cref="NullReferenceException">Thrown if the user or token data cannot be found.</exception>
     /// <exception cref="IdentityException">Thrown if the email change fails.</exception>
-    Task ChangeEmailAsync(ChangeEmail<TIdentity> changeEmail, bool setUsername, CancellationToken cancellationToken = default);
+    Task ChangeEmailAsync(TIdentity id, ChangeEmail changeEmail, bool setUsername, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Generates an email confirmation token for the specified user.
     /// </summary>
-    /// <param name="generateConfirmEmailToken">The <see cref="GenerateConfirmEmailToken{TIdentity}"/> request containing the user id.</param>
+    /// <param name="id">The id of the user.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A <see cref="ConfirmEmailToken{TIdentity}"/> containing the generated token.</returns>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="generateConfirmEmailToken"/> is <c>null</c>.</exception>
     /// <exception cref="NullReferenceException">Thrown if the user cannot be found.</exception>
-    Task<ConfirmEmailToken<TIdentity>> GenerateConfirmEmailTokenAsync(GenerateConfirmEmailToken<TIdentity> generateConfirmEmailToken, CancellationToken cancellationToken = default);
+    Task<ConfirmEmailToken<TIdentity>> GenerateConfirmEmailTokenAsync(TIdentity id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Confirms the email of a user using a valid confirmation token.
     /// </summary>
-    /// <param name="confirmEmail">The <see cref="ConfirmEmail{TIdentity}"/> request containing the user id and token.</param>
+    /// <param name="id">The id of the user.</param>
+    /// <param name="confirmEmail">The <see cref="ConfirmEmail"/> request containing the user id and token.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="confirmEmail"/> is <c>null</c>.</exception>
     /// <exception cref="NullReferenceException">Thrown if the user cannot be found.</exception>
     /// <exception cref="IdentityException">Thrown if email confirmation fails.</exception>
-    Task ConfirmEmailAsync(ConfirmEmail<TIdentity> confirmEmail, CancellationToken cancellationToken = default);
+    Task ConfirmEmailAsync(TIdentity id, ConfirmEmail confirmEmail, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Generates a change phone number token for a user.
     /// </summary>
-    /// <param name="generateChangePhoneToken">The <see cref="GenerateChangePhoneToken{TIdentity}"/> request containing the user id and new phone number.</param>
+    /// <param name="id">The id of the user.</param>
+    /// <param name="generateChangePhoneToken">The <see cref="GenerateChangePhoneToken"/> request containing the user id and new phone number.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A <see cref="ChangePhoneNumberToken{TIdentity}"/> containing the generated token and new phone number.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="generateChangePhoneToken"/> is <c>null</c>.</exception>
     /// <exception cref="NullReferenceException">Thrown if the user cannot be found.</exception>
     /// <exception cref="IdentityException">Thrown if the phone number is already in use.</exception>
-    Task<ChangePhoneNumberToken<TIdentity>> GenerateChangePhoneNumberTokenAsync(GenerateChangePhoneToken<TIdentity> generateChangePhoneToken, CancellationToken cancellationToken = default);
+    Task<ChangePhoneNumberToken<TIdentity>> GenerateChangePhoneNumberTokenAsync(TIdentity id, GenerateChangePhoneToken generateChangePhoneToken, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Changes the phone number of a user using a valid token.
     /// </summary>
-    /// <param name="changePhoneNumber">The <see cref="ChangePhoneNumber{TIdentity}"/> request containing the user id and token.</param>
+    /// <param name="id">The id of the user.</param>
+    /// <param name="changePhoneNumber">The <see cref="ChangePhoneNumber"/> request containing the user id and token.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="changePhoneNumber"/> is <c>null</c>.</exception>
     /// <exception cref="NullReferenceException">Thrown if the user or token data cannot be found.</exception>
     /// <exception cref="IdentityException">Thrown if the phone number change fails.</exception>
-    Task ChangePhoneNumberAsync(ChangePhoneNumber<TIdentity> changePhoneNumber, CancellationToken cancellationToken = default);
+    Task ChangePhoneNumberAsync(TIdentity id, ChangePhoneNumber changePhoneNumber, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Generates a confirm phone number token for a user.
     /// </summary>
-    /// <param name="generateConfirmPhoneToken">The <see cref="GenerateConfirmPhoneToken{TIdentity}"/> request containing the user id.</param>
+    /// <param name="id">The id of the user.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A <see cref="ConfirmPhoneNumberToken{TIdentity}"/> containing the generated token.</returns>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="generateConfirmPhoneToken"/> is <c>null</c>.</exception>
     /// <exception cref="NullReferenceException">Thrown if the user cannot be found.</exception>
-    Task<ConfirmPhoneNumberToken<TIdentity>> GenerateConfirmPhoneNumberTokenAsync(GenerateConfirmPhoneToken<TIdentity> generateConfirmPhoneToken, CancellationToken cancellationToken = default);
+    Task<ConfirmPhoneNumberToken<TIdentity>> GenerateConfirmPhoneNumberTokenAsync(TIdentity id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Confirms the phone number of a user using a valid token.
     /// </summary>
-    /// <param name="confirmPhoneNumber">The <see cref="ConfirmPhoneNumber{TIdentity}"/> request containing the user id and token.</param>
+    /// <param name="id">The id of the user.</param>
+    /// <param name="confirmPhoneNumber">The <see cref="ConfirmPhoneNumber"/> request containing the user id and token.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="confirmPhoneNumber"/> is <c>null</c>.</exception>
     /// <exception cref="NullReferenceException">Thrown if the user cannot be found.</exception>
     /// <exception cref="IdentityException">Thrown if phone number confirmation fails.</exception>
-    Task ConfirmPhoneNumberAsync(ConfirmPhoneNumber<TIdentity> confirmPhoneNumber, CancellationToken cancellationToken = default);
+    Task ConfirmPhoneNumberAsync(TIdentity id, ConfirmPhoneNumber confirmPhoneNumber, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Generates a custom purpose token for a user for a specific purpose.
     /// </summary>
-    /// <param name="generateCustomPurposeToken">The <see cref="GenerateCustomPurposeToken{TIdentity}"/> request containing the user id and purpose.</param>
+    /// <param name="id">The id of the user.</param>
+    /// <param name="generateCustomPurposeToken">The <see cref="GenerateCustomPurposeToken"/> request containing the user id and purpose.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A <see cref="ConfirmCustomPurposeToken{TIdentity}"/> containing the token and purpose.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="generateCustomPurposeToken"/> is <c>null</c>.</exception>
     /// <exception cref="NullReferenceException">Thrown if the user cannot be found.</exception>
-    Task<ConfirmCustomPurposeToken<TIdentity>> GenerateCustomPurposeTokenAsync(GenerateCustomPurposeToken<TIdentity> generateCustomPurposeToken, CancellationToken cancellationToken = default);
+    Task<ConfirmCustomPurposeToken<TIdentity>> GenerateCustomPurposeTokenAsync(TIdentity id, GenerateCustomPurposeToken generateCustomPurposeToken, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Confirms a custom purpose token of a user.
     /// </summary>
-    /// <param name="confirmCustomPurpose">The <see cref="ConfirmCustomPurpose{TIdentity}"/> request containing the user id, token, and purpose.</param>
+    /// <param name="id">The id of the user.</param>
+    /// <param name="confirmCustomPurpose">The <see cref="ConfirmCustomPurpose"/> request containing the user id, token, and purpose.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="confirmCustomPurpose"/> is <c>null</c>.</exception>
     /// <exception cref="NullReferenceException">Thrown if the user cannot be found.</exception>
     /// <exception cref="IdentityException">Thrown if the token verification fails.</exception>
-    Task ConfirmCustomPurposeTokenAsync(ConfirmCustomPurpose<TIdentity> confirmCustomPurpose, CancellationToken cancellationToken = default);
+    Task ConfirmCustomPurposeTokenAsync(TIdentity id, ConfirmCustomPurpose confirmCustomPurpose, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Activates a user by setting <c>IsActive</c> to <c>true</c>.
@@ -324,16 +334,154 @@ public interface IIdentityRepository<TIdentity>
     #endregion
 
 
+    #region User Roles
+
+    /// <summary>
+    /// Retrieves the role names assigned to a specific user.
+    /// </summary>
+    /// <param name="id">The identifier of the user.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>A collection of role names.</returns>
+    /// <exception cref="NullReferenceException">Thrown if the user cannot be found.</exception>
+    Task<IEnumerable<string>> GetUserRolesAsync(TIdentity id, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Retrieves the role names assigned to a specific user.
+    /// </summary>
+    /// <param name="identityUser">The <see cref="IdentityUserEx{TIdentity}"/> instance.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>A collection of role names.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="identityUser"/> is <c>null</c>.</exception>
+    Task<IEnumerable<string>> GetUserRolesAsync(IdentityUserEx<TIdentity> identityUser, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Assigns a role to a user.
+    /// </summary>
+    /// <param name="id">The identifier of the user.</param>
+    /// <param name="assignUserRole">The details of the user and role to assign.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="assignUserRole"/> is <c>null</c>.</exception>
+    /// <exception cref="NullReferenceException">Thrown if the user does not exist.</exception>
+    /// <exception cref="InvalidOperationException">Thrown if role assignment fails.</exception>
+    Task AssignUserRoleAsync(TIdentity id, AssignUserRole assignUserRole, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Removes a role from a user.
+    /// </summary>
+    /// <param name="id">The identifier of the user.</param>
+    /// <param name="removeUserRole">The details of the user and role to remove.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="removeUserRole"/> is <c>null</c>.</exception>
+    /// <exception cref="NullReferenceException">Thrown if the user does not exist.</exception>
+    /// <exception cref="InvalidOperationException">Thrown if role removal fails.</exception>
+    Task RemoveUserRoleAsync(TIdentity id, RemoveUserRole removeUserRole, CancellationToken cancellationToken = default);
+
+    #endregion
+
+
+    #region User Claims
+
+    /// <summary>
+    /// Retrieves all claims of a user, including role-based and passed transient claims.
+    /// </summary>
+    /// <param name="identityUser">The user to retrieve claims for.</param>
+    /// <param name="transientRoles">Optional transient roles to include as claims.</param>
+    /// <param name="transientClaims">Optional transient claims to include.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>A list of <see cref="Claim"/> objects for the user.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="identityUser"/> is <c>null</c>.</exception>
+    Task<IList<Claim>> GetAllClaims(IdentityUserEx<TIdentity> identityUser, IEnumerable<string>? transientRoles = null, IDictionary<string, string>? transientClaims = null, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Retrieves a specific claim of a user by claim type.
+    /// </summary>
+    /// <param name="id">The identifier of the user.</param>
+    /// <param name="getClaim">The details of the user and claim type to retrieve.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>The matching <see cref="Claim"/> if found; otherwise <c>null</c>.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="getClaim"/> is <c>null</c>.</exception>
+    Task<Claim?> GetUserClaimAsync(TIdentity id, GetClaim<TIdentity> getClaim, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Retrieves all claims of a user by user ID.
+    /// </summary>
+    /// <param name="id">The user identifier.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>A collection of <see cref="Claim"/> objects for the user.</returns>
+    /// <exception cref="NullReferenceException">Thrown if the user does not exist.</exception>
+    Task<IEnumerable<Claim>> GetUserClaimsAsync(TIdentity id, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Retrieves all claims of a user.
+    /// </summary>
+    /// <param name="identityUser">The user to retrieve claims for.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>A collection of <see cref="Claim"/> objects for the user.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="identityUser"/> is <c>null</c>.</exception>
+    Task<IEnumerable<Claim>> GetUserClaimsAsync(IdentityUserEx<TIdentity> identityUser, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Assigns a claim to a user.
+    /// </summary>
+    /// <param name="id">The identifier of the user.</param>
+    /// <param name="assignUserClaim">The claim details to assign.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>The created <see cref="IdentityUserClaim{TIdentity}"/>.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="assignUserClaim"/> is <c>null</c>.</exception>
+    /// <exception cref="NullReferenceException">Thrown if the user does not exist.</exception>
+    /// <exception cref="InvalidOperationException">Thrown if claim assignment fails.</exception>
+    Task<IdentityUserClaim<TIdentity>> AssignUserClaimAsync(TIdentity id, AssignUserClaim assignUserClaim, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Replaces an existing claim of a user with a new value.
+    /// </summary>
+    /// <param name="id">The identifier of the user.</param>
+    /// <param name="replaceUserClaim">The claim details to replace.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>The updated <see cref="IdentityUserClaim{TIdentity}"/>.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="replaceUserClaim"/> is <c>null</c>.</exception>
+    /// <exception cref="NullReferenceException">Thrown if the user or existing claim does not exist.</exception>
+    /// <exception cref="InvalidOperationException">Thrown if claim replacement fails.</exception>
+    Task<IdentityUserClaim<TIdentity>> ReplaceUserClaimAsync(TIdentity id, ReplaceUserClaim replaceUserClaim, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Assigns a claim to a user, or replaces it if it already exists.
+    /// </summary>
+    /// <param name="id">The identifier of the user.</param>
+    /// <param name="assignOrReplaceUserClaim">The claim details to assign or replace.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>The resulting <see cref="IdentityUserClaim{TIdentity}"/>.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="assignOrReplaceUserClaim"/> is <c>null</c>.</exception>
+    /// <exception cref="NullReferenceException">Thrown if the user does not exist.</exception>
+    Task<IdentityUserClaim<TIdentity>> AssignOrReplaceUserClaimAsync(TIdentity id, AssignOrReplaceUserClaim assignOrReplaceUserClaim, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Removes a claim from a user.
+    /// </summary>
+    /// <param name="id">The identifier of the user.</param>
+    /// <param name="removeUserClaim">The claim details to remove.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="removeUserClaim"/> is <c>null</c>.</exception>
+    /// <exception cref="NullReferenceException">Thrown if the user or claim does not exist.</exception>
+    /// <exception cref="InvalidOperationException">Thrown if claim removal fails.</exception>
+    Task RemoveUserClaimAsync(TIdentity id, RemoveUserClaim removeUserClaim, CancellationToken cancellationToken = default);
+
+    #endregion
+
+
     #region External Logins
 
     /// <summary>
     /// Retrieves all external login providers associated with a user by user id.
     /// </summary>
-    /// <param name="userId">The identifier of the user.</param>
+    /// <param name="id">The identifier of the user.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A collection of <see cref="UserLoginInfo"/> representing external logins.</returns>
     /// <exception cref="NullReferenceException">Thrown if the user cannot be found.</exception>
-    Task<IEnumerable<UserLoginInfo>> GetUserExternalLoginsAsync(TIdentity userId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<UserLoginInfo>> GetUserExternalLoginsAsync(TIdentity id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Retrieves all external login providers associated with a user by <see cref="IdentityUserEx{TIdentity}"/>.
@@ -347,25 +495,26 @@ public interface IIdentityRepository<TIdentity>
     /// <summary>
     /// Adds an external login provider to a user.
     /// </summary>
-    /// <param name="userId">The identifier of the user.</param>
-    /// <param name="externalLogInData">The external provider data to associate with the user.</param>
+    /// <param name="id">The identifier of the user.</param>
+    /// <param name="externalProvider">The external provider to associate with the user.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>The <see cref="UserLoginInfo"/> that was added.</returns>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="externalLogInData"/> is <c>null</c>.</exception>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="externalProvider"/> is <c>null</c>.</exception>
     /// <exception cref="NullReferenceException">Thrown if the user cannot be found.</exception>
     /// <exception cref="IdentityException">Thrown if adding the external login fails.</exception>
-    Task<UserLoginInfo> AddExternalLoginAsync(TIdentity userId, ExternalProvider externalLogInData, CancellationToken cancellationToken = default);
+    Task<UserLoginInfo> AddExternalLoginAsync(TIdentity id, ExternalProvider externalProvider, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Removes an external login provider from a user.
     /// </summary>
-    /// <param name="removeExternalLogin">The <see cref="RemoveExternalLogin{TIdentity}"/> request containing the user id and external provider to remove.</param>
+    /// <param name="id">The identifier of the user.</param>
+    /// <param name="removeExternalLogin">The <see cref="RemoveExternalLogin"/> request containing the user id and external provider to remove.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="removeExternalLogin"/> is <c>null</c>.</exception>
     /// <exception cref="NullReferenceException">Thrown if the user cannot be found.</exception>
     /// <exception cref="IdentityException">Thrown if removing the external login fails.</exception>
-    Task RemoveExternalLoginAsync(RemoveExternalLogin<TIdentity> removeExternalLogin, CancellationToken cancellationToken = default);
+    Task RemoveExternalLoginAsync(TIdentity id, RemoveExternalLogin removeExternalLogin, CancellationToken cancellationToken = default);
 
     #endregion
 
@@ -424,28 +573,29 @@ public interface IIdentityRepository<TIdentity>
     /// <summary>
     /// Retrieves an API key by its identifier.
     /// </summary>
-    /// <param name="id">The identifier of the API key.</param>
+    /// <param name="apiKeyId">The identifier of the API key.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>The <see cref="IdentityApiKey{TIdentity}"/> if found; otherwise, <c>null</c>.</returns>
-    Task<IdentityApiKey<TIdentity>?> GetApiKeyAsync(TIdentity id, CancellationToken cancellationToken = default);
+    Task<IdentityApiKey<TIdentity>?> GetApiKeyAsync(TIdentity apiKeyId, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Retrieves all API keys associated with a specific user.
     /// </summary>
-    /// <param name="userId">The identifier of the user.</param>
+    /// <param name="id">The identifier of the user.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A collection of <see cref="IdentityApiKey{TIdentity}"/>.</returns>
-    Task<IEnumerable<IdentityApiKey<TIdentity>>> GetApiKeysAsync(TIdentity userId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<IdentityApiKey<TIdentity>>> GetApiKeysAsync(TIdentity id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Creates a new API key for a user.
     /// </summary>
+    /// <param name="id">The identifier of the user.</param>
     /// <param name="createApiKey">The data for creating the API key.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>The created <see cref="IdentityApiKey{TIdentity}"/>.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="createApiKey"/> is <c>null</c>.</exception>
     /// <exception cref="NullReferenceException">Thrown if the user or secret configuration cannot be found.</exception>
-    Task<IdentityApiKeyCreated<TIdentity>> CreateApiKeyAsync(CreateApiKey<TIdentity> createApiKey, CancellationToken cancellationToken = default);
+    Task<IdentityApiKeyCreated<TIdentity>> CreateApiKeyAsync(TIdentity id, CreateApiKey createApiKey, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Validates a provided API key and returns its associated record if valid.
@@ -460,106 +610,22 @@ public interface IIdentityRepository<TIdentity>
     /// <summary>
     /// Updates the name or metadata of an existing API key.
     /// </summary>
+    /// <param name="apiKeyId">The identifier of the API key.</param>
     /// <param name="editApiKey">The data for updating the API key.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>The updated <see cref="IdentityApiKey{TIdentity}"/> if found; otherwise, <c>null</c>.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="editApiKey"/> is <c>null</c>.</exception>
-    Task<IdentityApiKey<TIdentity>?> EditApiKeyAsync(EditApiKey<TIdentity> editApiKey, CancellationToken cancellationToken = default);
+    Task<IdentityApiKey<TIdentity>?> EditApiKeyAsync(TIdentity apiKeyId, EditApiKey editApiKey, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Revokes an API key, marking it as inactive.
     /// </summary>
+    /// <param name="apiKeyId">The identifier of the API key.</param>
     /// <param name="revokeApiKey">The data for revoking the API key.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>The updated <see cref="IdentityApiKey{TIdentity}"/> if found and active; otherwise, <c>null</c>.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="revokeApiKey"/> is <c>null</c>.</exception>
-    Task<IdentityApiKey<TIdentity>?> RevokeApiKeyAsync(RevokeApiKey<TIdentity> revokeApiKey, CancellationToken cancellationToken = default);
-
-    #endregion
-
-
-    #region Claims
-
-    /// <summary>
-    /// Retrieves all claims of a user, including role-based and passed transient claims.
-    /// </summary>
-    /// <param name="identityUser">The user to retrieve claims for.</param>
-    /// <param name="transientRoles">Optional transient roles to include as claims.</param>
-    /// <param name="transientClaims">Optional transient claims to include.</param>
-    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-    /// <returns>A list of <see cref="Claim"/> objects for the user.</returns>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="identityUser"/> is <c>null</c>.</exception>
-    Task<IList<Claim>> GetAllClaims(IdentityUserEx<TIdentity> identityUser, IEnumerable<string>? transientRoles = null, IDictionary<string, string>? transientClaims = null, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Retrieves a specific claim of a user by claim type.
-    /// </summary>
-    /// <param name="getClaim">The details of the user and claim type to retrieve.</param>
-    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-    /// <returns>The matching <see cref="Claim"/> if found; otherwise <c>null</c>.</returns>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="getClaim"/> is <c>null</c>.</exception>
-    Task<Claim?> GetUserClaimAsync(GetClaim<TIdentity> getClaim, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Retrieves all claims of a user by user ID.
-    /// </summary>
-    /// <param name="userId">The user identifier.</param>
-    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-    /// <returns>A collection of <see cref="Claim"/> objects for the user.</returns>
-    /// <exception cref="NullReferenceException">Thrown if the user does not exist.</exception>
-    Task<IEnumerable<Claim>> GetUserClaimsAsync(TIdentity userId, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Retrieves all claims of a user.
-    /// </summary>
-    /// <param name="identityUser">The user to retrieve claims for.</param>
-    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-    /// <returns>A collection of <see cref="Claim"/> objects for the user.</returns>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="identityUser"/> is <c>null</c>.</exception>
-    Task<IEnumerable<Claim>> GetUserClaimsAsync(IdentityUserEx<TIdentity> identityUser, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Assigns a claim to a user.
-    /// </summary>
-    /// <param name="assignUserClaim">The claim details to assign.</param>
-    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-    /// <returns>The created <see cref="IdentityUserClaim{TIdentity}"/>.</returns>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="assignUserClaim"/> is <c>null</c>.</exception>
-    /// <exception cref="NullReferenceException">Thrown if the user does not exist.</exception>
-    /// <exception cref="InvalidOperationException">Thrown if claim assignment fails.</exception>
-    Task<IdentityUserClaim<TIdentity>> AssignUserClaimAsync(AssignUserClaim<TIdentity> assignUserClaim, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Replaces an existing claim of a user with a new value.
-    /// </summary>
-    /// <param name="replaceUserClaim">The claim details to replace.</param>
-    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-    /// <returns>The updated <see cref="IdentityUserClaim{TIdentity}"/>.</returns>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="replaceUserClaim"/> is <c>null</c>.</exception>
-    /// <exception cref="NullReferenceException">Thrown if the user or existing claim does not exist.</exception>
-    /// <exception cref="InvalidOperationException">Thrown if claim replacement fails.</exception>
-    Task<IdentityUserClaim<TIdentity>> ReplaceUserClaimAsync(ReplaceUserClaim<TIdentity> replaceUserClaim, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Assigns a claim to a user, or replaces it if it already exists.
-    /// </summary>
-    /// <param name="assignOrReplaceUserClaim">The claim details to assign or replace.</param>
-    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-    /// <returns>The resulting <see cref="IdentityUserClaim{TIdentity}"/>.</returns>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="assignOrReplaceUserClaim"/> is <c>null</c>.</exception>
-    /// <exception cref="NullReferenceException">Thrown if the user does not exist.</exception>
-    Task<IdentityUserClaim<TIdentity>> AssignOrReplaceUserClaimAsync(AssignOrReplaceUserClaim<TIdentity> assignOrReplaceUserClaim, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Removes a claim from a user.
-    /// </summary>
-    /// <param name="removeUserClaim">The claim details to remove.</param>
-    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="removeUserClaim"/> is <c>null</c>.</exception>
-    /// <exception cref="NullReferenceException">Thrown if the user or claim does not exist.</exception>
-    /// <exception cref="InvalidOperationException">Thrown if claim removal fails.</exception>
-    Task RemoveUserClaimAsync(RemoveUserClaim<TIdentity> removeUserClaim, CancellationToken cancellationToken = default);
+    Task<IdentityApiKey<TIdentity>?> RevokeApiKeyAsync(TIdentity apiKeyId, RevokeApiKey<TIdentity> revokeApiKey, CancellationToken cancellationToken = default);
 
     #endregion
 
@@ -593,46 +659,6 @@ public interface IIdentityRepository<TIdentity>
     /// <exception cref="NullReferenceException">Thrown if the role does not exist.</exception>
     /// <exception cref="InvalidOperationException">Thrown if role deletion fails.</exception>
     Task DeleteRoleAsync(string roleName, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Retrieves the role names assigned to a specific user.
-    /// </summary>
-    /// <param name="userId">The identifier of the user.</param>
-    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-    /// <returns>A collection of role names.</returns>
-    /// <exception cref="NullReferenceException">Thrown if the user cannot be found.</exception>
-    Task<IEnumerable<string>> GetUserRolesAsync(TIdentity userId, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Retrieves the role names assigned to a specific user.
-    /// </summary>
-    /// <param name="identityUser">The <see cref="IdentityUserEx{TIdentity}"/> instance.</param>
-    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-    /// <returns>A collection of role names.</returns>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="identityUser"/> is <c>null</c>.</exception>
-    Task<IEnumerable<string>> GetUserRolesAsync(IdentityUserEx<TIdentity> identityUser, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Assigns a role to a user.
-    /// </summary>
-    /// <param name="assignUserRole">The details of the user and role to assign.</param>
-    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="assignUserRole"/> is <c>null</c>.</exception>
-    /// <exception cref="NullReferenceException">Thrown if the user does not exist.</exception>
-    /// <exception cref="InvalidOperationException">Thrown if role assignment fails.</exception>
-    Task AssignUserRoleAsync(AssignUserRole<TIdentity> assignUserRole, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Removes a role from a user.
-    /// </summary>
-    /// <param name="removeUserRole">The details of the user and role to remove.</param>
-    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="removeUserRole"/> is <c>null</c>.</exception>
-    /// <exception cref="NullReferenceException">Thrown if the user does not exist.</exception>
-    /// <exception cref="InvalidOperationException">Thrown if role removal fails.</exception>
-    Task RemoveUserRoleAsync(RemoveUserRole<TIdentity> removeUserRole, CancellationToken cancellationToken = default);
 
     #endregion
 
@@ -669,45 +695,49 @@ public interface IIdentityRepository<TIdentity>
     /// <summary>
     /// Assigns a claim to a role.
     /// </summary>
+    /// <param name="roleId">The identifier of the role.</param>
     /// <param name="assignClaim">The claim details to assign.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>The created <see cref="IdentityRoleClaim{TIdentity}"/>.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="assignClaim"/> is <c>null</c>.</exception>
     /// <exception cref="NullReferenceException">Thrown if the role does not exist.</exception>
     /// <exception cref="InvalidOperationException">Thrown if claim assignment fails.</exception>
-    Task<IdentityRoleClaim<TIdentity>> AssignRoleClaimAsync(AssignRoleClaim<TIdentity> assignClaim, CancellationToken cancellationToken = default);
+    Task<IdentityRoleClaim<TIdentity>> AssignRoleClaimAsync(TIdentity roleId, AssignRoleClaim assignClaim, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Replaces an existing claim of a role with a new value.
     /// </summary>
+    /// <param name="roleId">The identifier of the role.</param>
     /// <param name="replaceClaim">The details of the claim to replace.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>The updated <see cref="IdentityRoleClaim{TIdentity}"/>.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="replaceClaim"/> is <c>null</c>.</exception>
     /// <exception cref="NullReferenceException">Thrown if the role or existing claim does not exist.</exception>
     /// <exception cref="InvalidOperationException">Thrown if claim replacement fails.</exception>
-    Task<IdentityRoleClaim<TIdentity>> ReplaceRoleClaimAsync(ReplaceRoleClaim<TIdentity> replaceClaim, CancellationToken cancellationToken = default);
+    Task<IdentityRoleClaim<TIdentity>> ReplaceRoleClaimAsync(TIdentity roleId, ReplaceRoleClaim replaceClaim, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Assigns a claim to a role, or replaces it if it already exists.
     /// </summary>
+    /// <param name="roleId">The identifier of the role.</param>
     /// <param name="assignOrReplaceRoleClaim">The claim details to assign or replace.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>The resulting <see cref="IdentityRoleClaim{TIdentity}"/>.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="assignOrReplaceRoleClaim"/> is <c>null</c>.</exception>
     /// <exception cref="NullReferenceException">Thrown if the role does not exist.</exception>
-    Task<IdentityRoleClaim<TIdentity>> AssignOrReplaceRoleClaimAsync(AssignOrReplaceRoleClaim<TIdentity> assignOrReplaceRoleClaim, CancellationToken cancellationToken = default);
+    Task<IdentityRoleClaim<TIdentity>> AssignOrReplaceRoleClaimAsync(TIdentity roleId, AssignOrReplaceRoleClaim assignOrReplaceRoleClaim, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Removes a claim from a role.
     /// </summary>
+    /// <param name="roleId">The identifier of the role.</param>
     /// <param name="removeClaim">The claim details to remove.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="removeClaim"/> is <c>null</c>.</exception>
     /// <exception cref="NullReferenceException">Thrown if the role or claim does not exist.</exception>
     /// <exception cref="InvalidOperationException">Thrown if claim removal fails.</exception>
-    Task RemoveRoleClaimAsync(RemoveRoleClaim<TIdentity> removeClaim, CancellationToken cancellationToken = default);
+    Task RemoveRoleClaimAsync(TIdentity roleId, RemoveRoleClaim removeClaim, CancellationToken cancellationToken = default);
 
     #endregion
 }

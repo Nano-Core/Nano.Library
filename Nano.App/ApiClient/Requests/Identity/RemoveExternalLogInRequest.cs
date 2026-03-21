@@ -14,7 +14,7 @@ public class RemoveExternalLoginRequest : RemoveExternalLoginRequest<Guid>;
 /// Represents a request to remove an external login from a user.
 /// </summary>
 /// <typeparam name="TIdentity">The type of the user identifier.</typeparam>
-[DeleteAction(ActionRoutes.IDENTITY_EXTERNAL_LOGINS_REMOVE)]
+[DeleteAction(ActionRoutes.IDENTITY_EXTERNAL_LOGINS_REMOVE_DIRECT)]
 public class RemoveExternalLoginRequest<TIdentity> : BaseRequest
     where TIdentity : IEquatable<TIdentity>
 {
@@ -23,5 +23,5 @@ public class RemoveExternalLoginRequest<TIdentity> : BaseRequest
     /// </summary>
     [Required]
     [Body]
-    public virtual RemoveExternalLogin<TIdentity> RemoveExternalLogin { get; set; } = new();
+    public virtual RemoveExternalLogin RemoveExternalLogin { get; set; } = new();
 }

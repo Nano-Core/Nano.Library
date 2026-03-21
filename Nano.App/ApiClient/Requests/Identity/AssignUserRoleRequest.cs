@@ -23,5 +23,5 @@ public class AssignUserRoleRequest<TIdentity> : BaseRequest
     /// </summary>
     [Required]
     [Body]
-    public virtual AssignUserRole<TIdentity> AssignUserRole { get; set; } = new();
+    public virtual AssignUserRole AssignUserRole { get; set; } = new();
 }

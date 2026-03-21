@@ -1,9 +1,11 @@
 using DynamicExpression.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nano.App.Consts;
 using Nano.Common.Consts;
 using Nano.Data.Abstractions;
+using Nano.Data.Abstractions.Identity.Consts;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Eventing.Abstractions;
 using System;
@@ -53,7 +55,7 @@ public abstract class BaseEntityController<TEntity, TCriteria> : BaseEntityContr
         : base(logger, repository, eventing)
     {
     }
-} 
+}
 
 /// <summary>
 /// Controller providing readable and writable operations (Create, Edit, Delete).
@@ -61,6 +63,7 @@ public abstract class BaseEntityController<TEntity, TCriteria> : BaseEntityContr
 /// <typeparam name="TEntity">The entity type implementing <see cref="IEntity"/> handled by this controller.</typeparam>
 /// <typeparam name="TIdentity">The identifier type of <typeparamref name="TEntity"/>.</typeparam>
 /// <typeparam name="TCriteria">The query criteria type implementing <see cref="IQueryCriteria"/>.</typeparam>
+[Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.DELETER)]
 public abstract class BaseEntityController<TEntity, TIdentity, TCriteria> : BaseEntityCreatableAndEditableController<TEntity, TIdentity, TCriteria>
     where TEntity : class, IEntityIdentity<TIdentity>, IEntityWritable, new()
     where TCriteria : class, IQueryCriteria, new()

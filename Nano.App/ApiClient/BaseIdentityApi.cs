@@ -16,8 +16,6 @@ using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 
 namespace Nano.App.ApiClient;
 
-// BUG: API-CLIENT: NullReferenceException => throw new NotFoundException(nameof(entity));
-
 /// <inheritdoc />
 public abstract class BaseIdentityApi<TUser> : BaseIdentityApi<TUser, Guid>
     where TUser : class, IEntityUser<Guid>

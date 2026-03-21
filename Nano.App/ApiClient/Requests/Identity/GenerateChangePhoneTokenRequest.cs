@@ -23,5 +23,5 @@ public class GenerateChangePhoneTokenRequest<TIdentity> : BaseRequest
     /// </summary>
     [Required]
     [Body]
-    public virtual GenerateChangePhoneToken<TIdentity> ChangePhoneToken { get; set; } = new();
+    public virtual GenerateChangePhoneToken ChangePhoneToken { get; set; } = new();
 }

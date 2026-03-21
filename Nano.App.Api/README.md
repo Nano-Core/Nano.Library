@@ -112,7 +112,7 @@ The `App` section in the configuration defines behavior related to the applicati
 |  `HealthCheck`             | object     | null       | Health-check configuration options. See **[health Check](#health-check)**.                                  |
 |  `VirusScan`               | object     | null       | Virus scanning options. See **[Virus Scan](#virus-scan)**.                                                  |
 |  `ErrorHandling`           | object     | default    | Error handling configuration options. See **[Error Handling](#error-handling)**.                            |
-|  `Identity`                | object     | null       | Identity configuration options. See **[Identity](#identity)**.                                              |
+|  `Authentication`          | object     | default    | Authentication configuration options. See **[Authentication](#authentication)**.                            |
 |  `Apis`                    | dictionary | []         | Named Nano API client configurations available to the application. See **[Api Client](api-clients)**.       |
 
 ```json
@@ -130,7 +130,7 @@ The `App` section in the configuration defines behavior related to the applicati
   "HealthCheck": null,
   "VirusScan": null,
   "ErrorHandling": { }
-  "Identity": null,
+  "Authentication": { },
   "Apis": []
 }
 ```
@@ -1470,10 +1470,9 @@ When your application needs to manage usernames, passwords, roles, permissions, 
 **[Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#identity)**. This enables Nano to store and maintain user credentials and claims in a 
 centralized identity store. Roles and claims can then be automatically loaded for each user, simplifying access control and authorization across your application.
 
-Nano also supports transient authentication and must be assigned each time a user logs in. Users authenticate through external providers, and JWT tokens are generated for 
-use in subsequent requests. Roles and claims are transient, meaning they must be assigned each time a user logs in. To access all base controller actions in Nano, 
-the `administrator` role must be included. Otherwise, roles can be assigned more selectively from Nano’s default roles to provide finer-grained access control for 
-transient users.  
+Nano also supports transient authentication. Users authenticate through external providers, and a Nano JWT tokens are generated for use in subsequent requests. Roles and claims 
+are transient, meaning they must be assigned each time a user logs in. To access all base controller actions in Nano, the `administrator` role must be included. Otherwise, roles can 
+be assigned more selectively from Nano’s default roles to provide finer-grained access control for transient users.  
 
 | Name          | Description                          |
 | ------------- | ------------------------------------ |
@@ -1488,10 +1487,6 @@ transient users.
 Transient roles and claims may also be added when using persistent authentication, and its often preferred for data than might change. Consider you might fetch a user’s 
 legal name at login and add it as a transient claim, rather than storing it permanently in the identity system. This approach ensures that certain information is always 
 current without updating persistent claims.
-
-Nano provides a concrete `AuthController`, which exposes endpoints based on your authentication configuration. Learn more about [Authentication Controllers](#controllers). 
-If you prefer implementing you own authentication controller, you can use the interfaces `IAuthRootRepository`, `IAuthTransientRepository` or `IIdentityAuthRepository`, 
-to derive authentication functionality.  
 
 The following configuration is available for authentication.  
 
@@ -1545,8 +1540,11 @@ a specific user account available for login. This login type is transient and do
 
 When logged in as root, the administrator role is automatically assigned, providing full permissions across the application.  
 
-The supported `ExternalLogins` in Nano are Facebook, Google, and Microsoft. Nano allows you to use external logins either alongside 
-**[Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#identity)** or as transient logins without an identity store.  
+Nano also supports authentication using external providers. Predefined integrations are available for providers such as Facebook, Google, and Microsoft, and direct external authentication 
+is supported as well. With direct external authentication, you pass the authentication result to Nano, which then handles JWT token creation or persists the login in the identity store 
+if configured.
+
+External logins can be used alongside **[Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#identity)** or as transient logins without an identity store.
 
 The configuration is defined as follows.  
 
@@ -1603,9 +1601,15 @@ The configuration is defined as follows.
 
 > ⚠️ The external provider application must be configured with at least the following scopes: `id`, `email`, and `username`.
 
-The `BaseAuthController` (see **[Controllers](#controllers)**) exposes endpoints for all configured authentication methods. Each method allows specifying an `AppId`, 
-a unique string that identifies the application or platform the user is authenticating from. This enables logins to be managed independently per application. If no `AppId` 
-is provided, it defaults to `Default`. All authentication methods also return a consistent `AccessToken` in the response, with default values as shown below.  
+Nano provides a `BaseAuthController` which, when inherited, automatically exposes endpoints for all configured authentication methods. If you prefer to implement your own 
+authentication controller, you can leverage the interfaces `IAuthRootRepository`, `IAuthTransientRepository`, or `IIdentityAuthRepository` to build custom authentication 
+functionality.  
+
+> ⚠️ Learn more about [Authentication Controllers](#controllers).
+
+Each authentication method allows you to specify an `AppId`, a unique identifier for the application or platform the user is authenticating from. This makes it possible to manage 
+logins independently per application and to isolate refresh tokens when an identity store is configured. If no `AppId` is provided, it defaults to `Default`. All authentication 
+methods return a consistent `AccessToken` in the response, using the default values shown below.  
 
 ```json
 {
@@ -1852,63 +1856,67 @@ emails, phone numbers, external logins, claims, roles, and API keys.
 The following endpoints are available in the `BaseIdentityController<TEntity, TCriteria>` for managing user identities. Not all identity features might be configured. Nano only 
 exposes endpoints that match the current configuration; any features not configured will not be registered or available in the controller.
 
-| Endpoint                                     | Method        | Role          | Description                                                                 |
-|--------------------------------------------- |-------------- | ------------- | --------------------------------------------------------------------------- |
-| `/{entity}s/password/options`                | GET           | Anonymous     | Retrieves the configured password options.                                  |
-| `/{entity}s/email/is-taken`                  | GET           | Anonymous     | Determines whether an email address is already in use.                      |
-| `/{entity}s/phone/is-taken`                  | GET           | Anonymous     | Determines whether a phone number is already in use.                        |
-| `/{entity}s/signup`                          | POST          | Anonymous     | Registers a new user.                                                       |
-| `/{entity}s/signup/external/direct`          | POST          | Anonymous     | Registers a new user using externally provided login data.                  |
-| `/{entity}s/signup/external/facebook`        | POST          | Anonymous     | Registers a new user using an external Facebook login provider.             |
-| `/{entity}s/signup/external/google`          | POST          | Anonymous     | Registers a new user using an external Google login provider.               |
-| `/{entity}s/signup/external/microsoft`       | POST          | Anonymous     | Registers a new user using an external Microsoft login provider.            |
-| `/{entity}s/username/set`                    | POST          | Anonymous     | Sets the username of a user.                                                |
-| `/{entity}s/password/set`                    | POST          | identity      | Assigns a password to a user that does not already have one.                |
-| `/{entity}s/password/change`                 | POST          | identity      | Changes the password of an existing user.                                   |
-| `/{entity}s/password/reset`                  | POST          | Anonymous     | Resets the password of a user using a reset token.                          |
-| `/{entity}s/password/reset/token`            | POST          | Anonymous     | Generates a password reset token.                                           |
-| `/{entity}s/email/change`                    | POST          | identity      | Changes the email address of a user.                                        |
-| `/{entity}s/email/change/token`              | POST          | identity      | Generates an email change token.                                            |
-| `/{entity}s/email/confirm`                   | POST          | identity      | Confirms the email address of a user.                                       |
-| `/{entity}s/email/confirm/token`             | POST          | identity      | Generates an email confirmation token.                                      |
-| `/{entity}s/phone/change`                    | POST          | identity      | Changes the phone number of a user.                                         |
-| `/{entity}s/phone/change/token`              | POST          | identity      | Generates a phone number change token.                                      |
-| `/{entity}s/phone/confirm`                   | POST          | identity      | Confirms the phone number of a user.                                        |
-| `/{entity}s/phone/confirm/token`             | POST          | identity      | Generates a phone number confirmation token.                                |
-| `/{entity}s/custom-purpose/confirm`          | POST          | identity      | Generates a custom-purpose token for a user.                                |
-| `/{entity}s/custom-purpose/confirm/token`    | POST          | identity      | Confirms a previously generated custom-purpose token.                       |
-| `/{entity}s/{id}/activate`                   | POST          | identity      | Activates the user with the specified identifier.                           |
-| `/{entity}s/{id}/deactivate`                 | POST / DELETE | identity      | Deactivates the user with the specified identifier.                         |
-| `/{entity}s/{id}/delete`                     | POST / DELETE | deleter       | Deletes the user with the specified identifier.                             |
-| `/{entity}s/delete/many`                     | POST / DELETE | deleter       | Deletes multiple users with the specified identifiers.                      |
-| `/{entity}s/{userId}/roles`                  | GET           | identity      | Retrieves all roles assigned to a specific user.                            |
-| `/{entity}s/roles/assign`                    | POST          | identity      | Assigns a role to a user.                                                   |
-| `/{entity}s/roles/remove`                    | POST / DELETE | identity      | Removes a role from a user.                                                 |
-| `/{entity}s/{userId}/claims`                 | GET           | identity      | Retrieves all claims assigned to a specific user.                           |
-| `/{entity}s/claims/assign`                   | POST          | identity      | Assigns a new claim to a user.                                              |
-| `/{entity}s/claims/replace`                  | PUT           | identity      | Replaces an existing claim of a user.                                       |
-| `/{entity}s/claims/assign-or-replace`        | PUT           | identity      | Assigns or replaces a claim of a user.                                      |
-| `/{entity}s/claims/remove`                   | POST / DELETE | identity      | Removes a claim from a user.                                                |
-| `/{entity}s/{userId}/external-logins`        | GET           | identity      | Retrieves the external login providers associated with a user.              |
-| `/{entity}s/external-logins/add/facebook`    | POST          | identity      | Adds a Facebook external login to a user account.                           |
-| `/{entity}s/external-logins/add/google`      | POST          | identity      | Adds a Google external login to a user account.                             |
-| `/{entity}s/external-logins/add/microsoft`   | POST          | identity      | Adds a Microsoft external login to a user account.                          |
-| `/{entity}s/external-logins/remove`          | POST / DELETE | identity      | Removes an external login from a user account.                              |
-| `/{entity}s/{userId}/refresh-tokens`         | GET           | identity      | Retrieves all refresh tokens associated with a specific user.               |
-| `/{entity}s/{userId}/refresh-tokens/active`  | GET           | identity      | Retrieves all active refresh tokens for a specific user.                    |
-| `/{entity}s/refresh-tokens/{refreshTokenId}` | DELETE        | identity      | Deletes a specific refresh token by its identifier.                         |
-| `/{entity}s/{userId}/api-keys`               | GET           | identity      | Retrieves all API keys associated with a specific user.                     |
-| `/{entity}s/api-keys/create`                 | POST          | identity      | Creates a new API key for a user.                                           |
-| `/{entity}s/api-keys/edit`                   | PUT / POST    | identity      | Edits an existing API key.                                                  |
-| `/{entity}s/api-keys/{apiKeyId}/revoke`      | DELETE        | identity      | Revokes a specific API key.                                                 |
-| `/{entity}s/roles`                           | GET           | administrator | Retrieves all roles in the system.                                          |
-| `/{entity}s/roles/create`                    | POST          | administrator | Creates a new role.                                                         |
-| `/{entity}s/roles/delete`                    | POST / DELETE | administrator | Deletes a role from the system.                                             |
-| `/{entity}s/roles/{roleId}/claims`           | GET           | administrator | Retrieves all claims associated with a role.                                |
-| `/{entity}s/roles/claims/assign`             | POST          | administrator | Assigns a claim to a role.                                                  |
-| `/{entity}s/roles/claims/replace`            | PUT           | administrator | Replaces a claim of a role.                                                 |
-| `/{entity}s/roles/claims/assign-or-replace`  | PUT           | administrator | Assigns or replaces a claim of a role.                                      |
-| `/{entity}s/roles/claims/remove`             | POST / DELETE | administrator | Removes a claim from a role.                                                |
+| Endpoint                                              | Method        | Role          | Description                                                                 |
+|------------------------------------------------------ |-------------- | ------------- | --------------------------------------------------------------------------- |
+| `/{entity}s/password/options`                         | GET           | Anonymous     | Retrieves the configured password options.                                  |
+| `/{entity}s/email/is-taken`                           | GET           | Anonymous     | Determines whether an email address is already in use.                      |
+| `/{entity}s/phone/is-taken`                           | GET           | Anonymous     | Determines whether a phone number is already in use.                        |
+| `/{entity}s/signup`                                   | POST          | Anonymous     | Registers a new user.                                                       |
+| `/{entity}s/signup/external/direct`                   | POST          | Anonymous     | Registers a new user using externally provided login data.                  |
+| `/{entity}s/signup/external/facebook`                 | POST          | Anonymous     | Registers a new user using an external Facebook login provider.             |
+| `/{entity}s/signup/external/google`                   | POST          | Anonymous     | Registers a new user using an external Google login provider.               |
+| `/{entity}s/signup/external/microsoft`                | POST          | Anonymous     | Registers a new user using an external Microsoft login provider.            |
+| `/{entity}s/{id}/username/set`                        | POST          | Anonymous     | Sets the username of a user.                                                |
+| `/{entity}s/{id}/password/set`                        | POST          | identity      | Assigns a password to a user that does not already have one.                |
+| `/{entity}s/{id}/password/change`                     | POST          | identity      | Changes the password of an existing user.                                   |
+| `/{entity}s/{id}/password/reset`                      | POST          | Anonymous     | Resets the password of a user using a reset token.                          |
+| `/{entity}s/password/reset/token`                     | POST          | Anonymous     | Generates a password reset token.                                           |
+| `/{entity}s/{id}/email/change`                        | POST          | identity      | Changes the email address of a user.                                        |
+| `/{entity}s/{id}/email/change/token`                  | POST          | identity      | Generates an email change token.                                            |
+| `/{entity}s/{id}/email/confirm`                       | POST          | identity      | Confirms the email address of a user.                                       |
+| `/{entity}s/{id}/email/confirm/token`                 | POST          | identity      | Generates an email confirmation token.                                      |
+| `/{entity}s/{id}/phone/change`                        | POST          | identity      | Changes the phone number of a user.                                         |
+| `/{entity}s/{id}/phone/change/token`                  | POST          | identity      | Generates a phone number change token.                                      |
+| `/{entity}s/{id}/phone/confirm`                       | POST          | identity      | Confirms the phone number of a user.                                        |
+| `/{entity}s/{id}/phone/confirm/token`                 | POST          | identity      | Generates a phone number confirmation token.                                |
+| `/{entity}s/{id}/custom-purpose/confirm`              | POST          | identity      | Generates a custom-purpose token for a user.                                |
+| `/{entity}s/{id}/custom-purpose/confirm/token`        | POST          | identity      | Confirms a previously generated custom-purpose token.                       |
+| `/{entity}s/{id}/activate`                            | POST          | identity      | Activates the user with the specified identifier.                           |
+| `/{entity}s/{id}/deactivate`                          | POST / DELETE | identity      | Deactivates the user with the specified identifier.                         |
+| `/{entity}s/{id}/delete`                              | POST / DELETE | deleter       | Deletes the user with the specified identifier.                             |
+| `/{entity}s/delete/many`                              | POST / DELETE | deleter       | Deletes multiple users with the specified identifiers.                      |
+| `/{entity}s/{id}/roles`                               | GET           | identity      | Retrieves all roles assigned to a specific user.                            |
+| `/{entity}s/{id}/roles/assign`                        | POST          | identity      | Assigns a role to a user.                                                   |
+| `/{entity}s/{id}/roles/remove`                        | POST / DELETE | identity      | Removes a role from a user.                                                 |
+| `/{entity}s/{id}/claims`                              | GET           | identity      | Retrieves all claims assigned to a specific user.                           |
+| `/{entity}s/{id}/claims/assign`                       | POST          | identity      | Assigns a new claim to a user.                                              |
+| `/{entity}s/{id}/claims/replace`                      | PUT           | identity      | Replaces an existing claim of a user.                                       |
+| `/{entity}s/{id}/claims/assign-or-replace`            | PUT           | identity      | Assigns or replaces a claim of a user.                                      |
+| `/{entity}s/{id}/claims/remove`                       | POST / DELETE | identity      | Removes a claim from a user.                                                |
+| `/{entity}s/{id}/external-logins`                     | GET           | identity      | Retrieves the external login providers associated with a user.              |
+| `/{entity}s/{id}/external-logins/add/direct`          | POST          | identity      | Adds an external login direct (no authentication) to a user account.        |
+| `/{entity}s/{id}/external-logins/add/facebook`        | POST          | identity      | Adds a Facebook external login to a user account.                           |
+| `/{entity}s/{id}/external-logins/add/google`          | POST          | identity      | Adds a Google external login to a user account.                             |
+| `/{entity}s/{id}/external-logins/add/microsoft`       | POST          | identity      | Adds a Microsoft external login to a user account.                          |
+| `/{entity}s/{id}/external-logins/remove/direct`       | POST / DELETE | identity      | Removes an external login direct from a user account.                       |
+| `/{entity}s/{id}/external-logins/remove/facebook`     | POST / DELETE | identity      | Removes a Facebook external login from a user account.                      |
+| `/{entity}s/{id}/external-logins/remove/google`       | POST / DELETE | identity      | Removes a Google external login from a user account.                        |
+| `/{entity}s/{id}/external-logins/remove/microsoft`    | POST / DELETE | identity      | Removes a Microsoft external login from a user account.                     |
+| `/{entity}s/{id}/refresh-tokens`                      | GET           | identity      | Retrieves all refresh tokens associated with a specific user.               |
+| `/{entity}s/{id}/refresh-tokens/active`               | GET           | identity      | Retrieves all active refresh tokens for a specific user.                    |
+| `/{entity}s/refresh-tokens/{refreshTokenId}`          | DELETE        | identity      | Deletes a specific refresh token by its identifier.                         |
+| `/{entity}s/{id}/api-keys`                            | GET           | identity      | Retrieves all API keys associated with a specific user.                     |
+| `/{entity}s/{id}/api-keys/create`                     | POST          | identity      | Creates a new API key for a user.                                           |
+| `/{entity}s/api-keys/{apiKeyId}/edit`                 | PUT / POST    | identity      | Edits an existing API key.                                                  |
+| `/{entity}s/api-keys/{apiKeyId}/revoke`               | DELETE        | identity      | Revokes a specific API key.                                                 |
+| `/{entity}s/roles`                                    | GET           | administrator | Retrieves all roles in the system.                                          |
+| `/{entity}s/roles/create`                             | POST          | administrator | Creates a new role.                                                         |
+| `/{entity}s/roles/delete`                             | POST / DELETE | administrator | Deletes a role from the system.                                             |
+| `/{entity}s/roles/{roleId}/claims`                    | GET           | administrator | Retrieves all claims associated with a role.                                |
+| `/{entity}s/roles/{roleId}/claims/assign`             | POST          | administrator | Assigns a claim to a role.                                                  |
+| `/{entity}s/roles/{roleId}/claims/replace`            | PUT           | administrator | Replaces a claim of a role.                                                 |
+| `/{entity}s/roles/{roleId}/claims/assign-or-replace`  | PUT           | administrator | Assigns or replaces a claim of a role.                                      |
+| `/{entity}s/roles/{roleId}/claims/remove`             | POST / DELETE | administrator | Removes a claim from a role.                                                |
 
 > 📖 Learn more about **[Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#identity)**.
 

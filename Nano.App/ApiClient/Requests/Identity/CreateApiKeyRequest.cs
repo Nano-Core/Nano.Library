@@ -23,5 +23,5 @@ public class CreateApiKeyRequest<TIdentity> : BaseRequest
     /// </summary>
     [Required]
     [Body]
-    public virtual CreateApiKey<TIdentity> CreateApiKey { get; set; } = new();
+    public virtual CreateApiKey CreateApiKey { get; set; } = new();
 }
