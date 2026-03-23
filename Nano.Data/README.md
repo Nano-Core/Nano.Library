@@ -86,24 +86,24 @@ Nano abstractions.
 ## Configuration
 The `Data` section in the configuration defines the data provider and related settings used by the application.
 
-| Setting                         | Type   | Default     | Description                                                                                                                                                             |
-| ------------------------------- | ------ | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-|  `BatchSize`                    | int    | 25          | The maximum batch size for queries.                                                                                                                                     |
-|  `BulkBatchSize`                | int    | 500         | The maximum batch size for bulk operations.                                                                                                                             |
-|  `BulkBatchDelay`               | int    | 1000        | The delay (in milliseconds) between bulk batches.                                                                                                                       |
-|  `QueryRetryCount`              | int    | 0           | The number of times a query will retry on failure.                                                                                                                      |
-|  `UseLazyLoading`               | bool   | false       | A value indicating whether lazy loading is enabled. See **[Lazy Loading](#lazy-loading)**. ⚠️ Not recommended, use **[Nano Include Annotation](#include-annotation)**.  |
-|  `StartupAction`                | enum   | None        | The startup action for the database. Allowed Values: `None`, `Create` or `Migrate`. Defaults to `None`.                                                                 |
-|  `UseSensitiveDataLogging`      | bool   | false       | A value indicating whether sensitive data logging is enabled.                                                                                                           |
-|  `QuerySplittingBehavior`       | enum   | SingleQuery | The default query splitting behavior for EF Core queries.                                                                                                               |              
-|  `DefaultCollation`             | string | null        | The default collation for the database. ⚠️ Note: Changing this setting affects only new migrations and will not modify existing tables or columns.                      |
-|  `ConnectionString`             | string | null        | Required. The connection string for the database.                                                                                                                       |
-|  `Repository`                   | object | default     | The cache configuration options. See **[Repositories](#repositories)**.                                                                                                 |
-|  `Repository.UseAutoSave`       | bool   | true        | A value indicating whether automatic saving of changes in repositories is enabled. See **[Autosave](#autosave)**.                                                       |
-|  `Repository.QueryIncludeDepth` | int    | 4           | The maximum depth for query includes. See **[Include Annotation](#include-annotation)**.                                                                                |
-|  `ConnectionPool`               | object | null        | The connection pool configuration options. See **[Connection Pool](#connection-pool)**.                                                                                 |
-|  `Identity`                     | object | null        | The identity configuration options. See **[Identity](#identity)**.                                                                                                      |
-|  `HealthCheck`                  | object | null        | The options for configuring health checks. See **[Health Check](#health-check)**. _Only relevant for `NanoApiApplication` and `NanoWebApplication`_.                    |
+| Setting                        | Type   | Default     | Description                                                                                                                                                             |
+| ------------------------------ | ------ | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `BatchSize`                    | int    | 25          | The maximum batch size for queries.                                                                                                                                     |
+| `BulkBatchSize`                | int    | 500         | The maximum batch size for bulk operations.                                                                                                                             |
+| `BulkBatchDelay`               | int    | 1000        | The delay (in milliseconds) between bulk batches.                                                                                                                       |
+| `QueryRetryCount`              | int    | 0           | The number of times a query will retry on failure.                                                                                                                      |
+| `UseLazyLoading`               | bool   | false       | A value indicating whether lazy loading is enabled. See **[Lazy Loading](#lazy-loading)**. ⚠️ Not recommended, use **[Nano Include Annotation](#include-annotation)**.  |
+| `StartupAction`                | enum   | None        | The startup action for the database. Allowed Values: `None`, `Create` or `Migrate`. Defaults to `None`.                                                                 |
+| `UseSensitiveDataLogging`      | bool   | false       | A value indicating whether sensitive data logging is enabled.                                                                                                           |
+| `QuerySplittingBehavior`       | enum   | SingleQuery | The default query splitting behavior for EF Core queries.                                                                                                               |              
+| `DefaultCollation`             | string | null        | The default collation for the database. ⚠️ Note: Changing this setting affects only new migrations and will not modify existing tables or columns.                      |
+| `ConnectionString`             | string | null        | Required. The connection string for the database.                                                                                                                       |
+| `Repository`                   | object | default     | The cache configuration options. See **[Repositories](#repositories)**.                                                                                                 |
+| `Repository.UseAutoSave`       | bool   | true        | A value indicating whether automatic saving of changes in repositories is enabled. See **[Autosave](#autosave)**.                                                       |
+| `Repository.QueryIncludeDepth` | int    | 4           | The maximum depth for query includes. See **[Include Annotation](#include-annotation)**.                                                                                |
+| `ConnectionPool`               | object | null        | The connection pool configuration options. See **[Connection Pool](#connection-pool)**.                                                                                 |
+| `Identity`                     | object | null        | The identity configuration options. See **[Identity](#identity)**.                                                                                                      |
+| `HealthCheck`                  | object | null        | The options for configuring health checks. See **[Health Check](#health-check)**. _Only relevant for `NanoApiApplication` and `NanoWebApplication`_.                    |
 
 ```json
 "Data": {
@@ -141,31 +141,31 @@ and reduce allocation overhead.
 Identity configures the data store used for authentication and authorization. It manages users, roles, and related security data required for signing in and enforcing 
 access control.  
 
-| Setting                                | Type     | Default         | Description                                                                                                              |
-| -------------------------------------- | -------- | --------------- | ------------------------------------------------------------------------------------------------------------------------ |
-|  `TokensExpirationInHours`             | TimeSpan | 24:00:00        | The expiration time for tokens in hours.                                                                                 |
-|  `UseAudit`                            | enum     | None            | Defines which intitity models to to audit. Allows multiple values. See possible values below.                            |
-|  `User`                                | object   | default         | Options for user-specific settings.                                                                                      |
-|  `User.IsUniqueEmailAddressRequired`   | bool     | true            | A value indicating whether each user must have a unique email address.                                                   |
-|  `User.IsUniquePhoneNumberRequired`    | bool     | false           | A value indicating whether each user must have a unique phone number.                                                    |
-|  `User.AllowedUserNameCharacters`      | string   | abcde...        | The allowed characters for usernames.                                                                                    |
-|  `User.DefaultRoles`                   | array    | [administrator] | The default roles assigned to a new user. If `null`, new users will automatically be assigned the _Administrator_ role.  |
-|  `SignIn`                              | object   | default         | Options for sign-in requirements.                                                                                        |
-|  `SignIn.RequireConfirmedEmail`        | bool     | False           | A value indicating whether users must have a confirmed email to sign in.                                                 |
-|  `SignIn.RequireConfirmedPhoneNumber`  | bool     | false           | A value indicating whether users must have a confirmed phone number to sign in.                                          |
-|  `Lockout`                             | object   | default         | Options for account lockout policies.                                                                                    |
-|  `Lockout.AllowedForNewUsers`          | bool     | true            | A value indicating whether lockout is allowed for new users.                                                             |
-|  `Lockout.MaxFailedAccessAttempts`     | int      | 3               | The maximum number of failed access attempts before a user is locked out.                                                |
-|  `Lockout.DefaultLockoutTimeSpan`      | TImeSpan | 00:30:00        | The default lockout duration for a user.                                                                                 |
-|  `Password`                            | object   | default         | Options for password complexity requirements.                                                                            |
-|  `Password.RequireDigit`               | bool     | true            | A value indicating whether the password must contain at least one digit.                                                 |
-|  `Password.RequireNonAlphanumeric`     | bool     | true            | A value indicating whether the password must contain at least one non-alphanumeric character.                            |
-|  `Password.RequireLowercase`           | bool     | true            | A value indicating whether the password must contain at least one lowercase letter.                                      |
-|  `Password.RequirUppercase`            | bool     | true            | A value indicating whether the password must contain at least one uppercase letter.                                      |
-|  `Password.RequiredLength`             | int      | 12              | The minimum required length of the password.                                                                             |
-|  `Password.RequiredUniqueCharacters`   | int      | 3               | The number of unique characters required in the password.                                                                |
-|  `ApiKey`                              | object   | default         | Optional. Options for API keys.                                                                                          |
-|  `ApiKey.Secret`                       | string   | null            | Required. The secret key used to create and validate API keys.                                                           |
+| Setting                               | Type     | Default         | Description                                                                                                              |
+| ------------------------------------- | -------- | --------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `TokensExpirationInHours`             | TimeSpan | 24:00:00        | The expiration time for tokens in hours.                                                                                 |
+| `UseAudit`                            | enum     | None            | Defines which intitity models to to audit. Allows multiple values. See possible values below.                            |
+| `User`                                | object   | default         | Options for user-specific settings.                                                                                      |
+| `User.IsUniqueEmailAddressRequired`   | bool     | true            | A value indicating whether each user must have a unique email address.                                                   |
+| `User.IsUniquePhoneNumberRequired`    | bool     | false           | A value indicating whether each user must have a unique phone number.                                                    |
+| `User.AllowedUserNameCharacters`      | string   | abcde...        | The allowed characters for usernames.                                                                                    |
+| `User.DefaultRoles`                   | array    | [administrator] | The default roles assigned to a new user. If `null`, new users will automatically be assigned the _Administrator_ role.  |
+| `SignIn`                              | object   | default         | Options for sign-in requirements.                                                                                        |
+| `SignIn.RequireConfirmedEmail`        | bool     | False           | A value indicating whether users must have a confirmed email to sign in.                                                 |
+| `SignIn.RequireConfirmedPhoneNumber`  | bool     | false           | A value indicating whether users must have a confirmed phone number to sign in.                                          |
+| `Lockout`                             | object   | default         | Options for account lockout policies.                                                                                    |
+| `Lockout.AllowedForNewUsers`          | bool     | true            | A value indicating whether lockout is allowed for new users.                                                             |
+| `Lockout.MaxFailedAccessAttempts`     | int      | 3               | The maximum number of failed access attempts before a user is locked out.                                                |
+| `Lockout.DefaultLockoutTimeSpan`      | TImeSpan | 00:30:00        | The default lockout duration for a user.                                                                                 |
+| `Password`                            | object   | default         | Options for password complexity requirements.                                                                            |
+| `Password.RequireDigit`               | bool     | true            | A value indicating whether the password must contain at least one digit.                                                 |
+| `Password.RequireNonAlphanumeric`     | bool     | true            | A value indicating whether the password must contain at least one non-alphanumeric character.                            |
+| `Password.RequireLowercase`           | bool     | true            | A value indicating whether the password must contain at least one lowercase letter.                                      |
+| `Password.RequirUppercase`            | bool     | true            | A value indicating whether the password must contain at least one uppercase letter.                                      |
+| `Password.RequiredLength`             | int      | 12              | The minimum required length of the password.                                                                             |
+| `Password.RequiredUniqueCharacters`   | int      | 3               | The number of unique characters required in the password.                                                                |
+| `ApiKey`                              | object   | default         | Optional. Options for API keys.                                                                                          |
+| `ApiKey.Secret`                       | string   | null            | Required. The secret key used to create and validate API keys.                                                           |
 
 ```json
 "Data": {
@@ -247,9 +247,9 @@ When health checks are enabled in the data configuration, Nano automatically reg
 This allows the application to verify that the underlying database connection is available and operational. The health check integrates with ASP.NET Core's health check system 
 and can be used by monitoring tools, load balancers, or container orchestrators to determine the health status of the application.  
 
-| Setting                         | Type   | Default     | Description                                                                                                                           |
-| ------------------------------- | ------ | ----------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-|  `HealthCheck.UnhealthyStatus`  | enum   | Unhealthy   | The health status reported when the data provider is unavailable. _Only relevant for `NanoApiApplication` and `NanoWebApplication`_.  |
+| Setting                        | Type   | Default     | Description                                                                                                                           |
+| ------------------------------ | ------ | ----------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `HealthCheck.UnhealthyStatus`  | enum   | Unhealthy   | The health status reported when the data provider is unavailable. _Only relevant for `NanoApiApplication` and `NanoWebApplication`_.  |
 
 ```json
 "Data": {
@@ -561,8 +561,8 @@ Try it out yourself using the **[Api.Data.Mysql](https://github.com/Nano-Core/Na
 **[Console.Data.Mysql](https://github.com/Nano-Core/Nano.Lessons/tree/master/Console.Data.Mysql)** examples. Similar examples are available for other data providers as well.  
 
 Nano also provides a dedicated repository for managing entity user models, the `IIdentityRepository` and `IIdentityRepository<TIdentity>`. These repositories expose common identity 
-operations such as login, signup, email changes, management of roles and claims, etc. Internally, the repository encapsulates functionality from `UserManager<T>`, `SignInManager<T>`, 
-and `RoleManager<T>`, providing a unified interface for working with identity features. This abstraction simplifies identity management and allows applications to interact with 
+operations such as login, signup, email changes, management of roles and claims, etc. Internally, the repository encapsulates functionality from `UserManager<T>` and 
+`RoleManager<T>`, providing a unified interface for working with identity features. This abstraction simplifies identity management and allows applications to interact with 
 identity logic through a single, consistent repository.  
 
 | Method                                  | Type                 | Parameters                                    | Description                                                                                                          |

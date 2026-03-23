@@ -6,7 +6,6 @@ using Nano.Data.Abstractions.Config;
 using Nano.Data.Abstractions.Identity;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Nano.Data.Abstractions.Identity.Consts;
-using Nano.Data.Abstractions.Identity.Extensions;
 using Nano.Data.Abstractions.Identity.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Data.Abstractions.Models.Identity;
@@ -21,19 +20,20 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Nano.App.Exceptions;
 using Nano.Data.Abstractions.Exceptions;
 using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 
 namespace Nano.Data.Identity;
 
 /// <inheritdoc />
-public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOptions> options, BaseDbContext<TIdentity> dbContext, SignInManager<IdentityUserEx<TIdentity>> signInManager, UserManager<IdentityUserEx<TIdentity>> userManager, RoleManager<IdentityRole<TIdentity>> roleManager)
+public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOptions> options, IAuthenticationSchemeProvider schemeProvider, BaseDbContext<TIdentity> dbContext, UserManager<IdentityUserEx<TIdentity>> userManager, RoleManager<IdentityRole<TIdentity>> roleManager)
     : IIdentityRepository<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     private readonly IOptionsMonitor<DataOptions> options = options ?? throw new ArgumentNullException(nameof(options));
+    private readonly IAuthenticationSchemeProvider schemeProvider = schemeProvider ?? throw new ArgumentNullException(nameof(schemeProvider));
     private readonly BaseDbContext<TIdentity> dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-    private readonly SignInManager<IdentityUserEx<TIdentity>> signInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
     private readonly UserManager<IdentityUserEx<TIdentity>> userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
     private readonly RoleManager<IdentityRole<TIdentity>> roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
 
@@ -41,10 +41,13 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
     #region Login
 
     /// <inheritdoc />
-    public virtual Task<IEnumerable<AuthenticationScheme>> GetExternalProviderSchemesAsync(CancellationToken cancellationToken = default)
+    public virtual async Task<IEnumerable<AuthenticationScheme>> GetExternalProviderSchemesAsync(CancellationToken cancellationToken = default)
     {
-        return this.signInManager
-            .GetExternalAuthenticationSchemesAsync();
+        var schemes = await this.schemeProvider
+            .GetAllSchemesAsync();
+
+        return schemes
+            .Where(s => !string.IsNullOrEmpty(s.DisplayName));
     }
 
     /// <inheritdoc />
@@ -52,33 +55,37 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
     {
         ArgumentNullException.ThrowIfNull(signIn);
 
-        var result = await this.signInManager
-            .PasswordSignInAsync(signIn.Username, signIn.Password, signIn.IsRememberMe, true);
+        var identityUser = await this.userManager
+            .FindByNameAsync(signIn.Username);
 
-        if (result.Succeeded)
+        if (identityUser == null)
         {
-            var identityUser = await this.userManager
-                .FindByNameAsync(signIn.Username);
-
-            return identityUser ?? throw new UnauthorizedException($"The user: {signIn.Username} was not found or is deactivated.");
+            throw new NotFoundException(nameof(identityUser));
         }
 
-        if (result.IsLockedOut)
+        var isLockedOut = await this.userManager
+            .IsLockedOutAsync(identityUser);
+
+        if (isLockedOut)
         {
-            throw new UnauthorizedException($"The user: {signIn.Username} is locked out.");
+            throw new PermissionDeniedException($"The user: {signIn.Username} is locked out.");
         }
 
-        if (result.IsNotAllowed)
+        var checkPassword = await this.userManager
+            .CheckPasswordAsync(identityUser, signIn.Password);
+
+        if (!checkPassword)
         {
-            throw new UnauthorizedException($"The user: {signIn.Username} is not allowed to login.");
+            await this.userManager.AccessFailedAsync(identityUser);
+
+            throw new UnauthorizedException();
         }
 
-        if (result.RequiresTwoFactor)
-        {
-            throw new UnauthorizedException($"The user: {signIn.Username} requires two-factor authentication.");
-        }
+        // success
+        await this.userManager
+            .ResetAccessFailedCountAsync(identityUser);
 
-        throw new UnauthorizedException($"An unknwon error occured, when trying to login user: {signIn.Username}.");
+        return identityUser;
     }
 
     /// <inheritdoc />
@@ -94,31 +101,20 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
             throw new UnauthorizedException($"The external login: {signInExternal.ExternalProvider.LoginProvider} for user: {signInExternal.ExternalProvider.ProviderKey} was not found or is deactivated.");
         }
 
-        await this.signInManager
-            .SignInAsync(identityUser, signInExternal.IsRememberMe);
-
         return identityUser;
     }
 
     /// <inheritdoc />
-    public virtual async Task SignOutAsync(CancellationToken cancellationToken = default)
+    public virtual async Task SignOutAsync(TIdentity userId, string appId, CancellationToken cancellationToken = default)
     {
-        var appId = this.signInManager.Context
-            .GetJwtAppId();
-
-        var userId = this.signInManager.Context
-            .GetJwtUserId();
-
-        if (userId == null)
-        {
-            return;
-        }
+        ArgumentNullException.ThrowIfNull(userId);
+        ArgumentNullException.ThrowIfNull(appId);
 
         var identityUserTokenExpiries = this.dbContext
             .Set<IdentityUserRefreshToken<TIdentity>>();
 
         var refreshTokens = identityUserTokenExpiries
-            .Where(x => x.IdentityUserId.Equals(userId.Value) && x.AppId == appId);
+            .Where(x => x.IdentityUserId.Equals(userId) && x.AppId == appId);
 
         if (refreshTokens.Any())
         {
@@ -131,9 +127,6 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
             await this.dbContext
                 .SaveChangesAsync(cancellationToken);
         }
-
-        await this.signInManager
-            .SignOutAsync();
     }
 
     #endregion
@@ -224,9 +217,6 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
         {
             ThrowIdentityExceptions(addLoginResult.Errors);
         }
-
-        await this.signInManager
-            .SignInAsync(identityUser, false);
 
         return await this.CreateUser(signUpExternal.User, identityUser, cancellationToken);
     }
@@ -325,9 +315,6 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
         {
             ThrowIdentityExceptions(result.Errors);
         }
-
-        await this.signInManager
-            .RefreshSignInAsync(identityUser);
     }
 
     /// <inheritdoc />
@@ -770,9 +757,6 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
         this.dbContext
             .RemoveRange(refreshTokens);
 
-        await this.signInManager
-            .SignOutAsync();
-
         identityUser.IsActive = false;
 
         var entityEntry = this.dbContext
@@ -1182,12 +1166,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
         var result = await this.userManager
             .RemoveLoginAsync(identityUser, removeExternalLogin.LoginProvider, userLoginInfo.ProviderKey);
 
-        if (result.Succeeded)
-        {
-            await this.signInManager
-                .RefreshSignInAsync(identityUser);
-        }
-        else
+        if (!result.Succeeded)
         {
             ThrowIdentityExceptions(result.Errors);
         }

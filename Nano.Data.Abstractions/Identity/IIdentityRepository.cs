@@ -55,9 +55,11 @@ public interface IIdentityRepository<TIdentity>
     /// <summary>
     /// Signs out the currently authenticated user and removes any associated refresh tokens.
     /// </summary>
+    /// <param name="userId">The user id.</param>
+    /// <param name="appId">The app id of the JWT token.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    Task SignOutAsync(CancellationToken cancellationToken = default);
+    Task SignOutAsync(TIdentity userId, string appId, CancellationToken cancellationToken = default);
 
     #endregion
 

@@ -1,109 +1,60 @@
+using Microsoft.AspNetCore.Authentication;
+using Nano.App.Api.Mvc.Authentication.Abstractions;
+using Nano.Data.Abstractions.Exceptions;
+using Nano.Data.Abstractions.Identity.Authentication;
+using Nano.Data.Abstractions.Identity.Authentication.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using Nano.App.Api.Config;
-using Nano.App.Api.Mvc.Authentication.Abstractions;
-using Nano.Data.Abstractions.Exceptions;
-using Nano.Data.Abstractions.Identity.Authentication;
-using Nano.Data.Abstractions.Identity.Authentication.Models;
 
 namespace Nano.App.Api.Mvc.Authentication;
 
 /// <inheritdoc />
-public class AuthTransientRepository : IAuthTransientRepository
+public class AuthTransientRepository(IAuthenticationSchemeProvider schemeProvider, IAuthJwtRepository authJwtRepository, IAuthExternalRepository? authExternalRepository = null)
+    : IAuthTransientRepository
 {
-    private readonly ExternalLoginOptions options;
-    private readonly IAuthJwtRepository authJwtRepository;
-    private readonly IAuthExternalRepository? authExternalRepository;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="AuthTransientRepository"/> class.
-    /// </summary>
-    /// <param name="options">The external login options used to configure the repository. Cannot be null.</param>
-    /// <param name="authJwtRepository">The JWT authentication repository used for token management. Cannot be null.</param>
-    /// <param name="authExternalRepository">An optional external authentication repository. Can be null if not required.</param>
-    public AuthTransientRepository(ExternalLoginOptions options, IAuthJwtRepository authJwtRepository, IAuthExternalRepository? authExternalRepository = null)
-    {
-        this.options = options ?? throw new ArgumentNullException(nameof(options));
-        this.authJwtRepository = authJwtRepository ?? throw new ArgumentNullException(nameof(authJwtRepository));
-        this.authExternalRepository = authExternalRepository;
-    }
+    private readonly IAuthJwtRepository authJwtRepository = authJwtRepository ?? throw new ArgumentNullException(nameof(authJwtRepository));
+    private readonly IAuthenticationSchemeProvider schemeProvider = schemeProvider ?? throw new ArgumentNullException(nameof(schemeProvider));
 
     /// <inheritdoc />
     public virtual async Task<IEnumerable<ExternalLoginProvider>> GetExternalProviderSchemesAsync(CancellationToken cancellationToken = default)
     {
-        await Task.CompletedTask;
+        var schemes = await this.schemeProvider
+            .GetAllSchemesAsync();
 
-        var schemes = new List<ExternalLoginProvider>();
-
-        if (this.options.Facebook != null)
-        {
-            const string NAME = nameof(this.options.Facebook);
-
-            schemes
-                .Add(new ExternalLoginProvider
-                {
-                    Name = NAME,
-                    DisplayName = NAME
-                });
-        }
-
-        if (this.options.Google != null)
-        {
-            const string NAME = nameof(this.options.Google);
-
-            schemes
-                .Add(new ExternalLoginProvider
-                {
-                    Name = NAME,
-                    DisplayName = NAME
-                });
-        }
-
-        if (this.options.Microsoft != null)
-        {
-            const string NAME = nameof(this.options.Microsoft);
-
-            schemes
-                .Add(new ExternalLoginProvider
-                {
-                    Name = NAME,
-                    DisplayName = NAME
-                });
-        }
-
-        return schemes;
+        return schemes
+            .Where(s => !string.IsNullOrEmpty(s.DisplayName))
+            .Select(x => new ExternalLoginProvider
+            {
+                Name = x.Name,
+                DisplayName = x.DisplayName
+            });
     }
 
     /// <inheritdoc />
-    public virtual async Task<AccessToken> LogInExternalAsync(LogInExternalDirect externalLogInData, CancellationToken cancellationToken = default)
+    public virtual async Task<AccessToken> LogInExternalAsync(LogInExternalDirect logInExternalDirect, CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(externalLogInData);
-
-        if (this.authExternalRepository == null)
-        {
-            throw new NullReferenceException(nameof(this.authExternalRepository));
-        }
+        ArgumentNullException.ThrowIfNull(logInExternalDirect);
 
         await Task.CompletedTask;
 
-        var claims = externalLogInData.TransientClaims
+        var claims = logInExternalDirect.TransientClaims
             .Select(x => new Claim(x.Key, x.Value));
 
-        var roleClaims = externalLogInData.TransientRoles
+        var roleClaims = logInExternalDirect.TransientRoles
             .Select(x => new Claim(ClaimTypes.Role, x));
 
         var accessToken = this.authJwtRepository
             .GenerateJwtToken(new GenerateJwtToken
             {
-                AppId = externalLogInData.AppId,
-                UserId = externalLogInData.ExternalLogInData.Id,
-                UserName = externalLogInData.ExternalLogInData.Name,
-                UserEmail = externalLogInData.ExternalLogInData.Email,
-                ExternalToken = externalLogInData.ExternalLogInData.ExternalToken,
+                AppId = logInExternalDirect.AppId,
+                UserId = logInExternalDirect.ExternalLogInData.Id,
+                UserName = logInExternalDirect.ExternalLogInData.Name,
+                UserEmail = logInExternalDirect.ExternalLogInData.Email,
+                ExternalToken = logInExternalDirect.ExternalLogInData.ExternalToken,
                 Claims = claims
                     .Union(roleClaims)
             });
@@ -117,12 +68,12 @@ public class AuthTransientRepository : IAuthTransientRepository
     {
         ArgumentNullException.ThrowIfNull(logInExternal);
 
-        if (this.authExternalRepository == null)
+        if (authExternalRepository == null)
         {
-            throw new NullReferenceException(nameof(this.authExternalRepository));
+            throw new NullReferenceException(nameof(authExternalRepository));
         }
 
-        var externalLoginData = await this.authExternalRepository
+        var externalLoginData = await authExternalRepository
             .AuthenticateAsync(logInExternal.Provider, cancellationToken);
 
         if (externalLoginData == null)
@@ -134,7 +85,6 @@ public class AuthTransientRepository : IAuthTransientRepository
         {
             AppId = logInExternal.AppId,
             IsRefreshable = logInExternal.IsRefreshable,
-            IsRememberMe = logInExternal.IsRememberMe,
             ExternalLogInData = externalLoginData,
             TransientRoles = logInExternal.TransientRoles,
             TransientClaims = logInExternal.TransientClaims

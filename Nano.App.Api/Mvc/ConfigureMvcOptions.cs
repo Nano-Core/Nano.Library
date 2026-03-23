@@ -5,11 +5,13 @@ using Nano.App.Api.Config;
 using Nano.App.Api.Mvc.Conventions;
 using Nano.Data.Abstractions.Config;
 using System;
+using Nano.App.Api.Mvc.Authentication;
 
 namespace Nano.App.Api.Mvc;
 
-internal sealed class ConfigureMvcOptions(IOptionsMonitor<ApiOptions> apiOptions, IOptionsMonitor<DataOptions>? dataOptions = null) : IConfigureOptions<MvcOptions>
+internal sealed class ConfigureMvcOptions(AuthenticationSchemeCache authenticationSchemeProvider, IOptionsMonitor<ApiOptions> apiOptions, IOptionsMonitor<DataOptions>? dataOptions = null) : IConfigureOptions<MvcOptions>
 {
+    private readonly AuthenticationSchemeCache authenticationSchemeCache = authenticationSchemeProvider ?? throw new ArgumentNullException(nameof(authenticationSchemeProvider));
     private readonly IOptionsMonitor<ApiOptions> apiOptions = apiOptions ?? throw new ArgumentNullException(nameof(apiOptions));
 
     /// <summary>
@@ -27,7 +29,7 @@ internal sealed class ConfigureMvcOptions(IOptionsMonitor<ApiOptions> apiOptions
         var routeAttribute = new RouteAttribute(this.apiOptions.CurrentValue.Hosting.Root);
         var routePrefixConvention = new RoutePrefixConvention(routeAttribute);
         var producesJsonConvention = new ProducesJsonConvention();
-        var conditionalActionConvention = new ConditionalActionsConvention(this.apiOptions, dataOptions);
+        var conditionalActionConvention = new ConditionalActionsConvention(this.authenticationSchemeCache, this.apiOptions, dataOptions);
 
         options.Conventions
             .Insert(0, routePrefixConvention);

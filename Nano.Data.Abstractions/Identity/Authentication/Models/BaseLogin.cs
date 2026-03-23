@@ -15,14 +15,6 @@ public abstract class BaseLogIn
     public virtual string? AppId { get; set; }
 
     /// <summary>
-    /// Indicates whether the login should be persisted across sessions.
-    /// Not relevant for transient logins.
-    /// </summary>
-    [Required]
-    [DefaultValue(false)]
-    public virtual bool IsRememberMe { get; set; } = false;
-
-    /// <summary>
     /// Indicates whether the login supports token refresh.
     /// Not relevant for transient logins.
     /// </summary>

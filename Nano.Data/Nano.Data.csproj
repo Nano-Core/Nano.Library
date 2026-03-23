@@ -11,6 +11,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\Nano.App\Nano.App.csproj" />
 	  <ProjectReference Include="..\Nano.Common\Nano.Common.csproj" />
 	  <ProjectReference Include="..\Nano.Data.Abstractions\Nano.Data.Abstractions.csproj" />
 	  <ProjectReference Include="..\Nano.Eventing.Abstractions\Nano.Eventing.Abstractions.csproj" />

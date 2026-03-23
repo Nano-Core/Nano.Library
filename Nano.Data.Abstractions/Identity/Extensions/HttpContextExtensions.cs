@@ -28,23 +28,14 @@ public static class HttpContextExtensions
     /// </summary>
     /// <param name="httpContext">The current HTTP context.</param>
     /// <returns>The user identifier as a <see cref="Guid"/> if present and valid; otherwise, null.</returns>
-    public static Guid? GetJwtUserId(this HttpContext httpContext)
+    public static string? GetJwtUserId(this HttpContext httpContext)
     {
         ArgumentNullException.ThrowIfNull(httpContext);
 
         var value = httpContext
             .GetJwtClaimValue(JwtRegisteredClaimNames.Sub);
 
-        if (value == null)
-        {
-            return null;
-        }
-
-        var success = Guid.TryParse(value, out var result);
-
-        return success
-            ? result
-            : null;
+        return value;
     }
 
     /// <summary>

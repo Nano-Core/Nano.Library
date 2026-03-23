@@ -27,6 +27,7 @@ using Nano.App.Api.Mvc.Authentication.Extensions;
 using Nano.App.Api.Mvc.Authorization.Extensions;
 using Nano.App.Api.Mvc.Documentation;
 using Nano.App.Consts;
+using Nano.Data.Abstractions.Config;
 using Vivet.AspNetCore.RequestTimeZone.Enums;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
 using Vivet.AspNetCore.RequestTimeZone.Providers;
@@ -40,7 +41,7 @@ namespace Nano.App.Api.Extensions;
 
 internal static class ServiceCollectionExtensions
 {
-    internal static IServiceCollection ConfigureNanoApiServices(this IServiceCollection services, ApiOptions options)
+    internal static IServiceCollection ConfigureNanoApiServices(this IServiceCollection services, ApiOptions options, ApiKeyOptions? apiKeyOptions = null)
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(options);
@@ -54,8 +55,8 @@ internal static class ServiceCollectionExtensions
             .AddNanoSession(options.Session)
             .AddNanoResponseCaching(options.ResponseCache)
             .AddNanoVersioning(options.Version)
-            .AddNanoAuthentication(options.Authentication)
-            .AddNanoAuthorization()
+            .AddNanoAuthentication(options.Authentication, apiKeyOptions)
+            .AddNanoAuthorization(options.Authentication)
             .AddNanoRequestLocalization(options.Localization)
             .AddNanoRequestTimeZone(options.TimeZone)
             .AddNanoVirusScan(options.VirusScan)
@@ -64,10 +65,8 @@ internal static class ServiceCollectionExtensions
             .AddNanoHttpsRedirection(options.Hosting.Http, options.Hosting.Https)
             .AddNanoMvc()
             .AddNanoDocumentation(options.Documentation)
-            .AddNanoHealthChecking(options.HealthCheck, options.Hosting.Http.Ports.FirstOrDefault());
-
-        services
-            .AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            .AddNanoHealthChecking(options.HealthCheck, options.Hosting.Http.Ports.FirstOrDefault())
+            .AddHttpContextAccessor();
 
         return services;
     }

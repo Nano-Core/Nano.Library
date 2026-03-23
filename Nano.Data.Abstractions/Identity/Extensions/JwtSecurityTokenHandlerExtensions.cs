@@ -49,7 +49,7 @@ public static class JwtSecurityTokenHandlerExtensions
         }
 
         return value
-            .ConvertToTIdentity<TIdentity>();
+            .ConvertToIdentity<TIdentity>();
     }
 
     /// <summary>
@@ -93,35 +93,5 @@ public static class JwtSecurityTokenHandlerExtensions
             .Value;
 
         return value;
-    }
-
-
-    private static TIdentity ConvertToTIdentity<TIdentity>(this string value)
-    {
-        ArgumentNullException.ThrowIfNull(value);
-
-        var target = typeof(TIdentity);
-
-        if (target == typeof(Guid) && Guid.TryParse(value, out var guid))
-        {
-            return (TIdentity)(object)guid;
-        }
-
-        if (target == typeof(int) && int.TryParse(value, out var integer))
-        {
-            return (TIdentity)(object)integer;
-        }
-
-        if (target == typeof(long) && long.TryParse(value, out var bigInteger))
-        {
-            return (TIdentity)(object)bigInteger;
-        }
-
-        if (target == typeof(string))
-        {
-            return (TIdentity)(object)value;
-        }
-
-        throw new InvalidOperationException($"Unsupported identity type: {target.FullName}");
     }
 }

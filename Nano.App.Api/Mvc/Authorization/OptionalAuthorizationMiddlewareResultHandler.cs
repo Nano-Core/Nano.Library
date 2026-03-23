@@ -1,17 +1,14 @@
-using System;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.AspNetCore.Http;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Nano.App.Api.Mvc.Authorization;
 
-/// <summary>
-/// A custom authorization middleware result handler that allows requests to proceed without authentication if no authentication schemes are registered.
-/// Otherwise, it delegates to the default <see cref="AuthorizationMiddlewareResultHandler"/>.
-/// </summary>
-public class OptionalAuthorizationMiddlewareResultHandler : IAuthorizationMiddlewareResultHandler
+internal class OptionalAuthorizationMiddlewareResultHandler : IAuthorizationMiddlewareResultHandler
 {
     private readonly AuthorizationMiddlewareResultHandler authorizationMiddlewareResultHandler = new();
 
@@ -32,10 +29,19 @@ public class OptionalAuthorizationMiddlewareResultHandler : IAuthorizationMiddle
         ArgumentNullException.ThrowIfNull(policy);
         ArgumentNullException.ThrowIfNull(authorizeResult);
 
-        var authResult = await context
-            .AuthenticateAsync();
+        if (context.RequestServices.GetService(typeof(IAuthenticationSchemeProvider)) is IAuthenticationSchemeProvider authenticationSchemeProvider)
+        {
+            var schemes = await authenticationSchemeProvider
+                .GetAllSchemesAsync();
 
-        if (authResult.None)
+            if (!schemes.Any())
+            {
+                await next(context);
+
+                return;
+            }
+        }
+        else
         {
             await next(context);
 

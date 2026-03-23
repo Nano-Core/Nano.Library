@@ -29,7 +29,7 @@ using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 
 namespace Nano.App.Api.Controllers;
 
-// BUG: 000: API-KEY: Distributed architecture(Add Validate api-key endpoint, Still needs ApiKeyAuthenticationHandler? Kubernetes ingress nginx integration)
+// BUG: API-KEY: Distributed architecture(Add Validate api-key endpoint, Still needs ApiKeyAuthenticationHandler? Kubernetes ingress nginx integration)
 // - (API-KEY: IdentityApiKey Roles and Claims (don't inherit from IdentityUser))  https://chatgpt.com/c/695ceb26-c6e4-832f-8840-b36bd21b5be9
 
 /// <inheritdoc />
@@ -38,7 +38,7 @@ public abstract class BaseIdentityController<TEntity, TCriteria> : BaseIdentityC
     where TCriteria : class, IQueryCriteria, new()
 {
     /// <inheritdoc />
-    protected BaseIdentityController(ILogger<BaseIdentityController<TEntity, TCriteria>> logger, IRepository repository, IIdentityRepository<Guid> identityRepository, IAuthExternalRepository? authExternalRepository = null)
+    protected BaseIdentityController(ILogger<BaseIdentityController<TEntity, TCriteria>> logger, IRepository repository, IIdentityRepository identityRepository, IAuthExternalRepository? authExternalRepository = null)
         : base(logger, repository, identityRepository, authExternalRepository)
     {
     }

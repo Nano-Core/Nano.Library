@@ -161,7 +161,7 @@ public static class ServiceCollectionExtensions
         var requestId = httpContextAccessor.HttpContext?.TraceIdentifier;
         var createdBy = httpContextAccessor.HttpContext == null 
             ? null 
-            : httpContextAccessor.HttpContext.GetJwtUserId()?.ToString() ?? "Anonymous";
+            : httpContextAccessor.HttpContext.GetJwtUserId() ?? "Anonymous";
 
         var auditEntries = audit.Entries
             .Where(x => x.AuditEntryID == 0)

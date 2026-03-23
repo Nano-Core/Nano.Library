@@ -32,7 +32,7 @@ public class IdentityUserRefreshTokenMapping<TIdentity> : BaseEntityIdentityMapp
 
         builder
             .HasOne(x => x.IdentityUser)
-            .WithOne();
+            .WithMany();
 
         builder
             .Property(x => x.AppId)

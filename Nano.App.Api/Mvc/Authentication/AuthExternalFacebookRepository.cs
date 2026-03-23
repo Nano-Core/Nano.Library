@@ -1,13 +1,13 @@
-using System;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 using Nano.App.Api.Config;
 using Nano.Data.Abstractions.Exceptions;
 using Nano.Data.Abstractions.Identity.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Consts;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Newtonsoft.Json;
+using System;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Nano.App.Api.Mvc.Authentication;
 

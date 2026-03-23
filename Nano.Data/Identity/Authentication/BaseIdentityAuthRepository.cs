@@ -54,8 +54,7 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
             .SignInAsync(new SignIn
             {
                 Username = logIn.Username,
-                Password = logIn.Password,
-                IsRememberMe = logIn.IsRememberMe
+                Password = logIn.Password
             }, cancellationToken);
 
         if (identityUser == null)
@@ -95,8 +94,7 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
                 {
                     LoginProvider = logInExternalDirect.ExternalLogInData.ExternalToken.Name,
                     ProviderKey = logInExternalDirect.ExternalLogInData.Id
-                },
-                IsRememberMe = logInExternalDirect.IsRememberMe
+                }
             }, cancellationToken);
 
         var claims = await this.identityRepository
@@ -121,10 +119,10 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
     }
 
     /// <inheritdoc />
-    public virtual async Task<AccessToken> LogInExternalAsync<TProvider>(BaseLogInExternal<TProvider> logInExternalTransient, CancellationToken cancellationToken = default)
+    public virtual async Task<AccessToken> LogInExternalAsync<TProvider>(BaseLogInExternal<TProvider> logInExternal, CancellationToken cancellationToken = default)
         where TProvider : BaseLogInExternalProvider, new()
     {
-        ArgumentNullException.ThrowIfNull(logInExternalTransient);
+        ArgumentNullException.ThrowIfNull(logInExternal);
 
         if (this.authExternalRepository == null)
         {
@@ -132,7 +130,7 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
         }
 
         var externalLoginData = await this.authExternalRepository
-            .AuthenticateAsync(logInExternalTransient.Provider, cancellationToken);
+            .AuthenticateAsync(logInExternal.Provider, cancellationToken);
 
         if (externalLoginData == null)
         {
@@ -141,12 +139,11 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
 
         return await this.LogInExternalAsync(new LogInExternalDirect
         {
-            AppId = logInExternalTransient.AppId,
-            IsRefreshable = logInExternalTransient.IsRefreshable,
-            IsRememberMe = logInExternalTransient.IsRememberMe,
+            AppId = logInExternal.AppId,
+            IsRefreshable = logInExternal.IsRefreshable,
             ExternalLogInData = externalLoginData,
-            TransientRoles = logInExternalTransient.TransientRoles,
-            TransientClaims = logInExternalTransient.TransientClaims
+            TransientRoles = logInExternal.TransientRoles,
+            TransientClaims = logInExternal.TransientClaims
         }, cancellationToken);
     }
 
@@ -231,10 +228,12 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
     }
 
     /// <inheritdoc />
-    public virtual Task LogOutAsync(CancellationToken cancellationToken = default)
+    public virtual Task LogOutAsync(TIdentity userId, string appId, CancellationToken cancellationToken = default)
     {
+        ArgumentNullException.ThrowIfNull(appId);
+
         return this.identityRepository
-            .SignOutAsync(cancellationToken);
+            .SignOutAsync(userId, appId, cancellationToken);
     }
 
 

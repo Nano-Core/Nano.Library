@@ -2,7 +2,5 @@
 
 internal static class AuthorizationPolicies
 {
-    internal const string DEFAULT = "NanoAuthenticationPolicy";
-
-    internal const string ADD_OR_EDIT = "NanoAddOrEditPolicy";
+    internal const string ADD_OR_EDIT = "NanoAddOrEdit";
 }

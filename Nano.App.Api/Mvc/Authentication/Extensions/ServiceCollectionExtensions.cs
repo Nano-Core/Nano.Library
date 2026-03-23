@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
@@ -5,6 +6,7 @@ using Nano.App.Api.Config;
 using Nano.App.Api.Mvc.Authentication.Abstractions;
 using Nano.App.Config;
 using Nano.Common.Consts;
+using Nano.Data.Abstractions.Config;
 using Nano.Data.Abstractions.Identity.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Consts;
 using System;
@@ -16,44 +18,72 @@ namespace Nano.App.Api.Mvc.Authentication.Extensions;
 
 internal static class ServiceCollectionExtensions
 {
-    internal static IServiceCollection AddNanoAuthentication(this IServiceCollection services, AuthenticationOptions options)
+    internal static IServiceCollection AddNanoAuthentication(this IServiceCollection services, AuthenticationOptions options, ApiKeyOptions? apiKeyOptions = null)
     {
         ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(options);
 
         JwtSecurityTokenHandler.DefaultInboundClaimTypeMap
             .Clear();
 
         services
+            .AddSingleton<AuthenticationSchemeCache>();
+
+        if (options.Jwt == null && apiKeyOptions == null)
+        {
+            return services;
+        }
+
+        var defaultScheme = (options.Jwt != null, apiKeyOptions != null) switch
+        {
+            (true, true) => AuthenticationSchemes.JWT_OR_APIKEY,
+            (true, false) => AuthenticationSchemes.JWT,
+            (false, true) => AuthenticationSchemes.API_KEY,
+            _ => throw new ArgumentOutOfRangeException(nameof(options))
+        };
+
+        var authenticationBuilder = services
             .AddAuthentication(x =>
             {
-                x.DefaultScheme ??= AuthenticationSchemes.DYNAMIC_SCHEME;
+                x.DefaultScheme = defaultScheme;
+                x.DefaultAuthenticateScheme = defaultScheme;
+                x.DefaultChallengeScheme = defaultScheme;
+                x.DefaultForbidScheme = defaultScheme;
+                x.DefaultSignInScheme = defaultScheme;
+                x.DefaultSignOutScheme = defaultScheme;
             })
-            .AddJwtAuthentication(options.Jwt)
-            .AddPolicyScheme(AuthenticationSchemes.DYNAMIC_SCHEME, "Dynamic API Scheme", x =>
-            {
-                x.ForwardDefaultSelector = context =>
+            .AddJwtAuthentication(options.Jwt);
+
+        if (defaultScheme == AuthenticationSchemes.JWT_OR_APIKEY)
+        {
+            authenticationBuilder
+                .AddPolicyScheme(AuthenticationSchemes.JWT_OR_APIKEY, null, x =>
                 {
-                    if (context.Request.Headers.ContainsKey(HeaderNames.Authorization))
+                    x.ForwardDefaultSelector = context =>
                     {
+                        if (context.Request.Headers.ContainsKey(HeaderNames.Authorization))
+                        {
+                            return AuthenticationSchemes.JWT;
+                        }
+
+                        if (context.Request.Headers.ContainsKey(NanoHeaderNames.X_API_KEY))
+                        {
+                            return AuthenticationSchemes.API_KEY;
+                        }
+
                         return AuthenticationSchemes.JWT;
-                    }
-
-                    if (context.Request.Headers.ContainsKey(NanoHeaderNames.X_API_KEY))
-                    {
-                        return AuthenticationSchemes.API_KEY;
-                    }
-
-                    return null;
-                };
-            });
+                    };
+                });
+        }
 
         if (options.Jwt != null)
         {
             services
+                .AddAuthRepository()
                 .AddAuthJwtRepository(options.Jwt)
                 .AddAuthRootRepository(options.Jwt.RootLogin)
-                .AddAuthTransientRepository(options.Jwt.ExternalLogins)
-                .AddAuthExternalRepository(options.Jwt.ExternalLogins)
+                .AddAuthTransientRepository()
+                .AddAuthExternalRepository()
                 .AddAuthExternalFacebookRepository(options.Jwt.ExternalLogins.Facebook)
                 .AddAuthExternalGoogleRepository(options.Jwt.ExternalLogins.Google)
                 .AddAuthExternalMicrosoftRepository(options.Jwt.ExternalLogins.Microsoft);
@@ -63,6 +93,16 @@ internal static class ServiceCollectionExtensions
     }
 
 
+    private static IServiceCollection AddAuthRepository(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        services
+            .AddScoped<IAuthRepository, AuthRepository>()
+            .AddScoped(typeof(IAuthRepository<>), typeof(AuthRepository<>));
+
+        return services;
+    }
     private static IServiceCollection AddAuthJwtRepository(this IServiceCollection services, JwtAuthenticationOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(services);
@@ -117,27 +157,15 @@ internal static class ServiceCollectionExtensions
 
         return services;
     }
-    private static IServiceCollection AddAuthTransientRepository(this IServiceCollection services, ExternalLoginOptions? options = null)
+    private static IServiceCollection AddAuthTransientRepository(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
-
-        if (options is not { IsConfigured: true })
-        {
-            return services;
-        }
 
         services
             .AddScoped<IAuthTransientRepository>(x =>
             {
-                var apiOptions = x
-                    .GetRequiredService<IOptionsMonitor<ApiOptions>>();
-
-                var externalLoginsOptions = apiOptions.CurrentValue.Authentication.Jwt?.ExternalLogins;
-
-                if (externalLoginsOptions == null)
-                {
-                    throw new NullReferenceException(nameof(externalLoginsOptions));
-                }
+                var authenticationSchemeProvider = x
+                    .GetRequiredService<IAuthenticationSchemeProvider>();
 
                 var authJwtRepository = x
                     .GetRequiredService<IAuthJwtRepository>();
@@ -145,21 +173,16 @@ internal static class ServiceCollectionExtensions
                 var authExternalRepository = x
                     .GetService<IAuthExternalRepository>();
 
-                return new AuthTransientRepository(externalLoginsOptions, authJwtRepository, authExternalRepository);
+                return new AuthTransientRepository(authenticationSchemeProvider, authJwtRepository, authExternalRepository);
             });
         services
             .AddScoped<IAuthExternalRepository, AuthExternalRepository>();
 
         return services;
     }
-    private static IServiceCollection AddAuthExternalRepository(this IServiceCollection services, ExternalLoginOptions? options = null)
+    private static IServiceCollection AddAuthExternalRepository(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
-
-        if (options is not { IsConfigured: true })
-        {
-            return services;
-        }
 
         services
             .AddScoped<IAuthExternalRepository>(x =>

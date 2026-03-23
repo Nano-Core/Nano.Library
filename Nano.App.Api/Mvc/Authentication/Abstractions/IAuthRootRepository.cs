@@ -1,6 +1,6 @@
-using System.Threading.Tasks;
 using Nano.App.ApiClient.Requests.Auth.Models;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
+using System.Threading.Tasks;
 
 namespace Nano.App.Api.Mvc.Authentication.Abstractions;
 

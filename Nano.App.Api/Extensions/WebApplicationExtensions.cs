@@ -1,6 +1,6 @@
-using System;
 using Microsoft.AspNetCore.Builder;
 using Nano.App.Api.Config;
+using System;
 
 namespace Nano.App.Api.Extensions;
 
@@ -26,7 +26,7 @@ internal static class WebApplicationExtensions
             .UseCookiePolicy()
             .UseRouting()
             .UseNanoHttpCorsPolicy(options.HttpPolicyHeaders.Cors)
-            .UseAuthentication()
+            .UseNanoAuthentication()
             .UseAuthorization()
             .UseNanoSession(options.Session)
             .UseNanoRequestIdentifier()

@@ -1,14 +1,16 @@
-using System;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Nano.App.Abstractions;
 using Nano.App.Api.Config;
 using Nano.App.Api.Extensions;
 using Nano.App.Extensions;
+using Nano.Data.Abstractions.Config;
 using Nano.Data.Abstractions.Eventing.Extensions;
 using Nano.Data.Abstractions.Extensions;
 using Nano.Eventing.Abstractions.Extensions;
+using System;
 
 namespace Nano.App.Api;
 
@@ -39,8 +41,10 @@ public class NanoApiApplication : BaseNanoApplication<IApiApplication, WebApplic
         builder.Services
             .AddNanoApp<ApiOptions>(builder.Configuration, out var options);
 
+        var apiKeyOptions = GetApiKeyOptions(builder.Configuration);
+
         builder.Services
-            .ConfigureNanoApiServices(options);
+            .ConfigureNanoApiServices(options, apiKeyOptions);
 
         builder.WebHost
             .ConfigureWebHost(options);
@@ -79,5 +83,22 @@ public class NanoApiApplication : BaseNanoApplication<IApiApplication, WebApplic
             .UseNanoDbMigrations();
 
         return this;
+    }
+
+
+    /// <summary>
+    /// Gets the <see cref="ApiKeyOptions"/> from the <see cref="IConfiguration"/>.
+    /// </summary>
+    /// <param name="configuration">The <see cref="IConfiguration"/>.</param>
+    /// <returns>The <see cref="ApiKeyOptions"/>.</returns>
+    protected static ApiKeyOptions? GetApiKeyOptions(IConfiguration configuration)
+    {
+        ArgumentNullException.ThrowIfNull(configuration);
+
+        var apiKeySection = configuration
+            .GetSection("Data:Identity:ApiKey");
+
+        return apiKeySection
+            .Get<ApiKeyOptions>();
     }
 }

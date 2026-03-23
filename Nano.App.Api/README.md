@@ -97,23 +97,23 @@ Register your custom services in the `ConfigureServices(x => { })` method to ext
 ## Configuration
 The `App` section in the configuration defines behavior related to the application.  
 
-| Setting                    | Type       | Default    | Description                                                                                                                                                          |
-| -------------------------- | ---------- | ---------- | ----------------------------------------------------------------------------------------------------------- |
-|  `Version`                 | string     | 1.0.0.0    | Application version identifier.                                                                             |
-|  `ShutdownTimeout`         | int        | 10         | Number of seconds to wait after a SIGTERM signal before shutting down.                                      |
-|  `Hosting`                 | object     | default    | Hosting options. See **[Hosting](#hosting)**.                                                               |
-|  `HttpPolicyHeaders`       | object     | default    | HTTP policy header options. See **[Http Policy Headers](#http-policy-headers)**.                            |
-|  `ResponseCache`           | object     | null       | Response caching options. See **[Response Cache](#response-cache)**.                                        |
-|  `ResponseCompression`     | object     | null       | Response compression options. See **[Response Compression](#response-compression)**.                        |
-|  `Session`                 | object     | null       | Session management options. See **[Session](#session)**.                                                    |
-|  `TimeZone`                | object     | null       | Timezone configuration options. See **[TimeZone](#timezone)**.                                              |
-|  `Localization`            | object     | null       | Localization configuration options. See **[Localization](#localization)**.                                  |
-|  `Documentation`           | object     | null       | API documentation options (Swagger). See **[Documentation](#documentation)**.                               |
-|  `HealthCheck`             | object     | null       | Health-check configuration options. See **[health Check](#health-check)**.                                  |
-|  `VirusScan`               | object     | null       | Virus scanning options. See **[Virus Scan](#virus-scan)**.                                                  |
-|  `ErrorHandling`           | object     | default    | Error handling configuration options. See **[Error Handling](#error-handling)**.                            |
-|  `Authentication`          | object     | default    | Authentication configuration options. See **[Authentication](#authentication)**.                            |
-|  `Apis`                    | dictionary | []         | Named Nano API client configurations available to the application. See **[Api Client](api-clients)**.       |
+| Setting                   | Type       | Default    | Description                                                                                                                                                          |
+| ------------------------- | ---------- | ---------- | ----------------------------------------------------------------------------------------------------------- |
+| `Version`                 | string     | 1.0.0.0    | Application version identifier.                                                                             |
+| `ShutdownTimeout`         | int        | 10         | Number of seconds to wait after a SIGTERM signal before shutting down.                                      |
+| `Hosting`                 | object     | default    | Hosting options. See **[Hosting](#hosting)**.                                                               |
+| `HttpPolicyHeaders`       | object     | default    | HTTP policy header options. See **[Http Policy Headers](#http-policy-headers)**.                            |
+| `ResponseCache`           | object     | null       | Response caching options. See **[Response Cache](#response-cache)**.                                        |
+| `ResponseCompression`     | object     | null       | Response compression options. See **[Response Compression](#response-compression)**.                        |
+| `Session`                 | object     | null       | Session management options. See **[Session](#session)**.                                                    |
+| `TimeZone`                | object     | null       | Timezone configuration options. See **[TimeZone](#timezone)**.                                              |
+| `Localization`            | object     | null       | Localization configuration options. See **[Localization](#localization)**.                                  |
+| `Documentation`           | object     | null       | API documentation options (Swagger). See **[Documentation](#documentation)**.                               |
+| `HealthCheck`             | object     | null       | Health-check configuration options. See **[health Check](#health-check)**.                                  |
+| `VirusScan`               | object     | null       | Virus scanning options. See **[Virus Scan](#virus-scan)**.                                                  |
+| `ErrorHandling`           | object     | default    | Error handling configuration options. See **[Error Handling](#error-handling)**.                            |
+| `Authentication`          | object     | default    | Authentication configuration options. See **[Authentication](#authentication)**.                            |
+| `Apis`                    | dictionary | []         | Named Nano API client configurations available to the application. See **[Api Client](api-clients)**.       |
 
 ```json
 "App": {
@@ -140,12 +140,12 @@ The `App` section in the configuration defines behavior related to the applicati
 ## Hosting
 Hosting configuration specifies how the API is hosted on the Kestrel web server, defining endpoint exposure as well as request handling limits.  
 
-| Setting                  | Type    | Default  | Description                                                                                       |
-| ------------------------ | ------- | -------- | ------------------------------------------------------------------------------------------------- |
-|  `Root`                  | string  | api      | Root route prefix for the application endpoints.                                                  |
-|  `Http`                  | object  | default  | Options for HTTP. See **[Http](#http)**.                                                          |
-|  `Https`                 | object  | null     | Options for HTTPS. See **[Https](#https)**.                                                       |
-|  `MultipartLimits`       | object  | null     | Multipart upload limits. See **[MultiPart Limits](#multipart-limits)**.                           |
+| Setting                 | Type    | Default  | Description                                                                                       |
+| ----------------------- | ------- | -------- | ------------------------------------------------------------------------------------------------- |
+| `Root`                  | string  | api      | Root route prefix for the application endpoints.                                                  |
+| `Http`                  | object  | default  | Options for HTTP. See **[Http](#http)**.                                                          |
+| `Https`                 | object  | null     | Options for HTTPS. See **[Https](#https)**.                                                       |
+| `MultipartLimits`       | object  | null     | Multipart upload limits. See **[MultiPart Limits](#multipart-limits)**.                           |
 
 ```json
 "App": {
@@ -166,10 +166,10 @@ If **[Https](#https)** is also enabled, consider turning on `UseHttpsRedirection
 
 > ⚠️ Avoid using the default HTTP port (80), as it may trigger security warnings in Kubernetes.
 
-| Setting                 | Type    | Default  | Description                               |
-| ----------------------- | ------- | -------- | ----------------------------------------- |
-|  `Ports`                | array   | []       | List of ports for HTTP.                   |
-|  `UseHttpsRedirection`  | string  | false    | Enforce HTTPS redirect for all requests.  |
+| Setting                | Type    | Default  | Description                               |
+| ---------------------- | ------- | -------- | ----------------------------------------- |
+| `Ports`                | array   | []       | List of ports for HTTP.                   |
+| `UseHttpsRedirection`  | string  | false    | Enforce HTTPS redirect for all requests.  |
 
 ```json
 "App": {
@@ -197,13 +197,13 @@ HTTPS is primarily intended for local development. In production environments, s
 
 > ⚠️ Avoid using the default HTTP port (443), as it may trigger security warnings in Kubernetes.
 
-| Setting                  | Type    | Default  | Description                                   |
-| ------------------------ | ------- | -------- | --------------------------------------------- |
-|  `Ports`                 | array   | []       | List of ports for HTTPS.                      |
-|  `UseHttpsRequired`      | bool    | false    | Enforce HTTPS required for all requests.      |
-|  `Certificate`           | object  | default  | SSL certificate configuration.                |
-|  `Certificate.Path`      | string  | null     | Required. File path to the certificate.       |
-|  `Certificate.Password`  | string  | null     | Required. Password for the certificate.       |
+| Setting                 | Type    | Default  | Description                                   |
+| ----------------------- | ------- | -------- | --------------------------------------------- |
+| `Ports`                 | array   | []       | List of ports for HTTPS.                      |
+| `UseHttpsRequired`      | bool    | false    | Enforce HTTPS required for all requests.      |
+| `Certificate`           | object  | default  | SSL certificate configuration.                |
+| `Certificate.Path`      | string  | null     | Required. File path to the certificate.       |
+| `Certificate.Password`  | string  | null     | Required. Password for the certificate.       |
 
 ```json
 "App": {
@@ -250,10 +250,10 @@ Configure upload limits for the API.
 > ⚠️ Leaving this configuration as null allows unlimited uploads, which may be acceptable if limits are enforced at the orchestration level. 
 Otherwise, it is recommended to specify maximum upload sizes and timeouts to protect the application from large or slow requests.  
 
-| Setting                  | Type    | Default  | Description                                               |
-| ------------------------ | ------- | -------- | --------------------------------------------------------- |
-|  `MaxUploadBytes`        | array   | 33554432 | Maximum allowed upload size in bytes. Defaults to 32 MB.  |
-|  `KeepAliveTimeout`      | bool    | 00:02:10 | Timeout for slow uploads.                                 |
+| Setting                 | Type    | Default  | Description                                               |
+| ----------------------- | ------- | -------- | --------------------------------------------------------- |
+| `MaxUploadBytes`        | array   | 33554432 | Maximum allowed upload size in bytes. Defaults to 32 MB.  |
+| `KeepAliveTimeout`      | bool    | 00:02:10 | Timeout for slow uploads.                                 |
 
 ```json
 "App": {
@@ -271,17 +271,17 @@ Try it out yourself using the **[Api.Hosting.MultipartLimits](https://github.com
 ## Http Policy Headers
 Configure headers such as HSTS, XSS protection, CSP, CORS, and other policies to secure and control HTTP behavior.
 
-| Setting              | Type    | Default  | Description                                                                                           |
-| -------------------- | ------- | -------- | ----------------------------------------------------------------------------------------------------- |
-|  `ContentType`       | object  | null     | Content-Type header options. See **[Content Type](#content-type)**                                    |
-|  `ReferrerPolicy`    | object  | null     | Referrer-Policy header options. See **[Referrer Policy](#referrer-policy)**                           |
-|  `FrameOptions`      | object  | null     | X-Frame-Options header options. See **[Frame Options](#frame-options)**                               |
-|  `XssProtection`     | object  | null     | XSS-Protection header options. See **[Xss Protection](#xss-protection)**                              |
-|  `Csp`               | object  | null     | Content-Security-Policy (CSP) options. See **[Content Security Policy](#content-security-policy)**    |
-|  `Cors`              | object  | null     | CORS configuration options. See **[Cors](#cors)**                                                     |
-|  `Hsts`              | object  | null     | HSTS configuration options. See **[Hsts](#hsts)**                                                     |
-|  `Robots`            | object  | null     | Robots meta tag options. See **[Robots](#robots)**                                                    |
-|  `ForwardedHeaders`  | object  | null     | Forwarded headers configuration. See **[Forwarded Headers](#forwarded-headers)**                      |
+| Setting             | Type    | Default  | Description                                                                                           |
+| ------------------- | ------- | -------- | ----------------------------------------------------------------------------------------------------- |
+| `ContentType`       | object  | null     | Content-Type header options. See **[Content Type](#content-type)**                                    |
+| `ReferrerPolicy`    | object  | null     | Referrer-Policy header options. See **[Referrer Policy](#referrer-policy)**                           |
+| `FrameOptions`      | object  | null     | X-Frame-Options header options. See **[Frame Options](#frame-options)**                               |
+| `XssProtection`     | object  | null     | XSS-Protection header options. See **[Xss Protection](#xss-protection)**                              |
+| `Csp`               | object  | null     | Content-Security-Policy (CSP) options. See **[Content Security Policy](#content-security-policy)**    |
+| `Cors`              | object  | null     | CORS configuration options. See **[Cors](#cors)**                                                     |
+| `Hsts`              | object  | null     | HSTS configuration options. See **[Hsts](#hsts)**                                                     |
+| `Robots`            | object  | null     | Robots meta tag options. See **[Robots](#robots)**                                                    |
+| `ForwardedHeaders`  | object  | null     | Forwarded headers configuration. See **[Forwarded Headers](#forwarded-headers)**                      |
 
 ```json
 "App": {
@@ -303,9 +303,9 @@ Configure headers such as HSTS, XSS protection, CSP, CORS, and other policies to
 The HTTP X-Content-Type-Options response header indicates that the MIME types advertised in the Content-Type headers should be respected and not changed. 
 The header allows you to avoid MIME type sniffing by specifying that the MIME types are deliberately configured.
 
-| Setting          | Type  | Default  | Description                                       |
-| ---------------- | ----- | -------- | ------------------------------------------------- |
-|  `NoSniff`       | bool  | false    | If true, prevents MIME type sniffing. ⭐ `true`  |
+| Setting         | Type  | Default  | Description                                       |
+| --------------- | ----- | -------- | ------------------------------------------------- |
+| `NoSniff`       | bool  | false    | If true, prevents MIME type sniffing. ⭐ `true`  |
 
 ```json
 "App": {
@@ -324,9 +324,9 @@ Try it out yourself using the **[Api.PolicyHeaders.ContentType](https://github.c
 ## Referrer Policy
 The HTTP Referrer-Policy response header controls how much referrer information (sent with the Referer header) should be included with requests.  
 
-| Setting                  | Type  | Default   | Description                                      |
-| ------------------------ | ----- | --------- | ------------------------------------------------ |
-|  `ReferrerPolicyHeader`  | enum  | Disabled  | The referrer-policy. See possible values below   |
+| Setting                 | Type  | Default   | Description                                      |
+| ----------------------- | ----- | --------- | ------------------------------------------------ |
+| `ReferrerPolicyHeader`  | enum  | Disabled  | The referrer-policy. See possible values below   |
 
 ```json
 "App": {
@@ -339,17 +339,17 @@ The HTTP Referrer-Policy response header controls how much referrer information 
 ```
 
 #### Referrer Policies
-| Policy                          | Description                                                                                                                                                                                                                                                                             |
-| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-|  `Disabled`                     | Specifies that the Referrer-Policy header should not be set in the HTTP response.                                                                                                                                                                                                       |
-|  `NoReferrer`                   | Enables the no-referrer policy, instructing the browser to not send referrer information.                                                                                                                                                                                               |
-|  `NoReferrerWhenDowngrade`      | Enables the no-referrer-when-downgrade policy, instructing the browser to send full referrer information unless navigation is from HTTPS to HTTP.                                                                                                                                       |
-|  **`SameOrigin`**⭐             | **Enables the same-origin policy, instructing the browser to send full referrer information for same-origin requests and no referrer for cross-origin requests.**                                                                                                      |
-|  `Origin`                       | Enables the origin policy, instructing the browser to send origin (no path and query) as referrer information for both same-origin and cross-origin requests.                                                                                                                           |
-|  `StrictOrigin`                 | Enables the strict-origin policy, instructing the browser to send origin (no path and query) as referrer information for both same-origin and cross-origin HTTPS to HTTPS and HTTP to HTTP requests. HTTPS / HTTP requests will not include referrer information.                       |
-|  `OriginWhenCrossOrigin`        | Enables the origin-when-cross-origin policy, instructing the browser to send full referrer information for same-origin requests and origin (no path and query) as referrer information for cross-origin requests (includes HTTPS to HTTP and HTTP to HTTPS).                            |
-|  `StrictOriginWhenCrossOrigin`  | Enables the strict-origin-when-cross-origin policy, instructing the browser to send full referrer information for same-origin requests and origin (no path and query) as referrer information for cross-origin requests. Referrer information is not sent for HTTPS to HTTP requests.   |
-|  `UnsafeUrl`                    | Enables the unsafe-url policy, instructing the browser to send full referrer information for all requests. Note that this will leak full referrer information for HTTPS to HTTP requests, which is even more unsafe than default browser behaviour.                                     |
+| Policy                         | Description                                                                                                                                                                                                                                                                             |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Disabled`                     | Specifies that the Referrer-Policy header should not be set in the HTTP response.                                                                                                                                                                                                       |
+| `NoReferrer`                   | Enables the no-referrer policy, instructing the browser to not send referrer information.                                                                                                                                                                                               |
+| `NoReferrerWhenDowngrade`      | Enables the no-referrer-when-downgrade policy, instructing the browser to send full referrer information unless navigation is from HTTPS to HTTP.                                                                                                                                       |
+| **`SameOrigin`**⭐             | **Enables the same-origin policy, instructing the browser to send full referrer information for same-origin requests and no referrer for cross-origin requests.**                                                                                                      |
+| `Origin`                       | Enables the origin policy, instructing the browser to send origin (no path and query) as referrer information for both same-origin and cross-origin requests.                                                                                                                           |
+| `StrictOrigin`                 | Enables the strict-origin policy, instructing the browser to send origin (no path and query) as referrer information for both same-origin and cross-origin HTTPS to HTTPS and HTTP to HTTP requests. HTTPS / HTTP requests will not include referrer information.                       |
+| `OriginWhenCrossOrigin`        | Enables the origin-when-cross-origin policy, instructing the browser to send full referrer information for same-origin requests and origin (no path and query) as referrer information for cross-origin requests (includes HTTPS to HTTP and HTTP to HTTPS).                            |
+| `StrictOriginWhenCrossOrigin`  | Enables the strict-origin-when-cross-origin policy, instructing the browser to send full referrer information for same-origin requests and origin (no path and query) as referrer information for cross-origin requests. Referrer information is not sent for HTTPS to HTTP requests.   |
+| `UnsafeUrl`                    | Enables the unsafe-url policy, instructing the browser to send full referrer information for all requests. Note that this will leak full referrer information for HTTPS to HTTP requests, which is even more unsafe than default browser behaviour.                                     |
 
 Use `[ReferrerPolicy]` to override the global configuration, if needed.  
 
@@ -365,9 +365,9 @@ by ensuring that their content is not embedded into other sites.
 If this header is not sent, and the website has not implemented any other mechanisms to restrict embedding (such as the frame-ancestors CSP directive), 
 then the browser will allow other sites to embed this document.
 
-| Setting                           | Type  | Default   | Description                                           |
-| --------------------------------- | ----- | --------- | ----------------------------------------------------- |
-|  `FrameOptionsPolicyHeader`       | enum  | Disabled  | Specifies the X-Frame-Options policy header value.    |
+| Setting                          | Type  | Default   | Description                                           |
+| -------------------------------- | ----- | --------- | ----------------------------------------------------- |
+| `FrameOptionsPolicyHeader`       | enum  | Disabled  | Specifies the X-Frame-Options policy header value.    |
 
 ```json
 "App": {
@@ -397,10 +397,10 @@ implement a strong Content-Security-Policy that disables the use of inline JavaS
 
 > ⚠️ Deprecated: This feature is no longer recommended, and only supported by older browsers.  
 
-| Setting                       | Type    | Default  | Description                                           |
-| ----------------------------- | ------- | -------- | ----------------------------------------------------- |
-|  `XssProtectionPolicyHeader`  | enum    | null     | Specifies the X-XSS-Protection policy header value.   |
-|  `ReportingUrl`               | string  | null     | URL to report XSS attempts.                           |
+| Setting                      | Type    | Default  | Description                                           |
+| ---------------------------- | ------- | -------- | ----------------------------------------------------- |
+| `XssProtectionPolicyHeader`  | enum    | null     | Specifies the X-XSS-Protection policy header value.   |
+| `ReportingUrl`               | string  | null     | URL to report XSS attempts.                           |
 
 ```json
 "App": {
@@ -414,12 +414,12 @@ implement a strong Content-Security-Policy that disables the use of inline JavaS
 ```
 
 #### Xss Protection Policies
-| Policy                           | Description                                                                                                                                           |
-| -------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-|  `FilterDisabled`                | Specifies that the X-Xss-Protection header should be set in the HTTP response, explicitly disabling the IE XSS filter.                                |
-|  `FilterEnabled`                 | Specifies that the X-Xss-Protection header should be set in the HTTP response, explicitly enabling the IE XSS filter.                                 |
-|  **`FilterEnabledBlockMode`**⭐   | **Specifies that the X-Xss-Protection header should be set in the HTTP response, explicitly enabling the IE XSS filter. BlockMode is set to true.**   |
-|  `ProtectionReport`              | Report is sent.                                                                                                                                       |
+| Policy                          | Description                                                                                                                                           |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `FilterDisabled`                | Specifies that the X-Xss-Protection header should be set in the HTTP response, explicitly disabling the IE XSS filter.                                |
+| `FilterEnabled`                 | Specifies that the X-Xss-Protection header should be set in the HTTP response, explicitly enabling the IE XSS filter.                                 |
+| **`FilterEnabledBlockMode`**⭐   | **Specifies that the X-Xss-Protection header should be set in the HTTP response, explicitly enabling the IE XSS filter. BlockMode is set to true.**   |
+| `ProtectionReport`              | Report is sent.                                                                                                                                       |
 
 > 📖 Learn more about **[Xss Protection](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/X-XSS-Protection)**
 
@@ -432,34 +432,34 @@ With a few exceptions, policies mostly involve specifying server origins and scr
 See the **[Content Security Policy (CSP) Guide](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CSP)** for details about how a CSP is delivered to the browser, 
 what it looks like, along with use cases and deployment strategies.  
 
-| Setting                      | Type    | Default  | Description                                                                                                                                           |
-| ---------------------------- | ------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-|  `ReportOnly`                | object  | false    | The CSP will be enforced in report-only mode. Violations will be reported but not blocked.                                                            |
-|  `UpgradeInsecureRequests`   | object  | false    | Instructs the browser to upgrade all HTTP requests to HTTPS automatically.                                                                            |
-|  `ReportTo`                  | object  | null     | CSP Report-To header configuration. Specifies where CSP violation reports are sent (`report-to`). See [Report-To Directive](#report-to-directive)     |
-|  `Defaults`                  | object  | null     | Default directive (`default-src`) for all unspecified content types. See [Common Directive](#common-directive)                                        |
-|  `Scripts`                   | object  | null     | Controls allowed sources for scripts (`script-src`). See [Script Directive](#script-directive)                                                        |
-|  `ScriptsElem`               | object  | null     | Controls allowed sources for script elements (`script-src-elem`). See [Script Directive](#script-directive)                                           |
-|  `ScriptsAttr`               | object  | null     | Controls allowed sources for inline script attributes (`script-src-attr`). See [Script Directive](#script-directive)                                  |
-|  `Styles`                    | object  | null     | Controls allowed sources for stylesheets (`style-src`). See [Style Directive](#style-directive)                                                       |
-|  `StylesElem`                | object  | null     | Controls allowed sources for style elements (`style-src-elem`). See [Style Directive](#style-directive)                                               |
-|  `StylesAttr`                | object  | null     | Controls allowed sources for inline style attributes (`style-src-attr`). See [Style Directive](#style-directive)                                      |
-|  `Objects`                   | object  | null     | Controls allowed sources for object elements (`object-src`). See [Common Directive](#common-directive)                                                |
-|  `Images`                    | object  | null     | Controls allowed sources for images (`img-src`). See [Common Directive](#common-directive)                                                            |
-|  `Media`                     | object  | null     | Controls allowed sources for audio and video elements (`media-src`). See [Common Directive](#common-directive)                                        |
-|  `Frames`                    | object  | null     | Controls allowed sources for frames and iframes (`frame-src`). See [Common Directive](#common-directive)                                              |
-|  `FencedFrames`              | object  | null     | Controls allowed sources for fenced frames (`fenced-frame-src`). See [Common Directive](#common-directive)                                            |
-|  `FrameAncestors`            | object  | null     | Controls which sources can embed this document (`frame-ancestors`). See [Common Directive](#common-directive)                                         |
-|  `Fonts`                     | object  | null     | Controls allowed sources for fonts (`font-src`). See [Common Directive](#common-directive)                                                            |
-|  `Connections`               | object  | null     | Controls allowed URLs for fetch, XHR, WebSocket, EventSource (`connect-src`). See [Common Directive](#common-directive)                               |
-|  `BaseUris`                  | object  | null     | Controls allowed base URLs for the document (`base-uri`). See [Common Directive](#common-directive)                                                   |
-|  `Children`                  | object  | null     | Controls allowed sources for nested browsing contexts (`child-src`). See [Common Directive](#common-directive)                                        |
-|  `Forms`                     | object  | null     | Controls allowed URLs for form submissions (`form-action`). See [Common Directive](#common-directive)                                                 |
-|  `Manifests`                 | object  | null     | Controls allowed sources for web app manifests (`manifest-src`). See [Common Directive](#common-directive)                                            |
-|  `Workers`                   | object  | null     | Controls allowed sources for web workers, service workers, and shared workers (`worker-src`). See [Common Directive](#common-directive)               |
-|  `TrustedTypes`              | object  | null     | Restricts which Trusted Types policies are allowed to create DOM objects (`trusted-types`). See [Trusted Types Directive](#trusted-types-directive)   |
-|  `Sandbox`                   | object  | null     | Restricts features of a page when embedded in an iframe (`sandbox`). See [Sandbox Directive](#sandbox-directive)                                      |
-|  `PermissionsPolicy`         | object  | null     | Controls access to powerful browser features (`permissions-policy`). See [Permissions Policy Directive](#permissions-policy-directive)                |
+| Setting                     | Type    | Default  | Description                                                                                                                                           |
+| --------------------------- | ------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ReportOnly`                | object  | false    | The CSP will be enforced in report-only mode. Violations will be reported but not blocked.                                                            |
+| `UpgradeInsecureRequests`   | object  | false    | Instructs the browser to upgrade all HTTP requests to HTTPS automatically.                                                                            |
+| `ReportTo`                  | object  | null     | CSP Report-To header configuration. Specifies where CSP violation reports are sent (`report-to`). See [Report-To Directive](#report-to-directive)     |
+| `Defaults`                  | object  | null     | Default directive (`default-src`) for all unspecified content types. See [Common Directive](#common-directive)                                        |
+| `Scripts`                   | object  | null     | Controls allowed sources for scripts (`script-src`). See [Script Directive](#script-directive)                                                        |
+| `ScriptsElem`               | object  | null     | Controls allowed sources for script elements (`script-src-elem`). See [Script Directive](#script-directive)                                           |
+| `ScriptsAttr`               | object  | null     | Controls allowed sources for inline script attributes (`script-src-attr`). See [Script Directive](#script-directive)                                  |
+| `Styles`                    | object  | null     | Controls allowed sources for stylesheets (`style-src`). See [Style Directive](#style-directive)                                                       |
+| `StylesElem`                | object  | null     | Controls allowed sources for style elements (`style-src-elem`). See [Style Directive](#style-directive)                                               |
+| `StylesAttr`                | object  | null     | Controls allowed sources for inline style attributes (`style-src-attr`). See [Style Directive](#style-directive)                                      |
+| `Objects`                   | object  | null     | Controls allowed sources for object elements (`object-src`). See [Common Directive](#common-directive)                                                |
+| `Images`                    | object  | null     | Controls allowed sources for images (`img-src`). See [Common Directive](#common-directive)                                                            |
+| `Media`                     | object  | null     | Controls allowed sources for audio and video elements (`media-src`). See [Common Directive](#common-directive)                                        |
+| `Frames`                    | object  | null     | Controls allowed sources for frames and iframes (`frame-src`). See [Common Directive](#common-directive)                                              |
+| `FencedFrames`              | object  | null     | Controls allowed sources for fenced frames (`fenced-frame-src`). See [Common Directive](#common-directive)                                            |
+| `FrameAncestors`            | object  | null     | Controls which sources can embed this document (`frame-ancestors`). See [Common Directive](#common-directive)                                         |
+| `Fonts`                     | object  | null     | Controls allowed sources for fonts (`font-src`). See [Common Directive](#common-directive)                                                            |
+| `Connections`               | object  | null     | Controls allowed URLs for fetch, XHR, WebSocket, EventSource (`connect-src`). See [Common Directive](#common-directive)                               |
+| `BaseUris`                  | object  | null     | Controls allowed base URLs for the document (`base-uri`). See [Common Directive](#common-directive)                                                   |
+| `Children`                  | object  | null     | Controls allowed sources for nested browsing contexts (`child-src`). See [Common Directive](#common-directive)                                        |
+| `Forms`                     | object  | null     | Controls allowed URLs for form submissions (`form-action`). See [Common Directive](#common-directive)                                                 |
+| `Manifests`                 | object  | null     | Controls allowed sources for web app manifests (`manifest-src`). See [Common Directive](#common-directive)                                            |
+| `Workers`                   | object  | null     | Controls allowed sources for web workers, service workers, and shared workers (`worker-src`). See [Common Directive](#common-directive)               |
+| `TrustedTypes`              | object  | null     | Restricts which Trusted Types policies are allowed to create DOM objects (`trusted-types`). See [Trusted Types Directive](#trusted-types-directive)   |
+| `Sandbox`                   | object  | null     | Restricts features of a page when embedded in an iframe (`sandbox`). See [Sandbox Directive](#sandbox-directive)                                      |
+| `PermissionsPolicy`         | object  | null     | Controls access to powerful browser features (`permissions-policy`). See [Permissions Policy Directive](#permissions-policy-directive)                |
 
 ```json 
 "App": {
@@ -499,11 +499,11 @@ what it looks like, along with use cases and deployment strategies.
 Common configuration applicable to the following CSP directives:   
 `Defaults`, `Objects`, `Media`, `Images`, `Frames`, `FencedFrames`, `FrameAncestors`, `Fonts`, `Connections`, `BaseUris`, `Children`, `Forms`, `Manifests`, `Workers`
 
-| Setting        | Type    | Default | Description                                                        |
-| -------------- | ------- | ------- | ------------------------------------------------------------------ |
-|  `IsNone`      | bool    | false   | If `true`, only 'none' is allowed. All other sources are ignored.  |
-|  `IsSelf`      | bool    | false   | If `true`, 'self' is allowed as a source. ⭐                        |
-|  `Sources`     | array   | []      | Custom sources for the directive.                                  |
+| Setting       | Type    | Default | Description                                                        |
+| ------------- | ------- | ------- | ------------------------------------------------------------------ |
+| `IsNone`      | bool    | false   | If `true`, only 'none' is allowed. All other sources are ignored.  |
+| `IsSelf`      | bool    | false   | If `true`, 'self' is allowed as a source. ⭐                        |
+| `Sources`     | array   | []      | Custom sources for the directive.                                  |
 
 ```json 
 "App": {
@@ -526,37 +526,37 @@ Scripts directive are split into three different directives. `script-src`, `scri
 
 This table shows options for `script-src` and `script-src-elem`:  
 
-| Setting                     | Type    | Default | Description                                                                                           |
-| --------------------------- | ------- | ------- | ----------------------------------------------------------------------------------------------------- |
-|  `IsNone`                   | bool    | false   | Only `none` is allowed. All other sources are ignored.                                                |
-|  `IsSelf`                   | bool    | false   | `self` is allowed as a source. ⭐                                                                      |
-|  `IsUnsafeInline`           | bool    | false   | Allows inline scripts (`unsafe-inline`).                                                              |
-|  `IsUnsafeEval`             | bool    | false   | Allows eval() and similar constructs (`unsafe-eval`).                                                 |
-|  `IsUnsafeWasmEval`         | bool    | false   | Allows WebAssembly unsafe evaluation (`wasm-unsafe-eval`).                                            |
-|  `IsTrustedTypesEval`       | bool    | false   | Allows undo of trusted-type evaluation (`trusted-types-eval`).                                        |
-|  `StrictDynamic`            | bool    | false   | Enables 'strict-dynamic' behavior for script execution (`strict-dynamic`).                            |
-|  `IsUnsafeHashes`           | bool    | false   | Allows unsafe hashes for inline scripts (`unsafe-hashes`). ⚠️ Only allowed for `script-src`           |
-|  `UnsafeHashedAttributes`   | bool    | false   | Allows unsafe hashed attributes (`unsafe-hashed-attributes`). ⚠️ Only allowed for `script-src`        |
-|  `UnsafeAllowRedirects`     | bool    | false   | Allows redirects from unsafe sources (`unsafe-allow-redirects`).                                      |
-|  `InlineSpeculationRules`   | bool    | false   | Allows inline speculation rules (`inline-speculation-rules`).                                         |
-|  `Sources`                  | array   | []      | Custom sources for scripts.                                                                           |
-|  `Nonces`                   | array   | []      | Specific nonces to allow inline scripts.                                                              |
-|  `Hashes`                   | array   | []      | SHA hashes to allow inline script content. Must be prefixed with `sha256-`, `sha384-`, or `sha512-`.  |
-|  `RequireTrustedTypes`      | bool    | false   | Requires Trusted Types for script execution. ⚠️ Only allowed for `script-src`                         |
-|  `RequireSri`               | bool    | false   | Requires Subresource Integrity (SRI) for scripts. ⚠️ Only allowed for `script-src`                    |
-|  `ReportSample`             | bool    | false   | Enables 'report-sample' in CSP violation reports.                                                     |
+| Setting                    | Type    | Default | Description                                                                                           |
+| -------------------------- | ------- | ------- | ----------------------------------------------------------------------------------------------------- |
+| `IsNone`                   | bool    | false   | Only `none` is allowed. All other sources are ignored.                                                |
+| `IsSelf`                   | bool    | false   | `self` is allowed as a source. ⭐                                                                      |
+| `IsUnsafeInline`           | bool    | false   | Allows inline scripts (`unsafe-inline`).                                                              |
+| `IsUnsafeEval`             | bool    | false   | Allows eval() and similar constructs (`unsafe-eval`).                                                 |
+| `IsUnsafeWasmEval`         | bool    | false   | Allows WebAssembly unsafe evaluation (`wasm-unsafe-eval`).                                            |
+| `IsTrustedTypesEval`       | bool    | false   | Allows undo of trusted-type evaluation (`trusted-types-eval`).                                        |
+| `StrictDynamic`            | bool    | false   | Enables 'strict-dynamic' behavior for script execution (`strict-dynamic`).                            |
+| `IsUnsafeHashes`           | bool    | false   | Allows unsafe hashes for inline scripts (`unsafe-hashes`). ⚠️ Only allowed for `script-src`           |
+| `UnsafeHashedAttributes`   | bool    | false   | Allows unsafe hashed attributes (`unsafe-hashed-attributes`). ⚠️ Only allowed for `script-src`        |
+| `UnsafeAllowRedirects`     | bool    | false   | Allows redirects from unsafe sources (`unsafe-allow-redirects`).                                      |
+| `InlineSpeculationRules`   | bool    | false   | Allows inline speculation rules (`inline-speculation-rules`).                                         |
+| `Sources`                  | array   | []      | Custom sources for scripts.                                                                           |
+| `Nonces`                   | array   | []      | Specific nonces to allow inline scripts.                                                              |
+| `Hashes`                   | array   | []      | SHA hashes to allow inline script content. Must be prefixed with `sha256-`, `sha384-`, or `sha512-`.  |
+| `RequireTrustedTypes`      | bool    | false   | Requires Trusted Types for script execution. ⚠️ Only allowed for `script-src`                         |
+| `RequireSri`               | bool    | false   | Requires Subresource Integrity (SRI) for scripts. ⚠️ Only allowed for `script-src`                    |
+| `ReportSample`             | bool    | false   | Enables 'report-sample' in CSP violation reports.                                                     |
 
 This table shows the options for `script-src-attr`.
 
-| Setting                     | Type    | Default | Description                                                                                           |
-| --------------------------- | ------- | ------- | ----------------------------------------------------------------------------------------------------- |
-|  `IsNone`                   | bool    | false   | Only `none` is allowed. All other sources are ignored.                                                |
-|  `IsSelf`                   | bool    | false   | `self` is allowed as a source.⭐                                                                       |
-|  `IsUnsafeInline`           | bool    | false   | Allows inline scripts (`unsafe-inline`).                                                              |
-|  `IsUnsafeHashes`           | bool    | false   | Allows unsafe hashes for inline scripts (`unsafe-hashes`).                                            |
-|  `UnsafeHashedAttributes`   | bool    | false   | Allows unsafe hashed attributes (`unsafe-hashed-attributes`).                                         |
-|  `Sources`                  | array   | []      | Custom sources for scripts.                                                                           |
-|  `ReportSample`             | bool    | false   | Enables 'report-sample' in CSP violation reports.                                                     |
+| Setting                    | Type    | Default | Description                                                                                           |
+| -------------------------- | ------- | ------- | ----------------------------------------------------------------------------------------------------- |
+| `IsNone`                   | bool    | false   | Only `none` is allowed. All other sources are ignored.                                                |
+| `IsSelf`                   | bool    | false   | `self` is allowed as a source.⭐                                                                       |
+| `IsUnsafeInline`           | bool    | false   | Allows inline scripts (`unsafe-inline`).                                                              |
+| `IsUnsafeHashes`           | bool    | false   | Allows unsafe hashes for inline scripts (`unsafe-hashes`).                                            |
+| `UnsafeHashedAttributes`   | bool    | false   | Allows unsafe hashed attributes (`unsafe-hashed-attributes`).                                         |
+| `Sources`                  | array   | []      | Custom sources for scripts.                                                                           |
+| `ReportSample`             | bool    | false   | Enables 'report-sample' in CSP violation reports.                                                     |
 
 ```json 
 "App": {
@@ -626,28 +626,28 @@ Styles directive are split into three different directives. `style-src`, `style-
 
 This table shows options for `style-src` and `style-src-elem`:  
 
-| Setting                     | Type    | Default | Description                                                                                           |
-| --------------------------- | ------- | ------- | ----------------------------------------------------------------------------------------------------- |
-|  `IsNone`                   | bool    | false   | Only `none` is allowed. All other sources are ignored.                                                |
-|  `IsSelf`                   | bool    | false   | `self` is allowed as a source. ⭐                                                                      |
-|  `IsUnsafeInline`           | bool    | false   | Allows inline styles (`unsafe-inline`).                                                               |
-|  `IsUnsafeHashes`           | bool    | false   | Allows unsafe hashes for inline styles (`unsafe-hashes`). ⚠️ Only allowed for `style-src`             |
-|  `Sources`                  | array   | []      | Custom sources for styles.                                                                            |
-|  `Nonces`                   | array   | []      | Specific nonces to allow inline styles.                                                               |
-|  `Hashes`                   | array   | []      | SHA hashes to allow inline styles content. Must be prefixed with `sha256-`, `sha384-`, or `sha512-`.  |
-|  `RequireSri`               | bool    | false   | Requires Subresource Integrity (SRI) for styles. ⚠️ Only allowed for `style-src`                      |
-|  `ReportSample`             | bool    | false   | Enables 'report-sample' in CSP violation reports.                                                     |
+| Setting                    | Type    | Default | Description                                                                                           |
+| -------------------------- | ------- | ------- | ----------------------------------------------------------------------------------------------------- |
+| `IsNone`                   | bool    | false   | Only `none` is allowed. All other sources are ignored.                                                |
+| `IsSelf`                   | bool    | false   | `self` is allowed as a source. ⭐                                                                      |
+| `IsUnsafeInline`           | bool    | false   | Allows inline styles (`unsafe-inline`).                                                               |
+| `IsUnsafeHashes`           | bool    | false   | Allows unsafe hashes for inline styles (`unsafe-hashes`). ⚠️ Only allowed for `style-src`             |
+| `Sources`                  | array   | []      | Custom sources for styles.                                                                            |
+| `Nonces`                   | array   | []      | Specific nonces to allow inline styles.                                                               |
+| `Hashes`                   | array   | []      | SHA hashes to allow inline styles content. Must be prefixed with `sha256-`, `sha384-`, or `sha512-`.  |
+| `RequireSri`               | bool    | false   | Requires Subresource Integrity (SRI) for styles. ⚠️ Only allowed for `style-src`                      |
+| `ReportSample`             | bool    | false   | Enables 'report-sample' in CSP violation reports.                                                     |
 
 This table shows trhe options for `script-src-attr`.
 
-| Setting                     | Type    | Default | Description                                                                                           |
-| --------------------------- | ------- | ------- | ----------------------------------------------------------------------------------------------------- |
-|  `IsNone`                   | bool    | false   | Only `none` is allowed. All other sources are ignored.                                                |
-|  `IsSelf`                   | bool    | false   | `self` is allowed as a source. ⭐                                                                      |
-|  `IsUnsafeInline`           | bool    | false   | Allows inline styles (`unsafe-inline`).                                                               |
-|  `IsUnsafeHashes`           | bool    | false   | Allows unsafe hashes for inline styles (`unsafe-hashes`).                                             |
-|  `Sources`                  | array   | []      | Custom sources for styles.                                                                            |
-|  `ReportSample`             | bool    | false   | Enables 'report-sample' in CSP violation reports.                                                     |
+| Setting                    | Type    | Default | Description                                                                                           |
+| -------------------------- | ------- | ------- | ----------------------------------------------------------------------------------------------------- |
+| `IsNone`                   | bool    | false   | Only `none` is allowed. All other sources are ignored.                                                |
+| `IsSelf`                   | bool    | false   | `self` is allowed as a source. ⭐                                                                      |
+| `IsUnsafeInline`           | bool    | false   | Allows inline styles (`unsafe-inline`).                                                               |
+| `IsUnsafeHashes`           | bool    | false   | Allows unsafe hashes for inline styles (`unsafe-hashes`).                                             |
+| `Sources`                  | array   | []      | Custom sources for styles.                                                                            |
+| `ReportSample`             | bool    | false   | Enables 'report-sample' in CSP violation reports.                                                     |
 
 ```json 
 "App": {
@@ -697,11 +697,11 @@ This table shows trhe options for `script-src-attr`.
 The HTTP Content-Security-Policy (CSP) trusted-types directive is used to specify an allowlist of Trusted Type policy names 
 that a website can create using `trustedTypes.createPolicy()`.
 
-| Setting             | Type    | Default | Description                                               |
-| ------------------- | ------- | ------- | --------------------------------------------------------- |
-|  `IsNone`           | bool    | false   | Only `none` is allowed. All other sources are ignored.    |
-|  `AllowDuplicates`  | bool    | false   | Allow duplicate policy names.                             |
-|  `Policies`         | array   | []      | List of allowed Trusted Types policy names.               |
+| Setting            | Type    | Default | Description                                               |
+| ------------------ | ------- | ------- | --------------------------------------------------------- |
+| `IsNone`           | bool    | false   | Only `none` is allowed. All other sources are ignored.    |
+| `AllowDuplicates`  | bool    | false   | Allow duplicate policy names.                             |
+| `Policies`         | array   | []      | List of allowed Trusted Types policy names.               |
 
 ```json 
 "App": {
@@ -722,22 +722,22 @@ that a website can create using `trustedTypes.createPolicy()`.
 The HTTP Content-Security-Policy (CSP) sandbox directive enables a sandbox for the requested resource similar to the `<iframe>` sandbox attribute. 
 It applies restrictions to a page's actions including preventing popups, preventing the execution of plugins and scripts, and enforcing a same-origin policy.  
 
-| Setting                                 | Type    | Default     | Description                                                  |
-| --------------------------------------- | ------- | ----------- | ------------------------------------------------------------ |
-|  `AllowDownloads`                       | bool    | false       | Allows downloads in the sandbox.                             |
-|  `AllowForms`                           | bool    | false       | Allows form submissions from the sandboxed page.             |
-|  `AllowModals`                          | bool    | false       | Allows opening modal windows.                                |
-|  `AllowOrientationLock`                 | bool    | false       | Allows disabling screen orientation lock.                    |
-|  `AllowPointerLock`                     | bool    | false       | Allows usage of Pointer Lock API.                            |
-|  `AllowPopups`                          | bool    | false       | Allows popups (window.open, target=_blank).                  |
-|  `AllowPopupsToEscapeSandbox`           | bool    | false       | Allows popups to escape sandbox restrictions.                |
-|  `AllowPresentation`                    | bool    | false       | Allows initiating presentations from the sandboxed page.     |
-|  `AllowSameOrigin`                      | bool    | false       | Allows same-origin access from sandboxed content.            |
-|  `AllowScripts`                         | bool    | false       | Allows execution of scripts.                                 |
-|  `AllowStorageAccessByUserActivation`   | bool    | false       | Allows storage access via user activation.                   |
-|  `AllowTopNavigation`                   | bool    | false       | Allows top-level navigation.                                 |
-|  `AllowTopNavigationByUserActivation`   | bool    | false       | Allows top-level navigation via user activation.             |
-|  `AllowTopNavigationToCustomProtocols`  | bool    | false       | Allows navigation to custom protocols.                       |
+| Setting                                | Type    | Default     | Description                                                  |
+| -------------------------------------- | ------- | ----------- | ------------------------------------------------------------ |
+| `AllowDownloads`                       | bool    | false       | Allows downloads in the sandbox.                             |
+| `AllowForms`                           | bool    | false       | Allows form submissions from the sandboxed page.             |
+| `AllowModals`                          | bool    | false       | Allows opening modal windows.                                |
+| `AllowOrientationLock`                 | bool    | false       | Allows disabling screen orientation lock.                    |
+| `AllowPointerLock`                     | bool    | false       | Allows usage of Pointer Lock API.                            |
+| `AllowPopups`                          | bool    | false       | Allows popups (window.open, target=_blank).                  |
+| `AllowPopupsToEscapeSandbox`           | bool    | false       | Allows popups to escape sandbox restrictions.                |
+| `AllowPresentation`                    | bool    | false       | Allows initiating presentations from the sandboxed page.     |
+| `AllowSameOrigin`                      | bool    | false       | Allows same-origin access from sandboxed content.            |
+| `AllowScripts`                         | bool    | false       | Allows execution of scripts.                                 |
+| `AllowStorageAccessByUserActivation`   | bool    | false       | Allows storage access via user activation.                   |
+| `AllowTopNavigation`                   | bool    | false       | Allows top-level navigation.                                 |
+| `AllowTopNavigationByUserActivation`   | bool    | false       | Allows top-level navigation via user activation.             |
+| `AllowTopNavigationToCustomProtocols`  | bool    | false       | Allows navigation to custom protocols.                       |
 
 ```json 
 "App": {
@@ -830,11 +830,11 @@ The following directives may be added to `PermissionPolicy` in the configuration
 
 Each directive may be configured as shown below.  
 
-| Setting                     | Type    | Default | Description                                                 |
-| --------------------------- | ------- | ------- | ----------------------------------------------------------- |
-|  `IsNone`                   | bool    | false   | Only `none` is allowed. All other sources are ignored.      |
-|  `IsSelf`                   | bool    | false   | `self` is allowed as a source. ⭐                            |
-|  `Sources`                  | array   | []      | Allowed custom asources.                                    |
+| Setting                    | Type    | Default | Description                                                 |
+| -------------------------- | ------- | ------- | ----------------------------------------------------------- |
+| `IsNone`                   | bool    | false   | Only `none` is allowed. All other sources are ignored.      |
+| `IsSelf`                   | bool    | false   | `self` is allowed as a source. ⭐                            |
+| `Sources`                  | array   | []      | Allowed custom asources.                                    |
 
 ```json 
 "App": {
@@ -857,11 +857,11 @@ Each directive may be configured as shown below.
 Defines the CSP `report-to` directive for reporting policy violations.  
 If configured, both the `Report-To` and `Reporting-Endpoints` headers are emitted on every response using the provided configuration.  
 
-| Setting        | Type    | Default     | Description                                                                                                                                                  |
-| -------------- | ------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-|  `Group`       | string  | csp-reports | Reporting group name referenced by CSP.                                                                                                                      |
-|  `MaxAge`      | int     | 10886400    | Max age (seconds) for the report group.                                                                                                                      |
-|  `Endpoints`   | array   | []          | URLs to receive CSP reports. If no endpoints is specified, report-to will default to the built-in Nano endpoint: `/csp/report-to`, that logs the violation.  |
+| Setting       | Type    | Default     | Description                                                                                                                                                  |
+| ------------- | ------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `Group`       | string  | csp-reports | Reporting group name referenced by CSP.                                                                                                                      |
+| `MaxAge`      | int     | 10886400    | Max age (seconds) for the report group.                                                                                                                      |
+| `Endpoints`   | array   | []          | URLs to receive CSP reports. If no endpoints is specified, report-to will default to the built-in Nano endpoint: `/csp/report-to`, that logs the violation.  |
 
 ```json 
 "App": {
@@ -888,17 +888,17 @@ from a domain different than the one that served the original page.
 
 Nano intercepts browser preflight (OPTIONS) requests and responds with the correct `Access-Control-*` headers, fully respecting the configured CORS policy.  
 
-| Setting                   | Type    | Default  | Description                                                                                                                                |
-| ------------------------- | ------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-|  `AllowedOrigins`         | array   | []       | Allowed origins.                                                                                                                           |
-|  `AllowedHeaders`         | array   | []       | Allowed HTTP headers.                                                                                                                      |
-|  `AllowedMethods`         | array   | []       | Allowed HTTP methods.                                                                                                                      |
-|  `AllowCredentials`       | bool    | false    | Indicates whether credentials are allowed.                                                                                                 |
-|  `Origin`                 | object  | default  | Origin-specific CORS policies.                                                                                                             |
-|  `Origin.EmbedderPolicy`  | object  | default  | The HTTP Cross-Origin-Embedder-Policy (COEP) response header configures the current document's policy for loading and embedding cross-origin resources. Allowed values: `UnsafeNone`⭐, `RequireCorp` or `Credentialless`.  |
-|  `Origin.OpenerPolicy`    | object  | default  | The HTTP Cross-Origin-Opener-Policy (COOP) response header allows a website to control whether a new top-level document, opened using Window.open() or by navigating to a new page, is opened in the same browsing context group (BCG) or in a new browsing context group. Allowed values: `SameOrigin`⭐, `UnsafeNone` or `SameOriginAllowPopups`.  |
-|  `Origin.ResourcePolicy`  | object  | default  | The HTTP Cross-Origin-Resource-Policy response header (CORP) indicates that the browser should block no-cors cross-origin or cross-site requests to the given resource. Allowed values: `SameOrigin`⭐, `SameSite` or `CrossOrigin`.  |
-|  `ExposedHeaders`         | object  | default  | Additional exposed headers. Nano exposes these headers by default: `TZ`, `RequestId`, `Content-Disposition` and `api-supported-versions`.  |
+| Setting                  | Type    | Default  | Description                                                                                                                                |
+| ------------------------ | ------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `AllowedOrigins`         | array   | []       | Allowed origins.                                                                                                                           |
+| `AllowedHeaders`         | array   | []       | Allowed HTTP headers.                                                                                                                      |
+| `AllowedMethods`         | array   | []       | Allowed HTTP methods.                                                                                                                      |
+| `AllowCredentials`       | bool    | false    | Indicates whether credentials are allowed.                                                                                                 |
+| `Origin`                 | object  | default  | Origin-specific CORS policies.                                                                                                             |
+| `Origin.EmbedderPolicy`  | object  | default  | The HTTP Cross-Origin-Embedder-Policy (COEP) response header configures the current document's policy for loading and embedding cross-origin resources. Allowed values: `UnsafeNone`⭐, `RequireCorp` or `Credentialless`.  |
+| `Origin.OpenerPolicy`    | object  | default  | The HTTP Cross-Origin-Opener-Policy (COOP) response header allows a website to control whether a new top-level document, opened using Window.open() or by navigating to a new page, is opened in the same browsing context group (BCG) or in a new browsing context group. Allowed values: `SameOrigin`⭐, `UnsafeNone` or `SameOriginAllowPopups`.  |
+| `Origin.ResourcePolicy`  | object  | default  | The HTTP Cross-Origin-Resource-Policy response header (CORP) indicates that the browser should block no-cors cross-origin or cross-site requests to the given resource. Allowed values: `SameOrigin`⭐, `SameSite` or `CrossOrigin`.  |
+| `ExposedHeaders`         | object  | default  | Additional exposed headers. Nano exposes these headers by default: `TZ`, `RequestId`, `Content-Disposition` and `api-supported-versions`.  |
 
 ```json
 "App": {
@@ -932,11 +932,11 @@ Try it out yourself using the **[Api.PolicyHeaders.Cors](https://github.com/Nano
 ## Strict Transport Security (Hsts)
 HTTP Strict Transport Security (HSTS) is a web security policy mechanism that forces browsers to interact with websites solely through secure HTTPS connections.  
 
-| Setting               | Type     | Default       | Description                                                                                           |
-| --------------------- | -------- | ------------- | ----------------------------------------------------------------------------------------------------- |
-|  `MaxAge`             | TimeSpan | 182:00:00:00  | Maximum age for HSTS. Default 182 days.                                                               |
-|  `UsePreload`         | bool     | false         | Enable or disable the preload directive. Preload will only used if `MaxAge` is greater than 7 weeks.  |
-|  `IncludeSubdomains`  | bool     | false         | Include subdomains in HSTS policy.                                                                    |
+| Setting              | Type     | Default       | Description                                                                                           |
+| -------------------- | -------- | ------------- | ----------------------------------------------------------------------------------------------------- |
+| `MaxAge`             | TimeSpan | 182:00:00:00  | Maximum age for HSTS. Default 182 days.                                                               |
+| `UsePreload`         | bool     | false         | Enable or disable the preload directive. Preload will only used if `MaxAge` is greater than 7 weeks.  |
+| `IncludeSubdomains`  | bool     | false         | Include subdomains in HSTS policy.                                                                    |
 
 ```json
 "App": {
@@ -958,15 +958,15 @@ Try it out yourself using the **[Api.PolicyHeaders.Hsts](https://github.com/Nano
 The `X-Robots-Tag` response header defines how crawlers should index URLs. While not part of any specification, it is a de-facto standard method 
 for communicating with search bots, web crawlers, and similar user agents.
 
-| Setting             | Type  | Default  | Description                                                                         |
-| ------------------- | ----- | -------- | ----------------------------------------------------------------------------------- |
-|  `UseNoIndex`       | bool  | false    | Instructs search engines to not index the page.                                     |
-|  `UseNoFollow`      | bool  | false    | Instructs search engines to not follow links on the page.                           |
-|  `UseNoSnippet`     | bool  | false    | Instructs search engines to not display a snippet for the page in search results.   |
-|  `UseNoArchive`     | bool  | false    | Instructs search engines to not offer a cached version of the page.                 |
-|  `UseNoOdp`         | bool  | false    | Instructs search engines to not use Open Directory Project info for title/snippet.  |
-|  `UseNoTranslate`   | bool  | false    | Instructs search engines to not offer translation of the page (Google only).        |
-|  `UseNoImageIndex`  | bool  | false    | Instructs search engines to not index images on the page (Google only).             |
+| Setting            | Type  | Default  | Description                                                                         |
+| ------------------ | ----- | -------- | ----------------------------------------------------------------------------------- |
+| `UseNoIndex`       | bool  | false    | Instructs search engines to not index the page.                                     |
+| `UseNoFollow`      | bool  | false    | Instructs search engines to not follow links on the page.                           |
+| `UseNoSnippet`     | bool  | false    | Instructs search engines to not display a snippet for the page in search results.   |
+| `UseNoArchive`     | bool  | false    | Instructs search engines to not offer a cached version of the page.                 |
+| `UseNoOdp`         | bool  | false    | Instructs search engines to not use Open Directory Project info for title/snippet.  |
+| `UseNoTranslate`   | bool  | false    | Instructs search engines to not offer translation of the page (Google only).        |
+| `UseNoImageIndex`  | bool  | false    | Instructs search engines to not index images on the page (Google only).             |
 
 ```json
 "App": {
@@ -992,10 +992,10 @@ Try it out yourself using the **[Api.PolicyHeaders.Robots](https://github.com/Na
 When connecting through a HTTP proxy (or load balancer), server logs will only contain the IP address, host address, and protocol of the proxy; 
 this header can be used to identify the IP address, host, and protocol, of the original request.
 
-| Setting                   | Type    | Default  | Description                                                                                              |
-| ------------------------- | ------- | -------- | -------------------------------------------------------------------------------------------------------- |
-|  `Headers`                | object  | All      | Defines the headers that should forwarded.                                                               |
-|  `RequireHeaderSymmetry`  | bool    | true     | Specifies that forwarded headers will only be processed if the set of headers is complete for that hop.  |
+| Setting                  | Type    | Default  | Description                                                                                              |
+| ------------------------ | ------- | -------- | -------------------------------------------------------------------------------------------------------- |
+| `Headers`                | object  | All      | Defines the headers that should forwarded.                                                               |
+| `RequireHeaderSymmetry`  | bool    | true     | Specifies that forwarded headers will only be processed if the set of headers is complete for that hop.  |
 
 ```json
 "App": {
@@ -1009,15 +1009,15 @@ this header can be used to identify the IP address, host, and protocol, of the o
 ```
 
 #### Headers Values
-| Setting              | Description                                                                                            |
-| -------------------- | ------------------------------------------------------------------------------------------------------ |
-|  `None`              | Do not process any forwarders.                                                                         |
-|  `XForwardedFor`     | Process `X-Forwarded-For`, which identifies the originating IP address of the client.                  |
-|  `XForwardedHost`    | Process `X-Forwarded-Host`, which identifies the original host requested by the client.                |
-|  `XForwardedPort`    | Process `X-Forwarded-Port`, which identifies the original port requested by the client.                |
-|  `XForwardedProto`   | Process `X-Forwarded-Proto`, which identifies the protocol (HTTP or HTTPS) the client used to connect. |
-|  `XForwardedPrefix`  | Process `X-Forwarded-Prefix`, which identifies the original path base used by the client.              |
-|  `All`               | Process X-Forwarded-For, X-Forwarded-Host, X-Forwarded-Proto and X-Forwarded-Prefix.                   |
+| Setting             | Description                                                                                            |
+| ------------------- | ------------------------------------------------------------------------------------------------------ |
+| `None`              | Do not process any forwarders.                                                                         |
+| `XForwardedFor`     | Process `X-Forwarded-For`, which identifies the originating IP address of the client.                  |
+| `XForwardedHost`    | Process `X-Forwarded-Host`, which identifies the original host requested by the client.                |
+| `XForwardedPort`    | Process `X-Forwarded-Port`, which identifies the original port requested by the client.                |
+| `XForwardedProto`   | Process `X-Forwarded-Proto`, which identifies the protocol (HTTP or HTTPS) the client used to connect. |
+| `XForwardedPrefix`  | Process `X-Forwarded-Prefix`, which identifies the original path base used by the client.              |
+| `All`               | Process X-Forwarded-For, X-Forwarded-Host, X-Forwarded-Proto and X-Forwarded-Prefix.                   |
 
 #### X-Forwarded-Headers
 | Header               | HttpContext                                     |
@@ -1046,11 +1046,11 @@ restore the session based on the cookie, query the DB for results, or render the
 
 > ⚠️ It's recommended to enable this in configuration, then disable for specific actions using `[ResponseCache(...)]`.
 
-| Setting        | Type     | Default  | Description                                         |
-| -------------- | -------- | -------- | --------------------------------------------------- |
-|  `MaxSize`     | int      | 1024     | Maximum cache size in KB. Default is 1 MB.          |
-|  `MaxBodySize` | int      | 102400   | Maximum cached body size in KB. Default is 100 MB.  |
-|  `MaxAge`      | TimeSpan | 00:20:00 | Maximum cache duration. Default is 20 minutes.      |
+| Setting       | Type     | Default  | Description                                         |
+| ------------- | -------- | -------- | --------------------------------------------------- |
+| `MaxSize`     | int      | 1024     | Maximum cache size in KB. Default is 1 MB.          |
+| `MaxBodySize` | int      | 102400   | Maximum cached body size in KB. Default is 100 MB.  |
+| `MaxAge`      | TimeSpan | 00:20:00 | Maximum cache duration. Default is 20 minutes.      |
 
 ```json
 "App": {
@@ -1070,10 +1070,10 @@ Try it out yourself using the **[Api.ResponseCache](https://github.com/Nano-Core
 HTTP response compression is a technique used to reduce the size of data sent from a web server to a client (usually a browser). 
 By shrinking the payload, it improves website loading speeds, reduces bandwidth consumption, and enhances overall network efficiency.  
 
-| Setting        | Type   | Default  | Description                            |
-| -------------- | ------ | -------- | -------------------------------------- |
-|  `UseGzip`     | bool   | true     | Enable or disable Gzip compression.    |
-|  `UseBrotli`   | bool   | true     | Enable or disable Brotli compression.  |
+| Setting       | Type   | Default  | Description                            |
+| ------------- | ------ | -------- | -------------------------------------- |
+| `UseGzip`     | bool   | true     | Enable or disable Gzip compression.    |
+| `UseBrotli`   | bool   | true     | Enable or disable Brotli compression.  |
 
 ```json
 "App": {
@@ -1108,9 +1108,9 @@ metadata:
     nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
 ```
 
-| Setting        | Type     | Default  | Description                                         |
-| -------------- | -------- | -------- | --------------------------------------------------- |
-|  `Timeout`     | TimeSpan | 00:20:00 | Session timeout duration. Default is 20 minutes.    |
+| Setting       | Type     | Default  | Description                                         |
+| ------------- | -------- | -------- | --------------------------------------------------- |
+| `Timeout`     | TimeSpan | 00:20:00 | Session timeout duration. Default is 20 minutes.    |
 
 ```json
 "App": {
@@ -1165,9 +1165,9 @@ var utc   = DateTimeInfo.UtcNow; // UTC date-time
 
 Cookie name: `.AspNetCore.TimeZone`
 
-| Setting             | Type    | Default  | Description                             |
-| ------------------- | ------- | -------- | --------------------------------------- |
-|  `DefaultTimeZone`  | string  | UTC      | Default time zone for the application.  |
+| Setting            | Type    | Default  | Description                             |
+| ------------------ | ------- | -------- | --------------------------------------- |
+| `DefaultTimeZone`  | string  | UTC      | Default time zone for the application.  |
 
 ```json
 "App": {
@@ -1194,10 +1194,10 @@ the built-in [Nano Api Client](https://github.com/Nano-Core/Nano.Library/tree/ma
 
 Cookie name: `.AspNetCore.Culture`
 
-| Setting               | Type    | Default  | Description                                                                                                |
-| --------------------- | --------| -------- | ---------------------------------------------------------------------------------------------------------- |
-|  `DefaultCulture`     | string  | en-US    | The default culture used by the application.                                                               |
-|  `SupportedCultures`  | enum    | []       | The set of cultures supported by the application. Unsupported cultures will fallback to `DefaultCulture`.  |
+| Setting              | Type    | Default  | Description                                                                                                |
+| -------------------- | --------| -------- | ---------------------------------------------------------------------------------------------------------- |
+| `DefaultCulture`     | string  | en-US    | The default culture used by the application.                                                               |
+| `SupportedCultures`  | enum    | []       | The set of cultures supported by the application. Unsupported cultures will fallback to `DefaultCulture`.  |
 
 ```json
 "App": {
@@ -1243,21 +1243,21 @@ Try it out yourself using the **[Api.Versioning](https://github.com/Nano-Core/Na
 ## Documentation
 When documentation is enabled in the configuration, the API's web-based documentation interface (Swagger) is available at `/docs`.
 
-| Setting               | Type    | Default   | Description                                                                                                                                  |
-| --------------------- | ------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-|  `Name`               | string  | Nano App  | Name of the application or API.                                                                                                              |
-|  `Description`        | string  | null      | Description of the application or API.                                                                                                       |
-|  `TermsOfServiceUrl`  | string  | null      | URL for terms of service. Must be a valid url.                                                                                               |
-|  `Contact`            | string  | null      | Contact information for the API.                                                                                                             |
-|  `Contact.Name`       | string  | null      | The identifying name of the contact person/organization.                                                                                     |
-|  `Contact.Email`      | string  | null      | The email address of the contact person/organization. Must be a valid email address.                                                         |
-|  `Contact.Url`        | string  | null      | The URL pointing to the contact information. MUST be in the format of a URL. Must be a valid url.                                            |
-|  `License`            | string  | null      | License information for the API.                                                                                                             |
-|  `License.Name`       | string  | null      | The license name used for the API.                                                                                                           |
-|  `License.Identifier` | string  | null      | An SPDX license expression for the API. The identifier field is mutually exclusive of the url field.                                         |
-|  `License.Url`        | string  | null      | The URL pointing to the contact information. MUST be in the format of a URL. Must be a valid url.                                            |
-|  `CspNonce`           | string  | null      | Optional Content Security Policy nonce. See [CSP Nonce](#csp-nonce).                                                                         |
-|  `HideDefaultVersion` | bool    | true      | Hide default API version (`App:Version`). Default version routes will be hidden in swagger, only the default non-versioned routes will show. |
+| Setting              | Type    | Default   | Description                                                                                                                                  |
+| -------------------- | ------- | --------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Name`               | string  | Nano App  | Name of the application or API.                                                                                                              |
+| `Description`        | string  | null      | Description of the application or API.                                                                                                       |
+| `TermsOfServiceUrl`  | string  | null      | URL for terms of service. Must be a valid url.                                                                                               |
+| `Contact`            | string  | null      | Contact information for the API.                                                                                                             |
+| `Contact.Name`       | string  | null      | The identifying name of the contact person/organization.                                                                                     |
+| `Contact.Email`      | string  | null      | The email address of the contact person/organization. Must be a valid email address.                                                         |
+| `Contact.Url`        | string  | null      | The URL pointing to the contact information. MUST be in the format of a URL. Must be a valid url.                                            |
+| `License`            | string  | null      | License information for the API.                                                                                                             |
+| `License.Name`       | string  | null      | The license name used for the API.                                                                                                           |
+| `License.Identifier` | string  | null      | An SPDX license expression for the API. The identifier field is mutually exclusive of the url field.                                         |
+| `License.Url`        | string  | null      | The URL pointing to the contact information. MUST be in the format of a URL. Must be a valid url.                                            |
+| `CspNonce`           | string  | null      | Optional Content Security Policy nonce. See [CSP Nonce](#csp-nonce).                                                                         |
+| `HideDefaultVersion` | bool    | true      | Hide default API version (`App:Version`). Default version routes will be hidden in swagger, only the default non-versioned routes will show. |
 
 ```json
 "App": {
@@ -1313,15 +1313,15 @@ Dependencies between services are represented as a tree of health checks. If any
 to the configured rules, affecting the overall health status of the application. This makes it easy to monitor the health of all components and dependencies 
 in a consistent and centralized way.  
 
-| Setting                              | Type   | Default | Description                                                                                                                                                               |
-| ------------------------------------ | ------ | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-|  `EvaluationInterval`                | int    | 10      | Interval between health-check evaluations, in seconds.                                                                                                                    |
-|  `FailureNotificationInterval`       | int    | 60      | Minimum interval between failure notifications, in seconds.                                                                                                               |
-|  `MaximumHistoryEntriesPerEndpoint`  | int    | 50      | Maximum number of historical entries per endpoint stored in the UI database.                                                                                              |
-|  `WebHooks`                          | array  | []      | Configured web-hooks triggered on health-check events. ⚠️ Normally, webhooks aren’t needed; in the cloud, `/healthz` is polled and monitoring uses more robust alerting.  |
-|  `WebHooks.Name`                     | string | null    | Required. Name of the web-hook.                                                                                                                                           |
-|  `WebHooks.Url`                      | string | null    | Required. URL to which the web-hook will send requests.                                                                                                                   |
-|  `WebHooks.Payload`                  | string | null    | Optional. Payload to include in the web-hook request.                                                                                                                     |
+| Setting                             | Type   | Default | Description                                                                                                                                                               |
+| ----------------------------------- | ------ | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `EvaluationInterval`                | int    | 10      | Interval between health-check evaluations, in seconds.                                                                                                                    |
+| `FailureNotificationInterval`       | int    | 60      | Minimum interval between failure notifications, in seconds.                                                                                                               |
+| `MaximumHistoryEntriesPerEndpoint`  | int    | 50      | Maximum number of historical entries per endpoint stored in the UI database.                                                                                              |
+| `WebHooks`                          | array  | []      | Configured web-hooks triggered on health-check events. ⚠️ Normally, webhooks aren’t needed; in the cloud, `/healthz` is polled and monitoring uses more robust alerting.  |
+| `WebHooks.Name`                     | string | null    | Required. Name of the web-hook.                                                                                                                                           |
+| `WebHooks.Url`                      | string | null    | Required. URL to which the web-hook will send requests.                                                                                                                   |
+| `WebHooks.Payload`                  | string | null    | Optional. Payload to include in the web-hook request.                                                                                                                     |
 
 ```json
 "App": {
@@ -1359,12 +1359,12 @@ into the middleware pipeline, Nano helps enforce security best practices and pre
 
 > ⚠️ `ClamAV` has no authentication, so only run it internally in Kubernetes.
 
-| Setting                         | Type   | Default   | Description                                                                                        |
-| ------------------------------- | ------ | --------- | -------------------------------------------------------------------------------------------------- |
-|  `Host`                         | string | clamav    | Hostname of the virus scanning service.                                                            |
-|  `Port`                         | int    | 3310      | Port of the virus scanning service.                                                                |
-|  `HealthCheck`                  | object | null      | Health check configuration for the virus scanning service.                                         |
-|  `HealthCheck.UnhealthyStatus`  | enum   | Unhealthy | Gets or sets the health status level to report when a monitored service is detected as unhealthy.  |
+| Setting                        | Type   | Default   | Description                                                                                        |
+| ------------------------------ | ------ | --------- | -------------------------------------------------------------------------------------------------- |
+| `Host`                         | string | clamav    | Hostname of the virus scanning service.                                                            |
+| `Port`                         | int    | 3310      | Port of the virus scanning service.                                                                |
+| `HealthCheck`                  | object | null      | Health check configuration for the virus scanning service.                                         |
+| `HealthCheck.UnhealthyStatus`  | enum   | Unhealthy | Gets or sets the health status level to report when a monitored service is detected as unhealthy.  |
 
 ```json
 "App": {
@@ -1464,43 +1464,52 @@ This is enabled by default and requires no additional configuration.
 Try it out yourself using the **[Api.StaticFiles](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.StaticFiles)** example.  
 
 ## Authentication
-In Nano, authentication can be either persistent, using an identity store to manage user data, or transient, relying on external providers without storing identity information.  
+Nano supports two built-in authentication methods: JWT and API key authentication, and it also allows you to integrate custom authentication schemes. If no authentication schemes are 
+registered, meaning JWT and API key authentication are both disabled in configuration, and no custom authentication has been added, all endpoints will be accessible anonymously by default.  
+
+Nano uses a cookie-less approach to authentication and authorization, relying entirely on JWT tokens or API keys specified in request headers. While it is possible to implement custom 
+authentication handlers, this is generally not recommended. Instead, you should use External Direct authentication, where authentication is handled externally and the resulting identity 
+data is passed to Nano (e.g., via external sign-in or sign-up). Nano will then process the request and return a JWT token for subsequent authenticated interactions.
+
+In Nano, authentication can be either with an identity store to manage user data, or without - transient, relying on external providers without storing identity information.  
 
 When your application needs to manage usernames, passwords, roles, permissions, or other persistent user data, you should configure 
 **[Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#identity)**. This enables Nano to store and maintain user credentials and claims in a 
-centralized identity store. Roles and claims can then be automatically loaded for each user, simplifying access control and authorization across your application.
+centralized identity store. Roles and claims can then be automatically loaded for each user, simplifying access control and authorization across your application.  
 
 Nano also supports transient authentication. Users authenticate through external providers, and a Nano JWT tokens are generated for use in subsequent requests. Roles and claims 
 are transient, meaning they must be assigned each time a user logs in. To access all base controller actions in Nano, the `administrator` role must be included. Otherwise, roles can 
 be assigned more selectively from Nano’s default roles to provide finer-grained access control for transient users.  
 
-| Name          | Description                          |
-| ------------- | ------------------------------------ |
-| reader        | Authorized to read.                  | 
-| writer        | Authorized to read and write.        | 
-| creator       | Authorized to create.                | 
-| editor        | Authorized to update.                | 
-| deleter       | Authorized to create.                | 
-| identity      | Authorized to use identity actions.  | 
-| Administrator | Full access to everything.           | 
+| Name          | Description                                             |
+| ------------- | ------------------------------------------------------- |
+| reader        | Authorized to read.                                     | 
+| writer        | Authorized to read and write (create, update, delete).  | 
+| creator       | Authorized to create.                                   | 
+| editor        | Authorized to update.                                   | 
+| deleter       | Authorized to create.                                   | 
+| identity      | Authorized to use identity actions.                     | 
+| Administrator | Full access to everything.                              | 
 
 Transient roles and claims may also be added when using persistent authentication, and its often preferred for data than might change. Consider you might fetch a user’s 
 legal name at login and add it as a transient claim, rather than storing it permanently in the identity system. This approach ensures that certain information is always 
-current without updating persistent claims.
+current without the need to update persistent claims when data changes.  
+
+> ⚠️ API key authentication is only supported when using the built-in identity store, and is configured as part of **[Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#identity)**.
 
 The following configuration is available for authentication.  
 
-| Setting                   | Type     | Default   | Description                                                                                         |
-| ------------------------- | -------- | --------- | --------------------------------------------------------------------------------------------------- |
-|  `Jwt`                    | object   | null      | Optional JWT authentication configuration.                                                          |
-|  `Jwt.Issuer`             | string   | null      | Required. JWT issuer.                                                                               |
-|  `Jwt.Audience`           | string   | null      | Required. JWT audience.                                                                             |
-|  `Jwt.PublicKey`          | string   | null      | Required. Base64-encoded public key.                                                                |
-|  `Jwt.PrivateKey`         | string   | null      | Optional Base64-encoded private key. _This is required if the application must create JWT tokens_.  |
-|  `Jwt.Expiration`         | TimeSpan | 00:60:00  | Expiration for the access token.                                                                    |
-|  `Jwt.RefreshExpiration`  | TimeSpan | 72:00:00  | Expiration for the refresh token.                                                                   |
-|  `Jwt.RootLogin`          | object   | null      | Optional root login options.                                                                        |
-|  `Jwt.ExternalLogins`     | object   | null      | Optional external login options.                                                                    |
+| Setting                  | Type     | Default   | Description                                                                                         |
+| ------------------------ | -------- | --------- | --------------------------------------------------------------------------------------------------- |
+| `Jwt`                    | object   | null      | Optional JWT authentication configuration.                                                          |
+| `Jwt.Issuer`             | string   | null      | Required. JWT issuer.                                                                               |
+| `Jwt.Audience`           | string   | null      | Required. JWT audience.                                                                             |
+| `Jwt.PublicKey`          | string   | null      | Optional. Base64-encoded public key. Required to generate JWT tokens.                               |
+| `Jwt.PrivateKey`         | string   | null      | Optional Base64-encoded private key. _This is required if the application must create JWT tokens_.  |
+| `Jwt.Expiration`         | TimeSpan | 01:00:00  | Expiration for the access token.                                                                    |
+| `Jwt.RefreshExpiration`  | TimeSpan | 72:00:00  | Expiration for the refresh token.                                                                   |
+| `Jwt.RootLogin`          | object   | null      | Optional root login options.                                                                        |
+| `Jwt.ExternalLogins`     | object   | null      | Optional external login options.                                                                    |
 
 ```json
 "App": {
@@ -1510,16 +1519,49 @@ The following configuration is available for authentication.
       "Audience": null,
       "PublicKey": null,
       "PrivateKey": null,
-      "Expiration": "00:60:00",
+      "Expiration": "01:00:00",
       "RefreshExpiration": "72:00:00"
     }
   }
 }
 ```
 
-Nano supports a statically configured login called `RootLogin`. It is primarily intended for use in `Development` environments when testing services in isolation, but where 
+In a distributed application architecture, the application responsible for signing in users must be configured with both a private and a public key, while all other 
+applications only need the public key. The private key is used to generate JWT tokens, whereas the public key is sufficient to validate them.  
+
+Both the public and private keys should be stored securely as a Kubernetes secret for the `Staging` and `Production` environments and should not be exposed.  
+
+In Nano, all authentication features are accessed through a set of repository interfaces. The table below details each supported login type and its corresponding registered 
+interfaces, showing what is available for use in your application.
+
+| Login                  | Auth Type         | Config Required                | Primary Interface            |
+| ---------------------- | ----------------- | ------------------------------ | ---------------------------- |
+| Credentials            | JWT Identity      | Jwt, Identity                  | `IIdentityAuthRepository`    |
+| Root                   | JWT Transient     | Jwt, RootLogin                 | `IAuthRootRepository`        |
+| External               | JWT Identity      | Jwt, ExternalLogins, Identity  | `IIdentityAuthRepository`    |
+| External Transient     | JWT Transient     | Jwt, ExternalLogins            | `IAuthTransientRepository`   |
+| Api Key                | Api Key Identity  | Identity, ApiKey               | -                            |
+
+The most basic and commonly used authentication method is logging in with credentials, a username and password, validated against the configured identity store.  
+
+The `IIdentityAuthRepository` provides the following methods to support this functionality.  
+
+| Method                              | Parameters           | Description                                                                                                                     |
+| ----------------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `GetExternalProviderSchemesAsync`   | —                    | Retrieves all configured external authentication schemes available for login.                                                   |
+| `LogInAsync`                        | logIn                | Logs in a user using username and password credentials, generating a JWT access token and optional refresh token.               |
+| `LogInExternalAsync`                | logInExternal        | Logs in a user using a configured built-in external login provider, generating a JWT access token and optional refresh token.   |
+| `LogInExternalAsync`                | logInExternalDirect  | Logs in a user using direct external login data, generating a JWT access token and optional refresh token.                      |
+| `LogInRefreshAsync`                 | logInRefresh         | Refreshes an existing access token using a valid refresh token, generating a new JWT and refresh token.                         |
+| `LogOutAsync`                       | userId, appId        | Logs out the current user.                                                                                                      |
+
+Try it out yourself using the **[Api.Data.Identity.Authentication.Jwt](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Authentication.Jwt)** example.  
+
+Nano also supports a statically configured JWT login called `RootLogin`. It is primarily intended for use in `Development` environments when testing services in isolation, but where 
 the application still requires an authenticated user. Another common scenario is when console applications need to authenticate through the Nano API client but do not have 
-a specific user account available for login. This login type is transient and does not rely on an identity store. The `RootLogin` configuration is defined as follows.  
+a specific user account available for login. This login type is transient and does not rely on an identity store.  
+
+The `RootLogin` configuration is defined as follows.  
 
 | Setting       | Type     | Default   | Description                                 |
 | ------------- | -------- | --------- | ------------------------------------------- |
@@ -1540,13 +1582,21 @@ a specific user account available for login. This login type is transient and do
 
 When logged in as root, the administrator role is automatically assigned, providing full permissions across the application.  
 
-Nano also supports authentication using external providers. Predefined integrations are available for providers such as Facebook, Google, and Microsoft, and direct external authentication 
-is supported as well. With direct external authentication, you pass the authentication result to Nano, which then handles JWT token creation or persists the login in the identity store 
-if configured.
+The `IAuthRootRepository` contains just a single method.  
 
-External logins can be used alongside **[Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#identity)** or as transient logins without an identity store.
+| Method           | Parameters   | Description                                                                                                                       |
+| ---------------- | ------------ | --------------------------------------------------------------------------------------------------------------------------------- |
+| `LogInRootAsync` | logInRoot    | Signs in the admin/root user using credentials. The credentials must match the root username and password in the configuration.   |
 
-The configuration is defined as follows.  
+Try it out yourself using the **[Api.Authentication.RootLogin](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Authentication.RootLogin)** example.  
+
+Next, authentication using external providers is supported in Nano as well. Predefined integrations are available for providers such as Facebook, Google, and Microsoft, and 
+direct external authentication is supported as well. With direct external authentication, you pass the authentication result to Nano, which then handles JWT token creation or 
+persists the login in the identity store if configured.
+
+External logins can be used with **[Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#identity)** or as transient logins without an identity store.
+
+The configuration is defined as follows for the built-in external logins.  
 
 **Facebook**
 
@@ -1601,11 +1651,52 @@ The configuration is defined as follows.
 
 > ⚠️ The external provider application must be configured with at least the following scopes: `id`, `email`, and `username`.
 
-Nano provides a `BaseAuthController` which, when inherited, automatically exposes endpoints for all configured authentication methods. If you prefer to implement your own 
-authentication controller, you can leverage the interfaces `IAuthRootRepository`, `IAuthTransientRepository`, or `IIdentityAuthRepository` to build custom authentication 
-functionality.  
+The `IIdentityAuthRepository` handles external authentication backed by the identity store, whereas the `IAuthTransientRepository` is designed for transient logins and provides 
+methods specifically for external transient authentication.
 
-> ⚠️ Learn more about [Authentication Controllers](#controllers).
+| Method                              | Parameters           | Description                                                                                                                     |
+| ----------------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `GetExternalProviderSchemesAsync`   | —                    | Retrieves all configured external authentication schemes available for login.                                                   |
+| `LogInExternalAsync`                | logInExternal        | Performs an external login using direct external login data and generates a corresponding JWT access token.                     |
+| `LogInExternalAsync`                | logInExternalDirect  | Performs an external login using a configured built-in external provider type and generates a corresponding JWT access token.   |
+
+Try out external authentication yourself using one of these examples.  
+
+* **[Api.Data.Identity.Authentication.External.Direct](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Authentication.External.Direct)** 
+* **[Api.Data.Identity.Authentication.External.Facebook](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Authentication.External.Facebook)** 
+* **[Api.Data.Identity.Authentication.External.Google](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Authentication.External.Google)** 
+* **[Api.Data.Identity.Authentication.External.Microsoft](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Authentication.External.Microsoft)** 
+
+...or the equivalent transient examples.  
+
+* **[Api.Authentication.External.Direct](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Authentication.External.Direct)** 
+* **[Api.Authentication.External.Facebook](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Authentication.External.Facebook)** 
+* **[Api.Authentication.External.Google](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Authentication.External.Google)** 
+* **[Api.Authentication.External.Microsoft](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Authentication.External.Microsoft)** 
+
+Finally, Nano allows you to add a custom authentication provider. The recommended approach is to configure JWT authentication in Nano and then integrate your custom authentication 
+through a direct external provider. You can also register custom authorization policies as needed and apply them using the `[Authorize]` attribute on relevant endpoints.  
+
+If you choose not to configure any Nano authentication, registering only your custom provider will work as well, leaving your provider as the sole active authentication method. 
+Custom external providers that are registered will appear in the results of `GetExternalAuthenticationSchemesAsync()`. Your custom authentication can be used both with the 
+identity store and for transient logins.
+
+```csharp
+services
+    .AddAuthentication(x =>
+    {
+        x.DefaultScheme = "CustomScheme;
+    })
+    .AddCustomAuthentication(...)     
+```
+
+Try it out yourself using the **[Api.Authentication.Custom](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Authentication.Custom)** example.  
+
+All authentication repositories are leveraged by the `BaseAuthController` when implemented to expose authentication endpoints. In most cases, you do not need to interact with 
+the repositories directly. Using the controller provides a consistent, simplified interface to access all configured authentication actions, ensuring that authentication flows are 
+handled correctly and securely.
+
+> 📖 Learn more about [Authentication Controllers](#controllers).
 
 Each authentication method allows you to specify an `AppId`, a unique identifier for the application or platform the user is authenticating from. This makes it possible to manage 
 logins independently per application and to isolate refresh tokens when an identity store is configured. If no `AppId` is provided, it defaults to `Default`. All authentication 
@@ -1657,21 +1748,7 @@ metadata:
     nginx.ingress.kubernetes.io/auth-response-headers: "Authorization"
 ```
 
-Try out transient authentication yourself using one of these examples.  
-
-* **[Api.Authentication.RootLogin](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Authentication.RootLogin)** 
-* **[Api.Authentication.External.Facebook](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Authentication.External.Facebook)** 
-* **[Api.Authentication.External.Google](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Authentication.External.Google)** 
-* **[Api.Authentication.External.Microsoft](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Authentication.External.Microsoft)** 
-
-or examples with identity store configured.  
-
-* **[Api.Data.Identity.Authentication.Jwt](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Authentication.Jwt)** 
-* **[Api.Data.Identity.Authentication.External.Facebook](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Authentication.External.Facebook)** 
-* **[Api.Data.Identity.Authentication.External.Google](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Authentication.External.Google)** 
-* **[Api.Data.Identity.Authentication.External.Microsoft](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Authentication.External.Microsoft)** 
-* **[Api.Data.Identity.Authentication.ApiKey](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Authentication.Jwt)** 
-* **[Api.Data.Identity.Authentication.Custom](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Authentication.Custom)** 
+Try it out yourself using the **[Api.Data.Identity.Authentication.ApiKey](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Authentication.Jwt)** example.  
 
 ## Authorization
 Nano supports authorization using either a JWT token or an API key. JWT tokens are provided in the `Authorization` header, while API keys are provided in 
@@ -1932,7 +2009,7 @@ are not configured will not be registered or available in the controller.
 | ------------------------------------------- | ------ | --------- | ------------------------------------------------------------------------------------ |
 | `/auth/login`                               | POST   | Anonymous | Authenticates a user and returns an access token (JWT).                              |
 | `/auth/login/root`                          | POST   | Anonymous | Authenticates the root user from configuration and returns an access token.          |
-| `/auth/login/externalvdirect`               | POST   | Anonymous | Signs in a user via direct external authentication data.                             |
+| `/auth/login/external/direct`               | POST   | Anonymous | Signs in a user via direct external authentication data.                             |
 | `/auth/login/external/direct/transient`     | POST   | Anonymous | Signs in a transient user via direct external authentication data.                   |
 | `/auth/login/external/facebook`             | POST   | Anonymous | Signs in a user via external Facebook authentication.                                |
 | `/auth/login/external/facebook/transient`   | POST   | Anonymous | Signs in a transient user via external Facebook authentication.                      |

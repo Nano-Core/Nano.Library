@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.Extensions.Options;
 using Nano.App.Api.Config;
@@ -8,27 +5,18 @@ using Nano.App.Api.Controllers;
 using Nano.App.Api.Mvc.Extensions;
 using Nano.Common.Extensions;
 using Nano.Data.Abstractions.Config;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Nano.App.Api.Mvc.Authentication;
 
 namespace Nano.App.Api.Mvc.Conventions;
 
-/// <summary>
-/// Conditional controller actions based on application options and feature flags.
-/// </summary>
-public sealed class ConditionalActionsConvention : IControllerModelConvention
+internal sealed class ConditionalActionsConvention(AuthenticationSchemeCache authenticationSchemeProvider, IOptionsMonitor<ApiOptions> apiOptions, IOptionsMonitor<DataOptions>? dataOptions = null)
+    : IControllerModelConvention
 {
-    private readonly IOptionsMonitor<ApiOptions> apiOptions;
-    private readonly IOptionsMonitor<DataOptions>? dataOptions;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="ConditionalActionsConvention"/> class.
-    /// </summary>
-    /// <param name="apiOptions">The web API options monitor.</param>
-    /// <param name="dataOptions">The data options monitor (optional).</param>
-    public ConditionalActionsConvention(IOptionsMonitor<ApiOptions> apiOptions, IOptionsMonitor<DataOptions>? dataOptions = null)
-    {
-        this.apiOptions = apiOptions ?? throw new ArgumentNullException(nameof(apiOptions));
-        this.dataOptions = dataOptions;
-    }
+    private readonly IOptionsMonitor<ApiOptions> apiOptions = apiOptions ?? throw new ArgumentNullException(nameof(apiOptions));
+    private readonly AuthenticationSchemeCache authenticationSchemeCache = authenticationSchemeProvider ?? throw new ArgumentNullException(nameof(authenticationSchemeProvider));
 
     /// <summary>
     /// Applies conditional rules to controller actions based on configuration.
@@ -58,7 +46,7 @@ public sealed class ConditionalActionsConvention : IControllerModelConvention
         var disabledActions = controller.Actions
             .Where(x =>
             {
-                if (nameof(BaseAuthController<>.LogInAsync).ReplaceAsync() == x.ActionName && (this.dataOptions?.CurrentValue.Identity == null || this.apiOptions.CurrentValue.Authentication.Jwt == null))
+                if (nameof(BaseAuthController<>.LogInAsync).ReplaceAsync() == x.ActionName && (dataOptions?.CurrentValue.Identity == null || this.apiOptions.CurrentValue.Authentication.Jwt == null))
                 {
                     return true;
                 }
@@ -68,32 +56,17 @@ public sealed class ConditionalActionsConvention : IControllerModelConvention
                     return true;
                 }
 
-                if (nameof(BaseAuthController<>.LogInRefreshAsync).ReplaceAsync() == x.ActionName && ((this.dataOptions?.CurrentValue.Identity == null && !(this.apiOptions.CurrentValue.Authentication.Jwt?.ExternalLogins.IsConfigured ?? false)) || this.apiOptions.CurrentValue.Authentication.Jwt == null))
+                if (nameof(BaseAuthController<>.LogInExternalDirectAsync).ReplaceAsync() == x.ActionName && (dataOptions?.CurrentValue.Identity == null || this.apiOptions.CurrentValue.Authentication.Jwt == null || this.authenticationSchemeCache.Schemes.Length == 0))
                 {
                     return true;
                 }
 
-                if (nameof(BaseAuthController<>.LogInExternalDirectAsync).ReplaceAsync() == x.ActionName && !(this.apiOptions.CurrentValue.Authentication.Jwt?.ExternalLogins.IsConfigured ?? false))
+                if (nameof(BaseAuthController<>.LogInExternalDirectTransientAsync).ReplaceAsync() == x.ActionName && (this.apiOptions.CurrentValue.Authentication.Jwt == null || this.authenticationSchemeCache.Schemes.Length == 0))
                 {
                     return true;
                 }
 
-                if (nameof(BaseAuthController<>.LogInExternalDirectTransientAsync).ReplaceAsync() == x.ActionName && !(this.apiOptions.CurrentValue.Authentication.Jwt?.ExternalLogins.IsConfigured ?? false))
-                {
-                    return true;
-                }
-
-                if (nameof(BaseAuthController<>.LogInExternalGoogleAsync).ReplaceAsync() == x.ActionName && this.apiOptions.CurrentValue.Authentication.Jwt?.ExternalLogins.Google == null)
-                {
-                    return true;
-                }
-
-                if (nameof(BaseAuthController<>.LogInExternalGoogleTransientAsync).ReplaceAsync() == x.ActionName && this.apiOptions.CurrentValue.Authentication.Jwt?.ExternalLogins.Google == null)
-                {
-                    return true;
-                }
-
-                if (nameof(BaseAuthController<>.LogInExternalFacebookAsync).ReplaceAsync() == x.ActionName && this.apiOptions.CurrentValue.Authentication.Jwt?.ExternalLogins.Facebook == null)
+                if (nameof(BaseAuthController<>.LogInExternalFacebookAsync).ReplaceAsync() == x.ActionName && (dataOptions?.CurrentValue.Identity == null || this.apiOptions.CurrentValue.Authentication.Jwt?.ExternalLogins.Facebook == null))
                 {
                     return true;
                 }
@@ -103,7 +76,17 @@ public sealed class ConditionalActionsConvention : IControllerModelConvention
                     return true;
                 }
 
-                if (nameof(BaseAuthController<>.LogInExternalMicrosoftAsync).ReplaceAsync() == x.ActionName && this.apiOptions.CurrentValue.Authentication.Jwt?.ExternalLogins.Microsoft == null)
+                if (nameof(BaseAuthController<>.LogInExternalGoogleAsync).ReplaceAsync() == x.ActionName && (dataOptions?.CurrentValue.Identity == null || this.apiOptions.CurrentValue.Authentication.Jwt?.ExternalLogins.Google == null))
+                {
+                    return true;
+                }
+
+                if (nameof(BaseAuthController<>.LogInExternalGoogleTransientAsync).ReplaceAsync() == x.ActionName && this.apiOptions.CurrentValue.Authentication.Jwt?.ExternalLogins.Google == null)
+                {
+                    return true;
+                }
+
+                if (nameof(BaseAuthController<>.LogInExternalMicrosoftAsync).ReplaceAsync() == x.ActionName && (dataOptions?.CurrentValue.Identity == null || this.apiOptions.CurrentValue.Authentication.Jwt?.ExternalLogins.Microsoft == null))
                 {
                     return true;
                 }
@@ -113,12 +96,17 @@ public sealed class ConditionalActionsConvention : IControllerModelConvention
                     return true;
                 }
 
-                if (nameof(BaseAuthController<>.LogOutAsync).ReplaceAsync() == x.ActionName && (this.dataOptions?.CurrentValue.Identity == null || this.apiOptions.CurrentValue.Authentication.Jwt == null))
+                if (nameof(BaseAuthController<>.LogInRefreshAsync).ReplaceAsync() == x.ActionName && (dataOptions?.CurrentValue.Identity == null || this.apiOptions.CurrentValue.Authentication.Jwt == null))
                 {
                     return true;
                 }
 
-                if (nameof(BaseAuthController<>.GetExternalSchemesAsync).ReplaceAsync() == x.ActionName && !(this.apiOptions.CurrentValue.Authentication.Jwt?.ExternalLogins.IsConfigured ?? false))
+                if (nameof(BaseAuthController<>.LogOutAsync).ReplaceAsync() == x.ActionName && (dataOptions?.CurrentValue.Identity == null || this.apiOptions.CurrentValue.Authentication.Jwt == null))
+                {
+                    return true;
+                }
+
+                if (nameof(BaseAuthController<>.GetExternalSchemesAsync).ReplaceAsync() == x.ActionName && this.authenticationSchemeCache.Schemes.Length == 0)
                 {
                     return true;
                 }
@@ -237,7 +225,7 @@ public sealed class ConditionalActionsConvention : IControllerModelConvention
                     }));
         }
 
-        if (this.dataOptions?.CurrentValue.Identity?.ApiKey == null)
+        if (dataOptions?.CurrentValue.Identity?.ApiKey == null)
         {
             disabledActions
                 .AddRange(controller.Actions

@@ -42,8 +42,10 @@ public class NanoWebApplication : NanoApiApplication, IWebApplication
             .AddNanoApp<WebOptions>(builder.Configuration, out var options)
             .AddNanoConfigSection<ApiOptions>(builder.Configuration, BaseAppOptions.SectionName, out _);
 
+        var apiKeyOptions = GetApiKeyOptions(builder.Configuration);
+
         builder.Services
-            .ConfigureNanoWebServices(options);
+            .ConfigureNanoWebServices(options, apiKeyOptions);
 
         builder.WebHost
             .ConfigureWebHost(options);
