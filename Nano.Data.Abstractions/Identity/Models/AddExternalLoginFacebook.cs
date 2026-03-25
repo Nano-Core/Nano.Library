@@ -5,4 +5,4 @@ namespace Nano.Data.Abstractions.Identity.Models;
 /// <summary>
 /// Adds a Facebook external login to an existing user.
 /// </summary>
-public class AddExternalLoginFacebook : AddExternalLoginImplicit<ExternalLoginProviderFacebook>;
+public class AddExternalLoginFacebook : BaseAddExternalLogin<ExternalProviderFacebook, ImplicitFlow>;

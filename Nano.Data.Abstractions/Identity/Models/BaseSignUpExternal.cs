@@ -6,24 +6,13 @@ using Nano.Data.Abstractions.Models.Abstractions;
 namespace Nano.Data.Abstractions.Identity.Models;
 
 /// <summary>
-/// Base type for external sign-up requests.
-/// </summary>
-public abstract class BaseSignUpExternal : BaseSignUp;
-
-/// <summary>
 /// Base type for external sign-up requests with a strongly typed user.
 /// </summary>
 /// <typeparam name="TUser">The user type.</typeparam>
 /// <typeparam name="TIdentity">The user identity type.</typeparam>
-public abstract class BaseSignUpExternal<TUser, TIdentity> : BaseSignUpExternal
-    where TUser : IEntityUser<TIdentity>, new()
-    where TIdentity : IEquatable<TIdentity>
-{
-    /// <summary>
-    /// The user entity created or associated during sign-up.
-    /// </summary>
-    public virtual TUser User { get; set; } = new();
-}
+public abstract class BaseSignUpExternal<TUser, TIdentity> : BaseSignUp<TUser, TIdentity>
+    where TUser : IEntityUser<TIdentity>
+    where TIdentity : IEquatable<TIdentity>;
 
 /// <summary>
 /// Base type for external sign-up requests with provider-specific data.
@@ -31,14 +20,22 @@ public abstract class BaseSignUpExternal<TUser, TIdentity> : BaseSignUpExternal
 /// <typeparam name="TProvider">The external authentication provider type.</typeparam>
 /// <typeparam name="TUser">The user type.</typeparam>
 /// <typeparam name="TIdentity">The user identity type.</typeparam>
-public abstract class BaseSignUpExternal<TProvider, TUser, TIdentity> : BaseSignUpExternal<TUser, TIdentity>
-    where TProvider : BaseLogInExternalProvider, new()
-    where TUser : IEntityUser<TIdentity>, new()
+/// <typeparam name="TFlow">The type of authentication flow, e.g. auth-code, implicit, etc.</typeparam>
+public abstract class BaseSignUpExternal<TProvider, TFlow, TUser, TIdentity> : BaseSignUpExternal<TUser, TIdentity>
+    where TProvider : BaseExternalProvider
+    where TFlow : BaseAuthFlow
+    where TUser : IEntityUser<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
     /// The external authentication provider configuration.
     /// </summary>
     [Required]
-    public virtual TProvider Provider { get; set; } = new();
+    public virtual TProvider Provider { get; set; } = null!;
+
+    /// <summary>
+    /// The flow used for authentication.
+    /// </summary>
+    [Required]
+    public virtual TFlow Flow { get; set; } = null!;
 }

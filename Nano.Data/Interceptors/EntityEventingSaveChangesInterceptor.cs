@@ -10,7 +10,7 @@ using Nano.Eventing.Abstractions;
 
 namespace Nano.Data.Interceptors;
 
-// BUG: ENTITY EVENT: Entity Event Map
+// TODO: ENTITY EVENT: Entity Event Map
 // 1. Make a map of Publish Attributes and their property names.
 // 2. When SaveChanges then check if any property names are affected (e.g. User.IdentityUser.Email is changed, then User needs to be fetched and published)
 // NB: Maybe make startup validation of Publish properties and use of include ???

@@ -16,6 +16,6 @@ public class SignUpExternalFacebookRequest<TUser> : SignUpExternalFacebookReques
 /// <typeparam name="TUser">The type of the user entity.</typeparam>
 /// <typeparam name="TIdentity">The type of the user identifier.</typeparam>
 [PostAction(ActionRoutes.IDENTITY_SIGNUP_EXTERNAL_FACEBOOK)]
-public class SignUpExternalFacebookRequest<TUser, TIdentity> : BaseSignUpExternalRequest<SignUpExternalFacebook<TUser, TIdentity>>
+public class SignUpExternalFacebookRequest<TUser, TIdentity> : BaseSignUpExternalRequest<SignUpExternalFacebook<TUser, TIdentity>, TUser, TIdentity>
     where TUser : IEntityUser<TIdentity>, new()
     where TIdentity : IEquatable<TIdentity>;

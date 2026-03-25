@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Nano.App.Api.Config;
 using Nano.Data.Abstractions.Exceptions;
-using Nano.Data.Abstractions.Identity.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Consts;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Newtonsoft.Json;
@@ -14,15 +13,25 @@ using Newtonsoft.Json.Linq;
 
 namespace Nano.App.Api.Mvc.Authentication;
 
+// BUG: 000: Look into response from Authenticate / Authenticate Refresh, we need to support more and custom data return. Maybe we can return claims.
+// Also look at direct methods if we need to add claims for something if we change the response
+// BASICALLY, CAN WE RETURN MORE DATA AS CLAIMS AND THEN THEY SHOULD BE ADDED TO SIGNUP / LOGON ???????
+
 /// <inheritdoc />
 public class AuthExternalMicrosoftRepository(MicrosoftOptions options, HttpClient httpClient)
-    : IAuthExternalMicrosoftRepository
+    : BaseAuthExternalRepository<ExternalProviderMicrosoft>(ExternalLogInProviderNames.MICROSOFT)
 {
     private readonly MicrosoftOptions options = options ?? throw new ArgumentNullException(nameof(options));
     private readonly HttpClient httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
 
     /// <inheritdoc />
-    public virtual async Task<ExternalLogInData> Authenticate(ExternalLoginProviderMicrosoft provider, CancellationToken cancellationToken = default)
+    public override Task<ExternalLogInData> AuthenticateAsync(ExternalProviderMicrosoft provider, ImplicitFlow auth, CancellationToken cancellationToken = default)
+    {
+        throw new NotImplementedException();
+    }
+
+    /// <inheritdoc />
+    public override async Task<ExternalLogInData> AuthenticateAsync(ExternalProviderMicrosoft provider, AuthCodeFlow auth, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(provider);
 
@@ -31,52 +40,42 @@ public class AuthExternalMicrosoftRepository(MicrosoftOptions options, HttpClien
         string accessToken;
         string? refreshToken;
 
-        switch (provider)
+        using var httpRequestMessage = new HttpRequestMessage();
+
+        httpRequestMessage.Method = HttpMethod.Post;
+        httpRequestMessage.RequestUri = new Uri($"https://login.microsoftonline.com/{this.options.TenantId}/oauth2/v2.0/token");
+
+        using var formContent = new MultipartFormDataContent();
+
+        formContent.Add(new StringContent(this.options.ClientId), "client_id");
+        formContent.Add(new StringContent(this.options.ClientSecret), "client_secret");
+        formContent.Add(new StringContent("authorization_code"), "grant_type");
+        formContent.Add(new StringContent(auth.Code), "code");
+        formContent.Add(new StringContent(auth.CodeVerifier), "code_verifier");
+        formContent.Add(new StringContent(auth.RedirectUri), "redirect_uri");
+        formContent.Add(new StringContent(this.options.Scopes.Aggregate(string.Empty, (current, x) => current + $"{x} ")), "scope");
+
+        httpRequestMessage.Content = formContent;
+
+        var httpResponse = await httpClient
+            .SendAsync(httpRequestMessage, cancellationToken);
+
+        var stringContent = await httpResponse.Content
+            .ReadAsStringAsync(cancellationToken);
+
+        var content = JsonConvert.DeserializeObject<JObject>(stringContent);
+
+        var error = content?["error"]?.ToString();
+        var errorDescription = content?["error"]?.ToString() ?? "Unknown";
+
+        if (error != null)
         {
-            case ExternalLoginProviderAuthCode authCodeLogin:
-            {
-                using var httpRequestMessage = new HttpRequestMessage();
-
-                httpRequestMessage.Method = HttpMethod.Post;
-                httpRequestMessage.RequestUri = new Uri($"https://login.microsoftonline.com/{options.TenantId}/oauth2/v2.0/token");
-
-                using var formContent = new MultipartFormDataContent();
-
-                formContent.Add(new StringContent(options.ClientId), "client_id");
-                formContent.Add(new StringContent(options.ClientSecret), "client_secret");
-                formContent.Add(new StringContent("authorization_code"), "grant_type");
-                formContent.Add(new StringContent(authCodeLogin.Code), "code");
-                formContent.Add(new StringContent(authCodeLogin.CodeVerifier), "code_verifier");
-                formContent.Add(new StringContent(authCodeLogin.RedirectUri), "redirect_uri");
-                formContent.Add(new StringContent(options.Scopes.Aggregate(string.Empty, (current, x) => current + $"{x} ")), "scope");
-
-                httpRequestMessage.Content = formContent;
-
-                var httpResponse = await httpClient
-                    .SendAsync(httpRequestMessage, cancellationToken);
-
-                var stringContent = await httpResponse.Content
-                    .ReadAsStringAsync(cancellationToken);
-
-                var content = JsonConvert.DeserializeObject<JObject>(stringContent);
-
-                var error = content?["error"]?.ToString();
-                var errorDescription = content?["error"]?.ToString() ?? "Unknown";
-
-                if (error != null)
-                {
-                    throw new InvalidOperationException($"{error}: {errorDescription}");
-                }
-
-                accessToken = content?["access_token"]?.ToString() ?? throw new NullReferenceException(nameof(accessToken));
-                refreshToken = content["refresh_token"]?.ToString();
-
-                break;
-            }
-
-            default:
-                throw new NotSupportedException(provider.GetType().Name);
+            throw new InvalidOperationException($"{error}: {errorDescription}");
         }
+
+        accessToken = content?["access_token"]?.ToString() ?? throw new NullReferenceException(nameof(accessToken));
+        refreshToken = content["refresh_token"]?.ToString();
+
 
         var jwtToken = tokenHandler
             .ReadJwtToken(accessToken);
@@ -113,6 +112,7 @@ public class AuthExternalMicrosoftRepository(MicrosoftOptions options, HttpClien
             Id = id,
             Name = name,
             Email = email,
+            Username = email,
             ExternalToken =
             {
                 Name = ExternalLogInProviderNames.MICROSOFT,
@@ -123,9 +123,10 @@ public class AuthExternalMicrosoftRepository(MicrosoftOptions options, HttpClien
     }
 
     /// <inheritdoc />
-    public virtual async Task<ExternalLoginTokenData> AuthenticateRefresh(LogInExternalRefreshMicrosoft logInExternalRefresh, CancellationToken cancellationToken = default)
+    public override async Task<ExternalLoginTokenData> AuthenticateRefreshAsync(ExternalProviderMicrosoft provider, string refreshToken, CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(logInExternalRefresh);
+        ArgumentNullException.ThrowIfNull(provider);
+        ArgumentNullException.ThrowIfNull(refreshToken);
 
         var httpRequestMessage = new HttpRequestMessage();
 
@@ -137,7 +138,7 @@ public class AuthExternalMicrosoftRepository(MicrosoftOptions options, HttpClien
         formContent.Add(new StringContent(this.options.ClientId), "client_id");
         formContent.Add(new StringContent(this.options.ClientSecret), "client_secret");
         formContent.Add(new StringContent("refresh_token"), "grant_type");
-        formContent.Add(new StringContent(logInExternalRefresh.RefreshToken), "refresh_token");
+        formContent.Add(new StringContent(refreshToken), "refresh_token");
         formContent.Add(new StringContent(this.options.Scopes.Aggregate(string.Empty, (current, x) => current + $"{x} ")), "scope");
 
         httpRequestMessage.Content = formContent;
@@ -165,13 +166,13 @@ public class AuthExternalMicrosoftRepository(MicrosoftOptions options, HttpClien
             throw new NullReferenceException(nameof(accessToken));
         }
 
-        var refreshToken = content?["refresh_token"]?.ToString();
+        var refreshTokenNew = content?["refresh_token"]?.ToString();
 
         return new ExternalLoginTokenData
         {
-            Name = logInExternalRefresh.ProviderName,
+            Name = provider.Name,
             Token = accessToken,
-            RefreshToken = refreshToken
+            RefreshToken = refreshTokenNew
         };
     }
 }

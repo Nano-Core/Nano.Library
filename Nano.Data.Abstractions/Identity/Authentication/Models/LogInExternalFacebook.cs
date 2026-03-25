@@ -3,4 +3,4 @@
 /// <summary>
 /// External login request using Facebook authentication.
 /// </summary>
-public class LogInExternalFacebook : LogInExternalImplicit<ExternalLoginProviderFacebook>;
+public class LogInExternalFacebook : BaseLogInExternal<ExternalProviderFacebook, ImplicitFlow>;

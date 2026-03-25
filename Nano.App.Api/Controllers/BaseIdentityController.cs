@@ -29,7 +29,7 @@ using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 
 namespace Nano.App.Api.Controllers;
 
-// BUG: API-KEY: Distributed architecture(Add Validate api-key endpoint, Still needs ApiKeyAuthenticationHandler? Kubernetes ingress nginx integration)
+// TODO: API-KEY: Distributed architecture(Add Validate api-key endpoint, Still needs ApiKeyAuthenticationHandler? Kubernetes ingress nginx integration)
 // - (API-KEY: IdentityApiKey Roles and Claims (don't inherit from IdentityUser))  https://chatgpt.com/c/695ceb26-c6e4-832f-8840-b36bd21b5be9
 
 /// <inheritdoc />
@@ -38,13 +38,13 @@ public abstract class BaseIdentityController<TEntity, TCriteria> : BaseIdentityC
     where TCriteria : class, IQueryCriteria, new()
 {
     /// <inheritdoc />
-    protected BaseIdentityController(ILogger<BaseIdentityController<TEntity, TCriteria>> logger, IRepository repository, IIdentityRepository identityRepository, IAuthExternalRepository? authExternalRepository = null)
+    protected BaseIdentityController(ILogger<BaseIdentityController<TEntity, TCriteria>> logger, IRepository repository, IIdentityRepository identityRepository, IAuthExternalRepositoryAggregator authExternalRepository)
         : base(logger, repository, identityRepository, authExternalRepository)
     {
     }
 
     /// <inheritdoc />
-    protected BaseIdentityController(ILogger<BaseIdentityController<TEntity, TCriteria>> logger, IRepository repository, IEventing eventing, IIdentityRepository<Guid> identityRepository, IAuthExternalRepository? authExternalRepository = null)
+    protected BaseIdentityController(ILogger<BaseIdentityController<TEntity, TCriteria>> logger, IRepository repository, IEventing eventing, IIdentityRepository<Guid> identityRepository, IAuthExternalRepositoryAggregator authExternalRepository)
         : base(logger, repository, eventing, identityRepository, authExternalRepository)
     {
     }
@@ -57,11 +57,18 @@ public abstract class BaseIdentityController<TEntity, TIdentity, TCriteria> : Ba
     where TIdentity : IEquatable<TIdentity>
     where TCriteria : class, IQueryCriteria, new()
 {
-    private readonly IIdentityRepository<TIdentity> identityRepository;
-    private readonly IAuthExternalRepository? authExternalRepository;
+    /// <summary>
+    /// Get or set the identity repository.
+    /// </summary>
+    protected readonly IIdentityRepository<TIdentity> identityRepository;
+
+    /// <summary>
+    /// Get or set the external authentication repository.
+    /// </summary>
+    protected readonly IAuthExternalRepositoryAggregator? authExternalRepository;
 
     /// <inheritdoc />
-    protected BaseIdentityController(ILogger<BaseIdentityController<TEntity, TIdentity, TCriteria>> logger, IRepository repository, IIdentityRepository<TIdentity> identityRepository, IAuthExternalRepository? authExternalRepository = null)
+    protected BaseIdentityController(ILogger<BaseIdentityController<TEntity, TIdentity, TCriteria>> logger, IRepository repository, IIdentityRepository<TIdentity> identityRepository, IAuthExternalRepositoryAggregator authExternalRepository)
         : base(logger, repository)
     {
         this.identityRepository = identityRepository ?? throw new ArgumentNullException(nameof(identityRepository));
@@ -69,7 +76,7 @@ public abstract class BaseIdentityController<TEntity, TIdentity, TCriteria> : Ba
     }
 
     /// <inheritdoc />
-    protected BaseIdentityController(ILogger<BaseIdentityController<TEntity, TIdentity, TCriteria>> logger, IRepository repository, IEventing eventing, IIdentityRepository<TIdentity> identityRepository, IAuthExternalRepository? authExternalRepository = null)
+    protected BaseIdentityController(ILogger<BaseIdentityController<TEntity, TIdentity, TCriteria>> logger, IRepository repository, IEventing eventing, IIdentityRepository<TIdentity> identityRepository, IAuthExternalRepositoryAggregator authExternalRepository)
         : base(logger, repository, eventing)
     {
         this.identityRepository = identityRepository ?? throw new ArgumentNullException(nameof(identityRepository));
@@ -250,7 +257,7 @@ public abstract class BaseIdentityController<TEntity, TIdentity, TCriteria> : Ba
         var user = await this.identityRepository
             .SignUpAsync(signUp, cancellationToken);
 
-        return this.Created("signup", user);
+        return this.Created(ActionRoutes.IDENTITY_SIGNUP, user);
     }
 
     /// <summary>
@@ -277,18 +284,19 @@ public abstract class BaseIdentityController<TEntity, TIdentity, TCriteria> : Ba
             .SignUpExternalAsync(new SignUpExternal<TEntity, TIdentity>
             {
                 User = signUpExternal.User,
-                Email = signUpExternal.ExternalLogInData.Email,
+                Username = signUpExternal.ExternalLogInData.Username,
+                EmailAddress = signUpExternal.ExternalLogInData.Email,
                 PhoneNumber = signUpExternal.ExternalLogInData.PhoneNumber,
                 ExternalProvider =
                 {
-                    LoginProvider = signUpExternal.ExternalLogInData.ExternalToken.Name,
-                    ProviderKey = signUpExternal.ExternalLogInData.Id
+                    Name = signUpExternal.ExternalLogInData.ExternalToken.Name,
+                    UserId = signUpExternal.ExternalLogInData.Id
                 },
                 Roles = signUpExternal.Roles,
                 Claims = signUpExternal.Claims
             }, cancellationToken);
 
-        return this.Created("signup/external/direct", user);
+        return this.Created(ActionRoutes.IDENTITY_SIGNUP_EXTERNAL_DIRECT, user);
     }
 
     /// <summary>
@@ -310,29 +318,31 @@ public abstract class BaseIdentityController<TEntity, TIdentity, TCriteria> : Ba
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> SignUpExternalFacebookAsync([FromBody][Required] SignUpExternalFacebook<TEntity, TIdentity> signUpExternal, CancellationToken cancellationToken = default)
     {
-        if (authExternalRepository == null)
+        if (this.authExternalRepository == null)
         {
             return this.NotFound();
         }
 
-        var externalProviderLogInData = await this.authExternalRepository
-            .AuthenticateAsync(signUpExternal.Provider, cancellationToken);
+        var authenticationData = await this.authExternalRepository
+            .AuthenticateAsync(signUpExternal.Provider, signUpExternal.Flow, cancellationToken);
 
         var user = await this.identityRepository
             .SignUpExternalAsync(new SignUpExternal<TEntity, TIdentity>
             {
                 User = signUpExternal.User,
-                Email = externalProviderLogInData.Email,
+                Username = authenticationData.Username,
+                EmailAddress = authenticationData.Email,
+                PhoneNumber = authenticationData.PhoneNumber,
                 ExternalProvider =
                 {
-                    LoginProvider = externalProviderLogInData.ExternalToken.Name,
-                    ProviderKey = externalProviderLogInData.Id
+                    Name = authenticationData.ExternalToken.Name,
+                    UserId = authenticationData.Id
                 },
                 Roles = signUpExternal.Roles,
                 Claims = signUpExternal.Claims
             }, cancellationToken);
 
-        return this.Created("signup/external/facebook", user);
+        return this.Created(ActionRoutes.IDENTITY_SIGNUP_EXTERNAL_FACEBOOK, user);
     }
 
     /// <summary>
@@ -354,29 +364,31 @@ public abstract class BaseIdentityController<TEntity, TIdentity, TCriteria> : Ba
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> SignUpExternalGoogleAsync([FromBody][Required] SignUpExternalGoogle<TEntity, TIdentity> signUpExternal, CancellationToken cancellationToken = default)
     {
-        if (authExternalRepository == null)
+        if (this.authExternalRepository == null)
         {
             return this.NotFound();
         }
 
-        var externalProviderLogInData = await this.authExternalRepository
-            .AuthenticateAsync(signUpExternal.Provider, cancellationToken);
+        var authenticationData = await this.authExternalRepository
+            .AuthenticateAsync(signUpExternal.Provider, signUpExternal.Flow, cancellationToken);
 
         var user = await this.identityRepository
             .SignUpExternalAsync(new SignUpExternal<TEntity, TIdentity>
             {
                 User = signUpExternal.User,
-                Email = externalProviderLogInData.Email,
+                Username = authenticationData.Username,
+                EmailAddress = authenticationData.Email,
+                PhoneNumber = authenticationData.PhoneNumber,
                 ExternalProvider =
                 {
-                    LoginProvider = externalProviderLogInData.ExternalToken.Name,
-                    ProviderKey = externalProviderLogInData.Id
+                    Name = authenticationData.ExternalToken.Name,
+                    UserId = authenticationData.Id
                 },
                 Roles = signUpExternal.Roles,
                 Claims = signUpExternal.Claims
             }, cancellationToken);
 
-        return this.Created("signup/external/google", user);
+        return this.Created(ActionRoutes.IDENTITY_SIGNUP_EXTERNAL_GOOGLE, user);
     }
 
     /// <summary>
@@ -398,29 +410,31 @@ public abstract class BaseIdentityController<TEntity, TIdentity, TCriteria> : Ba
     [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
     public virtual async Task<IActionResult> SignUpExternalMicrosoftAsync([FromBody][Required] SignUpExternalMicrosoft<TEntity, TIdentity> signUpExternal, CancellationToken cancellationToken = default)
     {
-        if (authExternalRepository == null)
+        if (this.authExternalRepository == null)
         {
             return this.NotFound();
         }
 
-        var externalProviderLogInData = await this.authExternalRepository
-            .AuthenticateAsync(signUpExternal.Provider, cancellationToken);
+        var authenticationData = await this.authExternalRepository
+            .AuthenticateAsync(signUpExternal.Provider, signUpExternal.Flow, cancellationToken);
 
         var user = await this.identityRepository
             .SignUpExternalAsync(new SignUpExternal<TEntity, TIdentity>
             {
                 User = signUpExternal.User,
-                Email = externalProviderLogInData.Email,
+                Username = authenticationData.Username,
+                EmailAddress = authenticationData.Email,
+                PhoneNumber = authenticationData.PhoneNumber,
                 ExternalProvider =
                 {
-                    LoginProvider = externalProviderLogInData.ExternalToken.Name,
-                    ProviderKey = externalProviderLogInData.Id
+                    Name = authenticationData.ExternalToken.Name,
+                    UserId = authenticationData.Id
                 },
                 Roles = signUpExternal.Roles,
                 Claims = signUpExternal.Claims
             }, cancellationToken);
 
-        return this.Created("signup/external/microsoft", user);
+        return this.Created(ActionRoutes.IDENTITY_SIGNUP_EXTERNAL_MICROSOFT, user);
     }
 
     #endregion
@@ -1248,13 +1262,13 @@ public abstract class BaseIdentityController<TEntity, TIdentity, TCriteria> : Ba
         }
 
         var externalProviderLogInData = await this.authExternalRepository
-            .AuthenticateAsync(addExternalLogin.Provider, cancellationToken);
+            .AuthenticateAsync(addExternalLogin.Provider, addExternalLogin.Flow, cancellationToken);
 
         var userLoginInfo = await this.identityRepository
             .AddExternalLoginAsync(id, new ExternalProvider
             {
-                LoginProvider = externalProviderLogInData.ExternalToken.Name,
-                ProviderKey = externalProviderLogInData.Id
+                Name = externalProviderLogInData.ExternalToken.Name,
+                UserId = externalProviderLogInData.Id
             }, cancellationToken);
 
         var externalLogin = new ExternalLogin
@@ -1299,13 +1313,13 @@ public abstract class BaseIdentityController<TEntity, TIdentity, TCriteria> : Ba
         }
 
         var externalProviderLogInData = await this.authExternalRepository
-            .AuthenticateAsync(addExternalLogin.Provider, cancellationToken);
+            .AuthenticateAsync(addExternalLogin.Provider, addExternalLogin.Flow, cancellationToken);
 
         var userLoginInfo = await this.identityRepository
             .AddExternalLoginAsync(id, new ExternalProvider
             {
-                LoginProvider = externalProviderLogInData.ExternalToken.Name,
-                ProviderKey = externalProviderLogInData.Id
+                Name = externalProviderLogInData.ExternalToken.Name,
+                UserId = externalProviderLogInData.Id
             }, cancellationToken);
 
         var externalLogin = new ExternalLogin
@@ -1350,13 +1364,13 @@ public abstract class BaseIdentityController<TEntity, TIdentity, TCriteria> : Ba
         }
 
         var externalProviderLogInData = await this.authExternalRepository
-            .AuthenticateAsync(addExternalLogin.Provider, cancellationToken);
+            .AuthenticateAsync(addExternalLogin.Provider, addExternalLogin.Flow, cancellationToken);
 
         var userLoginInfo = await this.identityRepository
             .AddExternalLoginAsync(id, new ExternalProvider
             {
-                LoginProvider = externalProviderLogInData.ExternalToken.Name,
-                ProviderKey = externalProviderLogInData.Id
+                Name = externalProviderLogInData.ExternalToken.Name,
+                UserId = externalProviderLogInData.Id
             }, cancellationToken);
 
         var externalLogin = new ExternalLogin

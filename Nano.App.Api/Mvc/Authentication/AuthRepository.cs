@@ -1,27 +1,24 @@
-using System;
 using Nano.App.Api.Mvc.Authentication.Abstractions;
 using Nano.Data.Abstractions.Identity.Authentication;
+using System;
 
 namespace Nano.App.Api.Mvc.Authentication;
 
 /// <inheritdoc cref="IAuthRepository" />
-public class AuthRepository(IIdentityAuthRepository<Guid>? identityAuthRepository = null, IAuthTransientRepository? authTransientRepository = null, IAuthRootRepository? authRootRepository = null, IAuthExternalRepository? authExternalRepository = null)
-    : AuthRepository<Guid>(identityAuthRepository, authTransientRepository, authRootRepository, authExternalRepository), IAuthRepository;
+public class AuthRepository(IAuthIdentityRepository<Guid>? authIdentityRepository = null, IAuthTransientRepository? authTransientRepository = null, IAuthRootRepository? authRootRepository = null)
+    : AuthRepository<Guid>(authIdentityRepository, authTransientRepository, authRootRepository), IAuthRepository;
 
 /// <inheritdoc />
-public class AuthRepository<TIdentity>(IIdentityAuthRepository<TIdentity>? identityAuthRepository = null, IAuthTransientRepository? authTransientRepository = null, IAuthRootRepository? authRootRepository = null, IAuthExternalRepository? authExternalRepository = null)
+public class AuthRepository<TIdentity>(IAuthIdentityRepository<TIdentity>? authIdentityRepository = null, IAuthTransientRepository? authTransientRepository = null, IAuthRootRepository? authRootRepository = null)
     : IAuthRepository<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    public IIdentityAuthRepository<TIdentity>? IdentityAuthRepository { get; } = identityAuthRepository;
+    public IAuthIdentityRepository<TIdentity>? AuthIdentityRepository { get; } = authIdentityRepository;
 
     /// <inheritdoc />
     public IAuthTransientRepository? AuthTransientRepository { get; } = authTransientRepository;
 
     /// <inheritdoc />
     public IAuthRootRepository? AuthRootRepository { get; } = authRootRepository;
-
-    /// <inheritdoc />
-    public IAuthExternalRepository? AuthExternalRepository { get; } = authExternalRepository;
 }

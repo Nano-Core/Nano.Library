@@ -19,20 +19,7 @@ public class SignUp<TUser, TIdentity> : BaseSignUp<TUser, TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
-    /// The user's email address.
-    /// </summary>
-    [Required]
-    [EmailAddress]
-    public virtual string EmailAddress { get; set; } = null!;
-
-    /// <summary>
-    /// The user's phone number (optional, international format supported).
-    /// </summary>
-    [InternationalPhone]
-    public virtual string? PhoneNumber { get; set; }
-
-    /// <summary>
-    /// The user's chosen username.
+    /// The user's username.
     /// </summary>
     [Required]
     [MaxLength(256)]
@@ -52,4 +39,17 @@ public class SignUp<TUser, TIdentity> : BaseSignUp<TUser, TIdentity>
     [MaxLength(256)]
     [Compare(nameof(Password))]
     public virtual string ConfirmPassword { get; set; } = null!;
+
+    /// <summary>
+    /// The user's email address.
+    /// </summary>
+    [Required]
+    [EmailAddress]
+    public virtual string EmailAddress { get; set; } = null!;
+
+    /// <summary>
+    /// The user's phone number (optional, international format supported).
+    /// </summary>
+    [InternationalPhone]
+    public virtual string? PhoneNumber { get; set; }
 }

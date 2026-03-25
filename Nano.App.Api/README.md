@@ -1536,15 +1536,15 @@ interfaces, showing what is available for use in your application.
 
 | Login                  | Auth Type         | Config Required                | Primary Interface            |
 | ---------------------- | ----------------- | ------------------------------ | ---------------------------- |
-| Credentials            | JWT Identity      | Jwt, Identity                  | `IIdentityAuthRepository`    |
+| Credentials            | JWT Identity      | Jwt, Identity                  | `IAuthIdentityRepository`    |
 | Root                   | JWT Transient     | Jwt, RootLogin                 | `IAuthRootRepository`        |
-| External               | JWT Identity      | Jwt, ExternalLogins, Identity  | `IIdentityAuthRepository`    |
+| External               | JWT Identity      | Jwt, ExternalLogins, Identity  | `IAuthIdentityRepository`    |
 | External Transient     | JWT Transient     | Jwt, ExternalLogins            | `IAuthTransientRepository`   |
 | Api Key                | Api Key Identity  | Identity, ApiKey               | -                            |
 
 The most basic and commonly used authentication method is logging in with credentials, a username and password, validated against the configured identity store.  
 
-The `IIdentityAuthRepository` provides the following methods to support this functionality.  
+The `IAuthIdentityRepository` provides the following methods to support this functionality.  
 
 | Method                              | Parameters           | Description                                                                                                                     |
 | ----------------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
@@ -1651,7 +1651,7 @@ The configuration is defined as follows for the built-in external logins.
 
 > ⚠️ The external provider application must be configured with at least the following scopes: `id`, `email`, and `username`.
 
-The `IIdentityAuthRepository` handles external authentication backed by the identity store, whereas the `IAuthTransientRepository` is designed for transient logins and provides 
+The `IAuthIdentityRepository` handles external authentication backed by the identity store, whereas the `IAuthTransientRepository` is designed for transient logins and provides 
 methods specifically for external transient authentication.
 
 | Method                              | Parameters           | Description                                                                                                                     |
@@ -2020,9 +2020,6 @@ are not configured will not be registered or available in the controller.
 | `/auth/login/refresh`                       | POST   | Anonymous | Refreshes an existing access token.                                                  |
 | `/auth/logout`                              | POST   | Anonymous | Logs out the current user and clears external authentication cookies.                |
 | `/auth/external/schemes`                    | GET    | Anonymous | Retrieves all configured external authentication schemes (e.g., Google, Facebook).   |
-| `/auth/external/facebook-data`              | POST   | Anonymous | Retrieves external login data from Facebook authentication provider.                 |
-| `/auth/external/google/data`                | POST   | Anonymous | Retrieves external login data from Google authentication provider.                   |
-| `/auth/external/microsoft/data`             | POST   | Anonymous | Retrieves external login data from Microsoft authentication provider.                |
 
 > 📖 Learn more about **[Authentication](#authentication)**.
 

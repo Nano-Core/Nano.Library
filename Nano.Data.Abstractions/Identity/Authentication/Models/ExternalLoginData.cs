@@ -15,11 +15,18 @@ public class ExternalLogInData
     public virtual string Id { get; set; } = null!;
 
     /// <summary>
-    /// The display name of the external user.
+    /// The name of the external user.
     /// </summary>
     [Required]
     [MaxLength(256)]
     public virtual string Name { get; set; } = null!;
+
+    /// <summary>
+    /// The username of the external user.
+    /// </summary>
+    [Required]
+    [MaxLength(256)]
+    public virtual string Username { get; set; } = null!;
 
     /// <summary>
     /// The email address of the external user.

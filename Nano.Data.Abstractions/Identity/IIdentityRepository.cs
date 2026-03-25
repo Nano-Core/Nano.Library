@@ -477,12 +477,29 @@ public interface IIdentityRepository<TIdentity>
     #region External Logins
 
     /// <summary>
+    /// Retrieves a specific external login provider associated with a user by user id.
+    /// </summary>
+    /// <param name="id">The identifier of the user.</param>
+    /// <param name="provider">The external provider name.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>The <see cref="UserLoginInfo"/> representing the external login of the passed <paramref name="provider"/>.</returns>
+    Task<UserLoginInfo?> GetUserExternalLoginAsync(TIdentity id, string provider, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Retrieves a specific external login provider associated with a user by <see cref="IdentityUserEx{TIdentity}"/>
+    /// </summary>
+    /// <param name="identityUser">The identity user instance.</param>
+    /// <param name="provider">The external provider name.</param>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+    /// <returns>The <see cref="UserLoginInfo"/> representing the external login of the passed <paramref name="provider"/>.</returns>
+    Task<UserLoginInfo?> GetUserExternalLoginAsync(IdentityUserEx<TIdentity> identityUser, string provider, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Retrieves all external login providers associated with a user by user id.
     /// </summary>
     /// <param name="id">The identifier of the user.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A collection of <see cref="UserLoginInfo"/> representing external logins.</returns>
-    /// <exception cref="NullReferenceException">Thrown if the user cannot be found.</exception>
     Task<IEnumerable<UserLoginInfo>> GetUserExternalLoginsAsync(TIdentity id, CancellationToken cancellationToken = default);
 
     /// <summary>

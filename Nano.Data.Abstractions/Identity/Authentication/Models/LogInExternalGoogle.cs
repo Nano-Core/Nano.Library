@@ -3,4 +3,4 @@
 /// <summary>
 /// External login request using Google authentication.
 /// </summary>
-public class LogInExternalGoogle : LogInExternalImplicit<ExternalLoginProviderGoogle>;
+public class LogInExternalGoogle : BaseLogInExternal<ExternalProviderGoogle, ImplicitFlow>;

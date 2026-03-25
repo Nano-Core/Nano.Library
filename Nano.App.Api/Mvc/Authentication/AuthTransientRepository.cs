@@ -13,16 +13,28 @@ using System.Threading.Tasks;
 namespace Nano.App.Api.Mvc.Authentication;
 
 /// <inheritdoc />
-public class AuthTransientRepository(IAuthenticationSchemeProvider schemeProvider, IAuthJwtRepository authJwtRepository, IAuthExternalRepository? authExternalRepository = null)
+public class AuthTransientRepository(IAuthenticationSchemeProvider authenticationSchemeProvider, IAuthJwtRepository authJwtRepository, IAuthExternalRepositoryAggregator authExternalRepository)
     : IAuthTransientRepository
 {
-    private readonly IAuthJwtRepository authJwtRepository = authJwtRepository ?? throw new ArgumentNullException(nameof(authJwtRepository));
-    private readonly IAuthenticationSchemeProvider schemeProvider = schemeProvider ?? throw new ArgumentNullException(nameof(schemeProvider));
+    /// <summary>
+    /// Get or set the authentication JWT repository.
+    /// </summary>
+    protected readonly IAuthJwtRepository authJwtRepository = authJwtRepository ?? throw new ArgumentNullException(nameof(authJwtRepository));
+
+    /// <summary>
+    /// Get or set the authentication scheme provideder.
+    /// </summary>
+    protected readonly IAuthenticationSchemeProvider authenticationSchemeProvider = authenticationSchemeProvider ?? throw new ArgumentNullException(nameof(authenticationSchemeProvider));
+
+    /// <summary>
+    /// Get or set the authentication external repository.
+    /// </summary>
+    protected readonly IAuthExternalRepositoryAggregator authExternalRepository = authExternalRepository ?? throw new ArgumentNullException(nameof(authExternalRepository));
 
     /// <inheritdoc />
     public virtual async Task<IEnumerable<ExternalLoginProvider>> GetExternalProviderSchemesAsync(CancellationToken cancellationToken = default)
     {
-        var schemes = await this.schemeProvider
+        var schemes = await this.authenticationSchemeProvider
             .GetAllSchemesAsync();
 
         return schemes
@@ -63,8 +75,9 @@ public class AuthTransientRepository(IAuthenticationSchemeProvider schemeProvide
     }
 
     /// <inheritdoc />
-    public virtual async Task<AccessToken> LogInExternalAsync<TProvider>(BaseLogInExternal<TProvider> logInExternal, CancellationToken cancellationToken = default)
-        where TProvider : BaseLogInExternalProvider, new()
+    public virtual async Task<AccessToken> LogInExternalAsync<TProvider, TFlow>(BaseLogInExternal<TProvider, TFlow> logInExternal, CancellationToken cancellationToken = default)
+        where TProvider : BaseExternalProvider, new()
+        where TFlow : BaseAuthFlow, new()
     {
         ArgumentNullException.ThrowIfNull(logInExternal);
 
@@ -74,7 +87,7 @@ public class AuthTransientRepository(IAuthenticationSchemeProvider schemeProvide
         }
 
         var externalLoginData = await authExternalRepository
-            .AuthenticateAsync(logInExternal.Provider, cancellationToken);
+            .AuthenticateAsync(logInExternal.Provider, logInExternal.Flow, cancellationToken);
 
         if (externalLoginData == null)
         {

@@ -8,7 +8,7 @@ namespace Nano.Data.Abstractions.Identity.Models;
 /// Sign up a user using Facebook as an external login provider with implicit flow (default identity type is Guid).
 /// </summary>
 /// <typeparam name="TUser">The user type.</typeparam>
-public class SignUpExternalFacebook<TUser> : SignUpExternalImplicit<ExternalLoginProviderFacebook, TUser>
+public class SignUpExternalFacebook<TUser> : SignUpExternalFacebook<TUser, Guid>
     where TUser : IEntityUser<Guid>, new();
 
 /// <summary>
@@ -16,6 +16,6 @@ public class SignUpExternalFacebook<TUser> : SignUpExternalImplicit<ExternalLogi
 /// </summary>
 /// <typeparam name="TUser">The user type.</typeparam>
 /// <typeparam name="TIdentity">The identity key type.</typeparam>
-public class SignUpExternalFacebook<TUser, TIdentity> : SignUpExternalImplicit<ExternalLoginProviderFacebook, TUser, TIdentity>
+public class SignUpExternalFacebook<TUser, TIdentity> : BaseSignUpExternal<ExternalProviderFacebook, ImplicitFlow, TUser, TIdentity>
     where TUser : IEntityUser<TIdentity>, new()
     where TIdentity : IEquatable<TIdentity>;

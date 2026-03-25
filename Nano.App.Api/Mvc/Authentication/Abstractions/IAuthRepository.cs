@@ -18,7 +18,7 @@ public interface IAuthRepository<in TIdentity>
     /// <summary>
     /// Defines a repository for managing authentication for identity users.
     /// </summary>
-    IIdentityAuthRepository<TIdentity>? IdentityAuthRepository { get; }
+    IAuthIdentityRepository<TIdentity>? AuthIdentityRepository { get; }
 
     /// <summary>
     /// Provides authentication for the root/admin user.
@@ -29,9 +29,4 @@ public interface IAuthRepository<in TIdentity>
     /// Defines a transient authentication repository for handling external login flows,
     /// </summary>
     IAuthTransientRepository? AuthTransientRepository { get; }
-
-    /// <summary>
-    /// Central repository for handling external authentication via Facebook, Google, and Microsoft providers.
-    /// </summary>
-    IAuthExternalRepository? AuthExternalRepository { get; }
 }

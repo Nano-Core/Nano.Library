@@ -64,14 +64,14 @@ internal static class ServiceCollectionExtensions
             .AddScoped<IIdentityRepository<TIdentity>, IdentityRepository<TIdentity>>();
 
         services
-            .AddIdentityAuthRepository<IIdentityAuthRepository, IdentityAuthRepository>()
-            .AddIdentityAuthRepository<IIdentityAuthRepository<TIdentity>, IdentityAuthRepository<TIdentity>>();
+            .AddAuthIdentityRepository<IAuthIdentityRepository, AuthIdentityRepository>()
+            .AddAuthIdentityRepository<IAuthIdentityRepository<TIdentity>, AuthIdentityRepository<TIdentity>>();
 
         return services;
     }
 
 
-    private static IServiceCollection AddIdentityAuthRepository<TService, TImplementation>(this IServiceCollection services)
+    private static IServiceCollection AddAuthIdentityRepository<TService, TImplementation>(this IServiceCollection services)
         where TService : class
         where TImplementation : TService
     {

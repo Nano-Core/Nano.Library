@@ -8,4 +8,4 @@ namespace Nano.App.ApiClient.Requests.Auth;
 /// Represents a request to get external login data for Facebook.
 /// </summary>
 [PostAction(ActionRoutes.AUTH_EXTERNAL_FACEBOOK_DATA)]
-public class GetExternalLoginDataFacebookRequest : BaseGetExternalLoginDataRequest<ExternalLoginProviderFacebook>;
+public class GetExternalLoginDataFacebookRequest : BaseGetExternalLoginDataRequest<ExternalProviderFacebook>;

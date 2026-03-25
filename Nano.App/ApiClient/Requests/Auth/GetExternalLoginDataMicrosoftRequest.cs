@@ -8,4 +8,4 @@ namespace Nano.App.ApiClient.Requests.Auth;
 /// Represents a request to get external login data for Microsoft.
 /// </summary>
 [PostAction(ActionRoutes.AUTH_EXTERNAL_MICROSOFT_DATA)]
-public class GetExternalLoginDataMicrosoftRequest : BaseGetExternalLoginDataRequest<ExternalLoginProviderMicrosoft>;
+public class GetExternalLoginDataMicrosoftRequest : BaseGetExternalLoginDataRequest<ExternalProviderMicrosoft>;

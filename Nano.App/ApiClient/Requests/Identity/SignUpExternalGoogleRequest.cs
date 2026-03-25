@@ -16,6 +16,6 @@ public class SignUpExternalGoogleRequest<TUser> : SignUpExternalGoogleRequest<TU
 /// <typeparam name="TUser">The type of the user entity.</typeparam>
 /// <typeparam name="TIdentity">The type of the user identifier.</typeparam>
 [PostAction(ActionRoutes.IDENTITY_SIGNUP_EXTERNAL_GOOGLE)]
-public class SignUpExternalGoogleRequest<TUser, TIdentity> : BaseSignUpExternalRequest<SignUpExternalGoogle<TUser, TIdentity>>
+public class SignUpExternalGoogleRequest<TUser, TIdentity> : BaseSignUpExternalRequest<SignUpExternalGoogle<TUser, TIdentity>, TUser, TIdentity>
     where TUser : IEntityUser<TIdentity>, new()
     where TIdentity : IEquatable<TIdentity>;

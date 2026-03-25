@@ -3,9 +3,9 @@
 namespace Nano.Data.Abstractions.Identity.Authentication.Models;
 
 /// <summary>
-/// External login provider using the authorization code flow.
+/// Auth code flow.
 /// </summary>
-public class ExternalLoginProviderAuthCode : BaseLogInExternalProvider
+public class AuthCodeFlow : BaseAuthFlow
 {
     /// <summary>
     /// The authorization code returned by the external provider.

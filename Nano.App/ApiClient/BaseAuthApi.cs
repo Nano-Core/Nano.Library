@@ -143,7 +143,7 @@ public abstract class BaseAuthApi<TIdentity> : BaseEntityApi<TIdentity>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="AccessToken"/>.</returns>
     public virtual async Task<ExternalLogInData> GetExternalLoginDataAsync<TProvider>(BaseGetExternalLoginDataRequest<TProvider> request, CancellationToken cancellationToken = default)
-        where TProvider : BaseLogInExternalProvider, new()
+        where TProvider : BaseExternalProvider, new()
     {
         ArgumentNullException.ThrowIfNull(request);
 

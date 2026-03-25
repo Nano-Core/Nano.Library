@@ -17,12 +17,12 @@ using Nano.Data.Abstractions.Exceptions;
 namespace Nano.Data.Identity.Authentication;
 
 /// <inheritdoc />
-public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepository<TIdentity>
+public abstract class BaseAuthIdentityRepository<TIdentity> : IAuthIdentityRepository<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     private readonly IIdentityRepository<TIdentity> identityRepository;
     private readonly IAuthJwtRepository authJwtRepository;
-    private readonly IAuthExternalRepository? authExternalRepository;
+    private readonly IAuthExternalRepositoryAggregator authExternalRepository;
 
     /// <summary>
     /// Constructor.
@@ -31,7 +31,7 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
     /// <param name="authJwtRepository">The repository for creating JWT tokens.</param>
     /// <param name="authExternalRepository">Optional external authentication repository (e.g., Google, Facebook, Microsoft).</param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="identityRepository"/> or <paramref name="authJwtRepository"/> is null.</exception>
-    protected BaseIdentityAuthRepository(IIdentityRepository<TIdentity> identityRepository, IAuthJwtRepository authJwtRepository, IAuthExternalRepository? authExternalRepository = null)
+    protected BaseAuthIdentityRepository(IIdentityRepository<TIdentity> identityRepository, IAuthJwtRepository authJwtRepository, IAuthExternalRepositoryAggregator authExternalRepository)
     {
         this.identityRepository = identityRepository ?? throw new ArgumentNullException(nameof(identityRepository));
         this.authJwtRepository = authJwtRepository ?? throw new ArgumentNullException(nameof(authJwtRepository));
@@ -92,8 +92,8 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
             {
                 ExternalProvider =
                 {
-                    LoginProvider = logInExternalDirect.ExternalLogInData.ExternalToken.Name,
-                    ProviderKey = logInExternalDirect.ExternalLogInData.Id
+                    Name = logInExternalDirect.ExternalLogInData.ExternalToken.Name,
+                    UserId = logInExternalDirect.ExternalLogInData.Id
                 }
             }, cancellationToken);
 
@@ -119,8 +119,9 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
     }
 
     /// <inheritdoc />
-    public virtual async Task<AccessToken> LogInExternalAsync<TProvider>(BaseLogInExternal<TProvider> logInExternal, CancellationToken cancellationToken = default)
-        where TProvider : BaseLogInExternalProvider, new()
+    public virtual async Task<AccessToken> LogInExternalAsync<TProvider, TFlow>(BaseLogInExternal<TProvider, TFlow> logInExternal, CancellationToken cancellationToken = default)
+        where TProvider : BaseExternalProvider, new()
+        where TFlow : BaseAuthFlow, new()
     {
         ArgumentNullException.ThrowIfNull(logInExternal);
 
@@ -130,7 +131,7 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
         }
 
         var externalLoginData = await this.authExternalRepository
-            .AuthenticateAsync(logInExternal.Provider, cancellationToken);
+            .AuthenticateAsync(logInExternal.Provider, logInExternal.Flow, cancellationToken);
 
         if (externalLoginData == null)
         {
@@ -203,11 +204,7 @@ public abstract class BaseIdentityAuthRepository<TIdentity> : IIdentityAuthRepos
             if (!string.IsNullOrEmpty(externalProviderName) && !string.IsNullOrEmpty(externalProviderRefreshToken))
             {
                 externalLoginTokenData = await this.authExternalRepository
-                    .AuthenticateRefreshAsync(new LogInExternalRefresh
-                    {
-                        ProviderName = externalProviderName,
-                        RefreshToken = externalProviderRefreshToken
-                    }, cancellationToken);
+                    .AuthenticateRefreshAsync(new ExternalProviderGeneric(externalProviderName), externalProviderRefreshToken, cancellationToken);
             }
         }
 

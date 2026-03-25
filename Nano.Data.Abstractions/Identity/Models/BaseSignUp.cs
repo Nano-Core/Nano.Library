@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Nano.Data.Abstractions.Models.Abstractions;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using Nano.Data.Abstractions.Models.Abstractions;
 
 namespace Nano.Data.Abstractions.Identity.Models;
 

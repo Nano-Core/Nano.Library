@@ -3,4 +3,4 @@
 /// <summary>
 /// External login request using Microsoft authentication and authorization code flow.
 /// </summary>
-public class LogInExternalMicrosoft : LogInExternalAuthCode<ExternalLoginProviderMicrosoft>;
+public class LogInExternalMicrosoft : BaseLogInExternal<ExternalProviderMicrosoft, AuthCodeFlow>;

@@ -16,6 +16,6 @@ public class SignUpExternalDirectRequest<TUser> : SignUpExternalDirectRequest<TU
 /// <typeparam name="TUser">The type of the user entity.</typeparam>
 /// <typeparam name="TIdentity">The type of the user identifier.</typeparam>
 [PostAction(ActionRoutes.IDENTITY_SIGNUP_EXTERNAL_DIRECT)]
-public class SignUpExternalDirectRequest<TUser, TIdentity> : BaseSignUpExternalRequest<SignUpExternalDirect<TUser, TIdentity>>
+public class SignUpExternalDirectRequest<TUser, TIdentity> : BaseSignUpExternalRequest<SignUpExternalDirect<TUser, TIdentity>, TUser, TIdentity>
     where TUser : IEntityUser<TIdentity>, new()
     where TIdentity : IEquatable<TIdentity>;

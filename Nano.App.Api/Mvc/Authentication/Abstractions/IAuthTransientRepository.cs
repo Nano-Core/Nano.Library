@@ -43,13 +43,15 @@ public interface IAuthTransientRepository
     /// <summary>
     /// Performs an external login using a configured built-in external provider type and generates a corresponding JWT access token.
     /// </summary>
-    /// <typeparam name="TProvider">The type of external login provider, derived from <see cref="BaseLogInExternalProvider"/>.</typeparam>
+    /// <typeparam name="TProvider">The type of external login provider, derived from <see cref="BaseExternalProvider"/>.</typeparam>
+    /// <typeparam name="TFlow">The type of authentication flow, e.g. auth-code, implicit, etc.</typeparam>
     /// <param name="logInExternal">The external login request containing provider-specific information, roles, claims, and options.</param>
     /// <param name="cancellationToken">A <see cref="CancellationToken"/> to cancel the operation.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains an <see cref="AccessToken"/> for the authenticated external user.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="logInExternal"/> is null.</exception>
     /// <exception cref="NullReferenceException">Thrown if the underlying external repository is not configured.</exception>
     /// <exception cref="UnauthorizedException">Thrown if the external login fails or no user is returned.</exception>
-    Task<AccessToken> LogInExternalAsync<TProvider>(BaseLogInExternal<TProvider> logInExternal, CancellationToken cancellationToken = default)
-        where TProvider : BaseLogInExternalProvider, new();
+    Task<AccessToken> LogInExternalAsync<TProvider, TFlow>(BaseLogInExternal<TProvider, TFlow> logInExternal, CancellationToken cancellationToken = default)
+        where TProvider : BaseExternalProvider, new()
+        where TFlow : BaseAuthFlow, new();
 }

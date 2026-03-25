@@ -27,12 +27,12 @@ using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 namespace Nano.Data.Identity;
 
 /// <inheritdoc />
-public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOptions> options, IAuthenticationSchemeProvider schemeProvider, BaseDbContext<TIdentity> dbContext, UserManager<IdentityUserEx<TIdentity>> userManager, RoleManager<IdentityRole<TIdentity>> roleManager)
+public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOptions> options, IAuthenticationSchemeProvider authenticationSchemeProvider, BaseDbContext<TIdentity> dbContext, UserManager<IdentityUserEx<TIdentity>> userManager, RoleManager<IdentityRole<TIdentity>> roleManager)
     : IIdentityRepository<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     private readonly IOptionsMonitor<DataOptions> options = options ?? throw new ArgumentNullException(nameof(options));
-    private readonly IAuthenticationSchemeProvider schemeProvider = schemeProvider ?? throw new ArgumentNullException(nameof(schemeProvider));
+    private readonly IAuthenticationSchemeProvider authenticationSchemeProvider = authenticationSchemeProvider ?? throw new ArgumentNullException(nameof(authenticationSchemeProvider));
     private readonly BaseDbContext<TIdentity> dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
     private readonly UserManager<IdentityUserEx<TIdentity>> userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
     private readonly RoleManager<IdentityRole<TIdentity>> roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
@@ -43,7 +43,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
     /// <inheritdoc />
     public virtual async Task<IEnumerable<AuthenticationScheme>> GetExternalProviderSchemesAsync(CancellationToken cancellationToken = default)
     {
-        var schemes = await this.schemeProvider
+        var schemes = await this.authenticationSchemeProvider
             .GetAllSchemesAsync();
 
         return schemes
@@ -94,11 +94,11 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
         ArgumentNullException.ThrowIfNull(signInExternal);
 
         var identityUser = await this.userManager
-            .FindByLoginAsync(signInExternal.ExternalProvider.LoginProvider, signInExternal.ExternalProvider.ProviderKey);
+            .FindByLoginAsync(signInExternal.ExternalProvider.Name, signInExternal.ExternalProvider.UserId);
 
         if (identityUser == null)
         {
-            throw new UnauthorizedException($"The external login: {signInExternal.ExternalProvider.LoginProvider} for user: {signInExternal.ExternalProvider.ProviderKey} was not found or is deactivated.");
+            throw new UnauthorizedException($"The external login: {signInExternal.ExternalProvider.Name} for user: {signInExternal.ExternalProvider.UserId} was not found or is deactivated.");
         }
 
         return identityUser;
@@ -200,15 +200,15 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
 
         var identityUser = new IdentityUserEx<TIdentity>
         {
-            Email = signUpExternal.Email,
-            UserName = signUpExternal.Email,
+            Email = signUpExternal.EmailAddress,
+            UserName = signUpExternal.Username,
             PhoneNumber = signUpExternal.PhoneNumber
         };
 
         await this.CreateIdentityUser(identityUser);
         await this.AssignSignUpRolesAndClaims(identityUser, signUpExternal.Roles, signUpExternal.Claims);
 
-        var userLoginInfo = new UserLoginInfo(signUpExternal.ExternalProvider.LoginProvider, signUpExternal.ExternalProvider.ProviderKey, signUpExternal.ExternalProvider.LoginProvider);
+        var userLoginInfo = new UserLoginInfo(signUpExternal.ExternalProvider.Name, signUpExternal.ExternalProvider.UserId, signUpExternal.ExternalProvider.Name);
 
         var addLoginResult = await this.userManager
             .AddLoginAsync(identityUser, userLoginInfo);
@@ -717,7 +717,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
         var identityUser = this.dbContext
             .Set<IdentityUserEx<TIdentity>>()
             .IgnoreQueryFilters()
-            .FirstOrDefault(x => x.Id.Equals(id)); 
+            .FirstOrDefault(x => x.Id.Equals(id));
 
         if (identityUser == null)
         {
@@ -1092,6 +1092,29 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
     #region User External Logins
 
     /// <inheritdoc />
+    public virtual async Task<UserLoginInfo?> GetUserExternalLoginAsync(TIdentity id, string provider, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(provider);
+
+        var userLoginInfos = await this.GetUserExternalLoginsAsync(id, cancellationToken);
+
+        return userLoginInfos
+            .FirstOrDefault(x => x.LoginProvider == provider);
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<UserLoginInfo?> GetUserExternalLoginAsync(IdentityUserEx<TIdentity> identityUser, string provider, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(identityUser);
+        ArgumentNullException.ThrowIfNull(provider);
+
+        var userLoginInfos = await this.GetUserExternalLoginsAsync(identityUser, cancellationToken);
+
+        return userLoginInfos
+            .FirstOrDefault(x => x.LoginProvider == provider);
+    }
+
+    /// <inheritdoc />
     public virtual async Task<IEnumerable<UserLoginInfo>> GetUserExternalLoginsAsync(TIdentity id, CancellationToken cancellationToken = default)
     {
         var identityUser = await this.userManager
@@ -1127,7 +1150,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
             throw new NotFoundException(nameof(identityUser));
         }
 
-        var userLoginInfo = new UserLoginInfo(externalProvider.LoginProvider, externalProvider.ProviderKey, externalProvider.LoginProvider);
+        var userLoginInfo = new UserLoginInfo(externalProvider.Name, externalProvider.UserId, externalProvider.Name);
 
         var addLoginResult = await this.userManager
             .AddLoginAsync(identityUser, userLoginInfo);

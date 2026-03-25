@@ -19,11 +19,18 @@ public class SignUpExternal<TUser, TIdentity> : BaseSignUp<TUser, TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
+    /// The user's username.
+    /// </summary>
+    [Required]
+    [MaxLength(256)]
+    public virtual string Username { get; set; } = null!;
+
+    /// <summary>
     /// The user's email address.
     /// </summary>
     [Required]
     [EmailAddress]
-    public virtual string Email { get; set; } = null!;
+    public virtual string EmailAddress { get; set; } = null!;
 
     /// <summary>
     /// The user's phone number (optional, international format supported).

@@ -16,6 +16,6 @@ public class SignUpExternalMicrosoftRequest<TUser> : SignUpExternalMicrosoftRequ
 /// <typeparam name="TUser">The type of the user entity.</typeparam>
 /// <typeparam name="TIdentity">The type of the user identifier.</typeparam>
 [PostAction(ActionRoutes.IDENTITY_SIGNUP_EXTERNAL_MICROSOFT)]
-public class SignUpExternalMicrosoftRequest<TUser, TIdentity> : BaseSignUpExternalRequest<SignUpExternalMicrosoft<TUser, TIdentity>>
+public class SignUpExternalMicrosoftRequest<TUser, TIdentity> : BaseSignUpExternalRequest<SignUpExternalMicrosoft<TUser, TIdentity>, TUser, TIdentity>
     where TUser : IEntityUser<TIdentity>, new()
     where TIdentity : IEquatable<TIdentity>;

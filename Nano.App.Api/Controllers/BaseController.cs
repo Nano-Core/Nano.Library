@@ -23,7 +23,7 @@ public abstract class BaseController : Controller
     /// <summary>
     /// Gets the current request identififer from header.
     /// </summary>
-    public virtual string? RequestId => this.HttpContext.Request.GetRequestId();
+    protected virtual string? RequestId => this.HttpContext.Request.GetRequestId();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="BaseController"/> class.
