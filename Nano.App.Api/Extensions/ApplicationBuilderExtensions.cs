@@ -1,5 +1,4 @@
 using HealthChecks.UI.Client;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -11,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
 using Nano.App.Api.Config;
-using Nano.App.Api.Mvc.Authentication;
 using Nano.App.Api.Mvc.Consts;
 using Nano.App.Api.Mvc.Documentation.Extensions;
 using Nano.App.Api.Mvc.Extensions;
@@ -646,37 +644,6 @@ internal static class ApplicationBuilderExtensions
                 x.UseRelativeResourcesPath = true;
                 x.UseRelativeWebhookPath = true;
             });
-
-        return applicationBuilder;
-    }
-
-    internal static IApplicationBuilder UseNanoAuthentication(this IApplicationBuilder applicationBuilder)
-    {
-        ArgumentNullException.ThrowIfNull(applicationBuilder);
-
-        applicationBuilder
-            .UseNanoAuthenticationSchemeCache();
-
-        return applicationBuilder;
-    }
-
-
-    private static IApplicationBuilder UseNanoAuthenticationSchemeCache(this IApplicationBuilder applicationBuilder)
-    {
-        ArgumentNullException.ThrowIfNull(applicationBuilder);
-
-        var cache = applicationBuilder.ApplicationServices
-            .GetRequiredService<AuthenticationSchemeCache>();
-
-        var schemeProvider = applicationBuilder.ApplicationServices
-            .GetRequiredService<IAuthenticationSchemeProvider>();
-
-        cache.Schemes = schemeProvider
-            .GetAllSchemesAsync()
-            .GetAwaiter()
-            .GetResult()
-            .Where(s => !string.IsNullOrEmpty(s.DisplayName))
-            .ToArray();
 
         return applicationBuilder;
     }

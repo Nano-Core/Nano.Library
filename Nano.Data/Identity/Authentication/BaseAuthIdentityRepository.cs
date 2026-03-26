@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authentication;
 using Nano.Data.Abstractions.Identity;
 using Nano.Data.Abstractions.Identity.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
@@ -6,13 +5,13 @@ using Nano.Data.Abstractions.Identity.Consts;
 using Nano.Data.Abstractions.Identity.Extensions;
 using Nano.Data.Abstractions.Identity.Models;
 using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Nano.Data.Abstractions.Exceptions;
+using Nano.Data.Abstractions.Extensions;
 
 namespace Nano.Data.Identity.Authentication;
 
@@ -22,7 +21,7 @@ public abstract class BaseAuthIdentityRepository<TIdentity> : IAuthIdentityRepos
 {
     private readonly IIdentityRepository<TIdentity> identityRepository;
     private readonly IAuthJwtRepository authJwtRepository;
-    private readonly IAuthExternalRepositoryAggregator authExternalRepository;
+    private readonly IAuthExternalRepositoryAggregator? authExternalRepository;
 
     /// <summary>
     /// Constructor.
@@ -31,18 +30,11 @@ public abstract class BaseAuthIdentityRepository<TIdentity> : IAuthIdentityRepos
     /// <param name="authJwtRepository">The repository for creating JWT tokens.</param>
     /// <param name="authExternalRepository">Optional external authentication repository (e.g., Google, Facebook, Microsoft).</param>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="identityRepository"/> or <paramref name="authJwtRepository"/> is null.</exception>
-    protected BaseAuthIdentityRepository(IIdentityRepository<TIdentity> identityRepository, IAuthJwtRepository authJwtRepository, IAuthExternalRepositoryAggregator authExternalRepository)
+    protected BaseAuthIdentityRepository(IIdentityRepository<TIdentity> identityRepository, IAuthJwtRepository authJwtRepository, IAuthExternalRepositoryAggregator? authExternalRepository = null)
     {
         this.identityRepository = identityRepository ?? throw new ArgumentNullException(nameof(identityRepository));
         this.authJwtRepository = authJwtRepository ?? throw new ArgumentNullException(nameof(authJwtRepository));
         this.authExternalRepository = authExternalRepository;
-    }
-
-    /// <inheritdoc />
-    public virtual Task<IEnumerable<AuthenticationScheme>> GetExternalProviderSchemesAsync(CancellationToken cancellationToken = default)
-    {
-        return this.identityRepository
-            .GetExternalProviderSchemesAsync(cancellationToken);
     }
 
     /// <inheritdoc />
@@ -92,8 +84,8 @@ public abstract class BaseAuthIdentityRepository<TIdentity> : IAuthIdentityRepos
             {
                 ExternalProvider =
                 {
-                    Name = logInExternalDirect.ExternalLogInData.ExternalToken.Name,
-                    UserId = logInExternalDirect.ExternalLogInData.Id
+                    Name = logInExternalDirect.ExternalAuthenticationData.ExternalToken.Name,
+                    UserId = logInExternalDirect.ExternalAuthenticationData.Id
                 }
             }, cancellationToken);
 
@@ -108,7 +100,7 @@ public abstract class BaseAuthIdentityRepository<TIdentity> : IAuthIdentityRepos
                 UserName = identityUser.UserName,
                 UserEmail = identityUser.Email,
                 Claims = claims,
-                ExternalToken = logInExternalDirect.ExternalLogInData.ExternalToken
+                ExternalToken = logInExternalDirect.ExternalAuthenticationData.ExternalToken
             });
 
         accessToken.RefreshToken = logInExternalDirect.IsRefreshable
@@ -130,21 +122,19 @@ public abstract class BaseAuthIdentityRepository<TIdentity> : IAuthIdentityRepos
             throw new NullReferenceException(nameof(this.authExternalRepository));
         }
 
-        var externalLoginData = await this.authExternalRepository
+        var authenticationData = await this.authExternalRepository
             .AuthenticateAsync(logInExternal.Provider, logInExternal.Flow, cancellationToken);
 
-        if (externalLoginData == null)
-        {
-            throw new UnauthorizedException();
-        }
+        var claims = logInExternal.TransientClaims
+            .Merge(authenticationData.TransientClaims);
 
         return await this.LogInExternalAsync(new LogInExternalDirect
         {
             AppId = logInExternal.AppId,
             IsRefreshable = logInExternal.IsRefreshable,
-            ExternalLogInData = externalLoginData,
+            ExternalAuthenticationData = authenticationData,
             TransientRoles = logInExternal.TransientRoles,
-            TransientClaims = logInExternal.TransientClaims
+            TransientClaims = claims
         }, cancellationToken);
     }
 
@@ -188,22 +178,22 @@ public abstract class BaseAuthIdentityRepository<TIdentity> : IAuthIdentityRepos
         var claims = await this.identityRepository
             .GetAllClaims(identityUser, logInRefresh.TransientRoles, logInRefresh.TransientClaims, cancellationToken);
 
-        ExternalLoginTokenData? externalLoginTokenData = null;
-        if (this.authExternalRepository != null)
+        var externalProviderName = claims
+            .Where(x => x.Type == ClaimTypesExtended.ExternalProviderName)
+            .Select(x => x.Value)
+            .FirstOrDefault();
+
+        var externalProviderRefreshToken = claims
+            .Where(x => x.Type == ClaimTypesExtended.ExternalProviderRefreshToken)
+            .Select(x => x.Value)
+            .FirstOrDefault();
+
+        ExternalAuthenticationToken? externalAuthenticationToken = null;
+        if (!string.IsNullOrEmpty(externalProviderName) && !string.IsNullOrEmpty(externalProviderRefreshToken))
         {
-            var externalProviderName = claims
-                .Where(x => x.Type == ClaimTypesExtended.ExternalProviderName)
-                .Select(x => x.Value)
-                .FirstOrDefault();
-
-            var externalProviderRefreshToken = claims
-                .Where(x => x.Type == ClaimTypesExtended.ExternalProviderRefreshToken)
-                .Select(x => x.Value)
-                .FirstOrDefault();
-
-            if (!string.IsNullOrEmpty(externalProviderName) && !string.IsNullOrEmpty(externalProviderRefreshToken))
+            if (this.authExternalRepository != null)
             {
-                externalLoginTokenData = await this.authExternalRepository
+                externalAuthenticationToken = await this.authExternalRepository
                     .AuthenticateRefreshAsync(new ExternalProviderGeneric(externalProviderName), externalProviderRefreshToken, cancellationToken);
             }
         }
@@ -215,7 +205,7 @@ public abstract class BaseAuthIdentityRepository<TIdentity> : IAuthIdentityRepos
                 UserId = identityUser.Id.ToString(),
                 UserName = identityUser.UserName,
                 UserEmail = identityUser.Email,
-                ExternalToken = externalLoginTokenData,
+                ExternalToken = externalAuthenticationToken,
                 Claims = claims
             });
 

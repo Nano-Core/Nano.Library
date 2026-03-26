@@ -25,5 +25,5 @@ public class SignUpExternalDirect<TUser, TIdentity> : BaseSignUpExternal<TUser, 
     /// Data from the external login provider.
     /// </summary>
     [Required]
-    public virtual ExternalLogInData ExternalLogInData { get; set; } = new();
+    public virtual ExternalAuthenticationData ExternalAuthenticationData { get; set; } = new();
 }

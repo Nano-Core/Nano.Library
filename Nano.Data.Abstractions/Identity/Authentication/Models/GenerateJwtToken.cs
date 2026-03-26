@@ -37,7 +37,7 @@ public class GenerateJwtToken
     /// <summary>
     /// External authentication token data, if applicable.
     /// </summary>
-    public virtual ExternalLoginTokenData? ExternalToken { get; set; }
+    public virtual ExternalAuthenticationToken? ExternalToken { get; set; }
 
     /// <summary>
     /// The claims included in the generated JWT.

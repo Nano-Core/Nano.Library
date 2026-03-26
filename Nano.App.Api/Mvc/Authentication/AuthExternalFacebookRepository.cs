@@ -7,24 +7,25 @@ using System;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Nano.App.Api.Mvc.Authentication.Abstractions;
 
 namespace Nano.App.Api.Mvc.Authentication;
 
-/// <inheritdoc />
+/// <inheritdoc cref="BaseAuthExternalRepository{TProvider}" />
 public class AuthExternalFacebookRepository(FacebookOptions options, HttpClient httpClient)
-    : BaseAuthExternalRepository<ExternalProviderFacebook>(ExternalLogInProviderNames.FACEBOOK)
+    : BaseAuthExternalRepository<ExternalProviderFacebook>, IBuiltInAuthExternalRepository
 {
     private readonly FacebookOptions options = options ?? throw new ArgumentNullException(nameof(options));
     private readonly HttpClient httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
 
     /// <inheritdoc />
-    public override Task<ExternalLogInData> AuthenticateAsync(ExternalProviderFacebook provider, AuthCodeFlow auth, CancellationToken cancellationToken = default)
+    public override Task<ExternalAuthenticationData> AuthenticateAsync(ExternalProviderFacebook provider, AuthCodeFlow authCodeFlow, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
     /// <inheritdoc />
-    public override async Task<ExternalLogInData> AuthenticateAsync(ExternalProviderFacebook provider, ImplicitFlow auth, CancellationToken cancellationToken = default)
+    public override async Task<ExternalAuthenticationData> AuthenticateAsync(ExternalProviderFacebook provider, ImplicitFlow implicitFlow, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(provider);
 
@@ -32,7 +33,7 @@ public class AuthExternalFacebookRepository(FacebookOptions options, HttpClient 
         const string FIELDS = "id,name,address,email,birthday";
 
         var debugTokenResponse = await httpClient
-            .GetAsync($"{HOST}/debug_token?input_token={auth.AccessToken}&access_token={options.AppId}|{options.AppSecret}", cancellationToken);
+            .GetAsync($"{HOST}/debug_token?input_token={implicitFlow.AccessToken}&access_token={options.AppId}|{options.AppSecret}", cancellationToken);
 
         debugTokenResponse
             .EnsureSuccessStatusCode();
@@ -58,7 +59,7 @@ public class AuthExternalFacebookRepository(FacebookOptions options, HttpClient 
         }
 
         using var userResponse = await httpClient
-            .GetAsync($"{HOST}/{validation.data.user_id}/?fields={FIELDS}&access_token={auth.AccessToken}", cancellationToken);
+            .GetAsync($"{HOST}/{validation.data.user_id}/?fields={FIELDS}&access_token={implicitFlow.AccessToken}", cancellationToken);
 
         userResponse
             .EnsureSuccessStatusCode();
@@ -66,19 +67,19 @@ public class AuthExternalFacebookRepository(FacebookOptions options, HttpClient 
         var user = await userResponse.Content
             .ReadAsStringAsync(cancellationToken);
 
-        var externalLoginData = JsonConvert.DeserializeObject<ExternalLogInData>(user);
+        var externalLoginData = JsonConvert.DeserializeObject<ExternalAuthenticationData>(user);
 
-        externalLoginData?.ExternalToken = new ExternalLoginTokenData
+        externalLoginData?.ExternalToken = new ExternalAuthenticationToken
         {
-            Name = ExternalLogInProviderNames.FACEBOOK,
-            Token = auth.AccessToken
+            Name = BuiltInExternalLogInProviderNames.FACEBOOK,
+            Token = implicitFlow.AccessToken
         };
 
         return externalLoginData ?? throw new UnauthorizedException();
     }
 
     /// <inheritdoc />
-    public override async Task<ExternalLoginTokenData> AuthenticateRefreshAsync(ExternalProviderFacebook provider, string refreshToken, CancellationToken cancellationToken = default)
+    public override async Task<ExternalAuthenticationToken> AuthenticateRefreshAsync(ExternalProviderFacebook provider, string refreshToken, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(provider);
         ArgumentNullException.ThrowIfNull(refreshToken);

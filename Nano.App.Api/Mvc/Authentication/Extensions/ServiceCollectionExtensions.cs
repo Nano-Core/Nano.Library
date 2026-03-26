@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
@@ -11,7 +10,9 @@ using Nano.Data.Abstractions.Identity.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Consts;
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Net.Http;
+using Nano.Common.Helpers;
 using AuthenticationOptions = Nano.App.Api.Config.AuthenticationOptions;
 
 namespace Nano.App.Api.Mvc.Authentication.Extensions;
@@ -25,9 +26,6 @@ internal static class ServiceCollectionExtensions
 
         JwtSecurityTokenHandler.DefaultInboundClaimTypeMap
             .Clear();
-
-        services
-            .AddSingleton<AuthenticationSchemeCache>();
 
         if (options.Jwt == null && apiKeyOptions == null)
         {
@@ -78,8 +76,6 @@ internal static class ServiceCollectionExtensions
 
         if (options.Jwt != null)
         {
-            // BUG: 222: Figure out how to register. Loop through all IAuthExternalRepository implementations??
-
             services
                 .AddAuthRepository()
                 .AddAuthJwtRepository(options.Jwt)
@@ -88,6 +84,7 @@ internal static class ServiceCollectionExtensions
                 .AddAuthExternalFacebookRepository(options.Jwt.ExternalLogins.Facebook)
                 .AddAuthExternalGoogleRepository(options.Jwt.ExternalLogins.Google)
                 .AddAuthExternalMicrosoftRepository(options.Jwt.ExternalLogins.Microsoft)
+                .AddCustomAuthExternalRepositories()
                 .AddAuthExternalRepositoryAggregator();
         }
 
@@ -160,31 +157,7 @@ internal static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
 
         services
-            .AddScoped<IAuthTransientRepository>(x =>
-            {
-                var authenticationSchemeProvider = x
-                    .GetRequiredService<IAuthenticationSchemeProvider>();
-
-                var authJwtRepository = x
-                    .GetRequiredService<IAuthJwtRepository>();
-
-                var authExternalRepository = x
-                    .GetRequiredService<IAuthExternalRepositoryAggregator>();
-
-                return new AuthTransientRepository(authenticationSchemeProvider, authJwtRepository, authExternalRepository);
-            });
-
-        //services
-        //    .AddScoped<IAuthExternalRepository, AuthExternalRepository>();
-
-        return services;
-    }
-    private static IServiceCollection AddAuthExternalRepositoryAggregator(this IServiceCollection services)
-    {
-        ArgumentNullException.ThrowIfNull(services);
-
-        services
-            .AddScoped<IAuthExternalRepositoryAggregator, AuthExternalRepositoryAggregator>();
+            .AddScoped<IAuthTransientRepository, AuthTransientRepository>();
 
         return services;
     }
@@ -201,7 +174,7 @@ internal static class ServiceCollectionExtensions
             .AddHttpClient<AuthExternalFacebookRepository>();
 
         services
-            .AddScoped<IAuthExternalRepository>(x =>
+            .AddScoped<IAuthExternalRepository, AuthExternalFacebookRepository>(x =>
             {
                 var apiOptions = x
                     .GetRequiredService<IOptionsMonitor<ApiOptions>>();
@@ -227,7 +200,7 @@ internal static class ServiceCollectionExtensions
         }
 
         services
-            .AddScoped<IAuthExternalRepository>(x =>
+            .AddScoped<IAuthExternalRepository, AuthExternalGoogleRepository>(x =>
             {
                 var apiOptions = x
                     .GetRequiredService<IOptionsMonitor<ApiOptions>>();
@@ -250,7 +223,7 @@ internal static class ServiceCollectionExtensions
             .AddHttpClient<AuthExternalMicrosoftRepository>();
 
         services
-            .AddScoped<IAuthExternalRepository>(x =>
+            .AddScoped<IAuthExternalRepository, AuthExternalMicrosoftRepository>(x =>
             {
                 var apiOptions = x
                     .GetRequiredService<IOptionsMonitor<ApiOptions>>();
@@ -263,6 +236,34 @@ internal static class ServiceCollectionExtensions
 
                 return new AuthExternalMicrosoftRepository(apiOptions.CurrentValue.Authentication.Jwt?.ExternalLogins.Microsoft!, httpClient);
             });
+
+        return services;
+    }
+    private static IServiceCollection AddCustomAuthExternalRepositories(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        var customProviders = TypesHelper
+            .GetAllTypes()
+            .Where(x =>
+                typeof(IAuthExternalRepository).IsAssignableFrom(x) &&
+                !typeof(IBuiltInAuthExternalRepository).IsAssignableFrom(x) &&
+                x is { IsClass: true, IsAbstract: false });
+
+        foreach (var provider in customProviders)
+        {
+            services
+                .AddScoped(typeof(IAuthExternalRepository), provider);
+        }
+
+        return services;
+    }
+    private static IServiceCollection AddAuthExternalRepositoryAggregator(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        services
+            .AddScoped<IAuthExternalRepositoryAggregator, AuthExternalRepositoryAggregator>();
 
         return services;
     }

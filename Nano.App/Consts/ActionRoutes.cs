@@ -29,8 +29,6 @@ internal class ActionRoutes
     internal const string AUTH_LOGIN = "login";
     internal const string AUTH_LOGIN_ROOT = "login/root";
     internal const string AUTH_LOGOUT = "logout";
-    internal const string AUTH_LOGIN_EXTERNAL_DIRECT = "login/external/direct";
-    internal const string AUTH_LOGIN_EXTERNAL_DIRECT_TRANSIENT = "login/external/direct/transient";
     internal const string AUTH_LOGIN_EXTERNAL_FACEBOOK = "login/external/facebook";
     internal const string AUTH_LOGIN_EXTERNAL_FACEBOOK_TRANSIENT = "login/external/facebook/transient";
     internal const string AUTH_LOGIN_EXTERNAL_GOOGLE = "login/external/google";
@@ -47,7 +45,6 @@ internal class ActionRoutes
     internal const string IDENTITY_EMAIL_IS_TAKEN = "email/is-taken";
     internal const string IDENTITY_PHONE_IS_TAKEN = "phone/is-taken";
     internal const string IDENTITY_SIGNUP = "signup";
-    internal const string IDENTITY_SIGNUP_EXTERNAL_DIRECT = "signup/external/direct";
     internal const string IDENTITY_SIGNUP_EXTERNAL_FACEBOOK = "signup/external/facebook";
     internal const string IDENTITY_SIGNUP_EXTERNAL_GOOGLE = "signup/external/google";
     internal const string IDENTITY_SIGNUP_EXTERNAL_MICROSOFT = "signup/external/microsoft";
@@ -77,11 +74,9 @@ internal class ActionRoutes
     internal const string IDENTITY_CLAIMS_ASSIGN_OR_REPLACE = "{id}/claims/assign-or-replace";
     internal const string IDENTITY_CLAIMS_REMOVE = "{id}/claims/remove";
     internal const string IDENTITY_EXTERNAL_LOGINS = "{id}/external-logins";
-    internal const string IDENTITY_EXTERNAL_LOGINS_ADD_DIRECT = "{id}/external-logins/add/direct";
     internal const string IDENTITY_EXTERNAL_LOGINS_ADD_FACEBOOK = "{id}/external-logins/add/facebook";
     internal const string IDENTITY_EXTERNAL_LOGINS_ADD_GOOGLE = "{id}/external-logins/add/google";
     internal const string IDENTITY_EXTERNAL_LOGINS_ADD_MICROSOFT = "{id}/external-logins/add/microsoft";
-    internal const string IDENTITY_EXTERNAL_LOGINS_REMOVE_DIRECT = "{id}/external-logins/remove/direct";
     internal const string IDENTITY_EXTERNAL_LOGINS_REMOVE_FACEBOOK = "{id}/external-logins/remove/facebook";
     internal const string IDENTITY_EXTERNAL_LOGINS_REMOVE_GOOGLE = "{id}/external-logins/remove/google";
     internal const string IDENTITY_EXTERNAL_LOGINS_REMOVE_MICROSOFT = "{id}/external-logins/remove/microsoft";

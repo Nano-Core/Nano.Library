@@ -1548,14 +1548,13 @@ The `IAuthIdentityRepository` provides the following methods to support this fun
 
 | Method                              | Parameters           | Description                                                                                                                     |
 | ----------------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `GetExternalProviderSchemesAsync`   | —                    | Retrieves all configured external authentication schemes available for login.                                                   |
 | `LogInAsync`                        | logIn                | Logs in a user using username and password credentials, generating a JWT access token and optional refresh token.               |
 | `LogInExternalAsync`                | logInExternal        | Logs in a user using a configured built-in external login provider, generating a JWT access token and optional refresh token.   |
 | `LogInExternalAsync`                | logInExternalDirect  | Logs in a user using direct external login data, generating a JWT access token and optional refresh token.                      |
 | `LogInRefreshAsync`                 | logInRefresh         | Refreshes an existing access token using a valid refresh token, generating a new JWT and refresh token.                         |
 | `LogOutAsync`                       | userId, appId        | Logs out the current user.                                                                                                      |
 
-Try it out yourself using the **[Api.Data.Identity.Authentication.Jwt](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Authentication.Jwt)** example.  
+Try it out yourself using the **[Api.Data.Identity.Auth.Jwt](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Auth.Jwt)** example.  
 
 Nano also supports a statically configured JWT login called `RootLogin`. It is primarily intended for use in `Development` environments when testing services in isolation, but where 
 the application still requires an authenticated user. Another common scenario is when console applications need to authenticate through the Nano API client but do not have 
@@ -1656,23 +1655,22 @@ methods specifically for external transient authentication.
 
 | Method                              | Parameters           | Description                                                                                                                     |
 | ----------------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `GetExternalProviderSchemesAsync`   | —                    | Retrieves all configured external authentication schemes available for login.                                                   |
 | `LogInExternalAsync`                | logInExternal        | Performs an external login using direct external login data and generates a corresponding JWT access token.                     |
 | `LogInExternalAsync`                | logInExternalDirect  | Performs an external login using a configured built-in external provider type and generates a corresponding JWT access token.   |
 
 Try out external authentication yourself using one of these examples.  
 
-* **[Api.Data.Identity.Authentication.External.Direct](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Authentication.External.Direct)** 
-* **[Api.Data.Identity.Authentication.External.Facebook](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Authentication.External.Facebook)** 
-* **[Api.Data.Identity.Authentication.External.Google](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Authentication.External.Google)** 
-* **[Api.Data.Identity.Authentication.External.Microsoft](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Authentication.External.Microsoft)** 
+* **[Api.Data.Identity.Auth.External.Direct](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Auth.External.Direct)** 
+* **[Api.Data.Identity.Auth.External.Facebook](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Auth.External.Facebook)** 
+* **[Api.Data.Identity.Auth.External.Google](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Auth.External.Google)** 
+* **[Api.Data.Identity.Auth.External.Microsoft](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Auth.External.Microsoft)** 
 
 ...or the equivalent transient examples.  
 
-* **[Api.Authentication.External.Direct](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Authentication.External.Direct)** 
-* **[Api.Authentication.External.Facebook](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Authentication.External.Facebook)** 
-* **[Api.Authentication.External.Google](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Authentication.External.Google)** 
-* **[Api.Authentication.External.Microsoft](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Authentication.External.Microsoft)** 
+* **[Api.Auth.External.Direct](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Auth.External.Direct)** 
+* **[Api.Auth.External.Facebook](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Auth.External.Facebook)** 
+* **[Api.Auth.External.Google](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Auth.External.Google)** 
+* **[Api.Auth.External.Microsoft](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Auth.External.Microsoft)** 
 
 Finally, Nano allows you to add a custom authentication provider. The recommended approach is to configure JWT authentication in Nano and then integrate your custom authentication 
 through a direct external provider. You can also register custom authorization policies as needed and apply them using the `[Authorize]` attribute on relevant endpoints.  
@@ -1748,7 +1746,7 @@ metadata:
     nginx.ingress.kubernetes.io/auth-response-headers: "Authorization"
 ```
 
-Try it out yourself using the **[Api.Data.Identity.Authentication.ApiKey](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Authentication.Jwt)** example.  
+Try it out yourself using the **[Api.Data.Identity.Auth.ApiKey](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Auth.Jwt)** example.  
 
 ## Authorization
 Nano supports authorization using either a JWT token or an API key. JWT tokens are provided in the `Authorization` header, while API keys are provided in 
@@ -1939,7 +1937,6 @@ exposes endpoints that match the current configuration; any features not configu
 | `/{entity}s/email/is-taken`                           | GET           | Anonymous     | Determines whether an email address is already in use.                      |
 | `/{entity}s/phone/is-taken`                           | GET           | Anonymous     | Determines whether a phone number is already in use.                        |
 | `/{entity}s/signup`                                   | POST          | Anonymous     | Registers a new user.                                                       |
-| `/{entity}s/signup/external/direct`                   | POST          | Anonymous     | Registers a new user using externally provided login data.                  |
 | `/{entity}s/signup/external/facebook`                 | POST          | Anonymous     | Registers a new user using an external Facebook login provider.             |
 | `/{entity}s/signup/external/google`                   | POST          | Anonymous     | Registers a new user using an external Google login provider.               |
 | `/{entity}s/signup/external/microsoft`                | POST          | Anonymous     | Registers a new user using an external Microsoft login provider.            |
@@ -1971,11 +1968,9 @@ exposes endpoints that match the current configuration; any features not configu
 | `/{entity}s/{id}/claims/assign-or-replace`            | PUT           | identity      | Assigns or replaces a claim of a user.                                      |
 | `/{entity}s/{id}/claims/remove`                       | POST / DELETE | identity      | Removes a claim from a user.                                                |
 | `/{entity}s/{id}/external-logins`                     | GET           | identity      | Retrieves the external login providers associated with a user.              |
-| `/{entity}s/{id}/external-logins/add/direct`          | POST          | identity      | Adds an external login direct (no authentication) to a user account.        |
 | `/{entity}s/{id}/external-logins/add/facebook`        | POST          | identity      | Adds a Facebook external login to a user account.                           |
 | `/{entity}s/{id}/external-logins/add/google`          | POST          | identity      | Adds a Google external login to a user account.                             |
 | `/{entity}s/{id}/external-logins/add/microsoft`       | POST          | identity      | Adds a Microsoft external login to a user account.                          |
-| `/{entity}s/{id}/external-logins/remove/direct`       | POST / DELETE | identity      | Removes an external login direct from a user account.                       |
 | `/{entity}s/{id}/external-logins/remove/facebook`     | POST / DELETE | identity      | Removes a Facebook external login from a user account.                      |
 | `/{entity}s/{id}/external-logins/remove/google`       | POST / DELETE | identity      | Removes a Google external login from a user account.                        |
 | `/{entity}s/{id}/external-logins/remove/microsoft`    | POST / DELETE | identity      | Removes a Microsoft external login from a user account.                     |
@@ -2009,8 +2004,6 @@ are not configured will not be registered or available in the controller.
 | ------------------------------------------- | ------ | --------- | ------------------------------------------------------------------------------------ |
 | `/auth/login`                               | POST   | Anonymous | Authenticates a user and returns an access token (JWT).                              |
 | `/auth/login/root`                          | POST   | Anonymous | Authenticates the root user from configuration and returns an access token.          |
-| `/auth/login/external/direct`               | POST   | Anonymous | Signs in a user via direct external authentication data.                             |
-| `/auth/login/external/direct/transient`     | POST   | Anonymous | Signs in a transient user via direct external authentication data.                   |
 | `/auth/login/external/facebook`             | POST   | Anonymous | Signs in a user via external Facebook authentication.                                |
 | `/auth/login/external/facebook/transient`   | POST   | Anonymous | Signs in a transient user via external Facebook authentication.                      |
 | `/auth/login/external/google`               | POST   | Anonymous | Signs in a user via external Google authentication.                                  |

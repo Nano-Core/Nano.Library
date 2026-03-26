@@ -28,13 +28,6 @@ public interface IIdentityRepository<TIdentity>
     #region Login
 
     /// <summary>
-    /// Retrieves all configured external authentication schemes available for login.
-    /// </summary>
-    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-    /// <returns>A collection of <see cref="AuthenticationScheme"/> representing each external provider.</returns>
-    Task<IEnumerable<AuthenticationScheme>> GetExternalProviderSchemesAsync(CancellationToken cancellationToken = default);
-
-    /// <summary>
     /// Attempts to sign in a user using the specified credentials.
     /// </summary>
     /// <param name="signIn">The user sign-in request containing username, password, and remember-me option.</param>

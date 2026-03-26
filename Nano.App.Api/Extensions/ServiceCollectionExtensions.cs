@@ -438,6 +438,7 @@ internal static class ServiceCollectionExtensions
                 x.LowercaseUrls = true;
             })
             .AddQueryModelBinders()
+            .AddSingleton(MvcEndpointVisibility.Discover)
             .AddSingleton<IConfigureOptions<MvcOptions>, ConfigureMvcOptions>()
             .AddSingleton<IConfigureOptions<MvcNewtonsoftJsonOptions>, ConfigureMvcJsonOptions>()
             .AddProblemDetails(x =>

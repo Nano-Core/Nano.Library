@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
 using Nano.Data.Abstractions.Exceptions;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 
@@ -29,13 +27,6 @@ public interface IAuthIdentityRepository : IAuthIdentityRepository<Guid>;
 public interface IAuthIdentityRepository<in TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
-    /// <summary>
-    /// Retrieves the configured external login providers for the application.
-    /// </summary>
-    /// <param name="cancellationToken">A <see cref="CancellationToken"/> to cancel the operation.</param>
-    /// <returns>A task that returns a collection of <see cref="AuthenticationScheme"/> representing available external login providers.</returns>
-    Task<IEnumerable<AuthenticationScheme>> GetExternalProviderSchemesAsync(CancellationToken cancellationToken = default);
-
     /// <summary>
     /// Logs in a user using username and password credentials, generating a JWT access token and optional refresh token.
     /// </summary>

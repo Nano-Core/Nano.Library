@@ -5,4 +5,4 @@ namespace Nano.Data.Abstractions.Identity.Authentication.Models;
 /// <summary>
 /// External login provider using Facebook authentication.
 /// </summary>
-public class ExternalProviderFacebook() : BaseExternalProvider(ExternalLogInProviderNames.FACEBOOK);
+public class ExternalProviderFacebook() : BaseExternalProvider(BuiltInExternalLogInProviderNames.FACEBOOK);

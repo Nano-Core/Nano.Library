@@ -5,23 +5,24 @@ using Nano.Data.Abstractions.Identity.Authentication.Models;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Nano.App.Api.Mvc.Authentication.Abstractions;
 
 namespace Nano.App.Api.Mvc.Authentication;
 
-/// <inheritdoc />
+/// <inheritdoc cref="BaseAuthExternalRepository{TProvider}" />
 public class AuthExternalGoogleRepository(GoogleOptions options)
-    : BaseAuthExternalRepository<ExternalProviderGoogle>(ExternalLogInProviderNames.GOOGLE)
+    : BaseAuthExternalRepository<ExternalProviderGoogle>, IBuiltInAuthExternalRepository
 {
     private readonly GoogleOptions options = options ?? throw new ArgumentNullException(nameof(options));
 
     /// <inheritdoc />
-    public override Task<ExternalLogInData> AuthenticateAsync(ExternalProviderGoogle provider, AuthCodeFlow auth, CancellationToken cancellationToken = default)
+    public override Task<ExternalAuthenticationData> AuthenticateAsync(ExternalProviderGoogle provider, AuthCodeFlow authCodeFlow, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
     /// <inheritdoc />
-    public override async Task<ExternalLogInData> AuthenticateAsync(ExternalProviderGoogle provider, ImplicitFlow auth, CancellationToken cancellationToken = default)
+    public override async Task<ExternalAuthenticationData> AuthenticateAsync(ExternalProviderGoogle provider, ImplicitFlow implicitFlow, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(provider);
 
@@ -37,24 +38,24 @@ public class AuthExternalGoogleRepository(GoogleOptions options)
         };
 
         var payload = await GoogleJsonWebSignature
-            .ValidateAsync(auth.AccessToken, settings);
+            .ValidateAsync(implicitFlow.AccessToken, settings);
 
-        return new ExternalLogInData
+        return new ExternalAuthenticationData
         {
             Id = payload.Subject,
             Name = payload.Name,
-            Email = payload.Email,
+            EmailAddress = payload.Email,
             Username = payload.Email,
             ExternalToken =
             {
-                Name = ExternalLogInProviderNames.GOOGLE,
-                Token = auth.AccessToken
+                Name = BuiltInExternalLogInProviderNames.GOOGLE,
+                Token = implicitFlow.AccessToken
             }
         };
     }
 
     /// <inheritdoc />
-    public override async Task<ExternalLoginTokenData> AuthenticateRefreshAsync(ExternalProviderGoogle provider, string refreshToken, CancellationToken cancellationToken = default)
+    public override async Task<ExternalAuthenticationToken> AuthenticateRefreshAsync(ExternalProviderGoogle provider, string refreshToken, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(provider);
         ArgumentNullException.ThrowIfNull(refreshToken);

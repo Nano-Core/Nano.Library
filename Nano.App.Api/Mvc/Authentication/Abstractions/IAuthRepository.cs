@@ -16,6 +16,11 @@ public interface IAuthRepository<in TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
+    /// Defines a repository for managing external authentication for users.
+    /// </summary>
+    IAuthExternalRepositoryAggregator AuthExternalRepositoryAggregator { get; }
+
+    /// <summary>
     /// Defines a repository for managing authentication for identity users.
     /// </summary>
     IAuthIdentityRepository<TIdentity>? AuthIdentityRepository { get; }

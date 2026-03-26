@@ -26,7 +26,7 @@ internal static class WebApplicationExtensions
             .UseCookiePolicy()
             .UseRouting()
             .UseNanoHttpCorsPolicy(options.HttpPolicyHeaders.Cors)
-            .UseNanoAuthentication()
+            .UseAuthentication()
             .UseAuthorization()
             .UseNanoSession(options.Session)
             .UseNanoRequestIdentifier()

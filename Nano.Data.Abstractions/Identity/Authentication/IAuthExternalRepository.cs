@@ -20,19 +20,19 @@ public interface IAuthExternalRepository
     /// Authenticates a user using the implicit authentication flow.
     /// </summary>
     /// <param name="provider">The external provider instance.</param>
-    /// <param name="auth">The implicit flow authentication data.</param>
+    /// <param name="implicitFlow">The implicit flow authentication data.</param>
     /// <param name="cancellationToken">Optional <see cref="CancellationToken"/>.</param>
-    /// <returns>An <see cref="ExternalLogInData"/> containing the authenticated user information.</returns>
-    Task<ExternalLogInData> AuthenticateAsync(BaseExternalProvider provider, ImplicitFlow auth, CancellationToken cancellationToken = default);
+    /// <returns>An <see cref="ExternalAuthenticationData"/> containing the authenticated user information.</returns>
+    Task<ExternalAuthenticationData> AuthenticateAsync(BaseExternalProvider provider, ImplicitFlow implicitFlow, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Authenticates a user using the authorization code authentication flow.
     /// </summary>
     /// <param name="provider">The external provider instance.</param>
-    /// <param name="auth">The authorization code flow authentication data.</param>
+    /// <param name="authCodeFlow">The authorization code flow authentication data.</param>
     /// <param name="cancellationToken">Optional <see cref="CancellationToken"/>.</param>
-    /// <returns>An <see cref="ExternalLogInData"/> containing the authenticated user information.</returns>
-    Task<ExternalLogInData> AuthenticateAsync(BaseExternalProvider provider, AuthCodeFlow auth, CancellationToken cancellationToken = default);
+    /// <returns>An <see cref="ExternalAuthenticationData"/> containing the authenticated user information.</returns>
+    Task<ExternalAuthenticationData> AuthenticateAsync(BaseExternalProvider provider, AuthCodeFlow authCodeFlow, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Refreshes an existing external authentication session using a refresh token.
@@ -40,8 +40,8 @@ public interface IAuthExternalRepository
     /// <param name="provider">The external provider instance.</param>
     /// <param name="refreshToken">The refresh token issued by the external provider.</param>
     /// <param name="cancellationToken">Optional <see cref="CancellationToken"/>.</param>
-    /// <returns>An <see cref="ExternalLoginTokenData"/> containing the refreshed authentication tokens.</returns>
-    Task<ExternalLoginTokenData> AuthenticateRefreshAsync(BaseExternalProvider provider, string refreshToken, CancellationToken cancellationToken = default);
+    /// <returns>An <see cref="ExternalAuthenticationToken"/> containing the refreshed authentication tokens.</returns>
+    Task<ExternalAuthenticationToken> AuthenticateRefreshAsync(BaseExternalProvider provider, string refreshToken, CancellationToken cancellationToken = default);
 }
 
 /// <summary>
@@ -56,19 +56,19 @@ public interface IAuthExternalRepository<in TProvider> : IAuthExternalRepository
     /// Authenticates a user using the implicit authentication flow.
     /// </summary>
     /// <param name="provider">The strongly-typed external provider instance.</param>
-    /// <param name="auth">The implicit flow authentication data.</param>
+    /// <param name="implicitFlow">The implicit flow authentication data.</param>
     /// <param name="cancellationToken">Optional <see cref="CancellationToken"/>.</param>
-    /// <returns>An <see cref="ExternalLogInData"/> containing the authenticated user information.</returns>
-    Task<ExternalLogInData> AuthenticateImplicitAsync(TProvider provider, ImplicitFlow auth, CancellationToken cancellationToken = default);
+    /// <returns>An <see cref="ExternalAuthenticationData"/> containing the authenticated user information.</returns>
+    Task<ExternalAuthenticationData> AuthenticateImplicitAsync(TProvider provider, ImplicitFlow implicitFlow, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Authenticates a user using the authorization code authentication flow.
     /// </summary>
     /// <param name="provider">The strongly-typed external provider instance.</param>
-    /// <param name="auth">The authorization code flow authentication data.</param>
+    /// <param name="authCodeFlow">The authorization code flow authentication data.</param>
     /// <param name="cancellationToken">Optional <see cref="CancellationToken"/>.</param>
-    /// <returns>An <see cref="ExternalLogInData"/> containing the authenticated user information.</returns>
-    Task<ExternalLogInData> AuthenticateAuthCodeAsync(TProvider provider, AuthCodeFlow auth, CancellationToken cancellationToken = default);
+    /// <returns>An <see cref="ExternalAuthenticationData"/> containing the authenticated user information.</returns>
+    Task<ExternalAuthenticationData> AuthenticateAuthCodeAsync(TProvider provider, AuthCodeFlow authCodeFlow, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Refreshes an existing external authentication session using a refresh token.
@@ -76,6 +76,6 @@ public interface IAuthExternalRepository<in TProvider> : IAuthExternalRepository
     /// <param name="provider">The strongly-typed external provider instance.</param>
     /// <param name="refreshToken">The refresh token issued by the external provider.</param>
     /// <param name="cancellationToken">Optional <see cref="CancellationToken"/>.</param>
-    /// <returns>An <see cref="ExternalLoginTokenData"/> containing the refreshed authentication tokens.</returns>
-    Task<ExternalLoginTokenData> AuthenticateRefreshAsync(TProvider provider, string refreshToken, CancellationToken cancellationToken = default);
+    /// <returns>An <see cref="ExternalAuthenticationToken"/> containing the refreshed authentication tokens.</returns>
+    Task<ExternalAuthenticationToken> AuthenticateRefreshAsync(TProvider provider, string refreshToken, CancellationToken cancellationToken = default);
 }

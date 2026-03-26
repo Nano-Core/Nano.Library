@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Nano.Data.Abstractions.Exceptions;
@@ -23,13 +22,6 @@ namespace Nano.App.Api.Mvc.Authentication.Abstractions;
 /// </remarks>
 public interface IAuthTransientRepository
 {
-    /// <summary>
-    /// Retrieves the list of configured external login providers.
-    /// </summary>
-    /// <param name="cancellationToken">A <see cref="CancellationToken"/> to cancel the operation.</param>
-    /// <returns>A task that represents the asynchronous operation. The task result contains a collection of <see cref="ExternalLoginProvider"/> representing each available provider.</returns>
-    Task<IEnumerable<ExternalLoginProvider>> GetExternalProviderSchemesAsync(CancellationToken cancellationToken = default);
-
     /// <summary>
     /// Performs an external login using direct external login data and generates a corresponding JWT access token.
     /// </summary>

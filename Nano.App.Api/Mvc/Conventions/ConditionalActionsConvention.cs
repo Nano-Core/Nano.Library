@@ -1,23 +1,17 @@
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using Microsoft.Extensions.Options;
-using Nano.App.Api.Config;
 using Nano.App.Api.Controllers;
 using Nano.App.Api.Mvc.Extensions;
 using Nano.Common.Extensions;
-using Nano.Data.Abstractions.Config;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Nano.App.Api.Mvc.Authentication;
 
 namespace Nano.App.Api.Mvc.Conventions;
 
-internal sealed class ConditionalActionsConvention(AuthenticationSchemeCache authenticationSchemeProvider, IOptionsMonitor<ApiOptions> apiOptions, IOptionsMonitor<DataOptions>? dataOptions = null)
+internal sealed class ConditionalActionsConvention(MvcEndpointVisibility mvcEndpointVisibility)
     : IControllerModelConvention
 {
-    private readonly IOptionsMonitor<ApiOptions> apiOptions = apiOptions ?? throw new ArgumentNullException(nameof(apiOptions));
-    private readonly AuthenticationSchemeCache authenticationSchemeCache = authenticationSchemeProvider ?? throw new ArgumentNullException(nameof(authenticationSchemeProvider));
-    private readonly IOptionsMonitor<DataOptions>? dataOptions = dataOptions;
+    private readonly MvcEndpointVisibility mvcEndpointVisibility = mvcEndpointVisibility ?? throw new ArgumentNullException(nameof(mvcEndpointVisibility));
 
     /// <summary>
     /// Applies conditional rules to controller actions based on configuration.
@@ -47,67 +41,62 @@ internal sealed class ConditionalActionsConvention(AuthenticationSchemeCache aut
         var disabledActions = controller.Actions
             .Where(x =>
             {
-                if (nameof(BaseAuthController<>.LogInAsync).ReplaceAsync() == x.ActionName && (this.dataOptions?.CurrentValue.Identity == null || this.apiOptions.CurrentValue.Authentication.Jwt == null))
+                if (!this.mvcEndpointVisibility.HasJwt)
                 {
                     return true;
                 }
 
-                if (nameof(BaseAuthController<>.LogInRootAsync).ReplaceAsync() == x.ActionName && this.apiOptions.CurrentValue.Authentication.Jwt?.RootLogin == null)
+                if (nameof(BaseAuthController<>.LogInAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasIdentity)
                 {
                     return true;
                 }
 
-                if (nameof(BaseAuthController<>.LogInExternalDirectAsync).ReplaceAsync() == x.ActionName && (this.dataOptions?.CurrentValue.Identity == null || this.apiOptions.CurrentValue.Authentication.Jwt == null || this.authenticationSchemeCache.Schemes.Length == 0))
+                if (nameof(BaseAuthController<>.LogInRootAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasAuthRoot)
                 {
                     return true;
                 }
 
-                if (nameof(BaseAuthController<>.LogInExternalDirectTransientAsync).ReplaceAsync() == x.ActionName && (this.apiOptions.CurrentValue.Authentication.Jwt == null || this.authenticationSchemeCache.Schemes.Length == 0))
+                if (nameof(BaseAuthController<>.LogInExternalFacebookAsync).ReplaceAsync() == x.ActionName && (!this.mvcEndpointVisibility.HasIdentity || !this.mvcEndpointVisibility.HasAuthFacebook))
                 {
                     return true;
                 }
 
-                if (nameof(BaseAuthController<>.LogInExternalFacebookAsync).ReplaceAsync() == x.ActionName && (this.dataOptions?.CurrentValue.Identity == null || this.apiOptions.CurrentValue.Authentication.Jwt?.ExternalLogins.Facebook == null))
+                if (nameof(BaseAuthController<>.LogInExternalFacebookTransientAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasAuthFacebook)
                 {
                     return true;
                 }
 
-                if (nameof(BaseAuthController<>.LogInExternalFacebookTransientAsync).ReplaceAsync() == x.ActionName && this.apiOptions.CurrentValue.Authentication.Jwt?.ExternalLogins.Facebook == null)
+                if (nameof(BaseAuthController<>.LogInExternalGoogleAsync).ReplaceAsync() == x.ActionName && (!this.mvcEndpointVisibility.HasIdentity || !this.mvcEndpointVisibility.HasAuthGoogle))
                 {
                     return true;
                 }
 
-                if (nameof(BaseAuthController<>.LogInExternalGoogleAsync).ReplaceAsync() == x.ActionName && (this.dataOptions?.CurrentValue.Identity == null || this.apiOptions.CurrentValue.Authentication.Jwt?.ExternalLogins.Google == null))
+                if (nameof(BaseAuthController<>.LogInExternalGoogleTransientAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasAuthGoogle)
                 {
                     return true;
                 }
 
-                if (nameof(BaseAuthController<>.LogInExternalGoogleTransientAsync).ReplaceAsync() == x.ActionName && this.apiOptions.CurrentValue.Authentication.Jwt?.ExternalLogins.Google == null)
+                if (nameof(BaseAuthController<>.LogInExternalMicrosoftAsync).ReplaceAsync() == x.ActionName && (!this.mvcEndpointVisibility.HasIdentity || !this.mvcEndpointVisibility.HasAuthMicrosoft))
                 {
                     return true;
                 }
 
-                if (nameof(BaseAuthController<>.LogInExternalMicrosoftAsync).ReplaceAsync() == x.ActionName && (this.dataOptions?.CurrentValue.Identity == null || this.apiOptions.CurrentValue.Authentication.Jwt?.ExternalLogins.Microsoft == null))
+                if (nameof(BaseAuthController<>.LogInExternalMicrosoftTransientAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasAuthMicrosoft)
                 {
                     return true;
                 }
 
-                if (nameof(BaseAuthController<>.LogInExternalMicrosoftTransientAsync).ReplaceAsync() == x.ActionName && this.apiOptions.CurrentValue.Authentication.Jwt?.ExternalLogins.Microsoft == null)
+                if (nameof(BaseAuthController<>.LogInRefreshAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasIdentity)
                 {
                     return true;
                 }
 
-                if (nameof(BaseAuthController<>.LogInRefreshAsync).ReplaceAsync() == x.ActionName && (this.dataOptions?.CurrentValue.Identity == null || this.apiOptions.CurrentValue.Authentication.Jwt == null))
+                if (nameof(BaseAuthController<>.LogOutAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasIdentity)
                 {
                     return true;
                 }
 
-                if (nameof(BaseAuthController<>.LogOutAsync).ReplaceAsync() == x.ActionName && (this.dataOptions?.CurrentValue.Identity == null || this.apiOptions.CurrentValue.Authentication.Jwt == null))
-                {
-                    return true;
-                }
-
-                if (nameof(BaseAuthController<>.GetExternalSchemesAsync).ReplaceAsync() == x.ActionName && this.authenticationSchemeCache.Schemes.Length == 0)
+                if (nameof(BaseAuthController<>.GetExternalSchemesAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasAuthCustomExternalLogins)
                 {
                     return true;
                 }
@@ -136,110 +125,82 @@ internal sealed class ConditionalActionsConvention(AuthenticationSchemeCache aut
 
         var disabledActions = new List<ActionModel>();
 
-        if (this.apiOptions.CurrentValue.Authentication.Jwt?.ExternalLogins.Facebook == null)
-        {
-            disabledActions
-                .AddRange(controller.Actions
-                    .Where(x =>
+        disabledActions
+            .AddRange(controller.Actions
+                .Where(x =>
+                {
+                    if (nameof(BaseIdentityController<,,>.GetExternalLoginsAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasAuthExternalLogins)
                     {
-                        if (nameof(BaseIdentityController<,,>.SignUpExternalFacebookAsync).ReplaceAsync() == x.ActionName)
-                        {
-                            return true;
-                        }
+                        return true;
+                    }
 
-                        if (nameof(BaseIdentityController<,,>.AddExternalLoginFacebookAsync).ReplaceAsync() == x.ActionName)
-                        {
-                            return true;
-                        }
-
-                        if (nameof(BaseIdentityController<,,>.RemoveExternalLoginFacebookAsync).ReplaceAsync() == x.ActionName)
-                        {
-                            return true;
-                        }
-
-                        return false;
-                    }));
-        }
-
-        if (this.apiOptions.CurrentValue.Authentication.Jwt?.ExternalLogins.Google == null)
-        {
-            disabledActions
-                .AddRange(controller.Actions
-                    .Where(x =>
+                    if (nameof(BaseIdentityController<,,>.SignUpExternalFacebookAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasAuthFacebook)
                     {
-                        if (nameof(BaseIdentityController<,,>.SignUpExternalGoogleAsync).ReplaceAsync() == x.ActionName)
-                        {
-                            return true;
-                        }
+                        return true;
+                    }
 
-                        if (nameof(BaseIdentityController<,,>.AddExternalLoginGoogleAsync).ReplaceAsync() == x.ActionName)
-                        {
-                            return true;
-                        }
-
-                        if (nameof(BaseIdentityController<,,>.RemoveExternalLoginGoogleAsync).ReplaceAsync() == x.ActionName)
-                        {
-                            return true;
-                        }
-
-                        return false;
-                    }));
-        }
-
-        if (this.apiOptions.CurrentValue.Authentication.Jwt?.ExternalLogins.Microsoft == null)
-        {
-            disabledActions
-                .AddRange(controller.Actions
-                    .Where(x =>
+                    if (nameof(BaseIdentityController<,,>.AddExternalLoginFacebookAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasAuthFacebook)
                     {
-                        if (nameof(BaseIdentityController<,,>.SignUpExternalMicrosoftAsync).ReplaceAsync() == x.ActionName)
-                        {
-                            return true;
-                        }
+                        return true;
+                    }
 
-                        if (nameof(BaseIdentityController<,,>.AddExternalLoginMicrosoftAsync).ReplaceAsync() == x.ActionName)
-                        {
-                            return true;
-                        }
-
-                        if (nameof(BaseIdentityController<,,>.RemoveExternalLoginMicrosoftAsync).ReplaceAsync() == x.ActionName)
-                        {
-                            return true;
-                        }
-
-                        return false;
-                    }));
-        }
-
-        if (this.dataOptions?.CurrentValue.Identity?.ApiKey == null)
-        {
-            disabledActions
-                .AddRange(controller.Actions
-                    .Where(x =>
+                    if (nameof(BaseIdentityController<,,>.RemoveExternalLoginFacebookAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasAuthFacebook)
                     {
-                        if (nameof(BaseIdentityController<,,>.GetApiKeysAsync).ReplaceAsync() == x.ActionName)
-                        {
-                            return true;
-                        }
+                        return true;
+                    }
 
-                        if (nameof(BaseIdentityController<,,>.CreateApiKeyAsync).ReplaceAsync() == x.ActionName)
-                        {
-                            return true;
-                        }
+                    if (nameof(BaseIdentityController<,,>.SignUpExternalGoogleAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasAuthGoogle)
+                    {
+                        return true;
+                    }
 
-                        if (nameof(BaseIdentityController<,,>.EditApiKeyAsync).ReplaceAsync() == x.ActionName)
-                        {
-                            return true;
-                        }
+                    if (nameof(BaseIdentityController<,,>.AddExternalLoginGoogleAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasAuthGoogle)
+                    {
+                        return true;
+                    }
 
-                        if (nameof(BaseIdentityController<,,>.RevokeApiKeyAsync).ReplaceAsync() == x.ActionName)
-                        {
-                            return true;
-                        }
+                    if (nameof(BaseIdentityController<,,>.RemoveExternalLoginGoogleAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasAuthGoogle)
+                    {
+                        return true;
+                    }
 
-                        return false;
-                    }));
-        }
+                    if (nameof(BaseIdentityController<,,>.SignUpExternalMicrosoftAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasAuthMicrosoft)
+                    {
+                        return true;
+                    }
+
+                    if (nameof(BaseIdentityController<,,>.AddExternalLoginMicrosoftAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasAuthMicrosoft)
+                    {
+                        return true;
+                    }
+
+                    if (nameof(BaseIdentityController<,,>.RemoveExternalLoginMicrosoftAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasAuthMicrosoft)
+                    {
+                        return true;
+                    }
+
+                    if (nameof(BaseIdentityController<,,>.GetApiKeysAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasApiKey)
+                    {
+                        return true;
+                    }
+
+                    if (nameof(BaseIdentityController<,,>.CreateApiKeyAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasApiKey)
+                    {
+                        return true;
+                    }
+
+                    if (nameof(BaseIdentityController<,,>.EditApiKeyAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasApiKey)
+                    {
+                        return true;
+                    }
+
+                    if (nameof(BaseIdentityController<,,>.RevokeApiKeyAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasApiKey)
+                    {
+                        return true;
+                    }
+
+                    return false;
+                }));
 
         foreach (var action in disabledActions)
         {

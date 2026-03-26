@@ -11,5 +11,5 @@ public class LogInExternalDirect : LogInExternal
     /// The external user data used to complete the login.
     /// </summary>
     [Required]
-    public virtual ExternalLogInData ExternalLogInData { get; set; } = new();
+    public virtual ExternalAuthenticationData ExternalAuthenticationData { get; set; } = new();
 }

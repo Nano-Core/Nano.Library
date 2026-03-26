@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Nano.Data.Abstractions.Config;
@@ -9,10 +8,10 @@ using System;
 namespace Nano.Data.Identity;
 
 /// <inheritdoc />
-public class IdentityRepository<TIdentity>(IOptionsMonitor<DataOptions> options, IAuthenticationSchemeProvider authenticationSchemeProvider, BaseDbContext<TIdentity> dbContext, RoleManager<IdentityRole<TIdentity>> roleManager, UserManager<IdentityUserEx<TIdentity>> userManager)
-    : BaseIdentityRepository<TIdentity>(options, authenticationSchemeProvider, dbContext, userManager, roleManager)
+public class IdentityRepository<TIdentity>(IOptionsMonitor<DataOptions> options, BaseDbContext<TIdentity> dbContext, RoleManager<IdentityRole<TIdentity>> roleManager, UserManager<IdentityUserEx<TIdentity>> userManager)
+    : BaseIdentityRepository<TIdentity>(options, dbContext, userManager, roleManager)
     where TIdentity : IEquatable<TIdentity>;
 
 /// <inheritdoc cref="IIdentityRepository"/>
-public class IdentityRepository(IOptionsMonitor<DataOptions> options, IAuthenticationSchemeProvider authenticationSchemeProvider, BaseDbContext<Guid> dbContext, UserManager<IdentityUserEx<Guid>> userManager, RoleManager<IdentityRole<Guid>> roleManager)
-    : BaseIdentityRepository<Guid>(options, authenticationSchemeProvider, dbContext, userManager, roleManager), IIdentityRepository;
+public class IdentityRepository(IOptionsMonitor<DataOptions> options, BaseDbContext<Guid> dbContext, UserManager<IdentityUserEx<Guid>> userManager, RoleManager<IdentityRole<Guid>> roleManager)
+    : BaseIdentityRepository<Guid>(options, dbContext, userManager, roleManager), IIdentityRepository;

@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -27,28 +26,17 @@ using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 namespace Nano.Data.Identity;
 
 /// <inheritdoc />
-public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOptions> options, IAuthenticationSchemeProvider authenticationSchemeProvider, BaseDbContext<TIdentity> dbContext, UserManager<IdentityUserEx<TIdentity>> userManager, RoleManager<IdentityRole<TIdentity>> roleManager)
+public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOptions> options, BaseDbContext<TIdentity> dbContext, UserManager<IdentityUserEx<TIdentity>> userManager, RoleManager<IdentityRole<TIdentity>> roleManager)
     : IIdentityRepository<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
     private readonly IOptionsMonitor<DataOptions> options = options ?? throw new ArgumentNullException(nameof(options));
-    private readonly IAuthenticationSchemeProvider authenticationSchemeProvider = authenticationSchemeProvider ?? throw new ArgumentNullException(nameof(authenticationSchemeProvider));
     private readonly BaseDbContext<TIdentity> dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
     private readonly UserManager<IdentityUserEx<TIdentity>> userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
     private readonly RoleManager<IdentityRole<TIdentity>> roleManager = roleManager ?? throw new ArgumentNullException(nameof(roleManager));
 
 
     #region Login
-
-    /// <inheritdoc />
-    public virtual async Task<IEnumerable<AuthenticationScheme>> GetExternalProviderSchemesAsync(CancellationToken cancellationToken = default)
-    {
-        var schemes = await this.authenticationSchemeProvider
-            .GetAllSchemesAsync();
-
-        return schemes
-            .Where(s => !string.IsNullOrEmpty(s.DisplayName));
-    }
 
     /// <inheritdoc />
     public virtual async Task<IdentityUserEx<TIdentity>> SignInAsync(SignIn signIn, CancellationToken cancellationToken = default)

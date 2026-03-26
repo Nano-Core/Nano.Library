@@ -1,37 +1,34 @@
-using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
 using Nano.App.Api.Config;
 using Nano.Data.Abstractions.Exceptions;
 using Nano.Data.Abstractions.Identity.Authentication.Consts;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
+using Nano.App.Api.Mvc.Authentication.Abstractions;
 
 namespace Nano.App.Api.Mvc.Authentication;
 
-// BUG: 000: Look into response from Authenticate / Authenticate Refresh, we need to support more and custom data return. Maybe we can return claims.
-// Also look at direct methods if we need to add claims for something if we change the response
-// BASICALLY, CAN WE RETURN MORE DATA AS CLAIMS AND THEN THEY SHOULD BE ADDED TO SIGNUP / LOGON ???????
-
-/// <inheritdoc />
+/// <inheritdoc cref="BaseAuthExternalRepository{TProvider}" />
 public class AuthExternalMicrosoftRepository(MicrosoftOptions options, HttpClient httpClient)
-    : BaseAuthExternalRepository<ExternalProviderMicrosoft>(ExternalLogInProviderNames.MICROSOFT)
+    : BaseAuthExternalRepository<ExternalProviderMicrosoft>, IBuiltInAuthExternalRepository
 {
     private readonly MicrosoftOptions options = options ?? throw new ArgumentNullException(nameof(options));
     private readonly HttpClient httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
 
     /// <inheritdoc />
-    public override Task<ExternalLogInData> AuthenticateAsync(ExternalProviderMicrosoft provider, ImplicitFlow auth, CancellationToken cancellationToken = default)
+    public override Task<ExternalAuthenticationData> AuthenticateAsync(ExternalProviderMicrosoft provider, ImplicitFlow implicitFlow, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
     }
 
     /// <inheritdoc />
-    public override async Task<ExternalLogInData> AuthenticateAsync(ExternalProviderMicrosoft provider, AuthCodeFlow auth, CancellationToken cancellationToken = default)
+    public override async Task<ExternalAuthenticationData> AuthenticateAsync(ExternalProviderMicrosoft provider, AuthCodeFlow authCodeFlow, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(provider);
 
@@ -50,9 +47,9 @@ public class AuthExternalMicrosoftRepository(MicrosoftOptions options, HttpClien
         formContent.Add(new StringContent(this.options.ClientId), "client_id");
         formContent.Add(new StringContent(this.options.ClientSecret), "client_secret");
         formContent.Add(new StringContent("authorization_code"), "grant_type");
-        formContent.Add(new StringContent(auth.Code), "code");
-        formContent.Add(new StringContent(auth.CodeVerifier), "code_verifier");
-        formContent.Add(new StringContent(auth.RedirectUri), "redirect_uri");
+        formContent.Add(new StringContent(authCodeFlow.Code), "code");
+        formContent.Add(new StringContent(authCodeFlow.CodeVerifier), "code_verifier");
+        formContent.Add(new StringContent(authCodeFlow.RedirectUri), "redirect_uri");
         formContent.Add(new StringContent(this.options.Scopes.Aggregate(string.Empty, (current, x) => current + $"{x} ")), "scope");
 
         httpRequestMessage.Content = formContent;
@@ -107,15 +104,15 @@ public class AuthExternalMicrosoftRepository(MicrosoftOptions options, HttpClien
             throw new NullReferenceException(nameof(id));
         }
 
-        return new ExternalLogInData
+        return new ExternalAuthenticationData
         {
             Id = id,
             Name = name,
-            Email = email,
+            EmailAddress = email,
             Username = email,
             ExternalToken =
             {
-                Name = ExternalLogInProviderNames.MICROSOFT,
+                Name = BuiltInExternalLogInProviderNames.MICROSOFT,
                 Token = accessToken,
                 RefreshToken = refreshToken
             }
@@ -123,7 +120,7 @@ public class AuthExternalMicrosoftRepository(MicrosoftOptions options, HttpClien
     }
 
     /// <inheritdoc />
-    public override async Task<ExternalLoginTokenData> AuthenticateRefreshAsync(ExternalProviderMicrosoft provider, string refreshToken, CancellationToken cancellationToken = default)
+    public override async Task<ExternalAuthenticationToken> AuthenticateRefreshAsync(ExternalProviderMicrosoft provider, string refreshToken, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(provider);
         ArgumentNullException.ThrowIfNull(refreshToken);
@@ -168,7 +165,7 @@ public class AuthExternalMicrosoftRepository(MicrosoftOptions options, HttpClien
 
         var refreshTokenNew = content?["refresh_token"]?.ToString();
 
-        return new ExternalLoginTokenData
+        return new ExternalAuthenticationToken
         {
             Name = provider.Name,
             Token = accessToken,

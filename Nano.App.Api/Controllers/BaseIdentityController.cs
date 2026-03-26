@@ -38,13 +38,13 @@ public abstract class BaseIdentityController<TEntity, TCriteria> : BaseIdentityC
     where TCriteria : class, IQueryCriteria, new()
 {
     /// <inheritdoc />
-    protected BaseIdentityController(ILogger<BaseIdentityController<TEntity, TCriteria>> logger, IRepository repository, IIdentityRepository identityRepository, IAuthExternalRepositoryAggregator authExternalRepository)
+    protected BaseIdentityController(ILogger<BaseIdentityController<TEntity, TCriteria>> logger, IRepository repository, IIdentityRepository identityRepository, IAuthExternalRepositoryAggregator? authExternalRepository = null)
         : base(logger, repository, identityRepository, authExternalRepository)
     {
     }
 
     /// <inheritdoc />
-    protected BaseIdentityController(ILogger<BaseIdentityController<TEntity, TCriteria>> logger, IRepository repository, IEventing eventing, IIdentityRepository<Guid> identityRepository, IAuthExternalRepositoryAggregator authExternalRepository)
+    protected BaseIdentityController(ILogger<BaseIdentityController<TEntity, TCriteria>> logger, IRepository repository, IEventing eventing, IIdentityRepository<Guid> identityRepository, IAuthExternalRepositoryAggregator? authExternalRepository = null)
         : base(logger, repository, eventing, identityRepository, authExternalRepository)
     {
     }
@@ -68,7 +68,7 @@ public abstract class BaseIdentityController<TEntity, TIdentity, TCriteria> : Ba
     protected readonly IAuthExternalRepositoryAggregator? authExternalRepository;
 
     /// <inheritdoc />
-    protected BaseIdentityController(ILogger<BaseIdentityController<TEntity, TIdentity, TCriteria>> logger, IRepository repository, IIdentityRepository<TIdentity> identityRepository, IAuthExternalRepositoryAggregator authExternalRepository)
+    protected BaseIdentityController(ILogger<BaseIdentityController<TEntity, TIdentity, TCriteria>> logger, IRepository repository, IIdentityRepository<TIdentity> identityRepository, IAuthExternalRepositoryAggregator? authExternalRepository = null)
         : base(logger, repository)
     {
         this.identityRepository = identityRepository ?? throw new ArgumentNullException(nameof(identityRepository));
@@ -76,7 +76,7 @@ public abstract class BaseIdentityController<TEntity, TIdentity, TCriteria> : Ba
     }
 
     /// <inheritdoc />
-    protected BaseIdentityController(ILogger<BaseIdentityController<TEntity, TIdentity, TCriteria>> logger, IRepository repository, IEventing eventing, IIdentityRepository<TIdentity> identityRepository, IAuthExternalRepositoryAggregator authExternalRepository)
+    protected BaseIdentityController(ILogger<BaseIdentityController<TEntity, TIdentity, TCriteria>> logger, IRepository repository, IEventing eventing, IIdentityRepository<TIdentity> identityRepository, IAuthExternalRepositoryAggregator? authExternalRepository = null)
         : base(logger, repository, eventing)
     {
         this.identityRepository = identityRepository ?? throw new ArgumentNullException(nameof(identityRepository));
@@ -261,45 +261,6 @@ public abstract class BaseIdentityController<TEntity, TIdentity, TCriteria> : Ba
     }
 
     /// <summary>
-    /// Registers a new user using externally provided login data.
-    /// </summary>
-    /// <param name="signUpExternal">The external sign-up request.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The created user.</returns>
-    /// <response code="201">Created.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="500">Error occurred.</response>
-    [HttpPost]
-    [Route(ActionRoutes.IDENTITY_SIGNUP_EXTERNAL_DIRECT)]
-    [AllowAnonymous]
-    [Consumes(HttpContentType.JSON)]
-    [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(BaseEntityUser), (int)HttpStatusCode.Created)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> SignUpExternalDirectAsync([FromBody][Required] SignUpExternalDirect<TEntity, TIdentity> signUpExternal, CancellationToken cancellationToken = default)
-    {
-        var user = await this.identityRepository
-            .SignUpExternalAsync(new SignUpExternal<TEntity, TIdentity>
-            {
-                User = signUpExternal.User,
-                Username = signUpExternal.ExternalLogInData.Username,
-                EmailAddress = signUpExternal.ExternalLogInData.Email,
-                PhoneNumber = signUpExternal.ExternalLogInData.PhoneNumber,
-                ExternalProvider =
-                {
-                    Name = signUpExternal.ExternalLogInData.ExternalToken.Name,
-                    UserId = signUpExternal.ExternalLogInData.Id
-                },
-                Roles = signUpExternal.Roles,
-                Claims = signUpExternal.Claims
-            }, cancellationToken);
-
-        return this.Created(ActionRoutes.IDENTITY_SIGNUP_EXTERNAL_DIRECT, user);
-    }
-
-    /// <summary>
     /// Registers a new user using an external Facebook login provider.
     /// </summary>
     /// <param name="signUpExternal">The external Facebook sign-up request.</param>
@@ -331,7 +292,7 @@ public abstract class BaseIdentityController<TEntity, TIdentity, TCriteria> : Ba
             {
                 User = signUpExternal.User,
                 Username = authenticationData.Username,
-                EmailAddress = authenticationData.Email,
+                EmailAddress = authenticationData.EmailAddress,
                 PhoneNumber = authenticationData.PhoneNumber,
                 ExternalProvider =
                 {
@@ -377,7 +338,7 @@ public abstract class BaseIdentityController<TEntity, TIdentity, TCriteria> : Ba
             {
                 User = signUpExternal.User,
                 Username = authenticationData.Username,
-                EmailAddress = authenticationData.Email,
+                EmailAddress = authenticationData.EmailAddress,
                 PhoneNumber = authenticationData.PhoneNumber,
                 ExternalProvider =
                 {
@@ -423,7 +384,7 @@ public abstract class BaseIdentityController<TEntity, TIdentity, TCriteria> : Ba
             {
                 User = signUpExternal.User,
                 Username = authenticationData.Username,
-                EmailAddress = authenticationData.Email,
+                EmailAddress = authenticationData.EmailAddress,
                 PhoneNumber = authenticationData.PhoneNumber,
                 ExternalProvider =
                 {
@@ -1195,45 +1156,6 @@ public abstract class BaseIdentityController<TEntity, TIdentity, TCriteria> : Ba
     }
 
     /// <summary>
-    /// Adds a external login direct (no authentication) to a user account.
-    /// </summary>
-    /// <param name="id">The identifier of the user.</param>
-    /// <param name="addExternalLoginDirect">The request containing Microsoft external login data.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The added external login.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occurred.</response>
-    [HttpPost]
-    [Route(ActionRoutes.IDENTITY_EXTERNAL_LOGINS_ADD_DIRECT)]
-    [Consumes(HttpContentType.JSON)]
-    [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(IEnumerable<ExternalLogin>), (int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> AddExternalLoginDirectAsync([FromRoute][Required] TIdentity id, [FromBody][Required] AddExternalLoginDirect addExternalLoginDirect, CancellationToken cancellationToken = default)
-    {
-        var userLoginInfo = await this.identityRepository
-            .AddExternalLoginAsync(id, addExternalLoginDirect.Provider, cancellationToken);
-
-        var externalLogin = new ExternalLogin
-        {
-            Key = userLoginInfo.ProviderKey,
-            Provider = new ExternalLoginProvider
-            {
-                Name = userLoginInfo.LoginProvider,
-                DisplayName = userLoginInfo.ProviderDisplayName
-            }
-        };
-
-        return this.Ok(externalLogin);
-    }
-
-    /// <summary>
     /// Adds a facebook external login to a user account.
     /// </summary>
     /// <param name="id">The identifier of the user.</param>
@@ -1387,34 +1309,6 @@ public abstract class BaseIdentityController<TEntity, TIdentity, TCriteria> : Ba
     }
 
     /// <summary>
-    /// Removes an external login from a user account.
-    /// </summary>
-    /// <param name="id">The identifier of the user.</param>
-    /// <param name="removeExternalLogin">The request identifying the external login to remove.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>No content.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occurred.</response>
-    [HttpPost]
-    [HttpDelete]
-    [Route(ActionRoutes.IDENTITY_EXTERNAL_LOGINS_REMOVE_DIRECT)]
-    [ProducesResponseType((int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> RemoveExternalLoginAsync([FromRoute][Required] TIdentity id, [FromBody][Required] RemoveExternalLogin removeExternalLogin, CancellationToken cancellationToken = default)
-    {
-        await this.identityRepository
-            .RemoveExternalLoginAsync(id, removeExternalLogin, cancellationToken);
-
-        return this.Ok();
-    }
-
-    /// <summary>
     /// Removes an facebook login from a user account.
     /// </summary>
     /// <param name="id">The identifier of the user.</param>
@@ -1436,7 +1330,7 @@ public abstract class BaseIdentityController<TEntity, TIdentity, TCriteria> : Ba
     public virtual async Task<IActionResult> RemoveExternalLoginFacebookAsync([FromRoute][Required] TIdentity id, CancellationToken cancellationToken = default)
     {
         await this.identityRepository
-            .RemoveExternalLoginAsync(id, new RemoveExternalLogin { LoginProvider = ExternalLogInProviderNames.FACEBOOK }, cancellationToken);
+            .RemoveExternalLoginAsync(id, new RemoveExternalLogin { LoginProvider = BuiltInExternalLogInProviderNames.FACEBOOK }, cancellationToken);
 
         return this.Ok();
     }
@@ -1463,7 +1357,7 @@ public abstract class BaseIdentityController<TEntity, TIdentity, TCriteria> : Ba
     public virtual async Task<IActionResult> RemoveExternalLoginGoogleAsync([FromRoute][Required] TIdentity id, CancellationToken cancellationToken = default)
     {
         await this.identityRepository
-            .RemoveExternalLoginAsync(id, new RemoveExternalLogin { LoginProvider = ExternalLogInProviderNames.GOOGLE }, cancellationToken);
+            .RemoveExternalLoginAsync(id, new RemoveExternalLogin { LoginProvider = BuiltInExternalLogInProviderNames.GOOGLE }, cancellationToken);
 
         return this.Ok();
     }
@@ -1490,7 +1384,7 @@ public abstract class BaseIdentityController<TEntity, TIdentity, TCriteria> : Ba
     public virtual async Task<IActionResult> RemoveExternalLoginMicrosoftAsync([FromRoute][Required] TIdentity id, CancellationToken cancellationToken = default)
     {
         await this.identityRepository
-            .RemoveExternalLoginAsync(id, new RemoveExternalLogin { LoginProvider = ExternalLogInProviderNames.MICROSOFT }, cancellationToken);
+            .RemoveExternalLoginAsync(id, new RemoveExternalLogin { LoginProvider = BuiltInExternalLogInProviderNames.MICROSOFT }, cancellationToken);
 
         return this.Ok();
     }

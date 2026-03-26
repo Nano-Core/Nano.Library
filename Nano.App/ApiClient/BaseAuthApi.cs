@@ -142,12 +142,12 @@ public abstract class BaseAuthApi<TIdentity> : BaseEntityApi<TIdentity>
     /// <param name="request">The <see cref="BaseGetExternalLoginDataRequest{TProvider}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The <see cref="AccessToken"/>.</returns>
-    public virtual async Task<ExternalLogInData> GetExternalLoginDataAsync<TProvider>(BaseGetExternalLoginDataRequest<TProvider> request, CancellationToken cancellationToken = default)
+    public virtual async Task<ExternalAuthenticationData> GetExternalLoginDataAsync<TProvider>(BaseGetExternalLoginDataRequest<TProvider> request, CancellationToken cancellationToken = default)
         where TProvider : BaseExternalProvider, new()
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        var externalLogInData = await this.InvokeAsync<BaseGetExternalLoginDataRequest<TProvider>, ExternalLogInData>(request, cancellationToken);
+        var externalLogInData = await this.InvokeAsync<BaseGetExternalLoginDataRequest<TProvider>, ExternalAuthenticationData>(request, cancellationToken);
 
         return externalLogInData ?? throw new UnauthorizedException();
     }
