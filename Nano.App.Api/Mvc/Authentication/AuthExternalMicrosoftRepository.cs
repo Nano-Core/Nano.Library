@@ -14,21 +14,15 @@ using Nano.App.Api.Mvc.Authentication.Abstractions;
 
 namespace Nano.App.Api.Mvc.Authentication;
 
-/// <inheritdoc cref="BaseAuthExternalRepository{TProvider}" />
+/// <inheritdoc cref="BaseAuthExternalRepository{TProvider, TFlow}" />
 public class AuthExternalMicrosoftRepository(MicrosoftOptions options, HttpClient httpClient)
-    : BaseAuthExternalRepository<ExternalProviderMicrosoft>, IBuiltInAuthExternalRepository
+    : BaseAuthExternalRepository<ExternalProviderMicrosoft, AuthCodeFlow>, IBuiltInAuthExternalRepository
 {
     private readonly MicrosoftOptions options = options ?? throw new ArgumentNullException(nameof(options));
     private readonly HttpClient httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
 
     /// <inheritdoc />
-    public override Task<ExternalAuthenticationData> AuthenticateAsync(ExternalProviderMicrosoft provider, ImplicitFlow implicitFlow, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
-    }
-
-    /// <inheritdoc />
-    public override async Task<ExternalAuthenticationData> AuthenticateAsync(ExternalProviderMicrosoft provider, AuthCodeFlow authCodeFlow, CancellationToken cancellationToken = default)
+    public override async Task<ExternalAuthenticationData> AuthenticateAsync(ExternalProviderMicrosoft provider, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(provider);
 
@@ -47,9 +41,9 @@ public class AuthExternalMicrosoftRepository(MicrosoftOptions options, HttpClien
         formContent.Add(new StringContent(this.options.ClientId), "client_id");
         formContent.Add(new StringContent(this.options.ClientSecret), "client_secret");
         formContent.Add(new StringContent("authorization_code"), "grant_type");
-        formContent.Add(new StringContent(authCodeFlow.Code), "code");
-        formContent.Add(new StringContent(authCodeFlow.CodeVerifier), "code_verifier");
-        formContent.Add(new StringContent(authCodeFlow.RedirectUri), "redirect_uri");
+        formContent.Add(new StringContent(provider.Flow.Code), "code");
+        formContent.Add(new StringContent(provider.Flow.CodeVerifier), "code_verifier");
+        formContent.Add(new StringContent(provider.Flow.RedirectUri), "redirect_uri");
         formContent.Add(new StringContent(this.options.Scopes.Aggregate(string.Empty, (current, x) => current + $"{x} ")), "scope");
 
         httpRequestMessage.Content = formContent;
@@ -120,9 +114,8 @@ public class AuthExternalMicrosoftRepository(MicrosoftOptions options, HttpClien
     }
 
     /// <inheritdoc />
-    public override async Task<ExternalAuthenticationToken> AuthenticateRefreshAsync(ExternalProviderMicrosoft provider, string refreshToken, CancellationToken cancellationToken = default)
+    public override async Task<ExternalAuthenticationToken> AuthenticateRefreshAsync(string refreshToken, CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(provider);
         ArgumentNullException.ThrowIfNull(refreshToken);
 
         var httpRequestMessage = new HttpRequestMessage();
@@ -167,7 +160,7 @@ public class AuthExternalMicrosoftRepository(MicrosoftOptions options, HttpClien
 
         return new ExternalAuthenticationToken
         {
-            Name = provider.Name,
+            Name = BuiltInExternalLogInProviderNames.MICROSOFT,
             Token = accessToken,
             RefreshToken = refreshTokenNew
         };

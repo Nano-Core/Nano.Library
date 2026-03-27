@@ -44,6 +44,6 @@ public interface IAuthTransientRepository
     /// <exception cref="NullReferenceException">Thrown if the underlying external repository is not configured.</exception>
     /// <exception cref="UnauthorizedException">Thrown if the external login fails or no user is returned.</exception>
     Task<AccessToken> LogInExternalAsync<TProvider, TFlow>(BaseLogInExternal<TProvider, TFlow> logInExternal, CancellationToken cancellationToken = default)
-        where TProvider : BaseExternalProvider, new()
-        where TFlow : BaseAuthFlow, new();
+        where TProvider : BaseExternalProvider<TFlow>
+        where TFlow : BaseAuthFlow;
 }

@@ -61,7 +61,7 @@ internal sealed class ConditionalActionsConvention(MvcEndpointVisibility mvcEndp
                     return true;
                 }
 
-                if (nameof(BaseAuthController<>.LogInExternalFacebookTransientAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasAuthFacebook)
+                if (nameof(BaseAuthController<>.LogInExternalFacebookTransientAsync).ReplaceAsync() == x.ActionName && (this.mvcEndpointVisibility.HasIdentity || !this.mvcEndpointVisibility.HasAuthFacebook))
                 {
                     return true;
                 }
@@ -71,7 +71,7 @@ internal sealed class ConditionalActionsConvention(MvcEndpointVisibility mvcEndp
                     return true;
                 }
 
-                if (nameof(BaseAuthController<>.LogInExternalGoogleTransientAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasAuthGoogle)
+                if (nameof(BaseAuthController<>.LogInExternalGoogleTransientAsync).ReplaceAsync() == x.ActionName && (this.mvcEndpointVisibility.HasIdentity || !this.mvcEndpointVisibility.HasAuthGoogle))
                 {
                     return true;
                 }
@@ -81,7 +81,7 @@ internal sealed class ConditionalActionsConvention(MvcEndpointVisibility mvcEndp
                     return true;
                 }
 
-                if (nameof(BaseAuthController<>.LogInExternalMicrosoftTransientAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasAuthMicrosoft)
+                if (nameof(BaseAuthController<>.LogInExternalMicrosoftTransientAsync).ReplaceAsync() == x.ActionName && (this.mvcEndpointVisibility.HasIdentity || !this.mvcEndpointVisibility.HasAuthMicrosoft))
                 {
                     return true;
                 }

@@ -1,4 +1,3 @@
-using System;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Nano.App.Api.Mvc.Serialization;
@@ -6,6 +5,7 @@ using Nano.Common.Serialization.Converters;
 using Nano.Data.Abstractions.Config;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
 
 namespace Nano.App.Api.Mvc;
 

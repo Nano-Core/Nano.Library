@@ -64,10 +64,7 @@ internal static class AuthenticationBuilderExtensions
                         return Task.CompletedTask;
                     }
                 };
-            })
-            .AddExternalLoginFacebook(options.ExternalLogins.Facebook)
-            .AddExternalLoginGoogle(options.ExternalLogins.Google)
-            .AddExternalLoginMicrosoft(options.ExternalLogins.Microsoft);
+            });
 
         return builder;
     }

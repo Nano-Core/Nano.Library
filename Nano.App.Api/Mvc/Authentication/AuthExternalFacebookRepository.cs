@@ -11,21 +11,15 @@ using Nano.App.Api.Mvc.Authentication.Abstractions;
 
 namespace Nano.App.Api.Mvc.Authentication;
 
-/// <inheritdoc cref="BaseAuthExternalRepository{TProvider}" />
+/// <inheritdoc cref="BaseAuthExternalRepository{TProvider, TFlow}" />
 public class AuthExternalFacebookRepository(FacebookOptions options, HttpClient httpClient)
-    : BaseAuthExternalRepository<ExternalProviderFacebook>, IBuiltInAuthExternalRepository
+    : BaseAuthExternalRepository<ExternalProviderFacebook, ImplicitFlow>, IBuiltInAuthExternalRepository
 {
     private readonly FacebookOptions options = options ?? throw new ArgumentNullException(nameof(options));
     private readonly HttpClient httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
 
     /// <inheritdoc />
-    public override Task<ExternalAuthenticationData> AuthenticateAsync(ExternalProviderFacebook provider, AuthCodeFlow authCodeFlow, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
-    }
-
-    /// <inheritdoc />
-    public override async Task<ExternalAuthenticationData> AuthenticateAsync(ExternalProviderFacebook provider, ImplicitFlow implicitFlow, CancellationToken cancellationToken = default)
+    public override async Task<ExternalAuthenticationData> AuthenticateAsync(ExternalProviderFacebook provider, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(provider);
 
@@ -33,7 +27,7 @@ public class AuthExternalFacebookRepository(FacebookOptions options, HttpClient 
         const string FIELDS = "id,name,address,email,birthday";
 
         var debugTokenResponse = await httpClient
-            .GetAsync($"{HOST}/debug_token?input_token={implicitFlow.AccessToken}&access_token={options.AppId}|{options.AppSecret}", cancellationToken);
+            .GetAsync($"{HOST}/debug_token?input_token={provider.Flow.AccessToken}&access_token={options.AppId}|{options.AppSecret}", cancellationToken);
 
         debugTokenResponse
             .EnsureSuccessStatusCode();
@@ -59,7 +53,7 @@ public class AuthExternalFacebookRepository(FacebookOptions options, HttpClient 
         }
 
         using var userResponse = await httpClient
-            .GetAsync($"{HOST}/{validation.data.user_id}/?fields={FIELDS}&access_token={implicitFlow.AccessToken}", cancellationToken);
+            .GetAsync($"{HOST}/{validation.data.user_id}/?fields={FIELDS}&access_token={provider.Flow.AccessToken}", cancellationToken);
 
         userResponse
             .EnsureSuccessStatusCode();
@@ -72,20 +66,19 @@ public class AuthExternalFacebookRepository(FacebookOptions options, HttpClient 
         externalLoginData?.ExternalToken = new ExternalAuthenticationToken
         {
             Name = BuiltInExternalLogInProviderNames.FACEBOOK,
-            Token = implicitFlow.AccessToken
+            Token = provider.Flow.AccessToken
         };
 
         return externalLoginData ?? throw new UnauthorizedException();
     }
 
     /// <inheritdoc />
-    public override async Task<ExternalAuthenticationToken> AuthenticateRefreshAsync(ExternalProviderFacebook provider, string refreshToken, CancellationToken cancellationToken = default)
+    public override async Task<ExternalAuthenticationToken> AuthenticateRefreshAsync(string refreshToken, CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(provider);
         ArgumentNullException.ThrowIfNull(refreshToken);
 
         await Task.CompletedTask;
 
-        throw new NotImplementedException();
+        throw new UnauthorizedException();
     }
 }

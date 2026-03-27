@@ -9,17 +9,12 @@ namespace Nano.Data.Abstractions.Identity.Models;
 /// <typeparam name="TProvider">The external authentication provider type.</typeparam>
 /// <typeparam name="TFlow">The type of authentication flow, e.g. auth-code, implicit, etc.</typeparam>
 public abstract class BaseAddExternalLogin<TProvider, TFlow>
-    where TProvider : BaseExternalProvider, new()
-    where TFlow : BaseAuthFlow, new()
+    where TProvider : BaseExternalProvider<TFlow>
+    where TFlow : BaseAuthFlow
 {
     /// <summary>
     /// The external authentication provider configuration.
     /// </summary>
     [Required]
-    public TProvider Provider { get; set; } = new();
-
-    /// <summary>
-    /// The flow used for authentication.
-    /// </summary>
-    public virtual TFlow Flow { get; set; } = new();
+    public TProvider Provider { get; set; } = null!;
 }

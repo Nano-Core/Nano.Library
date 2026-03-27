@@ -22,7 +22,7 @@ public abstract class BaseSignUpExternal<TUser, TIdentity> : BaseSignUp<TUser, T
 /// <typeparam name="TIdentity">The user identity type.</typeparam>
 /// <typeparam name="TFlow">The type of authentication flow, e.g. auth-code, implicit, etc.</typeparam>
 public abstract class BaseSignUpExternal<TProvider, TFlow, TUser, TIdentity> : BaseSignUpExternal<TUser, TIdentity>
-    where TProvider : BaseExternalProvider
+    where TProvider : BaseExternalProvider<TFlow>
     where TFlow : BaseAuthFlow
     where TUser : IEntityUser<TIdentity>
     where TIdentity : IEquatable<TIdentity>
@@ -32,10 +32,4 @@ public abstract class BaseSignUpExternal<TProvider, TFlow, TUser, TIdentity> : B
     /// </summary>
     [Required]
     public virtual TProvider Provider { get; set; } = null!;
-
-    /// <summary>
-    /// The flow used for authentication.
-    /// </summary>
-    [Required]
-    public virtual TFlow Flow { get; set; } = null!;
 }

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.ResponseCaching;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
@@ -17,6 +18,8 @@ using Nano.App.Api.Mvc.HealthChecks.Const;
 using Nano.App.Api.Mvc.Middleware;
 using Nano.App.Extensions;
 using Nano.Common.Consts;
+using Nano.Data.Abstractions.Identity.Authentication;
+using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Newtonsoft.Json.Linq;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using System;
@@ -24,7 +27,11 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Nano.App.Api.Mvc.Authentication;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
 using Vivet.AspNetCore.RequestTimeZone.Providers;
 using Vivet.AspNetCore.RequestVirusScan.Extensions;
@@ -32,6 +39,64 @@ using ForwardedHeadersOptions = Nano.App.Api.Config.ForwardedHeadersOptions;
 using SessionOptions = Nano.App.Api.Config.SessionOptions;
 
 namespace Nano.App.Api.Extensions;
+
+internal static class NanoEndpointRouteBuilderExtensions
+{
+    internal static IEndpointRouteBuilder MapNanoExternalAuthEndpoints(this IEndpointRouteBuilder app)
+    {
+        using var scope = app.ServiceProvider.CreateScope();
+
+        var repositories = scope.ServiceProvider
+            .GetServices<IAuthExternalRepository>();
+
+        foreach (var repo in repositories)
+        {
+            var group = app
+                .MapGroup($"api/auth/login/external/{repo.ProviderName}")
+                .WithTags("Auth");
+
+            var repoType = repo.GetType();
+
+            // Walk inheritance tree to find BaseAuthExternalRepository<,>
+            var baseType = repoType;
+            while ((!baseType.IsGenericType || baseType.GetGenericTypeDefinition() != typeof(BaseAuthExternalRepository<,>)))
+            {
+                baseType = baseType.BaseType!;
+            }
+
+            var genericArgs = baseType!.GetGenericArguments();
+
+            var providerType = genericArgs[0];
+            var flowType = genericArgs[1];
+
+            // Bind generic method
+            var method = typeof(NanoEndpointRouteBuilderExtensions)
+                .GetMethod(nameof(MapEndpoint), BindingFlags.NonPublic | BindingFlags.Static)!;
+
+            var genericMethod = method.MakeGenericMethod(providerType, flowType);
+
+            genericMethod.Invoke(null, [group]);
+        }
+
+        return app;
+    }
+
+    private static void MapEndpoint<TProvider, TFlow>(
+        RouteGroupBuilder group)
+        where TProvider : BaseExternalProvider<TFlow>
+        where TFlow : BaseAuthFlow
+    {
+        group.MapPost("", async (
+            LogInExternalCustom<TFlow> request,
+            IAuthExternalRepositoryAggregator repo,
+            CancellationToken ct) =>
+        {
+            var result = await repo.AuthenticateAsync(request.Provider, ct);
+            return Results.Ok(result);
+        });
+    }
+}
+
 
 internal static class ApplicationBuilderExtensions
 {

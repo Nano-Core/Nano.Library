@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
+using Nano.Data.Abstractions.Identity.Authentication.Models;
 
-namespace Nano.Data.Abstractions.Identity.Authentication.Models;
+namespace Nano.Data.Abstractions.Identity.Models;
 
 /// <summary>
 /// Represents an external login reference for a user.

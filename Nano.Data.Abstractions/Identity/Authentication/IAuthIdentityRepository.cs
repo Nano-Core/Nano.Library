@@ -54,8 +54,8 @@ public interface IAuthIdentityRepository<in TIdentity>
     /// <returns>A task that returns an <see cref="AccessToken"/> for the authenticated external user.</returns>
     /// <exception cref="UnauthorizedException">Thrown if the external login fails or no user is returned.</exception>
     Task<AccessToken> LogInExternalAsync<TProvider, TFlow>(BaseLogInExternal<TProvider, TFlow> logInExternal, CancellationToken cancellationToken = default)
-        where TProvider : BaseExternalProvider, new()
-        where TFlow : BaseAuthFlow, new();
+        where TProvider : BaseExternalProvider<TFlow>
+        where TFlow : BaseAuthFlow;
 
     /// <summary>
     /// Refreshes an existing access token using a valid refresh token, generating a new JWT and refresh token.

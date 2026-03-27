@@ -112,8 +112,8 @@ public abstract class BaseAuthIdentityRepository<TIdentity> : IAuthIdentityRepos
 
     /// <inheritdoc />
     public virtual async Task<AccessToken> LogInExternalAsync<TProvider, TFlow>(BaseLogInExternal<TProvider, TFlow> logInExternal, CancellationToken cancellationToken = default)
-        where TProvider : BaseExternalProvider, new()
-        where TFlow : BaseAuthFlow, new()
+        where TProvider : BaseExternalProvider<TFlow>
+        where TFlow : BaseAuthFlow
     {
         ArgumentNullException.ThrowIfNull(logInExternal);
 
@@ -123,7 +123,7 @@ public abstract class BaseAuthIdentityRepository<TIdentity> : IAuthIdentityRepos
         }
 
         var authenticationData = await this.authExternalRepository
-            .AuthenticateAsync(logInExternal.Provider, logInExternal.Flow, cancellationToken);
+            .AuthenticateAsync(logInExternal.Provider, cancellationToken);
 
         var claims = logInExternal.TransientClaims
             .Merge(authenticationData.TransientClaims);

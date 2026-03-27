@@ -4,7 +4,7 @@ using Nano.Data.Identity.DataProtection.Consts;
 
 namespace Nano.Data.Identity.DataProtection.Extensions;
 
-internal static class CustomIdentityBuilderExtensions
+internal static class IdentityBuilderExtensions
 {
     internal static IdentityBuilder AddCustomTokenProvider(this IdentityBuilder builder)
     {

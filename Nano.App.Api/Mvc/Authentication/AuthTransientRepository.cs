@@ -54,18 +54,18 @@ public class AuthTransientRepository(IAuthJwtRepository authJwtRepository, IAuth
 
     /// <inheritdoc />
     public virtual async Task<AccessToken> LogInExternalAsync<TProvider, TFlow>(BaseLogInExternal<TProvider, TFlow> logInExternal, CancellationToken cancellationToken = default)
-        where TProvider : BaseExternalProvider, new()
-        where TFlow : BaseAuthFlow, new()
+        where TProvider : BaseExternalProvider<TFlow>
+        where TFlow : BaseAuthFlow
     {
         ArgumentNullException.ThrowIfNull(logInExternal);
 
-        if (authExternalRepository == null)
+        if (this.authExternalRepository == null)
         {
-            throw new NullReferenceException(nameof(authExternalRepository));
+            throw new NullReferenceException(nameof(this.authExternalRepository));
         }
 
-        var authenticationData = await authExternalRepository
-            .AuthenticateAsync(logInExternal.Provider, logInExternal.Flow, cancellationToken);
+        var authenticationData = await this.authExternalRepository
+            .AuthenticateAsync(logInExternal.Provider, cancellationToken);
 
         var claims = logInExternal.TransientClaims
             .Merge(authenticationData.TransientClaims);

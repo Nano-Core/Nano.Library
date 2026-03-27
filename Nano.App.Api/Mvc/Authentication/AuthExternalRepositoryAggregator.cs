@@ -28,40 +28,42 @@ public class AuthExternalRepositoryAggregator(IEnumerable<IAuthExternalRepositor
     }
 
     /// <inheritdoc />
-    public Task<ExternalAuthenticationData> AuthenticateAsync(BaseExternalProvider provider, BaseAuthFlow auth, CancellationToken cancellationToken = default)
+    public Task<ExternalAuthenticationData> AuthenticateAsync<TFlow>(BaseExternalProvider<TFlow> provider, CancellationToken cancellationToken = default)
+        where TFlow : BaseAuthFlow
     {
         ArgumentNullException.ThrowIfNull(provider);
 
-        var externalRepository = this.repositories
-            .FirstOrDefault(x => x.ProviderName.Equals(provider.Name, StringComparison.OrdinalIgnoreCase));
+        var externalRepository = this.GetRepository(provider.Name);
 
-        if (externalRepository == null)
-        {
-            throw new NotFoundException(nameof(externalRepository));
-        }
-
-        return auth switch
-        {
-            AuthCodeFlow authCode => externalRepository.AuthenticateAsync(provider, authCode, cancellationToken) ?? throw new UnauthorizedException(),
-            ImplicitFlow implicitFlow => externalRepository.AuthenticateAsync(provider, implicitFlow, cancellationToken) ?? throw new UnauthorizedException(),
-            _ => throw new UnauthorizedException()
-        };
+        return externalRepository
+            .AuthenticateAsync(provider, cancellationToken) ?? throw new UnauthorizedException();
     }
 
     /// <inheritdoc />
     public Task<ExternalAuthenticationToken> AuthenticateRefreshAsync(BaseExternalProvider provider, string refreshToken, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(provider);
+        ArgumentNullException.ThrowIfNull(refreshToken);
+
+        var externalRepository = this.GetRepository(provider.Name);
+
+        return externalRepository
+            .AuthenticateRefreshAsync(refreshToken, cancellationToken) ?? throw new UnauthorizedException();
+    }
+
+
+    private IAuthExternalRepository GetRepository(string providerName)
+    {
+        ArgumentNullException.ThrowIfNull(providerName);
 
         var externalRepository = this.repositories
-            .FirstOrDefault(x => x.ProviderName.Equals(provider.Name, StringComparison.OrdinalIgnoreCase));
+            .FirstOrDefault(x => x.ProviderName.Equals(providerName, StringComparison.OrdinalIgnoreCase));
 
         if (externalRepository == null)
         {
             throw new NotFoundException(nameof(externalRepository));
         }
 
-        return externalRepository
-            .AuthenticateRefreshAsync(provider, refreshToken, cancellationToken) ?? throw new UnauthorizedException();
+        return externalRepository;
     }
 }

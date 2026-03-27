@@ -42,6 +42,9 @@ internal static class WebApplicationExtensions
         webApplication
             .MapControllers();
 
+        webApplication
+            .MapNanoExternalAuthEndpoints();
+
         return webApplication;
     }
 }

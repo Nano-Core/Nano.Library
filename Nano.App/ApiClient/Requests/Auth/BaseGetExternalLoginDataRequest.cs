@@ -9,12 +9,12 @@ namespace Nano.App.ApiClient.Requests.Auth;
 /// </summary>
 /// <typeparam name="TProvider">The type of external login provider.</typeparam>
 public abstract class BaseGetExternalLoginDataRequest<TProvider> : BaseAuthRequest
-    where TProvider : BaseExternalProvider, new()
+    where TProvider : BaseExternalProvider
 {
     /// <summary>
     /// The external login provider.
     /// </summary>
     [Required]
     [Body]
-    public virtual TProvider Provider { get; set; } = new();
+    public virtual TProvider Provider { get; set; } = null!;
 }

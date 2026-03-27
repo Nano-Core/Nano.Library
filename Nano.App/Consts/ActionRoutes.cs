@@ -29,6 +29,8 @@ internal class ActionRoutes
     internal const string AUTH_LOGIN = "login";
     internal const string AUTH_LOGIN_ROOT = "login/root";
     internal const string AUTH_LOGOUT = "logout";
+    internal const string AUTH_LOGIN_EXTERNAL = "login/external";
+    internal const string AUTH_LOGIN_EXTERNAL_TRANSIENT = "login/external/transient";
     internal const string AUTH_LOGIN_EXTERNAL_FACEBOOK = "login/external/facebook";
     internal const string AUTH_LOGIN_EXTERNAL_FACEBOOK_TRANSIENT = "login/external/facebook/transient";
     internal const string AUTH_LOGIN_EXTERNAL_GOOGLE = "login/external/google";
@@ -37,9 +39,6 @@ internal class ActionRoutes
     internal const string AUTH_LOGIN_EXTERNAL_MICROSOFT_TRANSIENT = "login/external/microsoft/transient";
     internal const string AUTH_LOGIN_REFRESH = "login/refresh";
     internal const string AUTH_EXTERNAL_SCHEMES = "external/schemes";
-    internal const string AUTH_EXTERNAL_FACEBOOK_DATA = "external/facebook/data";
-    internal const string AUTH_EXTERNAL_GOOGLE_DATA = "external/google/data";
-    internal const string AUTH_EXTERNAL_MICROSOFT_DATA = "external/microsoft/data";
 
     internal const string IDENTITY_PASSWORD_OPTIONS = "password/options";
     internal const string IDENTITY_EMAIL_IS_TAKEN = "email/is-taken";

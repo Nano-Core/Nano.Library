@@ -1,9 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -13,13 +7,14 @@ using Nano.App.Consts;
 using Nano.Common.Consts;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Nano.Data.Abstractions.Identity.Extensions;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Nano.App.Api.Controllers;
-
-// BUG: Are we missing endpoints / repo methods for using a custom provider?
-// Then we will need to make a AuthCode and Implicit endpoint
-
-// BUG: Then remove nuget for Microsoft, Facebook, Google ????
 
 /// <inheritdoc />
 public abstract class BaseAuthController(ILogger<BaseAuthController> logger, IAuthRepository<Guid> authRepository)
@@ -144,7 +139,7 @@ public abstract class BaseAuthController<TIdentity>(ILogger<BaseAuthController<T
     /// <summary>
     /// Signs in a user via external Facebook authentication.
     /// </summary>
-    /// <param name="logInExternal">The external login credentials.</param>
+    /// <param name="logInExternal">The external login.</param>
     /// <param name="cancellationToken">Token to cancel the request.</param>
     /// <returns>The generated <see cref="AccessToken"/>.</returns>
     /// <response code="200">Authentication succeeded and token returned.</response>
@@ -177,7 +172,7 @@ public abstract class BaseAuthController<TIdentity>(ILogger<BaseAuthController<T
     /// <summary>
     /// Signs in a transient user via external Facebook authentication.
     /// </summary>
-    /// <param name="logInExternal">The external login credentials.</param>
+    /// <param name="logInExternal">The external login.</param>
     /// <param name="cancellationToken">Token to cancel the request.</param>
     /// <returns>The generated <see cref="AccessToken"/>.</returns>
     /// <response code="200">Authentication succeeded and token returned.</response>
@@ -210,7 +205,7 @@ public abstract class BaseAuthController<TIdentity>(ILogger<BaseAuthController<T
     /// <summary>
     /// Signs in a user via external Google authentication.
     /// </summary>
-    /// <param name="logInExternal">The external login credentials.</param>
+    /// <param name="logInExternal">The external login.</param>
     /// <param name="cancellationToken">Token to cancel the request.</param>
     /// <returns>The generated <see cref="AccessToken"/>.</returns>
     /// <response code="200">Authentication succeeded and token returned.</response>

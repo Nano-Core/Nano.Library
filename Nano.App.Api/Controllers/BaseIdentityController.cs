@@ -285,7 +285,7 @@ public abstract class BaseIdentityController<TEntity, TIdentity, TCriteria> : Ba
         }
 
         var authenticationData = await this.authExternalRepository
-            .AuthenticateAsync(signUpExternal.Provider, signUpExternal.Flow, cancellationToken);
+            .AuthenticateAsync(signUpExternal.Provider, cancellationToken);
 
         var user = await this.identityRepository
             .SignUpExternalAsync(new SignUpExternal<TEntity, TIdentity>
@@ -331,7 +331,7 @@ public abstract class BaseIdentityController<TEntity, TIdentity, TCriteria> : Ba
         }
 
         var authenticationData = await this.authExternalRepository
-            .AuthenticateAsync(signUpExternal.Provider, signUpExternal.Flow, cancellationToken);
+            .AuthenticateAsync(signUpExternal.Provider, cancellationToken);
 
         var user = await this.identityRepository
             .SignUpExternalAsync(new SignUpExternal<TEntity, TIdentity>
@@ -377,7 +377,7 @@ public abstract class BaseIdentityController<TEntity, TIdentity, TCriteria> : Ba
         }
 
         var authenticationData = await this.authExternalRepository
-            .AuthenticateAsync(signUpExternal.Provider, signUpExternal.Flow, cancellationToken);
+            .AuthenticateAsync(signUpExternal.Provider, cancellationToken);
 
         var user = await this.identityRepository
             .SignUpExternalAsync(new SignUpExternal<TEntity, TIdentity>
@@ -1184,7 +1184,7 @@ public abstract class BaseIdentityController<TEntity, TIdentity, TCriteria> : Ba
         }
 
         var externalProviderLogInData = await this.authExternalRepository
-            .AuthenticateAsync(addExternalLogin.Provider, addExternalLogin.Flow, cancellationToken);
+            .AuthenticateAsync(addExternalLogin.Provider, cancellationToken);
 
         var userLoginInfo = await this.identityRepository
             .AddExternalLoginAsync(id, new ExternalProvider
@@ -1235,7 +1235,7 @@ public abstract class BaseIdentityController<TEntity, TIdentity, TCriteria> : Ba
         }
 
         var externalProviderLogInData = await this.authExternalRepository
-            .AuthenticateAsync(addExternalLogin.Provider, addExternalLogin.Flow, cancellationToken);
+            .AuthenticateAsync(addExternalLogin.Provider, cancellationToken);
 
         var userLoginInfo = await this.identityRepository
             .AddExternalLoginAsync(id, new ExternalProvider
@@ -1286,7 +1286,7 @@ public abstract class BaseIdentityController<TEntity, TIdentity, TCriteria> : Ba
         }
 
         var externalProviderLogInData = await this.authExternalRepository
-            .AuthenticateAsync(addExternalLogin.Provider, addExternalLogin.Flow, cancellationToken);
+            .AuthenticateAsync(addExternalLogin.Provider, cancellationToken);
 
         var userLoginInfo = await this.identityRepository
             .AddExternalLoginAsync(id, new ExternalProvider
