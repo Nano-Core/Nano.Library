@@ -8,8 +8,6 @@ using Nano.Common.Annotations;
 using Nano.Common.Consts;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Identity;
-using Nano.Data.Abstractions.Identity.Authentication;
-using Nano.Data.Abstractions.Identity.Authentication.Consts;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Nano.Data.Abstractions.Identity.Consts;
 using Nano.Data.Abstractions.Identity.Models;
@@ -38,14 +36,14 @@ public abstract class BaseIdentityController<TEntity, TCriteria> : BaseIdentityC
     where TCriteria : class, IQueryCriteria, new()
 {
     /// <inheritdoc />
-    protected BaseIdentityController(ILogger<BaseIdentityController<TEntity, TCriteria>> logger, IRepository repository, IIdentityRepository identityRepository, IAuthExternalRepositoryAggregator? authExternalRepository = null)
-        : base(logger, repository, identityRepository, authExternalRepository)
+    protected BaseIdentityController(ILogger<BaseIdentityController<TEntity, TCriteria>> logger, IRepository repository, IIdentityRepository identityRepository)
+        : base(logger, repository, identityRepository)
     {
     }
 
     /// <inheritdoc />
-    protected BaseIdentityController(ILogger<BaseIdentityController<TEntity, TCriteria>> logger, IRepository repository, IEventing eventing, IIdentityRepository<Guid> identityRepository, IAuthExternalRepositoryAggregator? authExternalRepository = null)
-        : base(logger, repository, eventing, identityRepository, authExternalRepository)
+    protected BaseIdentityController(ILogger<BaseIdentityController<TEntity, TCriteria>> logger, IRepository repository, IEventing eventing, IIdentityRepository<Guid> identityRepository)
+        : base(logger, repository, eventing, identityRepository)
     {
     }
 }
@@ -62,25 +60,18 @@ public abstract class BaseIdentityController<TEntity, TIdentity, TCriteria> : Ba
     /// </summary>
     protected readonly IIdentityRepository<TIdentity> identityRepository;
 
-    /// <summary>
-    /// Get or set the external authentication repository.
-    /// </summary>
-    protected readonly IAuthExternalRepositoryAggregator? authExternalRepository;
-
     /// <inheritdoc />
-    protected BaseIdentityController(ILogger<BaseIdentityController<TEntity, TIdentity, TCriteria>> logger, IRepository repository, IIdentityRepository<TIdentity> identityRepository, IAuthExternalRepositoryAggregator? authExternalRepository = null)
+    protected BaseIdentityController(ILogger<BaseIdentityController<TEntity, TIdentity, TCriteria>> logger, IRepository repository, IIdentityRepository<TIdentity> identityRepository)
         : base(logger, repository)
     {
         this.identityRepository = identityRepository ?? throw new ArgumentNullException(nameof(identityRepository));
-        this.authExternalRepository = authExternalRepository;
     }
 
     /// <inheritdoc />
-    protected BaseIdentityController(ILogger<BaseIdentityController<TEntity, TIdentity, TCriteria>> logger, IRepository repository, IEventing eventing, IIdentityRepository<TIdentity> identityRepository, IAuthExternalRepositoryAggregator? authExternalRepository = null)
+    protected BaseIdentityController(ILogger<BaseIdentityController<TEntity, TIdentity, TCriteria>> logger, IRepository repository, IEventing eventing, IIdentityRepository<TIdentity> identityRepository)
         : base(logger, repository, eventing)
     {
         this.identityRepository = identityRepository ?? throw new ArgumentNullException(nameof(identityRepository));
-        this.authExternalRepository = authExternalRepository;
     }
 
     /// <summary>
@@ -258,144 +249,6 @@ public abstract class BaseIdentityController<TEntity, TIdentity, TCriteria> : Ba
             .SignUpAsync(signUp, cancellationToken);
 
         return this.Created(ActionRoutes.IDENTITY_SIGNUP, user);
-    }
-
-    /// <summary>
-    /// Registers a new user using an external Facebook login provider.
-    /// </summary>
-    /// <param name="signUpExternal">The external Facebook sign-up request.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The created user.</returns>
-    /// <response code="201">Created.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="500">Error occurred.</response>
-    [HttpPost]
-    [Route(ActionRoutes.IDENTITY_SIGNUP_EXTERNAL_FACEBOOK)]
-    [AllowAnonymous]
-    [Consumes(HttpContentType.JSON)]
-    [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(BaseEntityUser), (int)HttpStatusCode.Created)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> SignUpExternalFacebookAsync([FromBody][Required] SignUpExternalFacebook<TEntity, TIdentity> signUpExternal, CancellationToken cancellationToken = default)
-    {
-        if (this.authExternalRepository == null)
-        {
-            return this.NotFound();
-        }
-
-        var authenticationData = await this.authExternalRepository
-            .AuthenticateAsync(signUpExternal.Provider, cancellationToken);
-
-        var user = await this.identityRepository
-            .SignUpExternalAsync(new SignUpExternal<TEntity, TIdentity>
-            {
-                User = signUpExternal.User,
-                Username = authenticationData.Username,
-                EmailAddress = authenticationData.EmailAddress,
-                PhoneNumber = authenticationData.PhoneNumber,
-                ExternalProvider =
-                {
-                    Name = authenticationData.ExternalToken.Name,
-                    UserId = authenticationData.Id
-                },
-                Roles = signUpExternal.Roles,
-                Claims = signUpExternal.Claims
-            }, cancellationToken);
-
-        return this.Created(ActionRoutes.IDENTITY_SIGNUP_EXTERNAL_FACEBOOK, user);
-    }
-
-    /// <summary>
-    /// Registers a new user using an external Google login provider.
-    /// </summary>
-    /// <param name="signUpExternal">The external Google sign-up request.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The created user.</returns>
-    /// <response code="201">Created.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="500">Error occurred.</response>
-    [HttpPost]
-    [Route(ActionRoutes.IDENTITY_SIGNUP_EXTERNAL_GOOGLE)]
-    [AllowAnonymous]
-    [Consumes(HttpContentType.JSON)]
-    [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(BaseEntityUser), (int)HttpStatusCode.Created)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> SignUpExternalGoogleAsync([FromBody][Required] SignUpExternalGoogle<TEntity, TIdentity> signUpExternal, CancellationToken cancellationToken = default)
-    {
-        if (this.authExternalRepository == null)
-        {
-            return this.NotFound();
-        }
-
-        var authenticationData = await this.authExternalRepository
-            .AuthenticateAsync(signUpExternal.Provider, cancellationToken);
-
-        var user = await this.identityRepository
-            .SignUpExternalAsync(new SignUpExternal<TEntity, TIdentity>
-            {
-                User = signUpExternal.User,
-                Username = authenticationData.Username,
-                EmailAddress = authenticationData.EmailAddress,
-                PhoneNumber = authenticationData.PhoneNumber,
-                ExternalProvider =
-                {
-                    Name = authenticationData.ExternalToken.Name,
-                    UserId = authenticationData.Id
-                },
-                Roles = signUpExternal.Roles,
-                Claims = signUpExternal.Claims
-            }, cancellationToken);
-
-        return this.Created(ActionRoutes.IDENTITY_SIGNUP_EXTERNAL_GOOGLE, user);
-    }
-
-    /// <summary>
-    /// Registers a new user using an external Microsoft login provider.
-    /// </summary>
-    /// <param name="signUpExternal">The external Microsoft sign-up request.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The created user.</returns>
-    /// <response code="201">Created.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="500">Error occurred.</response>
-    [HttpPost]
-    [Route(ActionRoutes.IDENTITY_SIGNUP_EXTERNAL_MICROSOFT)]
-    [AllowAnonymous]
-    [Consumes(HttpContentType.JSON)]
-    [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(BaseEntityUser), (int)HttpStatusCode.Created)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> SignUpExternalMicrosoftAsync([FromBody][Required] SignUpExternalMicrosoft<TEntity, TIdentity> signUpExternal, CancellationToken cancellationToken = default)
-    {
-        if (this.authExternalRepository == null)
-        {
-            return this.NotFound();
-        }
-
-        var authenticationData = await this.authExternalRepository
-            .AuthenticateAsync(signUpExternal.Provider, cancellationToken);
-
-        var user = await this.identityRepository
-            .SignUpExternalAsync(new SignUpExternal<TEntity, TIdentity>
-            {
-                User = signUpExternal.User,
-                Username = authenticationData.Username,
-                EmailAddress = authenticationData.EmailAddress,
-                PhoneNumber = authenticationData.PhoneNumber,
-                ExternalProvider =
-                {
-                    Name = authenticationData.ExternalToken.Name,
-                    UserId = authenticationData.Id
-                },
-                Roles = signUpExternal.Roles,
-                Claims = signUpExternal.Claims
-            }, cancellationToken);
-
-        return this.Created(ActionRoutes.IDENTITY_SIGNUP_EXTERNAL_MICROSOFT, user);
     }
 
     #endregion
@@ -1153,240 +1006,6 @@ public abstract class BaseIdentityController<TEntity, TIdentity, TCriteria> : Ba
             });
 
         return this.Ok(externalLogins);
-    }
-
-    /// <summary>
-    /// Adds a facebook external login to a user account.
-    /// </summary>
-    /// <param name="id">The identifier of the user.</param>
-    /// <param name="addExternalLogin">The request containing Microsoft external login data.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The added external login.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occurred.</response>
-    [HttpPost]
-    [Route(ActionRoutes.IDENTITY_EXTERNAL_LOGINS_ADD_FACEBOOK)]
-    [Consumes(HttpContentType.JSON)]
-    [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(IEnumerable<ExternalLogin>), (int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> AddExternalLoginFacebookAsync([FromRoute][Required] TIdentity id, [FromBody][Required] AddExternalLoginFacebook addExternalLogin, CancellationToken cancellationToken = default)
-    {
-        if (this.authExternalRepository == null)
-        {
-            return this.NotFound();
-        }
-
-        var externalProviderLogInData = await this.authExternalRepository
-            .AuthenticateAsync(addExternalLogin.Provider, cancellationToken);
-
-        var userLoginInfo = await this.identityRepository
-            .AddExternalLoginAsync(id, new ExternalProvider
-            {
-                Name = externalProviderLogInData.ExternalToken.Name,
-                UserId = externalProviderLogInData.Id
-            }, cancellationToken);
-
-        var externalLogin = new ExternalLogin
-        {
-            Key = userLoginInfo.ProviderKey,
-            Provider = new ExternalLoginProvider
-            {
-                Name = userLoginInfo.LoginProvider,
-                DisplayName = userLoginInfo.ProviderDisplayName
-            }
-        };
-
-        return this.Ok(externalLogin);
-    }
-
-    /// <summary>
-    /// Adds a Google external login to a user account.
-    /// </summary>
-    /// <param name="id">The identifier of the user.</param>
-    /// <param name="addExternalLogin">The request containing Google external login data.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The added external login.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occurred.</response>
-    [HttpPost]
-    [Route(ActionRoutes.IDENTITY_EXTERNAL_LOGINS_ADD_GOOGLE)]
-    [Consumes(HttpContentType.JSON)]
-    [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(IEnumerable<ExternalLogin>), (int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> AddExternalLoginGoogleAsync([FromRoute][Required] TIdentity id, [FromBody][Required] AddExternalLoginGoogle addExternalLogin, CancellationToken cancellationToken = default)
-    {
-        if (this.authExternalRepository == null)
-        {
-            return this.NotFound();
-        }
-
-        var externalProviderLogInData = await this.authExternalRepository
-            .AuthenticateAsync(addExternalLogin.Provider, cancellationToken);
-
-        var userLoginInfo = await this.identityRepository
-            .AddExternalLoginAsync(id, new ExternalProvider
-            {
-                Name = externalProviderLogInData.ExternalToken.Name,
-                UserId = externalProviderLogInData.Id
-            }, cancellationToken);
-
-        var externalLogin = new ExternalLogin
-        {
-            Key = userLoginInfo.ProviderKey,
-            Provider = new ExternalLoginProvider
-            {
-                Name = userLoginInfo.LoginProvider,
-                DisplayName = userLoginInfo.ProviderDisplayName
-            }
-        };
-
-        return this.Ok(externalLogin);
-    }
-
-    /// <summary>
-    /// Adds a Microsoft external login to a user account.
-    /// </summary>
-    /// <param name="id">The identifier of the user.</param>
-    /// <param name="addExternalLogin">The request containing Microsoft external login data.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The added external login.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occurred.</response>
-    [HttpPost]
-    [Route(ActionRoutes.IDENTITY_EXTERNAL_LOGINS_ADD_MICROSOFT)]
-    [Consumes(HttpContentType.JSON)]
-    [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(IEnumerable<ExternalLogin>), (int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> AddExternalLoginMicrosoftAsync([FromRoute][Required] TIdentity id, [FromBody][Required] AddExternalLoginMicrosoft addExternalLogin, CancellationToken cancellationToken = default)
-    {
-        if (this.authExternalRepository == null)
-        {
-            return this.NotFound();
-        }
-
-        var externalProviderLogInData = await this.authExternalRepository
-            .AuthenticateAsync(addExternalLogin.Provider, cancellationToken);
-
-        var userLoginInfo = await this.identityRepository
-            .AddExternalLoginAsync(id, new ExternalProvider
-            {
-                Name = externalProviderLogInData.ExternalToken.Name,
-                UserId = externalProviderLogInData.Id
-            }, cancellationToken);
-
-        var externalLogin = new ExternalLogin
-        {
-            Key = userLoginInfo.ProviderKey,
-            Provider = new ExternalLoginProvider
-            {
-                Name = userLoginInfo.LoginProvider,
-                DisplayName = userLoginInfo.ProviderDisplayName
-            }
-        };
-
-        return this.Ok(externalLogin);
-    }
-
-    /// <summary>
-    /// Removes an facebook login from a user account.
-    /// </summary>
-    /// <param name="id">The identifier of the user.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>No content.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occurred.</response>
-    [HttpPost]
-    [HttpDelete]
-    [Route(ActionRoutes.IDENTITY_EXTERNAL_LOGINS_REMOVE_FACEBOOK)]
-    [ProducesResponseType((int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> RemoveExternalLoginFacebookAsync([FromRoute][Required] TIdentity id, CancellationToken cancellationToken = default)
-    {
-        await this.identityRepository
-            .RemoveExternalLoginAsync(id, new RemoveExternalLogin { LoginProvider = BuiltInExternalLogInProviderNames.FACEBOOK }, cancellationToken);
-
-        return this.Ok();
-    }
-
-    /// <summary>
-    /// Removes an google login from a user account.
-    /// </summary>
-    /// <param name="id">The identifier of the user.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>No content.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occurred.</response>
-    [HttpPost]
-    [HttpDelete]
-    [Route(ActionRoutes.IDENTITY_EXTERNAL_LOGINS_REMOVE_GOOGLE)]
-    [ProducesResponseType((int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> RemoveExternalLoginGoogleAsync([FromRoute][Required] TIdentity id, CancellationToken cancellationToken = default)
-    {
-        await this.identityRepository
-            .RemoveExternalLoginAsync(id, new RemoveExternalLogin { LoginProvider = BuiltInExternalLogInProviderNames.GOOGLE }, cancellationToken);
-
-        return this.Ok();
-    }
-
-    /// <summary>
-    /// Removes an microsoft login from a user account.
-    /// </summary>
-    /// <param name="id">The identifier of the user.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>No content.</returns>
-    /// <response code="200">Success.</response>
-    /// <response code="400">Bad Request.</response>
-    /// <response code="401">Unauthorized.</response>
-    /// <response code="404">Not Found.</response>
-    /// <response code="500">Error occurred.</response>
-    [HttpPost]
-    [HttpDelete]
-    [Route(ActionRoutes.IDENTITY_EXTERNAL_LOGINS_REMOVE_MICROSOFT)]
-    [ProducesResponseType((int)HttpStatusCode.OK)]
-    [ProducesResponseType((int)HttpStatusCode.NotFound)]
-    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
-    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
-    public virtual async Task<IActionResult> RemoveExternalLoginMicrosoftAsync([FromRoute][Required] TIdentity id, CancellationToken cancellationToken = default)
-    {
-        await this.identityRepository
-            .RemoveExternalLoginAsync(id, new RemoveExternalLogin { LoginProvider = BuiltInExternalLogInProviderNames.MICROSOFT }, cancellationToken);
-
-        return this.Ok();
     }
 
     #endregion

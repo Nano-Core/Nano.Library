@@ -6,8 +6,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
@@ -22,6 +20,8 @@ using Nano.Common.Mvc.HealthChecks.Extensions;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Linq;
+using Asp.Versioning;
+using Asp.Versioning.ApiExplorer;
 using Nano.App.Api.Mvc;
 using Nano.App.Api.Mvc.Authentication.Extensions;
 using Nano.App.Api.Mvc.Authorization.Extensions;
@@ -288,7 +288,7 @@ internal static class ServiceCollectionExtensions
                     new HeaderApiVersionReader(NanoHeaderNames.API_VERSION),
                     new QueryStringApiVersionReader("api-version"));
             })
-            .AddVersionedApiExplorer(x =>
+            .AddApiExplorer(x =>
             {
                 x.GroupNameFormat = "'v'VV";
                 x.SubstituteApiVersionInUrl = true;
@@ -481,7 +481,8 @@ internal static class ServiceCollectionExtensions
                 return new ConfigureSwaggerOptions(apiOptions, authenticationSchemeProvider, apiVersionDescriptionProvider);
             })
             .AddSwaggerGen()
-            .AddSwaggerGenNewtonsoftSupport();
+            .AddSwaggerGenNewtonsoftSupport()
+            .AddEndpointsApiExplorer();
 
         return services;
     }

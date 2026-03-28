@@ -19,10 +19,10 @@ public interface IAuthExternalRepository
     /// <summary>
     /// Authenticates a user using the provider authentication flow.
     /// </summary>
-    /// <param name="provider">The external provider instance.</param>
+    /// <param name="flow">The flow instance.</param>
     /// <param name="cancellationToken">Optional <see cref="CancellationToken"/>.</param>
     /// <returns>An <see cref="ExternalAuthenticationData"/> containing the authenticated user information.</returns>
-    Task<ExternalAuthenticationData> AuthenticateAsync(BaseExternalProvider provider, CancellationToken cancellationToken = default);
+    Task<ExternalAuthenticationData> AuthenticateAsync(BaseAuthFlow flow, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Refreshes an existing external authentication session using a refresh token.
@@ -37,17 +37,15 @@ public interface IAuthExternalRepository
 /// Defines a strongly-typed contract for authenticating users using a specific external provider.
 /// Enables type-safe implementations while maintaining compatibility with <see cref="IAuthExternalRepository"/>.
 /// </summary>
-/// <typeparam name="TProvider">The type of the external provider, derived from <see cref="BaseExternalProvider"/>.</typeparam>
 /// <typeparam name="TFlow">The type of flow of the external provider.</typeparam>
-public interface IAuthExternalRepository<in TProvider, TFlow> : IAuthExternalRepository
-    where TProvider : BaseExternalProvider<TFlow>
+public interface IAuthExternalRepository<in TFlow> : IAuthExternalRepository
     where TFlow : BaseAuthFlow
 {
     /// <summary>
     /// Authenticates a user using the provider authentication flow.
     /// </summary>
-    /// <param name="provider">The strongly-typed external provider instance.</param>
+    /// <param name="flow">The strongly-typed flow instance.</param>
     /// <param name="cancellationToken">Optional <see cref="CancellationToken"/>.</param>
     /// <returns>An <see cref="ExternalAuthenticationData"/> containing the authenticated user information.</returns>
-    Task<ExternalAuthenticationData> AuthenticateAsync(TProvider provider, CancellationToken cancellationToken = default);
+    Task<ExternalAuthenticationData> AuthenticateAsync(TFlow flow, CancellationToken cancellationToken = default);
 }

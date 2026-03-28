@@ -111,22 +111,22 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseAuthApi<TIdentity>
         return user ?? throw new NullReferenceException(nameof(user));
     }
 
-    /// <summary>
-    /// Sign Up External Callback Async.
-    /// </summary>
-    /// <typeparam name="TSignUp">The signup type.</typeparam>
-    /// <param name="request">The <see cref="BaseSignUpExternalRequest"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The instance of <typeparamref name="TUser"/>.</returns>
-    public virtual async Task<TUser> SignUpExternalAsync<TSignUp>(TSignUp request, CancellationToken cancellationToken = default)
-        where TSignUp : BaseSignUpExternalRequest
-    {
-        ArgumentNullException.ThrowIfNull(request);
+    ///// <summary>
+    ///// Sign Up External Callback Async.
+    ///// </summary>
+    ///// <typeparam name="TSignUp">The signup type.</typeparam>
+    ///// <param name="request">The <see cref="BaseSignUpExternalRequest"/>.</param>
+    ///// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    ///// <returns>The instance of <typeparamref name="TUser"/>.</returns>
+    //public virtual async Task<TUser> SignUpExternalAsync<TSignUp>(TSignUp request, CancellationToken cancellationToken = default)
+    //    where TSignUp : BaseSignUpExternalRequest
+    //{
+    //    ArgumentNullException.ThrowIfNull(request);
 
-        var user = await this.InvokeAsync<TSignUp, TUser>(request, cancellationToken);
+    //    var user = await this.InvokeAsync<TSignUp, TUser>(request, cancellationToken);
 
-        return user ?? throw new NullReferenceException(nameof(user));
-    }
+    //    return user ?? throw new NullReferenceException(nameof(user));
+    //}
 
     #endregion
 
@@ -420,36 +420,36 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseAuthApi<TIdentity>
         return this.InvokeAsync<GetExternalLoginsRequest<TIdentity>, IEnumerable<ExternalLogin>>(request, cancellationToken);
     }
 
-    /// <summary>
-    /// Add External Login Async.
-    /// </summary>
-    /// <param name="request">The <see cref="BaseAddExternalLoginRequest"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="ExternalLogin"/>.</returns>
-    public virtual Task<ExternalLogin?> AddExternalLoginAsync<TLogin>(TLogin request, CancellationToken cancellationToken = default)
-        where TLogin : BaseAddExternalLoginRequest
-    {
-        ArgumentNullException.ThrowIfNull(request);
+    ///// <summary>
+    ///// Add External Login Async.
+    ///// </summary>
+    ///// <param name="request">The <see cref="BaseAddExternalLoginRequest"/>.</param>
+    ///// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    ///// <returns>The <see cref="ExternalLogin"/>.</returns>
+    //public virtual Task<ExternalLogin?> AddExternalLoginAsync<TLogin>(TLogin request, CancellationToken cancellationToken = default)
+    //    where TLogin : BaseAddExternalLoginRequest
+    //{
+    //    ArgumentNullException.ThrowIfNull(request);
 
-        request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
+    //    request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
 
-        return this.InvokeAsync<TLogin, ExternalLogin>(request, cancellationToken);
-    }
+    //    return this.InvokeAsync<TLogin, ExternalLogin>(request, cancellationToken);
+    //}
 
-    /// <summary>
-    /// Remove External Login Async.
-    /// </summary>
-    /// <param name="request">The <see cref="RemoveExternalLoginRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
-    public virtual Task RemoveExternalLoginAsync(RemoveExternalLoginRequest<TIdentity> request, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(request);
+    ///// <summary>
+    ///// Remove External Login Async.
+    ///// </summary>
+    ///// <param name="request">The <see cref="RemoveExternalLoginRequest{TIdentity}"/>.</param>
+    ///// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    ///// <returns>Void.</returns>
+    //public virtual Task RemoveExternalLoginAsync(RemoveExternalLoginRequest<TIdentity> request, CancellationToken cancellationToken = default)
+    //{
+    //    ArgumentNullException.ThrowIfNull(request);
 
-        request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
+    //    request.Controller = BaseIdentityApi<TUser, TIdentity>.IdentityController;
 
-        return this.InvokeAsync(request, cancellationToken);
-    }
+    //    return this.InvokeAsync(request, cancellationToken);
+    //}
 
     #endregion
 
@@ -489,7 +489,7 @@ public abstract class BaseIdentityApi<TUser, TIdentity> : BaseAuthApi<TIdentity>
     /// <summary>
     /// Delete User Refresh Token Async.
     /// </summary>
-    /// <param name="request">The <see cref="RemoveExternalLoginRequest{TIdentity}"/>.</param>
+    /// <param name="request">The <see cref="DeleteUserRefreshTokenRequest{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>Void.</returns>
     public virtual Task DeleteUserRefreshTokenAsync(DeleteUserRefreshTokenRequest<TIdentity> request, CancellationToken cancellationToken = default)

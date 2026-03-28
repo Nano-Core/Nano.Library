@@ -1,5 +1,5 @@
 using System;
-using Microsoft.AspNetCore.Mvc;
+using Asp.Versioning;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;
 using Nano.App.Api.Config;

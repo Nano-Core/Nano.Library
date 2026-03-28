@@ -10,16 +10,16 @@ using System.Threading.Tasks;
 
 namespace Nano.App.Api.Mvc.Authentication;
 
-/// <inheritdoc cref="BaseAuthExternalRepository{TProvider, TFlow}" />
+/// <inheritdoc cref="BaseAuthExternalRepository{TFlow}" />
 public class AuthExternalGoogleRepository(GoogleOptions options)
-    : BaseAuthExternalRepository<ExternalProviderGoogle, ImplicitFlow>, IBuiltInAuthExternalRepository
+    : BaseAuthExternalRepository<ImplicitFlow>(BuiltInExternalLogInProviderNames.GOOGLE), IBuiltInAuthExternalRepository
 {
     private readonly GoogleOptions options = options ?? throw new ArgumentNullException(nameof(options));
 
     /// <inheritdoc />
-    public override async Task<ExternalAuthenticationData> AuthenticateAsync(ExternalProviderGoogle provider, CancellationToken cancellationToken = default)
+    public override async Task<ExternalAuthenticationData> AuthenticateAsync(ImplicitFlow flow, CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(provider);
+        ArgumentNullException.ThrowIfNull(flow);
 
         if (options == null)
             throw new ArgumentNullException(nameof(options));
@@ -33,7 +33,7 @@ public class AuthExternalGoogleRepository(GoogleOptions options)
         };
 
         var payload = await GoogleJsonWebSignature
-            .ValidateAsync(provider.Flow.AccessToken, settings);
+            .ValidateAsync(flow.AccessToken, settings);
 
         return new ExternalAuthenticationData
         {
@@ -44,7 +44,7 @@ public class AuthExternalGoogleRepository(GoogleOptions options)
             ExternalToken =
             {
                 Name = BuiltInExternalLogInProviderNames.GOOGLE,
-                Token = provider.Flow.AccessToken
+                Token = flow.AccessToken
             }
         };
     }

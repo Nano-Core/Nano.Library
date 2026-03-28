@@ -42,19 +42,18 @@ public interface IAuthIdentityRepository<in TIdentity>
     /// <param name="logInExternalDirect">The external login information, including provider data, roles, claims, and refresh options.</param>
     /// <param name="cancellationToken">A <see cref="CancellationToken"/> to cancel the operation.</param>
     /// <returns>A task that returns an <see cref="AccessToken"/> for the authenticated external user.</returns>
-    Task<AccessToken> LogInExternalAsync(LogInExternalDirect logInExternalDirect, CancellationToken cancellationToken = default);
+    Task<AccessToken> LogInExternalAsync(LogInExternal logInExternalDirect, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Logs in a user using a configured built-in external login provider, generating a JWT access token and optional refresh token.
     /// </summary>
-    /// <typeparam name="TProvider">The external login provider type, derived from <see cref="BaseExternalProvider"/>.</typeparam>
     /// <typeparam name="TFlow">The type of authentication flow, e.g. auth-code, implicit, etc.</typeparam>
+    /// <param name="providerName">The name of the provider.</param>
     /// <param name="logInExternal">The external login request containing provider-specific data, roles, claims, and refresh options.</param>
     /// <param name="cancellationToken">A <see cref="CancellationToken"/> to cancel the operation.</param>
     /// <returns>A task that returns an <see cref="AccessToken"/> for the authenticated external user.</returns>
     /// <exception cref="UnauthorizedException">Thrown if the external login fails or no user is returned.</exception>
-    Task<AccessToken> LogInExternalAsync<TProvider, TFlow>(BaseLogInExternal<TProvider, TFlow> logInExternal, CancellationToken cancellationToken = default)
-        where TProvider : BaseExternalProvider<TFlow>
+    Task<AccessToken> LogInExternalAsync<TFlow>(string providerName, LogInExternal<TFlow> logInExternal, CancellationToken cancellationToken = default)
         where TFlow : BaseAuthFlow;
 
     /// <summary>
@@ -63,9 +62,7 @@ public interface IAuthIdentityRepository<in TIdentity>
     /// <param name="logInRefresh">The refresh login request containing the original token, refresh token, roles, and claims.</param>
     /// <param name="cancellationToken">A <see cref="CancellationToken"/> to cancel the operation.</param>
     /// <returns>A task that returns a new <see cref="AccessToken"/> with updated expiration.</returns>
-    /// <exception cref="UnauthorizedException">
-    /// Thrown if the refresh token is missing, invalid, expired, or does not match the stored token.
-    /// </exception>
+    /// <exception cref="UnauthorizedException">Thrown if the refresh token is missing, invalid, expired, or does not match the stored token.</exception>
     Task<AccessToken> LogInRefreshAsync(LogInRefresh logInRefresh, CancellationToken cancellationToken = default);
 
     /// <summary>

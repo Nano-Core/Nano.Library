@@ -25,26 +25,26 @@ public class AuthTransientRepository(IAuthJwtRepository authJwtRepository, IAuth
     protected readonly IAuthExternalRepositoryAggregator authExternalRepository = authExternalRepository ?? throw new ArgumentNullException(nameof(authExternalRepository));
 
     /// <inheritdoc />
-    public virtual async Task<AccessToken> LogInExternalAsync(LogInExternalDirect logInExternalDirect, CancellationToken cancellationToken = default)
+    public virtual async Task<AccessToken> LogInExternalAsync(LogInExternal logInExternal, CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(logInExternalDirect);
+        ArgumentNullException.ThrowIfNull(logInExternal);
 
         await Task.CompletedTask;
 
-        var claims = logInExternalDirect.TransientClaims
+        var claims = logInExternal.TransientClaims
             .Select(x => new Claim(x.Key, x.Value));
 
-        var roleClaims = logInExternalDirect.TransientRoles
+        var roleClaims = logInExternal.TransientRoles
             .Select(x => new Claim(ClaimTypes.Role, x));
 
         var accessToken = this.authJwtRepository
             .GenerateJwtToken(new GenerateJwtToken
             {
-                AppId = logInExternalDirect.AppId,
-                UserId = logInExternalDirect.ExternalAuthenticationData.Id,
-                UserName = logInExternalDirect.ExternalAuthenticationData.Name,
-                UserEmail = logInExternalDirect.ExternalAuthenticationData.EmailAddress,
-                ExternalToken = logInExternalDirect.ExternalAuthenticationData.ExternalToken,
+                AppId = logInExternal.AppId,
+                UserId = logInExternal.ExternalAuthenticationData.Id,
+                UserName = logInExternal.ExternalAuthenticationData.Name,
+                UserEmail = logInExternal.ExternalAuthenticationData.EmailAddress,
+                ExternalToken = logInExternal.ExternalAuthenticationData.ExternalToken,
                 Claims = claims
                     .Union(roleClaims)
             });
@@ -53,10 +53,10 @@ public class AuthTransientRepository(IAuthJwtRepository authJwtRepository, IAuth
     }
 
     /// <inheritdoc />
-    public virtual async Task<AccessToken> LogInExternalAsync<TProvider, TFlow>(BaseLogInExternal<TProvider, TFlow> logInExternal, CancellationToken cancellationToken = default)
-        where TProvider : BaseExternalProvider<TFlow>
+    public virtual async Task<AccessToken> LogInExternalAsync<TFlow>(string providerName, LogInExternal<TFlow> logInExternal, CancellationToken cancellationToken = default)
         where TFlow : BaseAuthFlow
     {
+        ArgumentNullException.ThrowIfNull(providerName);
         ArgumentNullException.ThrowIfNull(logInExternal);
 
         if (this.authExternalRepository == null)
@@ -65,12 +65,12 @@ public class AuthTransientRepository(IAuthJwtRepository authJwtRepository, IAuth
         }
 
         var authenticationData = await this.authExternalRepository
-            .AuthenticateAsync(logInExternal.Provider, cancellationToken);
+            .AuthenticateAsync(providerName, logInExternal.Flow, cancellationToken);
 
         var claims = logInExternal.TransientClaims
             .Merge(authenticationData.TransientClaims);
 
-        return await this.LogInExternalAsync(new LogInExternalDirect
+        return await this.LogInExternalAsync(new LogInExternal
         {
             AppId = logInExternal.AppId,
             IsRefreshable = logInExternal.IsRefreshable,

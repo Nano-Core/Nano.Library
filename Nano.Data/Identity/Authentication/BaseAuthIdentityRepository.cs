@@ -75,7 +75,7 @@ public abstract class BaseAuthIdentityRepository<TIdentity> : IAuthIdentityRepos
     }
 
     /// <inheritdoc />
-    public virtual async Task<AccessToken> LogInExternalAsync(LogInExternalDirect logInExternalDirect, CancellationToken cancellationToken = default)
+    public virtual async Task<AccessToken> LogInExternalAsync(LogInExternal logInExternalDirect, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(logInExternalDirect);
 
@@ -111,10 +111,10 @@ public abstract class BaseAuthIdentityRepository<TIdentity> : IAuthIdentityRepos
     }
 
     /// <inheritdoc />
-    public virtual async Task<AccessToken> LogInExternalAsync<TProvider, TFlow>(BaseLogInExternal<TProvider, TFlow> logInExternal, CancellationToken cancellationToken = default)
-        where TProvider : BaseExternalProvider<TFlow>
+    public virtual async Task<AccessToken> LogInExternalAsync<TFlow>(string providerName, LogInExternal<TFlow> logInExternal, CancellationToken cancellationToken = default)
         where TFlow : BaseAuthFlow
     {
+        ArgumentNullException.ThrowIfNull(providerName);
         ArgumentNullException.ThrowIfNull(logInExternal);
 
         if (this.authExternalRepository == null)
@@ -123,12 +123,12 @@ public abstract class BaseAuthIdentityRepository<TIdentity> : IAuthIdentityRepos
         }
 
         var authenticationData = await this.authExternalRepository
-            .AuthenticateAsync(logInExternal.Provider, cancellationToken);
+            .AuthenticateAsync(providerName, logInExternal.Flow, cancellationToken);
 
         var claims = logInExternal.TransientClaims
             .Merge(authenticationData.TransientClaims);
 
-        return await this.LogInExternalAsync(new LogInExternalDirect
+        return await this.LogInExternalAsync(new LogInExternal
         {
             AppId = logInExternal.AppId,
             IsRefreshable = logInExternal.IsRefreshable,
@@ -194,7 +194,7 @@ public abstract class BaseAuthIdentityRepository<TIdentity> : IAuthIdentityRepos
             if (this.authExternalRepository != null)
             {
                 externalAuthenticationToken = await this.authExternalRepository
-                    .AuthenticateRefreshAsync(new ExternalProviderGeneric(externalProviderName), externalProviderRefreshToken, cancellationToken);
+                    .AuthenticateRefreshAsync(externalProviderName, externalProviderRefreshToken, cancellationToken);
             }
         }
 

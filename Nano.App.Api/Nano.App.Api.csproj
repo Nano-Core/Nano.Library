@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<ItemGroup>
+		<PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" Version="10.0.0-preview.2" />
 		<PackageReference Include="AspNetCore.HealthChecks.System" Version="9.0.0" />
 		<PackageReference Include="AspNetCore.HealthChecks.UI" Version="9.0.0" />
 		<PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="9.0.0" />
@@ -8,7 +9,6 @@
 		<PackageReference Include="Google.Apis.Auth" Version="1.73.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.1" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="10.0.3" />
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.1.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="10.1.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="10.1.0" />

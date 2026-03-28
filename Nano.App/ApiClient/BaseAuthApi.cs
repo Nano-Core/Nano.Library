@@ -78,28 +78,28 @@ public abstract class BaseAuthApi<TIdentity> : BaseEntityApi<TIdentity>
         return response;
     }
 
-    /// <summary>
-    /// Log-In External Async.
-    /// </summary>
-    /// <param name="request">The <see cref="BaseLogInExternalRequest"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="AccessToken"/>.</returns>
-    public virtual async Task<AccessToken> LogInExternalAsync<TLogin>(TLogin request, CancellationToken cancellationToken = default)
-        where TLogin : BaseLogInExternalRequest
-    {
-        ArgumentNullException.ThrowIfNull(request);
+    ///// <summary>
+    ///// Log-In External Async.
+    ///// </summary>
+    ///// <param name="request">The <see cref="BaseLogInExternalRequest"/>.</param>
+    ///// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    ///// <returns>The <see cref="AccessToken"/>.</returns>
+    //public virtual async Task<AccessToken> LogInExternalAsync<TLogin>(TLogin request, CancellationToken cancellationToken = default)
+    //    where TLogin : BaseLogInExternalRequest
+    //{
+    //    ArgumentNullException.ThrowIfNull(request);
 
-        var response = await this.InvokeAsync<TLogin, AccessToken>(request, cancellationToken);
+    //    var response = await this.InvokeAsync<TLogin, AccessToken>(request, cancellationToken);
 
-        if (response == null)
-        {
-            throw new UnauthorizedException();
-        }
+    //    if (response == null)
+    //    {
+    //        throw new UnauthorizedException();
+    //    }
 
-        this.SetAuthorizationHeader(response.Token);
+    //    this.SetAuthorizationHeader(response.Token);
 
-        return response;
-    }
+    //    return response;
+    //}
 
     /// <summary>
     /// Log-In Refresh Async.
@@ -136,21 +136,21 @@ public abstract class BaseAuthApi<TIdentity> : BaseEntityApi<TIdentity>
         return this.InvokeAsync(request, cancellationToken);
     }
 
-    /// <summary>
-    /// Get External Login Data Async.
-    /// </summary>
-    /// <param name="request">The <see cref="BaseGetExternalLoginDataRequest{TProvider}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="AccessToken"/>.</returns>
-    public virtual async Task<ExternalAuthenticationData> GetExternalLoginDataAsync<TProvider>(BaseGetExternalLoginDataRequest<TProvider> request, CancellationToken cancellationToken = default)
-        where TProvider : BaseExternalProvider
-    {
-        ArgumentNullException.ThrowIfNull(request);
+    ///// <summary>
+    ///// Get External Login Data Async.
+    ///// </summary>
+    ///// <param name="request">The <see cref="BaseGetExternalLoginDataRequest{TProvider}"/>.</param>
+    ///// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    ///// <returns>The <see cref="AccessToken"/>.</returns>
+    //public virtual async Task<ExternalAuthenticationData> GetExternalLoginDataAsync<TProvider>(BaseGetExternalLoginDataRequest<TProvider> request, CancellationToken cancellationToken = default)
+    //    where TProvider : BaseExternalProvider
+    //{
+    //    ArgumentNullException.ThrowIfNull(request);
 
-        var externalLogInData = await this.InvokeAsync<BaseGetExternalLoginDataRequest<TProvider>, ExternalAuthenticationData>(request, cancellationToken);
+    //    var externalLogInData = await this.InvokeAsync<BaseGetExternalLoginDataRequest<TProvider>, ExternalAuthenticationData>(request, cancellationToken);
 
-        return externalLogInData ?? throw new UnauthorizedException();
-    }
+    //    return externalLogInData ?? throw new UnauthorizedException();
+    //}
 
     /// <summary>
     /// GetAsync External Schemes Async.

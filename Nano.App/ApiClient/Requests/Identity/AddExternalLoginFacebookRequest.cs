@@ -1,11 +1,11 @@
-﻿using Nano.App.ApiClient.Annotations.Actions;
-using Nano.App.Consts;
-using Nano.Data.Abstractions.Identity.Authentication.Models;
+﻿//using Nano.App.ApiClient.Annotations.Actions;
+//using Nano.App.Consts;
+//using Nano.Data.Abstractions.Identity.Authentication.Models;
 
-namespace Nano.App.ApiClient.Requests.Identity;
+//namespace Nano.App.ApiClient.Requests.Identity;
 
-/// <summary>
-/// Request to add an external Facebook login.
-/// </summary>
-[PostAction(ActionRoutes.IDENTITY_EXTERNAL_LOGINS_ADD_FACEBOOK)]
-public class AddExternalLoginFacebookRequest : BaseAddExternalLoginRequest<LogInExternalFacebook>;
+///// <summary>
+///// Request to add an external Facebook login.
+///// </summary>
+//[PostAction(ActionRoutes.IDENTITY_EXTERNAL_LOGINS_ADD_FACEBOOK)]
+//public class AddExternalLoginFacebookRequest : BaseAddExternalLoginRequest<LogInExternalFacebook>;

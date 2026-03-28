@@ -9,12 +9,10 @@ using System.Threading.Tasks;
 
 namespace Nano.Eventing;
 
-/// <inheritdoc />
 internal sealed class RegisterEventingHandlersTask(IEventing eventing) : IRegisterEventingHandlersTask
 {
     private readonly IEventing eventing = eventing ?? throw new ArgumentNullException(nameof(eventing));
 
-    /// <inheritdoc />
     public async Task RegisterEventHandlers(IServiceProvider serviceProvider, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(serviceProvider);

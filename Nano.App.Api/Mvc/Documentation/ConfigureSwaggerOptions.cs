@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi;
@@ -15,6 +14,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Xml;
+using Asp.Versioning.ApiExplorer;
 using Nano.App.Api.Mvc.Documentation.Filters.Operation;
 
 namespace Nano.App.Api.Mvc.Documentation;

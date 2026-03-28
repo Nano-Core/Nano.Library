@@ -1,6 +1,3 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -9,10 +6,12 @@ using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Config;
 using Nano.Data.Abstractions.Config.Enums;
 using Nano.Data.Abstractions.Identity.Consts;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Nano.Data;
 
-/// <inheritdoc />
 internal sealed class DbMigrationTask<TIdentity>(ILogger<DbMigrationTask<TIdentity>> logger, IOptionsMonitor<DataOptions> options, BaseDbContext<TIdentity> dbContext, RoleManager<IdentityRole<TIdentity>>? roleManager = null)
     : IDbMigrationTask
     where TIdentity : IEquatable<TIdentity>
@@ -21,7 +20,6 @@ internal sealed class DbMigrationTask<TIdentity>(ILogger<DbMigrationTask<TIdenti
     private readonly IOptionsMonitor<DataOptions> options = options ?? throw new ArgumentNullException(nameof(options));
     private readonly BaseDbContext<TIdentity> dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
 
-    /// <inheritdoc />
     public async Task MigrateAndSeedAsync(CancellationToken cancellationToken = default)
     {
         await this.EnsureCreatedAsync(cancellationToken);

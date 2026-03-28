@@ -19,8 +19,8 @@ public abstract class BaseAuditController(ILogger<BaseAuditController> logger, I
 /// </summary>
 /// <param name="logger">The logger instance.</param>
 /// <param name="repository">The repository instance.</param>
-[Route(ControllerRoutes.AUDIT_CONTROLLER_ROUTE)]
-[Route($"{ControllerRoutes.ROUTE_VERSION_PREFIX}/{ControllerRoutes.AUDIT_CONTROLLER_ROUTE}")]
+[Route(ControllerRoutes.AUDIT)]
+[Route($"{ControllerRoutes.ROUTE_VERSION_PREFIX}/{ControllerRoutes.AUDIT}")]
 [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
 public abstract class BaseAuditController<TIdentity>(ILogger<BaseAuditController<TIdentity>> logger, IRepository repository)
     : BaseEntityReadOnlyController<AuditEntry<TIdentity>, TIdentity, AuditEntryQueryCriteria<TIdentity>>(logger, repository)

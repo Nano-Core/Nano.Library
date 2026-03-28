@@ -28,24 +28,25 @@ public class AuthExternalRepositoryAggregator(IEnumerable<IAuthExternalRepositor
     }
 
     /// <inheritdoc />
-    public Task<ExternalAuthenticationData> AuthenticateAsync<TFlow>(BaseExternalProvider<TFlow> provider, CancellationToken cancellationToken = default)
+    public Task<ExternalAuthenticationData> AuthenticateAsync<TFlow>(string providerName, TFlow flow, CancellationToken cancellationToken = default)
         where TFlow : BaseAuthFlow
     {
-        ArgumentNullException.ThrowIfNull(provider);
+        ArgumentNullException.ThrowIfNull(providerName);
+        ArgumentNullException.ThrowIfNull(flow);
 
-        var externalRepository = this.GetRepository(provider.Name);
+        var externalRepository = this.GetRepository(providerName);
 
         return externalRepository
-            .AuthenticateAsync(provider, cancellationToken) ?? throw new UnauthorizedException();
+            .AuthenticateAsync(flow, cancellationToken) ?? throw new UnauthorizedException();
     }
 
     /// <inheritdoc />
-    public Task<ExternalAuthenticationToken> AuthenticateRefreshAsync(BaseExternalProvider provider, string refreshToken, CancellationToken cancellationToken = default)
+    public Task<ExternalAuthenticationToken> AuthenticateRefreshAsync(string providerName, string refreshToken, CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(provider);
+        ArgumentNullException.ThrowIfNull(providerName);
         ArgumentNullException.ThrowIfNull(refreshToken);
 
-        var externalRepository = this.GetRepository(provider.Name);
+        var externalRepository = this.GetRepository(providerName);
 
         return externalRepository
             .AuthenticateRefreshAsync(refreshToken, cancellationToken) ?? throw new UnauthorizedException();

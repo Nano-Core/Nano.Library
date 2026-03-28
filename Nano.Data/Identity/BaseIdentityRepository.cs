@@ -1080,26 +1080,26 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
     #region User External Logins
 
     /// <inheritdoc />
-    public virtual async Task<UserLoginInfo?> GetUserExternalLoginAsync(TIdentity id, string provider, CancellationToken cancellationToken = default)
+    public virtual async Task<UserLoginInfo?> GetUserExternalLoginAsync(TIdentity id, string providerName, CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(provider);
+        ArgumentNullException.ThrowIfNull(providerName);
 
         var userLoginInfos = await this.GetUserExternalLoginsAsync(id, cancellationToken);
 
         return userLoginInfos
-            .FirstOrDefault(x => x.LoginProvider == provider);
+            .FirstOrDefault(x => x.LoginProvider == providerName);
     }
 
     /// <inheritdoc />
-    public virtual async Task<UserLoginInfo?> GetUserExternalLoginAsync(IdentityUserEx<TIdentity> identityUser, string provider, CancellationToken cancellationToken = default)
+    public virtual async Task<UserLoginInfo?> GetUserExternalLoginAsync(IdentityUserEx<TIdentity> identityUser, string providerName, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(identityUser);
-        ArgumentNullException.ThrowIfNull(provider);
+        ArgumentNullException.ThrowIfNull(providerName);
 
         var userLoginInfos = await this.GetUserExternalLoginsAsync(identityUser, cancellationToken);
 
         return userLoginInfos
-            .FirstOrDefault(x => x.LoginProvider == provider);
+            .FirstOrDefault(x => x.LoginProvider == providerName);
     }
 
     /// <inheritdoc />
@@ -1152,9 +1152,9 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
     }
 
     /// <inheritdoc />
-    public virtual async Task RemoveExternalLoginAsync(TIdentity id, RemoveExternalLogin removeExternalLogin, CancellationToken cancellationToken = default)
+    public virtual async Task RemoveExternalLoginAsync(TIdentity id, string providerName, CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(removeExternalLogin);
+        ArgumentNullException.ThrowIfNull(providerName);
 
         var identityUser = await this.userManager
             .GetIdentityUserAsync(id, cancellationToken);
@@ -1167,7 +1167,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
         var userLoginInfos = await this.GetUserExternalLoginsAsync(identityUser, cancellationToken);
 
         var userLoginInfo = userLoginInfos
-            .FirstOrDefault(x => x.LoginProvider == removeExternalLogin.LoginProvider);
+            .FirstOrDefault(x => x.LoginProvider == providerName);
 
         if (userLoginInfo == null)
         {
@@ -1175,7 +1175,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
         }
 
         var result = await this.userManager
-            .RemoveLoginAsync(identityUser, removeExternalLogin.LoginProvider, userLoginInfo.ProviderKey);
+            .RemoveLoginAsync(identityUser, providerName, userLoginInfo.ProviderKey);
 
         if (!result.Succeeded)
         {

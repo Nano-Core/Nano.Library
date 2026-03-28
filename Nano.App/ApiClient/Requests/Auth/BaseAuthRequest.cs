@@ -12,6 +12,6 @@ public abstract class BaseAuthRequest : BaseRequest
     /// </summary>
     protected BaseAuthRequest()
     {
-        this.Controller = ControllerRoutes.AUTH_CONTROLLER_ROUTE;
+        this.Controller = ControllerRoutes.AUTH;
     }
 }

@@ -5,7 +5,7 @@ namespace Nano.Data.Abstractions.Identity.Models;
 /// <summary>
 /// Represents a request to sign in with username and password.
 /// </summary>
-public class SignIn : BaseSignIn
+public class SignIn
 {
     /// <summary>
     /// The username of the user signing in.

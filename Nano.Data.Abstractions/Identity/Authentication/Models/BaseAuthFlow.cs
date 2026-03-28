@@ -13,5 +13,5 @@ public abstract class BaseAuthFlow(AuthFlowType type)
     /// The type of flow. "AuthCode" or "Implicit".
     /// </summary>
     [Required]
-    public virtual AuthFlowType Type { get; set; } = type;
+    public virtual AuthFlowType Type { get; } = type;
 }

@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Nano.Data.Abstractions.Identity.Models;
@@ -473,19 +472,19 @@ public interface IIdentityRepository<TIdentity>
     /// Retrieves a specific external login provider associated with a user by user id.
     /// </summary>
     /// <param name="id">The identifier of the user.</param>
-    /// <param name="provider">The external provider name.</param>
+    /// <param name="providerName">The external provider name.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-    /// <returns>The <see cref="UserLoginInfo"/> representing the external login of the passed <paramref name="provider"/>.</returns>
-    Task<UserLoginInfo?> GetUserExternalLoginAsync(TIdentity id, string provider, CancellationToken cancellationToken = default);
+    /// <returns>The <see cref="UserLoginInfo"/> representing the external login of the passed <paramref name="providerName"/>.</returns>
+    Task<UserLoginInfo?> GetUserExternalLoginAsync(TIdentity id, string providerName, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Retrieves a specific external login provider associated with a user by <see cref="IdentityUserEx{TIdentity}"/>
     /// </summary>
     /// <param name="identityUser">The identity user instance.</param>
-    /// <param name="provider">The external provider name.</param>
+    /// <param name="providerName">The external provider name.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-    /// <returns>The <see cref="UserLoginInfo"/> representing the external login of the passed <paramref name="provider"/>.</returns>
-    Task<UserLoginInfo?> GetUserExternalLoginAsync(IdentityUserEx<TIdentity> identityUser, string provider, CancellationToken cancellationToken = default);
+    /// <returns>The <see cref="UserLoginInfo"/> representing the external login of the passed <paramref name="providerName"/>.</returns>
+    Task<UserLoginInfo?> GetUserExternalLoginAsync(IdentityUserEx<TIdentity> identityUser, string providerName, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Retrieves all external login providers associated with a user by user id.
@@ -520,13 +519,13 @@ public interface IIdentityRepository<TIdentity>
     /// Removes an external login provider from a user.
     /// </summary>
     /// <param name="id">The identifier of the user.</param>
-    /// <param name="removeExternalLogin">The <see cref="RemoveExternalLogin"/> request containing the user id and external provider to remove.</param>
+    /// <param name="providerName">The external provider name.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="removeExternalLogin"/> is <c>null</c>.</exception>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="providerName"/> is <c>null</c>.</exception>
     /// <exception cref="NullReferenceException">Thrown if the user cannot be found.</exception>
     /// <exception cref="IdentityException">Thrown if removing the external login fails.</exception>
-    Task RemoveExternalLoginAsync(TIdentity id, RemoveExternalLogin removeExternalLogin, CancellationToken cancellationToken = default);
+    Task RemoveExternalLoginAsync(TIdentity id, string providerName, CancellationToken cancellationToken = default);
 
     #endregion
 

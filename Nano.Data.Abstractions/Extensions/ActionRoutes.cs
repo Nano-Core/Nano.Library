@@ -1,5 +1,7 @@
 ﻿namespace Nano.App.Consts;
 
+// BUG: Where to place
+
 internal class ActionRoutes
 {
     internal const string INDEX = "index";
@@ -29,14 +31,8 @@ internal class ActionRoutes
     internal const string AUTH_LOGIN = "login";
     internal const string AUTH_LOGIN_ROOT = "login/root";
     internal const string AUTH_LOGOUT = "logout";
-    internal const string AUTH_LOGIN_EXTERNAL = "login/external";
-    internal const string AUTH_LOGIN_EXTERNAL_TRANSIENT = "login/external/transient";
-    internal const string AUTH_LOGIN_EXTERNAL_FACEBOOK = "login/external/facebook";
-    internal const string AUTH_LOGIN_EXTERNAL_FACEBOOK_TRANSIENT = "login/external/facebook/transient";
-    internal const string AUTH_LOGIN_EXTERNAL_GOOGLE = "login/external/google";
-    internal const string AUTH_LOGIN_EXTERNAL_GOOGLE_TRANSIENT = "login/external/google/transient";
-    internal const string AUTH_LOGIN_EXTERNAL_MICROSOFT = "login/external/microsoft";
-    internal const string AUTH_LOGIN_EXTERNAL_MICROSOFT_TRANSIENT = "login/external/microsoft/transient";
+    internal const string AUTH_LOGIN_EXTERNAL = "login/external/{providerName}";
+    internal const string AUTH_LOGIN_EXTERNAL_TRANSIENT = "login/external/{providerName}/transient";
     internal const string AUTH_LOGIN_REFRESH = "login/refresh";
     internal const string AUTH_EXTERNAL_SCHEMES = "external/schemes";
 
@@ -44,9 +40,7 @@ internal class ActionRoutes
     internal const string IDENTITY_EMAIL_IS_TAKEN = "email/is-taken";
     internal const string IDENTITY_PHONE_IS_TAKEN = "phone/is-taken";
     internal const string IDENTITY_SIGNUP = "signup";
-    internal const string IDENTITY_SIGNUP_EXTERNAL_FACEBOOK = "signup/external/facebook";
-    internal const string IDENTITY_SIGNUP_EXTERNAL_GOOGLE = "signup/external/google";
-    internal const string IDENTITY_SIGNUP_EXTERNAL_MICROSOFT = "signup/external/microsoft";
+    internal const string IDENTITY_SIGNUP_EXTERNAL = "signup/external/{providerName}";
     internal const string IDENTITY_USERNAME_SET = "{id}/username/set";
     internal const string IDENTITY_PASSWORD_SET = "{id}/password/set";
     internal const string IDENTITY_PASSWORD_CHANGE = "{id}/password/change";
@@ -73,12 +67,8 @@ internal class ActionRoutes
     internal const string IDENTITY_CLAIMS_ASSIGN_OR_REPLACE = "{id}/claims/assign-or-replace";
     internal const string IDENTITY_CLAIMS_REMOVE = "{id}/claims/remove";
     internal const string IDENTITY_EXTERNAL_LOGINS = "{id}/external-logins";
-    internal const string IDENTITY_EXTERNAL_LOGINS_ADD_FACEBOOK = "{id}/external-logins/add/facebook";
-    internal const string IDENTITY_EXTERNAL_LOGINS_ADD_GOOGLE = "{id}/external-logins/add/google";
-    internal const string IDENTITY_EXTERNAL_LOGINS_ADD_MICROSOFT = "{id}/external-logins/add/microsoft";
-    internal const string IDENTITY_EXTERNAL_LOGINS_REMOVE_FACEBOOK = "{id}/external-logins/remove/facebook";
-    internal const string IDENTITY_EXTERNAL_LOGINS_REMOVE_GOOGLE = "{id}/external-logins/remove/google";
-    internal const string IDENTITY_EXTERNAL_LOGINS_REMOVE_MICROSOFT = "{id}/external-logins/remove/microsoft";
+    internal const string IDENTITY_EXTERNAL_LOGINS_ADD = "{id}/external-logins/add/{providerName}";
+    internal const string IDENTITY_EXTERNAL_LOGINS_REMOVE = "{id}/external-logins/remove/{providerName}";
     internal const string IDENTITY_REFRESH_TOKENS = "{id}/refresh-tokens";
     internal const string IDENTITY_REFRESH_TOKENS_ACTIVE = "{id}/refresh-tokens/active";
     internal const string IDENTITY_REFRESH_TOKENS_DELETE = "refresh-tokens/{refreshTokenId}/delete";

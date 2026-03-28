@@ -11,23 +11,23 @@ using Nano.App.Api.Mvc.Authentication.Abstractions;
 
 namespace Nano.App.Api.Mvc.Authentication;
 
-/// <inheritdoc cref="BaseAuthExternalRepository{TProvider, TFlow}" />
+/// <inheritdoc cref="BaseAuthExternalRepository{TFlow}" />
 public class AuthExternalFacebookRepository(FacebookOptions options, HttpClient httpClient)
-    : BaseAuthExternalRepository<ExternalProviderFacebook, ImplicitFlow>, IBuiltInAuthExternalRepository
+    : BaseAuthExternalRepository<ImplicitFlow>(BuiltInExternalLogInProviderNames.FACEBOOK), IBuiltInAuthExternalRepository
 {
     private readonly FacebookOptions options = options ?? throw new ArgumentNullException(nameof(options));
     private readonly HttpClient httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
 
     /// <inheritdoc />
-    public override async Task<ExternalAuthenticationData> AuthenticateAsync(ExternalProviderFacebook provider, CancellationToken cancellationToken = default)
+    public override async Task<ExternalAuthenticationData> AuthenticateAsync(ImplicitFlow flow, CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(provider);
+        ArgumentNullException.ThrowIfNull(flow);
 
         const string HOST = "https://graph.facebook.com";
         const string FIELDS = "id,name,address,email,birthday";
 
         var debugTokenResponse = await httpClient
-            .GetAsync($"{HOST}/debug_token?input_token={provider.Flow.AccessToken}&access_token={options.AppId}|{options.AppSecret}", cancellationToken);
+            .GetAsync($"{HOST}/debug_token?input_token={flow.AccessToken}&access_token={options.AppId}|{options.AppSecret}", cancellationToken);
 
         debugTokenResponse
             .EnsureSuccessStatusCode();
@@ -53,7 +53,7 @@ public class AuthExternalFacebookRepository(FacebookOptions options, HttpClient 
         }
 
         using var userResponse = await httpClient
-            .GetAsync($"{HOST}/{validation.data.user_id}/?fields={FIELDS}&access_token={provider.Flow.AccessToken}", cancellationToken);
+            .GetAsync($"{HOST}/{validation.data.user_id}/?fields={FIELDS}&access_token={flow.AccessToken}", cancellationToken);
 
         userResponse
             .EnsureSuccessStatusCode();
@@ -66,7 +66,7 @@ public class AuthExternalFacebookRepository(FacebookOptions options, HttpClient 
         externalLoginData?.ExternalToken = new ExternalAuthenticationToken
         {
             Name = BuiltInExternalLogInProviderNames.FACEBOOK,
-            Token = provider.Flow.AccessToken
+            Token = flow.AccessToken
         };
 
         return externalLoginData ?? throw new UnauthorizedException();

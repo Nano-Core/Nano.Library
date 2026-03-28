@@ -56,36 +56,6 @@ internal sealed class ConditionalActionsConvention(MvcEndpointVisibility mvcEndp
                     return true;
                 }
 
-                if (nameof(BaseAuthController<>.LogInExternalFacebookAsync).ReplaceAsync() == x.ActionName && (!this.mvcEndpointVisibility.HasIdentity || !this.mvcEndpointVisibility.HasAuthFacebook))
-                {
-                    return true;
-                }
-
-                if (nameof(BaseAuthController<>.LogInExternalFacebookTransientAsync).ReplaceAsync() == x.ActionName && (this.mvcEndpointVisibility.HasIdentity || !this.mvcEndpointVisibility.HasAuthFacebook))
-                {
-                    return true;
-                }
-
-                if (nameof(BaseAuthController<>.LogInExternalGoogleAsync).ReplaceAsync() == x.ActionName && (!this.mvcEndpointVisibility.HasIdentity || !this.mvcEndpointVisibility.HasAuthGoogle))
-                {
-                    return true;
-                }
-
-                if (nameof(BaseAuthController<>.LogInExternalGoogleTransientAsync).ReplaceAsync() == x.ActionName && (this.mvcEndpointVisibility.HasIdentity || !this.mvcEndpointVisibility.HasAuthGoogle))
-                {
-                    return true;
-                }
-
-                if (nameof(BaseAuthController<>.LogInExternalMicrosoftAsync).ReplaceAsync() == x.ActionName && (!this.mvcEndpointVisibility.HasIdentity || !this.mvcEndpointVisibility.HasAuthMicrosoft))
-                {
-                    return true;
-                }
-
-                if (nameof(BaseAuthController<>.LogInExternalMicrosoftTransientAsync).ReplaceAsync() == x.ActionName && (this.mvcEndpointVisibility.HasIdentity || !this.mvcEndpointVisibility.HasAuthMicrosoft))
-                {
-                    return true;
-                }
-
                 if (nameof(BaseAuthController<>.LogInRefreshAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasIdentity)
                 {
                     return true;
@@ -130,51 +100,6 @@ internal sealed class ConditionalActionsConvention(MvcEndpointVisibility mvcEndp
                 .Where(x =>
                 {
                     if (nameof(BaseIdentityController<,,>.GetExternalLoginsAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasAuthExternalLogins)
-                    {
-                        return true;
-                    }
-
-                    if (nameof(BaseIdentityController<,,>.SignUpExternalFacebookAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasAuthFacebook)
-                    {
-                        return true;
-                    }
-
-                    if (nameof(BaseIdentityController<,,>.AddExternalLoginFacebookAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasAuthFacebook)
-                    {
-                        return true;
-                    }
-
-                    if (nameof(BaseIdentityController<,,>.RemoveExternalLoginFacebookAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasAuthFacebook)
-                    {
-                        return true;
-                    }
-
-                    if (nameof(BaseIdentityController<,,>.SignUpExternalGoogleAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasAuthGoogle)
-                    {
-                        return true;
-                    }
-
-                    if (nameof(BaseIdentityController<,,>.AddExternalLoginGoogleAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasAuthGoogle)
-                    {
-                        return true;
-                    }
-
-                    if (nameof(BaseIdentityController<,,>.RemoveExternalLoginGoogleAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasAuthGoogle)
-                    {
-                        return true;
-                    }
-
-                    if (nameof(BaseIdentityController<,,>.SignUpExternalMicrosoftAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasAuthMicrosoft)
-                    {
-                        return true;
-                    }
-
-                    if (nameof(BaseIdentityController<,,>.AddExternalLoginMicrosoftAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasAuthMicrosoft)
-                    {
-                        return true;
-                    }
-
-                    if (nameof(BaseIdentityController<,,>.RemoveExternalLoginMicrosoftAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasAuthMicrosoft)
                     {
                         return true;
                     }
