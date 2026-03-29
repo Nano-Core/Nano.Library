@@ -22,7 +22,7 @@ internal sealed class ConditionalActionsConvention(MvcEndpointVisibility mvcEndp
         ArgumentNullException.ThrowIfNull(controller);
 
         this.DisableAuthControllerActions(controller);
-        this.DisableIdentityControllerActions(controller);
+        this.DisableEntityUserControllerActions(controller);
     }
 
 
@@ -81,7 +81,7 @@ internal sealed class ConditionalActionsConvention(MvcEndpointVisibility mvcEndp
                 .Remove(action);
         }
     }
-    private void DisableIdentityControllerActions(ControllerModel controller)
+    private void DisableEntityUserControllerActions(ControllerModel controller)
     {
         ArgumentNullException.ThrowIfNull(controller);
 
@@ -120,6 +120,21 @@ internal sealed class ConditionalActionsConvention(MvcEndpointVisibility mvcEndp
                     }
 
                     if (nameof(BaseEntityUserController<,,>.RevokeApiKeyAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasApiKey)
+                    {
+                        return true;
+                    }
+
+                    if (nameof(BaseEntityUserController<,,>.GetRefreshTokensAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasJwt)
+                    {
+                        return true;
+                    }
+
+                    if (nameof(BaseEntityUserController<,,>.GetActiveRefreshTokensAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasJwt)
+                    {
+                        return true;
+                    }
+
+                    if (nameof(BaseEntityUserController<,,>.DeleteRefreshTokenAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasJwt)
                     {
                         return true;
                     }
