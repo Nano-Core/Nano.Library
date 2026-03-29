@@ -19,10 +19,7 @@ public static class ServiceProviderExtensions
     {
         ArgumentNullException.ThrowIfNull(serviceProvider);
 
-        using var scope = serviceProvider
-            .CreateScope();
-
-        var dbMigrationTask = scope.ServiceProvider
+        var dbMigrationTask = serviceProvider
             .GetService<IDbMigrationTask>();
 
         dbMigrationTask?

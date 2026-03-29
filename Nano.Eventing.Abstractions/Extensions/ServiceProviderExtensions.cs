@@ -21,14 +21,11 @@ public static class ServiceProviderExtensions
     {
         ArgumentNullException.ThrowIfNull(serviceProvider);
 
-        using var scope = serviceProvider
-            .CreateScope();
-
-        var registerEventHandlersTask = scope.ServiceProvider
+        var registerEventHandlersTask = serviceProvider
             .GetService<IRegisterEventingHandlersTask>();
 
         registerEventHandlersTask?
-            .RegisterEventHandlers(scope.ServiceProvider)
+            .RegisterEventHandlers(serviceProvider)
             .GetAwaiter()
             .GetResult();
 

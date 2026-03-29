@@ -67,6 +67,9 @@ internal static class ServiceCollectionExtensions
             .AddAuthIdentityRepository<IAuthIdentityRepository, AuthIdentityRepository>()
             .AddAuthIdentityRepository<IAuthIdentityRepository<TIdentity>, AuthIdentityRepository<TIdentity>>();
 
+        services
+            .AddScoped<IRegisterDataIdentityEndpointsTask, RegisterDataIdentityEndpointsTask<TIdentity>>();
+
         return services;
     }
 

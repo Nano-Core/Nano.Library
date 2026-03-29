@@ -66,7 +66,7 @@ internal sealed class ConditionalActionsConvention(MvcEndpointVisibility mvcEndp
                     return true;
                 }
 
-                if (nameof(BaseAuthController<>.GetExternalSchemesAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasAuthCustomExternalLogins)
+                if (nameof(BaseAuthController<>.GetExternalSchemesAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasAuthExternalLogins)
                 {
                     return true;
                 }
@@ -86,7 +86,7 @@ internal sealed class ConditionalActionsConvention(MvcEndpointVisibility mvcEndp
         ArgumentNullException.ThrowIfNull(controller);
 
         var isIdentityController = controller.ControllerType
-            .IsTypeOf(typeof(BaseIdentityController<,,>));
+            .IsTypeOf(typeof(BaseEntityUserController<,,>));
 
         if (!isIdentityController)
         {
@@ -99,27 +99,27 @@ internal sealed class ConditionalActionsConvention(MvcEndpointVisibility mvcEndp
             .AddRange(controller.Actions
                 .Where(x =>
                 {
-                    if (nameof(BaseIdentityController<,,>.GetExternalLoginsAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasAuthExternalLogins)
+                    if (nameof(BaseEntityUserController<,,>.GetExternalLoginsAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasAuthExternalLogins)
                     {
                         return true;
                     }
 
-                    if (nameof(BaseIdentityController<,,>.GetApiKeysAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasApiKey)
+                    if (nameof(BaseEntityUserController<,,>.GetApiKeysAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasApiKey)
                     {
                         return true;
                     }
 
-                    if (nameof(BaseIdentityController<,,>.CreateApiKeyAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasApiKey)
+                    if (nameof(BaseEntityUserController<,,>.CreateApiKeyAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasApiKey)
                     {
                         return true;
                     }
 
-                    if (nameof(BaseIdentityController<,,>.EditApiKeyAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasApiKey)
+                    if (nameof(BaseEntityUserController<,,>.EditApiKeyAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasApiKey)
                     {
                         return true;
                     }
 
-                    if (nameof(BaseIdentityController<,,>.RevokeApiKeyAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasApiKey)
+                    if (nameof(BaseEntityUserController<,,>.RevokeApiKeyAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasApiKey)
                     {
                         return true;
                     }

@@ -365,6 +365,8 @@ public class MyEntityUser : BaseEntityUser
 }
 ```
 
+> ⚠️ It is recommended to derive only a single implementation from `BaseEntityUser`. However, Nano supports multiple identity implementations if required.
+
 The following entity identity models are available in Nano.  
 
 | Entity Model                           | Table                           | Description                                                                    |

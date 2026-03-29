@@ -1,3 +1,5 @@
+using Asp.Versioning;
+using Asp.Versioning.ApiExplorer;
 using DynamicExpression.Extensions;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -12,22 +14,21 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
 using Nano.App.Api.Config;
-using Nano.App.Api.Mvc.Extensions;
-using Nano.App.Api.Mvc.HealthChecks;
-using Nano.App.Api.Mvc.Middleware;
-using Nano.Common.Consts;
-using Nano.Common.Mvc.HealthChecks.Extensions;
-using Swashbuckle.AspNetCore.SwaggerGen;
-using System;
-using System.Linq;
-using Asp.Versioning;
-using Asp.Versioning.ApiExplorer;
 using Nano.App.Api.Mvc;
 using Nano.App.Api.Mvc.Authentication.Extensions;
 using Nano.App.Api.Mvc.Authorization.Extensions;
 using Nano.App.Api.Mvc.Documentation;
+using Nano.App.Api.Mvc.Extensions;
+using Nano.App.Api.Mvc.HealthChecks;
+using Nano.App.Api.Mvc.Middleware;
 using Nano.App.Consts;
+using Nano.Common.Consts;
+using Nano.Common.Mvc.HealthChecks.Extensions;
 using Nano.Data.Abstractions.Config;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using System;
+using System.Linq;
+using System.Text.Json.Serialization;
 using Vivet.AspNetCore.RequestTimeZone.Enums;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
 using Vivet.AspNetCore.RequestTimeZone.Providers;
@@ -439,6 +440,12 @@ internal static class ServiceCollectionExtensions
             })
             .AddQueryModelBinders()
             .AddSingleton(MvcEndpointVisibility.Discover)
+            .ConfigureHttpJsonOptions(x =>
+            {
+                x.SerializerOptions.PropertyNamingPolicy = null;
+                x.SerializerOptions.PropertyNameCaseInsensitive = true;
+                x.SerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+            })
             .AddSingleton<IConfigureOptions<MvcOptions>, ConfigureMvcOptions>()
             .AddSingleton<IConfigureOptions<MvcNewtonsoftJsonOptions>, ConfigureMvcJsonOptions>()
             .AddProblemDetails(x =>

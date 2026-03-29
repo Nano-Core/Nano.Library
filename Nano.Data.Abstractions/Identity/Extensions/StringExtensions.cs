@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using System;
 
 namespace Nano.Data.Abstractions.Identity.Extensions;
@@ -42,5 +43,19 @@ public static class StringExtensions
         }
 
         throw new InvalidOperationException($"Unsupported identity type: {target.FullName}");
+    }
+
+    internal static ApiVersion ToApiVersion(this string version)
+    {
+        ArgumentNullException.ThrowIfNull(version);
+
+        var parts = version
+            .Split('.', StringSplitOptions.RemoveEmptyEntries);
+
+        return parts.Length switch
+        {
+            1 => new ApiVersion(int.Parse(parts[0]), 0),
+            _ => new ApiVersion(int.Parse(parts[0]), int.Parse(parts[1]))
+        };
     }
 }

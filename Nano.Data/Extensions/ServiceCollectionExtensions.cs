@@ -87,11 +87,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<IRepository, Repository<TContext, TIdentity>>();
 
         services
-            .AddScoped<IDbMigrationTask, DbMigrationTask<TIdentity>>()
-            .AddScoped<IRegisterDataIdentityEndpoints, RegisterDataIdentityEndpoints<TIdentity>>(x =>
-            {
-
-            });
+            .AddScoped<IDbMigrationTask, DbMigrationTask<TIdentity>>();
 
         services
             .AddScoped<EntityEventingHandler<TIdentity>>()

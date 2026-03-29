@@ -1,4 +1,5 @@
 ﻿using Nano.App.Consts;
+using Nano.Common.Consts;
 
 namespace Nano.App.ApiClient.Requests.Auth;
 

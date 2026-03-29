@@ -32,7 +32,7 @@ internal class ReplaceIdentityResponseTypeGenericFilter : IOperationFilter
         ArgumentNullException.ThrowIfNull(operation);
         ArgumentNullException.ThrowIfNull(context);
 
-        var baseType = GetGenericBaseType(context.MethodInfo.DeclaringType!, typeof(BaseIdentityController<,,>));
+        var baseType = GetGenericBaseType(context.MethodInfo.DeclaringType!, typeof(BaseEntityUserController<,,>));
 
         if (baseType == null)
         {

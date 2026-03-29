@@ -1,6 +1,7 @@
 ﻿using System;
 using Nano.App.ApiClient.Annotations.Actions;
 using Nano.App.Consts;
+using Nano.Common.Consts;
 
 namespace Nano.App.ApiClient.Requests;
 

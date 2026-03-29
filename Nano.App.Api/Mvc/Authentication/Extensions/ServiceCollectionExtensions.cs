@@ -86,6 +86,9 @@ internal static class ServiceCollectionExtensions
                 .AddAuthExternalMicrosoftRepository(options.Jwt.ExternalLogins.Microsoft)
                 .AddCustomAuthExternalRepositories()
                 .AddAuthExternalRepositoryAggregator();
+
+            services
+                .AddScoped<IRegisterTransientAuthEndpointsTask, RegisterTransientAuthEndpointsTask>();
         }
 
         return services;

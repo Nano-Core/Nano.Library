@@ -1923,12 +1923,12 @@ Try it yourself using one of the **[Api.Data Lessons](https://github.com/Nano-Co
 or any of the other data provider examples.
 
 When **[Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#identity)** is enabled, Nano provides a specialized base controller for managing 
-entity identities. The `BaseIdentityController<TEntity, TCriteria>` offers a rich set of methods for creating, updating, and managing user identities within your application. 
+entity identities. The `BaseEntityUserController<TEntity, TCriteria>` offers a rich set of methods for creating, updating, and managing user identities within your application. 
 To use it, derive a concrete implementation of this controller to expose identity-related actions for your application, using a user entity model derived from `BaseEntityUser` or 
 `BaseEntityUser<TIdentity>`. It behaves similarly to other entity controllers but includes additional actions tailored for identity management, such as handling usernames, passwords, 
 emails, phone numbers, external logins, claims, roles, and API keys.  
 
-The following endpoints are available in the `BaseIdentityController<TEntity, TCriteria>` for managing user identities. Not all identity features might be configured. Nano only 
+The following endpoints are available in the `BaseEntityUserController<TEntity, TCriteria>` for managing user identities. Not all identity features might be configured. Nano only 
 exposes endpoints that match the current configuration; any features not configured will not be registered or available in the controller.
 
 | Endpoint                                              | Method        | Role          | Description                                                                 |

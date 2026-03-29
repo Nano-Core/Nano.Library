@@ -15,10 +15,10 @@ public class LogInExternal : BaseLogIn
 }
 
 /// <summary>
-/// Base class for external login requests.
+/// Class for external login requests.
 /// </summary>
 /// <typeparam name="TFlow">The type of authentication flow, e.g. auth-code, implicit, etc.</typeparam>
-public abstract class LogInExternal<TFlow> : BaseLogIn
+public class LogInExternal<TFlow> : BaseLogIn
     where TFlow : BaseAuthFlow
 {
     /// <summary>

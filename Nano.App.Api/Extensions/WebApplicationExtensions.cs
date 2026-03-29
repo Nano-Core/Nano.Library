@@ -1,6 +1,10 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 using Nano.App.Api.Config;
+using Nano.Eventing.Abstractions.Extensions;
 using System;
+using Nano.Data.Abstractions.Eventing.Extensions;
+using Nano.Data.Abstractions.Extensions;
 
 namespace Nano.App.Api.Extensions;
 
@@ -42,9 +46,15 @@ internal static class WebApplicationExtensions
         webApplication
             .MapControllers();
 
-        webApplication
-            .MapNanoExternalAuthEndpoints();
+        using var scope = webApplication.Services
+            .CreateScope();
 
+        scope.ServiceProvider
+            .UseNanoEndpoints(webApplication, options)
+            .UseEventHandlers()
+            .UseEntityEventHandlers()
+            .UseNanoDbMigrations();
+      
         return webApplication;
     }
 }

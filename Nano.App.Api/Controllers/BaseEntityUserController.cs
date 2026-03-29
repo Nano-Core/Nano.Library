@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Nano.App.Consts;
 using Nano.Common.Annotations;
 using Nano.Common.Consts;
 using Nano.Data.Abstractions;
@@ -31,18 +30,18 @@ namespace Nano.App.Api.Controllers;
 // - (API-KEY: IdentityApiKey Roles and Claims (don't inherit from IdentityUser))  https://chatgpt.com/c/695ceb26-c6e4-832f-8840-b36bd21b5be9
 
 /// <inheritdoc />
-public abstract class BaseIdentityController<TEntity, TCriteria> : BaseIdentityController<TEntity, Guid, TCriteria>
+public abstract class BaseEntityUserController<TEntity, TCriteria> : BaseEntityUserController<TEntity, Guid, TCriteria>
     where TEntity : class, IEntityUser<Guid>, new()
     where TCriteria : class, IQueryCriteria, new()
 {
     /// <inheritdoc />
-    protected BaseIdentityController(ILogger<BaseIdentityController<TEntity, TCriteria>> logger, IRepository repository, IIdentityRepository identityRepository)
+    protected BaseEntityUserController(ILogger<BaseEntityUserController<TEntity, TCriteria>> logger, IRepository repository, IIdentityRepository identityRepository)
         : base(logger, repository, identityRepository)
     {
     }
 
     /// <inheritdoc />
-    protected BaseIdentityController(ILogger<BaseIdentityController<TEntity, TCriteria>> logger, IRepository repository, IEventing eventing, IIdentityRepository<Guid> identityRepository)
+    protected BaseEntityUserController(ILogger<BaseEntityUserController<TEntity, TCriteria>> logger, IRepository repository, IEventing eventing, IIdentityRepository<Guid> identityRepository)
         : base(logger, repository, eventing, identityRepository)
     {
     }
@@ -50,7 +49,7 @@ public abstract class BaseIdentityController<TEntity, TCriteria> : BaseIdentityC
 
 /// <inheritdoc />
 [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.IDENTITY)]
-public abstract class BaseIdentityController<TEntity, TIdentity, TCriteria> : BaseEntityUpdatableController<TEntity, TIdentity, TCriteria>
+public abstract class BaseEntityUserController<TEntity, TIdentity, TCriteria> : BaseEntityUpdatableController<TEntity, TIdentity, TCriteria>
     where TEntity : class, IEntityUser<TIdentity>, new()
     where TIdentity : IEquatable<TIdentity>
     where TCriteria : class, IQueryCriteria, new()
@@ -61,14 +60,14 @@ public abstract class BaseIdentityController<TEntity, TIdentity, TCriteria> : Ba
     protected readonly IIdentityRepository<TIdentity> identityRepository;
 
     /// <inheritdoc />
-    protected BaseIdentityController(ILogger<BaseIdentityController<TEntity, TIdentity, TCriteria>> logger, IRepository repository, IIdentityRepository<TIdentity> identityRepository)
+    protected BaseEntityUserController(ILogger<BaseEntityUserController<TEntity, TIdentity, TCriteria>> logger, IRepository repository, IIdentityRepository<TIdentity> identityRepository)
         : base(logger, repository)
     {
         this.identityRepository = identityRepository ?? throw new ArgumentNullException(nameof(identityRepository));
     }
 
     /// <inheritdoc />
-    protected BaseIdentityController(ILogger<BaseIdentityController<TEntity, TIdentity, TCriteria>> logger, IRepository repository, IEventing eventing, IIdentityRepository<TIdentity> identityRepository)
+    protected BaseEntityUserController(ILogger<BaseEntityUserController<TEntity, TIdentity, TCriteria>> logger, IRepository repository, IEventing eventing, IIdentityRepository<TIdentity> identityRepository)
         : base(logger, repository, eventing)
     {
         this.identityRepository = identityRepository ?? throw new ArgumentNullException(nameof(identityRepository));

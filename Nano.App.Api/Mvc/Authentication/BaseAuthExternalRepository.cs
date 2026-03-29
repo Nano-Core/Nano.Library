@@ -21,7 +21,7 @@ public abstract class BaseAuthExternalRepository<TFlow>(string providerName) : I
 
         if (flow is not TFlow typedFlow)
         {
-            throw new UnauthorizedException($"Invalid flow for {this.ProviderName}");
+            throw new NotFoundException(nameof(flow));
         }
 
         return this.AuthenticateAsync(typedFlow, cancellationToken);

@@ -4,6 +4,7 @@ using Nano.App.Consts;
 using Nano.Data.Abstractions.Identity.Models;
 using System;
 using System.ComponentModel.DataAnnotations;
+using Nano.Common.Consts;
 
 namespace Nano.App.ApiClient.Requests.Identity;
 

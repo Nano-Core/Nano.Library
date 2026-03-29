@@ -10,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
 using Nano.App.Api.Config;
-using Nano.App.Api.Mvc.Consts;
 using Nano.App.Api.Mvc.Documentation.Extensions;
 using Nano.App.Api.Mvc.Extensions;
 using Nano.App.Api.Mvc.HealthChecks.Const;

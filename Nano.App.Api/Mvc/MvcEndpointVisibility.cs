@@ -20,15 +20,7 @@ internal class MvcEndpointVisibility
 
     internal bool HasAuthRoot { get; set; }
 
-    internal bool HasAuthFacebook { get; set; }
-
-    internal bool HasAuthGoogle { get; set; }
-
-    internal bool HasAuthMicrosoft { get; set; }
-
-    internal bool HasAuthCustomExternalLogins { get; set; }
-
-    internal bool HasAuthExternalLogins => this.HasAuthCustomExternalLogins || this.HasAuthFacebook || this.HasAuthGoogle || this.HasAuthMicrosoft;
+    internal bool HasAuthExternalLogins { get; set; }
 
     internal static MvcEndpointVisibility Discover(IServiceProvider serviceProvider)
     {
@@ -53,7 +45,7 @@ internal class MvcEndpointVisibility
             .GetService<IAuthRootRepository>();
 
         var authExternalRepositories = scope.ServiceProvider
-            .GetService<IEnumerable<IAuthExternalRepository>>()?.ToArray();
+            .GetRequiredService<IEnumerable<IAuthExternalRepository>>();
 
         return new MvcEndpointVisibility
         {
@@ -61,13 +53,7 @@ internal class MvcEndpointVisibility
             HasApiKey = authenticationSchemes.Any(y => y.Name == AuthenticationSchemes.API_KEY),
             HasIdentity = identityRepository != null,
             HasAuthRoot = authRootRepository != null,
-            HasAuthFacebook = authExternalRepositories?.Any(y => y.ProviderName == BuiltInExternalLogInProviderNames.FACEBOOK) ?? false,
-            HasAuthGoogle = authExternalRepositories?.Any(y => y.ProviderName == BuiltInExternalLogInProviderNames.GOOGLE) ?? false,
-            HasAuthMicrosoft = authExternalRepositories?.Any(y => y.ProviderName == BuiltInExternalLogInProviderNames.MICROSOFT) ?? false,
-            HasAuthCustomExternalLogins = authExternalRepositories?.Any(y =>
-                y.ProviderName != BuiltInExternalLogInProviderNames.FACEBOOK &&
-                y.ProviderName != BuiltInExternalLogInProviderNames.GOOGLE &&
-                y.ProviderName != BuiltInExternalLogInProviderNames.MICROSOFT) ?? false
+            HasAuthExternalLogins = authExternalRepositories.Any()
         };
     }
 }
