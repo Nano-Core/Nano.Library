@@ -7,7 +7,7 @@ using System;
 
 namespace Nano.App.Api.Mvc;
 
-internal sealed class ConfigureMvcOptions(IOptionsMonitor<ApiOptions> apiOptions, MvcEndpointVisibility mvcEndpointVisibility) 
+internal sealed class ConfigureMvcOptions(IOptionsMonitor<ApiOptions> apiOptions, MvcEndpointVisibility mvcEndpointVisibility)
     : IConfigureOptions<MvcOptions>
 {
     private readonly IOptionsMonitor<ApiOptions> apiOptions = apiOptions ?? throw new ArgumentNullException(nameof(apiOptions));

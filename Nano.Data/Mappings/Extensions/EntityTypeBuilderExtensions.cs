@@ -27,7 +27,7 @@ public static class EntityTypeBuilderExtensions
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(action);
 
-        AddOnce<TEntity>(action, x => Triggers<TEntity>.Inserted += (Action<IInsertedEntry<TEntity>>)x);
+        AddOnce<TEntity>(action, x => { Triggers<TEntity>.Inserted += (Action<IInsertedEntry<TEntity>>)x; });
     }
 
     /// <summary>
@@ -43,7 +43,7 @@ public static class EntityTypeBuilderExtensions
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(action);
 
-        AddOnce<TEntity>(action, x => Triggers<TEntity>.Inserting += (Action<IInsertingEntry<TEntity>>)x);
+        AddOnce<TEntity>(action, x => { Triggers<TEntity>.Inserting += (Action<IInsertingEntry<TEntity>>)x; });
     }
 
     /// <summary>
@@ -59,7 +59,7 @@ public static class EntityTypeBuilderExtensions
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(action);
 
-        AddOnce<TEntity>(action, x => Triggers<TEntity>.InsertFailed += (Action<IInsertFailedEntry<TEntity>>)x);
+        AddOnce<TEntity>(action, x => { Triggers<TEntity>.InsertFailed += (Action<IInsertFailedEntry<TEntity>>)x; });
     }
 
     /// <summary>
@@ -75,7 +75,7 @@ public static class EntityTypeBuilderExtensions
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(action);
 
-        AddOnce<TEntity>(action, x => Triggers<TEntity>.Updated += (Action<IUpdatedEntry<TEntity>>)x);
+        AddOnce<TEntity>(action, x => { Triggers<TEntity>.Updated += (Action<IUpdatedEntry<TEntity>>)x; });
     }
 
     /// <summary>
@@ -91,7 +91,7 @@ public static class EntityTypeBuilderExtensions
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(action);
 
-        AddOnce<TEntity>(action, x => Triggers<TEntity>.Updating += (Action<IUpdatingEntry<TEntity>>)x);
+        AddOnce<TEntity>(action, x => { Triggers<TEntity>.Updating += (Action<IUpdatingEntry<TEntity>>)x; });
     }
 
     /// <summary>
@@ -107,7 +107,7 @@ public static class EntityTypeBuilderExtensions
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(action);
 
-        AddOnce<TEntity>(action, x => Triggers<TEntity>.UpdateFailed += (Action<IUpdateFailedEntry<TEntity>>)x);
+        AddOnce<TEntity>(action, x => { Triggers<TEntity>.UpdateFailed += (Action<IUpdateFailedEntry<TEntity>>)x; });
     }
 
     /// <summary>
@@ -123,7 +123,7 @@ public static class EntityTypeBuilderExtensions
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(action);
 
-        AddOnce<TEntity>(action, x => Triggers<TEntity>.Deleted += (Action<IDeletedEntry<TEntity>>)x);
+        AddOnce<TEntity>(action, x => { Triggers<TEntity>.Deleted += (Action<IDeletedEntry<TEntity>>)x; });
     }
 
     /// <summary>
@@ -139,7 +139,7 @@ public static class EntityTypeBuilderExtensions
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(action);
 
-        AddOnce<TEntity>(action, x => Triggers<TEntity>.Deleting += (Action<IDeletingEntry<TEntity>>)x);
+        AddOnce<TEntity>(action, x => { Triggers<TEntity>.Deleting += (Action<IDeletingEntry<TEntity>>)x; });
     }
 
     /// <summary>
@@ -155,7 +155,7 @@ public static class EntityTypeBuilderExtensions
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(action);
 
-        AddOnce<TEntity>(action, x => Triggers<TEntity>.DeleteFailed += (Action<IDeleteFailedEntry<TEntity>>)x);
+        AddOnce<TEntity>(action, x => { Triggers<TEntity>.DeleteFailed += (Action<IDeleteFailedEntry<TEntity>>)x; });
     }
 
 
@@ -166,7 +166,7 @@ public static class EntityTypeBuilderExtensions
         ArgumentNullException.ThrowIfNull(addAction);
 
         var entityType = typeof(TEntity);
- 
+
         var delegates = registeredTriggers
             .GetOrAdd(entityType, _ => []);
 

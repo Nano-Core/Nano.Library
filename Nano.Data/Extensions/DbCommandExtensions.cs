@@ -13,8 +13,8 @@ internal static class DbCommandExtensions
         var parameter = command
             .CreateParameter();
 
-        parameter.ParameterName = name.StartsWith('@') 
-            ? name 
+        parameter.ParameterName = name.StartsWith('@')
+            ? name
             : "@" + name;
 
         parameter.Value = value ?? DBNull.Value;

@@ -26,8 +26,10 @@ using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 
 namespace Nano.App.Api.Controllers;
 
-// BUG: API-KEY: Distributed architecture(Add Validate api-key endpoint, Still needs ApiKeyAuthenticationHandler? Kubernetes ingress nginx integration)
-// - (API-KEY: IdentityApiKey Roles and Claims (don't inherit from IdentityUser))  https://chatgpt.com/c/695ceb26-c6e4-832f-8840-b36bd21b5be9
+// BUG: API-KEY: Distributed architecture
+// - Add Validate api-key endpoint, Still needs ApiKeyAuthenticationHandler? Kubernetes ingress nginx integration)
+// - IdentityApiKey Roles and Claims (don't inherit from IdentityUser)  https://chatgpt.com/c/695ceb26-c6e4-832f-8840-b36bd21b5be9
+// - Make inherit from user when creating new api key
 
 /// <inheritdoc />
 public abstract class BaseEntityUserController<TEntity, TCriteria> : BaseEntityUserController<TEntity, Guid, TCriteria>

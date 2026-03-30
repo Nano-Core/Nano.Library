@@ -1,4 +1,3 @@
-using k8s.KubeConfigModels;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.OpenApi;

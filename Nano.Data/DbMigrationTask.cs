@@ -19,6 +19,7 @@ internal sealed class DbMigrationTask<TIdentity>(ILogger<DbMigrationTask<TIdenti
     private readonly ILogger<DbMigrationTask<TIdentity>> logger = logger ?? throw new ArgumentNullException(nameof(logger));
     private readonly IOptionsMonitor<DataOptions> options = options ?? throw new ArgumentNullException(nameof(options));
     private readonly BaseDbContext<TIdentity> dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+    private readonly RoleManager<IdentityRole<TIdentity>>? roleManager = roleManager;
 
     public async Task MigrateAndSeedAsync(CancellationToken cancellationToken = default)
     {

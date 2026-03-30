@@ -132,14 +132,11 @@ public sealed class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddlew
             problemDetails.Status = (int)HttpStatusCode.InternalServerError;
             problemDetails.Title = "Internal Server Error";
 
-            if (ex.InnerException != null)
+            if (ex.InnerException is BadRequestException or IdentityException)
             {
-                if (ex.InnerException is BadRequestException || ex.InnerException is IdentityException)
-                {
-                    problemDetails.Type = "https://datatracker.ietf.org/doc/html/rfc9110-15.6.1#name-400-bad-request";
-                    problemDetails.Status = (int)HttpStatusCode.BadRequest;
-                    problemDetails.Title = "Bad Request";
-                }
+                problemDetails.Type = "https://datatracker.ietf.org/doc/html/rfc9110-15.6.1#name-400-bad-request";
+                problemDetails.Status = (int)HttpStatusCode.BadRequest;
+                problemDetails.Title = "Bad Request";
             }
         }
         catch (Exception ex)

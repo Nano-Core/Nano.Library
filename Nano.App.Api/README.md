@@ -1675,11 +1675,11 @@ For a built-in provider, the following configuration can be added.
 Implementing a custom external authentication provider in Nano is straightforward. Create a class that derives from `BaseAuthExternalRepository<TFlow>` and provide a provider name via the 
 constructor. The base class implements the `IAuthExternalRepository<TFlow>` interface, which requires you to implement the abstract methods `AuthenticateAsync` and `AuthenticateRefreshAsync`. 
 The `TFlow` generic parameter defines the authentication flow used by the provider. Nano includes two built-in flows, `Implicit` and `AuthCode`, but you can extend this by creating your own 
-flow types that derive from `BaseAuthFlow`.
+flow types that derive from `BaseAuthFlow`. You can inject any registered service your authentication implementation.  
 
 All implementations of `IAuthExternalRepository<TFlow>` are automatically registered as external providers in Nano and exposed through the `IAuthExternalRepositoryAggregator`, which selects 
 the appropriate provider based on its name when multiple providers are available. The repository exposes `AuthenticateAsync` and `AuthenticateRefreshAsync` methods and, as shown below, also 
-provides a method to retrieve all registered providers.
+provides a method to retrieve all registered providers.  
 
 | Method                        | Parameters   | Description                                                                  |
 | ----------------------------- | ------------ | ---------------------------------------------------------------------------- |
@@ -1765,9 +1765,8 @@ Try it out yourself using the **[Api.Data.Identity.Auth.ApiKey](https://github.c
 
 ## Authorization
 Nano supports authorization using either a JWT token or an API key. JWT tokens are provided in the `Authorization` header, while API keys are provided in 
-the `X-Api-Key` header. If both headers are present in a request, the JWT token takes precedence. If no authentication has been configured for an application, 
-Nano allows _anonymous_ access by default. You can change this behavior by registering a custom authentication handler during application startup 
-in `ConfigureServices(...)`.
+the `X-Api-Key` header. If both are configured and both headers are present in a request, the JWT token takes precedence. If no authentication has been configured for 
+an application, Nano allows _anonymous_ access by default.  
 
 When building layered Nano applications, the `Authorization` header is automatically propagated between applications when using the built-in  
 [Nano Api Client](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#api-client). This ensures that the authenticated context is preserved 
@@ -1777,6 +1776,8 @@ In Nano, _claims_ are primarily used for carrying user information, while _roles
 authorization strategies. For example, you can override the `[Authorize]` attribute used by base controllers in Nano and register custom authorization policies 
 during application startup. By default, however, Nano base controllers rely on role-based authorization. See [Controllers](#controllers) for details on which 
 roles are required for specific base controllers and actions.
+
+Try it out yourself using the **[Api.Authorization](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Auth.ApiApi.AuthorizationKey)** example.  
 
 ## Api Clients
 Nano API clients provide a structured way to communicate with other Nano API applications. They are designed to simplify service-to-service communication while maintaining 

@@ -36,7 +36,7 @@ internal class ConfigureSwaggerOptions(IOptionsMonitor<ApiOptions> apiOptions, I
 
         this.ConfigureApiInfos(options);
         this.ConfigureSecurityDefinitions(options);
-        this.ConfigureDocumentationSources(options);
+        ConfigureDocumentationSources(options);
 
         options
             .IgnoreObsoleteActions();
@@ -178,7 +178,7 @@ internal class ConfigureSwaggerOptions(IOptionsMonitor<ApiOptions> apiOptions, I
                 .AddSecurityDefinition("ApiKey", apiKeySecurityScheme);
         }
     }
-    private void ConfigureDocumentationSources(SwaggerGenOptions options)
+    private static void ConfigureDocumentationSources(SwaggerGenOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
 

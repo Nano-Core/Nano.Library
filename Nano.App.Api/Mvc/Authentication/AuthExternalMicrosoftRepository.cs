@@ -28,8 +28,8 @@ public class AuthExternalMicrosoftRepository(MicrosoftOptions options, HttpClien
 
         var tokenHandler = new JwtSecurityTokenHandler();
 
-        string accessToken;
-        string? refreshToken;
+        //string accessToken;
+        //string? refreshToken;
 
         using var httpRequestMessage = new HttpRequestMessage();
 
@@ -64,9 +64,14 @@ public class AuthExternalMicrosoftRepository(MicrosoftOptions options, HttpClien
             throw new InvalidOperationException($"{error}: {errorDescription}");
         }
 
-        accessToken = content?["access_token"]?.ToString() ?? throw new NullReferenceException(nameof(accessToken));
-        refreshToken = content["refresh_token"]?.ToString();
+        var accessToken = content?["access_token"]?.ToString();
 
+        if (accessToken == null)
+        {
+            throw new NullReferenceException(nameof(accessToken));
+        }
+
+        var refreshToken = content?["refresh_token"]?.ToString();
 
         var jwtToken = tokenHandler
             .ReadJwtToken(accessToken);

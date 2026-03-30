@@ -13,20 +13,20 @@ internal sealed class SoftDeleteSaveChangesInterceptor : SaveChangesInterceptor
 {
     public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
     {
-        this.UpdateSoftDeletedEntities(eventData.Context);
+        UpdateSoftDeletedEntities(eventData.Context);
 
         return base.SavingChanges(eventData, result);
     }
 
     public override ValueTask<InterceptionResult<int>> SavingChangesAsync(DbContextEventData eventData, InterceptionResult<int> result, CancellationToken cancellationToken = default)
     {
-        this.UpdateSoftDeletedEntities(eventData.Context);
+        UpdateSoftDeletedEntities(eventData.Context);
 
         return base.SavingChangesAsync(eventData, result, cancellationToken);
     }
 
 
-    private void UpdateSoftDeletedEntities(DbContext? dbContext)
+    private static void UpdateSoftDeletedEntities(DbContext? dbContext)
     {
         ArgumentNullException.ThrowIfNull(dbContext);
 

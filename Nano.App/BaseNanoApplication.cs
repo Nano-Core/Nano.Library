@@ -6,7 +6,6 @@ using Nano.Common.Config;
 using System;
 using System.IO;
 using System.Reflection;
-using Microsoft.Extensions.Logging;
 
 namespace Nano.App;
 

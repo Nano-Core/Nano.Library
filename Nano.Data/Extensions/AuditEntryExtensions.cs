@@ -1,5 +1,4 @@
 using System;
-using Microsoft.AspNetCore.Identity;
 using Nano.Common.Extensions;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Data.Abstractions.Models.Enums;

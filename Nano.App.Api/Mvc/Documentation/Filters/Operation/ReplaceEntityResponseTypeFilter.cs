@@ -17,7 +17,7 @@ internal class ReplaceEntityResponseTypeFilter : IOperationFilter
         ArgumentNullException.ThrowIfNull(context);
 
         var baseType = GetGenericBaseType(context.MethodInfo.DeclaringType!, typeof(BaseEntityViewController<,>));
-        
+
         if (baseType == null)
         {
             return;

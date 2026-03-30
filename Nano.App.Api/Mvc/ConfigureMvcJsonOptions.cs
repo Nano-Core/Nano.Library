@@ -11,6 +11,8 @@ namespace Nano.App.Api.Mvc;
 
 internal class ConfigureMvcJsonOptions(IOptions<DataOptions>? dataOptions = null) : IConfigureOptions<MvcNewtonsoftJsonOptions>
 {
+    private readonly IOptions<DataOptions>? dataOptions = dataOptions;
+
     public void Configure(MvcNewtonsoftJsonOptions options)
     {
         ArgumentNullException.ThrowIfNull(options);
@@ -20,7 +22,7 @@ internal class ConfigureMvcJsonOptions(IOptions<DataOptions>? dataOptions = null
         options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
         options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
         options.SerializerSettings.PreserveReferencesHandling = PreserveReferencesHandling.None;
-        options.SerializerSettings.ContractResolver = new NanoMvcContractResolver(dataOptions);
+        options.SerializerSettings.ContractResolver = new NanoMvcContractResolver(this.dataOptions);
         options.SerializerSettings.Converters =
         [
             new StringEnumConverter(),

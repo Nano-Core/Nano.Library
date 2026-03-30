@@ -148,7 +148,7 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
- 
+
     private static void AutoSavePreAction<TIdentity>(DbContext dbContext, Audit audit)
         where TIdentity : IEquatable<TIdentity>
     {
@@ -159,8 +159,8 @@ public static class ServiceCollectionExtensions
             .GetService<IHttpContextAccessor>();
 
         var requestId = httpContextAccessor.HttpContext?.TraceIdentifier;
-        var createdBy = httpContextAccessor.HttpContext == null 
-            ? null 
+        var createdBy = httpContextAccessor.HttpContext == null
+            ? null
             : httpContextAccessor.HttpContext.GetJwtUserId() ?? "Anonymous";
 
         var auditEntries = audit.Entries

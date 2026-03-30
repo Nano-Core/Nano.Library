@@ -1286,16 +1286,15 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
                 .GetDbTransaction();
         }
 
-        if (parameters != null)
+        if (parameters == null)
         {
-            foreach (var kvp in parameters)
-            {
-                var dbParameter = command
-                    .CreateParameter(kvp.Key, kvp.Value);
+            return command;
+        }
 
-                command.Parameters
-                    .Add(dbParameter);
-            }
+        foreach (var dbParameter in parameters.Select(x => command.CreateParameter(x.Key, x.Value)))
+        {
+            command.Parameters
+                .Add(dbParameter);
         }
 
         return command;

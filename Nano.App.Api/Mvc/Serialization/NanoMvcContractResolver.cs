@@ -15,9 +15,10 @@ namespace Nano.App.Api.Mvc.Serialization;
 
 internal sealed class NanoMvcContractResolver(IOptions<DataOptions>? dataOptions = null) : NanoDefaultContractResolver
 {
-    private static readonly AsyncLocal<Stack<object>?> currentStack = new();
+    private readonly IOptions<DataOptions>? dataOptions = dataOptions;
 
-    private Stack<object> CurrentStack => currentStack.Value ??= new Stack<object>();
+    private static readonly AsyncLocal<Stack<object>?> currentStack = new();
+    private static Stack<object> CurrentStack => currentStack.Value ??= new Stack<object>();
 
     protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
     {
@@ -42,7 +43,7 @@ internal sealed class NanoMvcContractResolver(IOptions<DataOptions>? dataOptions
                 return false;
             }
 
-            var depth = this.CurrentStack.Count;
+            var depth = CurrentStack.Count;
             var maxDepth = dataOptions?.Value.Repository.QueryIncludeDepth ?? int.MaxValue;
 
             return depth <= maxDepth;
@@ -65,7 +66,7 @@ internal sealed class NanoMvcContractResolver(IOptions<DataOptions>? dataOptions
         contract.OnSerializingCallbacks
             .Add((x, _) =>
             {
-                var stack = this.CurrentStack;
+                var stack = CurrentStack;
 
                 if (!stack.Contains(x))
                 {
@@ -77,7 +78,7 @@ internal sealed class NanoMvcContractResolver(IOptions<DataOptions>? dataOptions
         contract.OnSerializedCallbacks
             .Add((x, _) =>
             {
-                var stack = this.CurrentStack;
+                var stack = CurrentStack;
 
                 if (stack.Count > 0 && ReferenceEquals(stack.Peek(), x))
                 {

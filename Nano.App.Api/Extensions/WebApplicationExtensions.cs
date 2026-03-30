@@ -54,7 +54,7 @@ internal static class WebApplicationExtensions
             .UseEventHandlers()
             .UseEntityEventHandlers()
             .UseNanoDbMigrations();
-      
+
         return webApplication;
     }
 }

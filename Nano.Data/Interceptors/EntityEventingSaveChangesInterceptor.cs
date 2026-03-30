@@ -22,6 +22,8 @@ internal sealed class EntityEventingSaveChangesInterceptor(IEventing eventing) :
 {
     private ConcurrentQueue<EntityEvent> pendingEvents = [];
 
+    private readonly IEventing eventing = eventing ?? throw new ArgumentNullException(nameof(eventing));
+
     public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
     {
         this.PreSaveEntityEvents(eventData.Context);
