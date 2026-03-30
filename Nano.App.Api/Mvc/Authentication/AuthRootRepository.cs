@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Nano.App.Api.Mvc.Authentication.Abstractions;
@@ -41,16 +42,17 @@ public class AuthRootRepository : IAuthRootRepository
             throw new UnauthorizedException();
         }
 
+        var claims = logInRoot.TransientClaims
+            .Select(x => new Claim(x.Key, x.Value))
+            .Concat([new Claim(ClaimTypes.Role, BuiltInUserRoles.ADMINISTRATOR)]);
+
         var accessToken = this.authJwtRepository
             .GenerateJwtToken(new GenerateJwtToken
             {
                 UserId = null,
                 UserEmail = null,
                 UserName = this.options.Username,
-                Claims =
-                [
-                    new Claim(ClaimTypes.Role, BuiltInUserRoles.ADMINISTRATOR)
-                ]
+                Claims = claims
             });
 
         return accessToken;

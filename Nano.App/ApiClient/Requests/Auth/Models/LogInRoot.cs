@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace Nano.App.ApiClient.Requests.Auth.Models;
@@ -20,4 +21,10 @@ public class LogInRoot
     [Required]
     [MaxLength(256)]
     public virtual string Password { get; set; } = null!;
+
+    /// <summary>
+    /// Non-persisted claims added to the issued JWT during login.
+    /// </summary>
+    [Required]
+    public virtual IDictionary<string, string> TransientClaims { get; set; } = new Dictionary<string, string>();
 }
