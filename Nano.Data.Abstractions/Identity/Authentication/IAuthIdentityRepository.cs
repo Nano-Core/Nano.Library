@@ -39,21 +39,21 @@ public interface IAuthIdentityRepository<in TIdentity>
     /// <summary>
     /// Logs in a user using direct external login data, generating a JWT access token and optional refresh token.
     /// </summary>
-    /// <param name="logInExternalDirect">The external login information, including provider data, roles, claims, and refresh options.</param>
+    /// <param name="logInExternal">The external login information, including provider data, roles, claims, and refresh options.</param>
     /// <param name="cancellationToken">A <see cref="CancellationToken"/> to cancel the operation.</param>
     /// <returns>A task that returns an <see cref="AccessToken"/> for the authenticated external user.</returns>
-    Task<AccessToken> LogInExternalAsync(LogInExternal logInExternalDirect, CancellationToken cancellationToken = default);
+    Task<AccessToken> LogInExternalAsync(LogInExternal logInExternal, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Logs in a user using a configured built-in external login provider, generating a JWT access token and optional refresh token.
     /// </summary>
     /// <typeparam name="TFlow">The type of authentication flow, e.g. auth-code, implicit, etc.</typeparam>
     /// <param name="providerName">The name of the provider.</param>
-    /// <param name="logInExternal">The external login request containing provider-specific data, roles, claims, and refresh options.</param>
+    /// <param name="logInExternalFlow">The external login request containing provider-specific data, roles, claims, and refresh options.</param>
     /// <param name="cancellationToken">A <see cref="CancellationToken"/> to cancel the operation.</param>
     /// <returns>A task that returns an <see cref="AccessToken"/> for the authenticated external user.</returns>
     /// <exception cref="UnauthorizedException">Thrown if the external login fails or no user is returned.</exception>
-    Task<AccessToken> LogInExternalAsync<TFlow>(string providerName, LogInExternal<TFlow> logInExternal, CancellationToken cancellationToken = default)
+    Task<AccessToken> LogInExternalAsync<TFlow>(string providerName, LogInExternal<TFlow> logInExternalFlow, CancellationToken cancellationToken = default)
         where TFlow : BaseAuthFlow;
 
     /// <summary>

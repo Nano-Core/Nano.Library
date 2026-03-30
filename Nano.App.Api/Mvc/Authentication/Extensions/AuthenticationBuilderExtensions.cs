@@ -1,12 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Nano.App.Api.Config;
 using Nano.Data.Abstractions.Identity.Authentication.Consts;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Nano.App.Api.Mvc.Authentication.Extensions;
 
@@ -51,15 +51,11 @@ internal static class AuthenticationBuilderExtensions
                 {
                     OnAuthenticationFailed = context =>
                     {
-                        if (context.Exception.GetType() != typeof(SecurityTokenExpiredException))
+                        if (context.Exception is SecurityTokenExpiredException)
                         {
-                            return Task.CompletedTask;
+                            context.Response.Headers
+                                .TryAdd("Token-Expired", "true");
                         }
-
-                        const string KEY = "Token-Expired";
-
-                        context.Response.Headers
-                            .TryAdd(KEY, true.ToString());
 
                         return Task.CompletedTask;
                     }

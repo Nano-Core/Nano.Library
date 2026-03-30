@@ -1464,12 +1464,11 @@ This is enabled by default and requires no additional configuration.
 Try it out yourself using the **[Api.StaticFiles](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.StaticFiles)** example.  
 
 ## Authentication
-Nano supports two built-in authentication methods: JWT and API key authentication, and it also allows you to integrate custom authentication schemes. If no authentication schemes are 
-registered, meaning JWT and API key authentication are both disabled in configuration, and no custom authentication has been added, all endpoints will be accessible anonymously by default.  
+Nano supports two built-in authentication schemes, JWT and API key authentication. If no authentication schemes has been configured, all endpoints will be accessible anonymously by default.  
 
 Nano uses a cookie-less approach to authentication and authorization, relying entirely on JWT tokens or API keys specified in request headers. While it is possible to implement custom 
-authentication handlers, this is generally not recommended. Instead, you should use External Direct authentication, where authentication is handled externally and the resulting identity 
-data is passed to Nano (e.g., via external sign-in or sign-up). Nano will then process the request and return a JWT token for subsequent authenticated interactions.
+authentication handlers, this is generally not recommended. Instead, derive external provider authentication implementations, where authentication is handled externally and the resulting 
+identity data is passed to Nano (e.g., via external sign-in or sign-up). Nano will then process the request and return a JWT token for subsequent authenticated interactions.
 
 In Nano, authentication can be either with an identity store to manage user data, or without - transient, relying on external providers without storing identity information.  
 
@@ -1477,7 +1476,7 @@ When your application needs to manage usernames, passwords, roles, permissions, 
 **[Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#identity)**. This enables Nano to store and maintain user credentials and claims in a 
 centralized identity store. Roles and claims can then be automatically loaded for each user, simplifying access control and authorization across your application.  
 
-Nano also supports transient authentication. Users authenticate through external providers, and a Nano JWT tokens are generated for use in subsequent requests. Roles and claims 
+With transient authentication, users authenticate through external providers, and a Nano JWT tokens are generated for use in subsequent requests. Roles and claims 
 are transient, meaning they must be assigned each time a user logs in. To access all base controller actions in Nano, the `administrator` role must be included. Otherwise, roles can 
 be assigned more selectively from Nano’s default roles to provide finer-grained access control for transient users.  
 
@@ -1534,29 +1533,15 @@ Both the public and private keys should be stored securely as a Kubernetes secre
 In Nano, all authentication features are accessed through a set of repository interfaces. The table below details each supported login type and its corresponding registered 
 interfaces, showing what is available for use in your application.
 
-| Login                  | Auth Type         | Config Required                | Primary Interface            |
+| Login                  | Auth Type         | Config / Registration Required | Primary Interface            |
 | ---------------------- | ----------------- | ------------------------------ | ---------------------------- |
-| Credentials            | JWT Identity      | Jwt, Identity                  | `IAuthIdentityRepository`    |
 | Root                   | JWT Transient     | Jwt, RootLogin                 | `IAuthRootRepository`        |
+| Credentials            | JWT Identity      | Jwt, Identity                  | `IAuthIdentityRepository`    |
 | External               | JWT Identity      | Jwt, ExternalLogins, Identity  | `IAuthIdentityRepository`    |
 | External Transient     | JWT Transient     | Jwt, ExternalLogins            | `IAuthTransientRepository`   |
 | Api Key                | Api Key Identity  | Identity, ApiKey               | -                            |
 
-The most basic and commonly used authentication method is logging in with credentials, a username and password, validated against the configured identity store.  
-
-The `IAuthIdentityRepository` provides the following methods to support this functionality.  
-
-| Method                              | Parameters           | Description                                                                                                                     |
-| ----------------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `LogInAsync`                        | logIn                | Logs in a user using username and password credentials, generating a JWT access token and optional refresh token.               |
-| `LogInExternalAsync`                | logInExternal        | Logs in a user using a configured built-in external login provider, generating a JWT access token and optional refresh token.   |
-| `LogInExternalAsync`                | logInExternalDirect  | Logs in a user using direct external login data, generating a JWT access token and optional refresh token.                      |
-| `LogInRefreshAsync`                 | logInRefresh         | Refreshes an existing access token using a valid refresh token, generating a new JWT and refresh token.                         |
-| `LogOutAsync`                       | userId, appId        | Logs out the current user.                                                                                                      |
-
-Try it out yourself using the **[Api.Data.Identity.Auth.Jwt](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Auth.Jwt)** example.  
-
-Nano also supports a statically configured JWT login called `RootLogin`. It is primarily intended for use in `Development` environments when testing services in isolation, but where 
+Nano supports a statically configured JWT login called `RootLogin`. It is primarily intended for use in `Development` environments when testing services in isolation, but where 
 the application still requires an authenticated user. Another common scenario is when console applications need to authenticate through the Nano API client but do not have 
 a specific user account available for login. This login type is transient and does not rely on an identity store.  
 
@@ -1589,13 +1574,31 @@ The `IAuthRootRepository` contains just a single method.
 
 Try it out yourself using the **[Api.Authentication.RootLogin](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Authentication.RootLogin)** example.  
 
-Next, authentication using external providers is supported in Nano as well. Predefined integrations are available for providers such as Facebook, Google, and Microsoft, and 
-direct external authentication is supported as well. With direct external authentication, you pass the authentication result to Nano, which then handles JWT token creation or 
-persists the login in the identity store if configured.
+The most basic and commonly used authentication method is logging in with credentials, a username and password, validated against the configured identity store.  
 
-External logins can be used with **[Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#identity)** or as transient logins without an identity store.
+The `IAuthIdentityRepository` provides the following methods to support this functionality.  
 
-The configuration is defined as follows for the built-in external logins.  
+| Method                              | Parameters                       | Description                                                                                                                             |
+| ----------------------------------- | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `LogInAsync`                        | logIn                            | Logs in a user using username and password credentials, generating a JWT access token and optional refresh token.                       |
+| `LogInExternalAsync`                | logInExternal                    | Logs in a user using direct external login data, generating a JWT access token and optional refresh token.                              |
+| `LogInExternalAsync`                | providerName, logInExternalFlow  | Logs in a user authenticating with a configured external login provider flow, generating a JWT access token and optional refresh token. |
+| `LogInRefreshAsync`                 | logInRefresh                     | Refreshes an existing access token using a valid refresh token, generating a new JWT and refresh token.                                 |
+| `LogOutAsync`                       | userId, appId                    | Logs out the current user.                                                                                                              |
+
+Try it out yourself using the **[Api.Data.Identity.Auth.Jwt](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Auth.Jwt)** example.  
+
+The `IAuthIdentityRepository` supports external authentication backed by the identity store, as shown in the table above. In contrast, the `IAuthTransientRepository`, shown in the table below, 
+also supports external authentication but is designed for transient logins without persistence and provides dedicated methods for external transient authentication.
+
+| Method                              | Parameters           | Description                                                                                                                     |
+| ----------------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `LogInExternalAsync`                | logInExternal        | Performs an external login using direct external login data and generates a corresponding JWT access token.                     |
+| `LogInExternalAsync`                | logInExternalDirect  | Performs an external login using a configured built-in external provider type and generates a corresponding JWT access token.   |
+
+Logging in using external authentication in Nano can be achieved either by configuring a built-in provider or by implementing a custom provider (see further down).  
+
+For a built-in provider, the following configuration can be added.  
 
 **Facebook**
 
@@ -1605,6 +1608,20 @@ The configuration is defined as follows for the built-in external logins.
 |  `Facebook.AppSecret`      | string | null     | Required. Facebook App Secret.      |
 |  `Facebook.Scopes`         | array  | []       | Required. OAuth Scopes.             |
 
+```json
+"App": {
+  "Authentication": {
+    "Jwt": {
+      "ExternalLogins": {
+        "Facebook": {
+            "AppId": null,
+            "AppSecret": null,
+            "Scopes": [ ]
+        }
+    }
+  }
+}
+```
 **Google**
 
 | Setting                    | Type   | Default  | Description                         |
@@ -1612,6 +1629,21 @@ The configuration is defined as follows for the built-in external logins.
 |  `Google.ClientId`         | string | null     | Required. Google Client Id.         |
 |  `Google.ClientSecret`     | string | null     | Required. Google Client Secret.     |
 |  `Google.Scopes`           | array  | []       | OAuth Scopes.                       |
+
+```json
+"App": {
+  "Authentication": {
+    "Jwt": {
+      "ExternalLogins": {
+        "Google": {
+          "ClientId": null,
+          "ClientSecret": null,
+          "Scopes": [ ]
+        }
+    }
+  }
+}
+```
 
 **Microsoft**
 
@@ -1627,16 +1659,6 @@ The configuration is defined as follows for the built-in external logins.
   "Authentication": {
     "Jwt": {
       "ExternalLogins": {
-        "Google": {
-          "ClientId": null,
-          "ClientSecret": null,
-          "Scopes": [ ]
-        },
-        "Facebook": {
-            "AppId": null,
-            "AppSecret": null,
-            "Scopes": [ ]
-        },
         "Microsoft": {
             "TenantId": null,
             "ClientId": null,
@@ -1650,45 +1672,38 @@ The configuration is defined as follows for the built-in external logins.
 
 > ⚠️ The external provider application must be configured with at least the following scopes: `id`, `email`, and `username`.
 
-The `IAuthIdentityRepository` handles external authentication backed by the identity store, whereas the `IAuthTransientRepository` is designed for transient logins and provides 
-methods specifically for external transient authentication.
+Implementing a custom external authentication provider in Nano is straightforward. Create a class that derives from `BaseAuthExternalRepository<TFlow>` and provide a provider name via the 
+constructor. The base class implements the `IAuthExternalRepository<TFlow>` interface, which requires you to implement the abstract methods `AuthenticateAsync` and `AuthenticateRefreshAsync`. 
+The `TFlow` generic parameter defines the authentication flow used by the provider. Nano includes two built-in flows, `Implicit` and `AuthCode`, but you can extend this by creating your own 
+flow types that derive from `BaseAuthFlow`.
 
-| Method                              | Parameters           | Description                                                                                                                     |
-| ----------------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `LogInExternalAsync`                | logInExternal        | Performs an external login using direct external login data and generates a corresponding JWT access token.                     |
-| `LogInExternalAsync`                | logInExternalDirect  | Performs an external login using a configured built-in external provider type and generates a corresponding JWT access token.   |
+All implementations of `IAuthExternalRepository<TFlow>` are automatically registered as external providers in Nano and exposed through the `IAuthExternalRepositoryAggregator`, which selects 
+the appropriate provider based on its name when multiple providers are available. The repository exposes `AuthenticateAsync` and `AuthenticateRefreshAsync` methods and, as shown below, also 
+provides a method to retrieve all registered providers.
+
+| Method                        | Parameters   | Description                                                                  |
+| ----------------------------- | ------------ | ---------------------------------------------------------------------------- |
+| `GetExternalProviderSchemes`  | flow         | Retrieves all configured external authentication providers.                  |
+| `AuthenticateAsync`           | flow         | Authenticates a user using the provider-specific authentication flow.        |
+| `AuthenticateRefreshAsync`    | refreshToken | Refreshes an existing external authentication session using a refresh token. |
+
+In most cases, there is no need to call the `IAuthExternalRepositoryAggregator` methods directly. External authentication is typically invoked through `IAuthIdentityRepository`, 
+`IAuthTransientRepository`, or `IIdentityRepository`. These repositories also support direct external methods, allowing you to first authenticate with an external provider, handle any 
+intermediate steps, and then use the resulting authentication data together with custom processing to complete the action within Nano.
 
 Try out external authentication yourself using one of these examples.  
 
-* **[Api.Data.Identity.Auth.External.Direct](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Auth.External.Direct)** 
+* **[Api.Data.Identity.Auth.External.Custom](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Auth.External.Custom)** 
 * **[Api.Data.Identity.Auth.External.Facebook](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Auth.External.Facebook)** 
 * **[Api.Data.Identity.Auth.External.Google](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Auth.External.Google)** 
 * **[Api.Data.Identity.Auth.External.Microsoft](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Auth.External.Microsoft)** 
 
 ...or the equivalent transient examples.  
 
-* **[Api.Auth.External.Direct](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Auth.External.Direct)** 
+* **[Api.Auth.External.Custom](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Auth.External.Custom)** 
 * **[Api.Auth.External.Facebook](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Auth.External.Facebook)** 
 * **[Api.Auth.External.Google](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Auth.External.Google)** 
 * **[Api.Auth.External.Microsoft](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Auth.External.Microsoft)** 
-
-Finally, Nano allows you to add a custom authentication provider. The recommended approach is to configure JWT authentication in Nano and then integrate your custom authentication 
-through a direct external provider. You can also register custom authorization policies as needed and apply them using the `[Authorize]` attribute on relevant endpoints.  
-
-If you choose not to configure any Nano authentication, registering only your custom provider will work as well, leaving your provider as the sole active authentication method. 
-Custom external providers that are registered will appear in the results of `GetExternalAuthenticationSchemesAsync()`. Your custom authentication can be used both with the 
-identity store and for transient logins.
-
-```csharp
-services
-    .AddAuthentication(x =>
-    {
-        x.DefaultScheme = "CustomScheme;
-    })
-    .AddCustomAuthentication(...)     
-```
-
-Try it out yourself using the **[Api.Authentication.Custom](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Authentication.Custom)** example.  
 
 All authentication repositories are leveraged by the `BaseAuthController` when implemented to expose authentication endpoints. In most cases, you do not need to interact with 
 the repositories directly. Using the controller provides a consistent, simplified interface to access all configured authentication actions, ensuring that authentication flows are 
@@ -1746,7 +1761,7 @@ metadata:
     nginx.ingress.kubernetes.io/auth-response-headers: "Authorization"
 ```
 
-Try it out yourself using the **[Api.Data.Identity.Auth.ApiKey](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Auth.Jwt)** example.  
+Try it out yourself using the **[Api.Data.Identity.Auth.ApiKey](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Auth.ApiKey)** example.  
 
 ## Authorization
 Nano supports authorization using either a JWT token or an API key. JWT tokens are provided in the `Authorization` header, while API keys are provided in 
@@ -1931,64 +1946,60 @@ emails, phone numbers, external logins, claims, roles, and API keys.
 The following endpoints are available in the `BaseEntityUserController<TEntity, TCriteria>` for managing user identities. Not all identity features might be configured. Nano only 
 exposes endpoints that match the current configuration; any features not configured will not be registered or available in the controller.
 
-| Endpoint                                              | Method        | Role          | Description                                                                 |
-|------------------------------------------------------ |-------------- | ------------- | --------------------------------------------------------------------------- |
-| `/{entity}s/password/options`                         | GET           | Anonymous     | Retrieves the configured password options.                                  |
-| `/{entity}s/email/is-taken`                           | GET           | Anonymous     | Determines whether an email address is already in use.                      |
-| `/{entity}s/phone/is-taken`                           | GET           | Anonymous     | Determines whether a phone number is already in use.                        |
-| `/{entity}s/signup`                                   | POST          | Anonymous     | Registers a new user.                                                       |
-| `/{entity}s/signup/external/facebook`                 | POST          | Anonymous     | Registers a new user using an external Facebook login provider.             |
-| `/{entity}s/signup/external/google`                   | POST          | Anonymous     | Registers a new user using an external Google login provider.               |
-| `/{entity}s/signup/external/microsoft`                | POST          | Anonymous     | Registers a new user using an external Microsoft login provider.            |
-| `/{entity}s/{id}/username/set`                        | POST          | Anonymous     | Sets the username of a user.                                                |
-| `/{entity}s/{id}/password/set`                        | POST          | identity      | Assigns a password to a user that does not already have one.                |
-| `/{entity}s/{id}/password/change`                     | POST          | identity      | Changes the password of an existing user.                                   |
-| `/{entity}s/{id}/password/reset`                      | POST          | Anonymous     | Resets the password of a user using a reset token.                          |
-| `/{entity}s/password/reset/token`                     | POST          | Anonymous     | Generates a password reset token.                                           |
-| `/{entity}s/{id}/email/change`                        | POST          | identity      | Changes the email address of a user.                                        |
-| `/{entity}s/{id}/email/change/token`                  | POST          | identity      | Generates an email change token.                                            |
-| `/{entity}s/{id}/email/confirm`                       | POST          | identity      | Confirms the email address of a user.                                       |
-| `/{entity}s/{id}/email/confirm/token`                 | POST          | identity      | Generates an email confirmation token.                                      |
-| `/{entity}s/{id}/phone/change`                        | POST          | identity      | Changes the phone number of a user.                                         |
-| `/{entity}s/{id}/phone/change/token`                  | POST          | identity      | Generates a phone number change token.                                      |
-| `/{entity}s/{id}/phone/confirm`                       | POST          | identity      | Confirms the phone number of a user.                                        |
-| `/{entity}s/{id}/phone/confirm/token`                 | POST          | identity      | Generates a phone number confirmation token.                                |
-| `/{entity}s/{id}/custom-purpose/confirm`              | POST          | identity      | Generates a custom-purpose token for a user.                                |
-| `/{entity}s/{id}/custom-purpose/confirm/token`        | POST          | identity      | Confirms a previously generated custom-purpose token.                       |
-| `/{entity}s/{id}/activate`                            | POST          | identity      | Activates the user with the specified identifier.                           |
-| `/{entity}s/{id}/deactivate`                          | POST / DELETE | identity      | Deactivates the user with the specified identifier.                         |
-| `/{entity}s/{id}/delete`                              | POST / DELETE | deleter       | Deletes the user with the specified identifier.                             |
-| `/{entity}s/delete/many`                              | POST / DELETE | deleter       | Deletes multiple users with the specified identifiers.                      |
-| `/{entity}s/{id}/roles`                               | GET           | identity      | Retrieves all roles assigned to a specific user.                            |
-| `/{entity}s/{id}/roles/assign`                        | POST          | identity      | Assigns a role to a user.                                                   |
-| `/{entity}s/{id}/roles/remove`                        | POST / DELETE | identity      | Removes a role from a user.                                                 |
-| `/{entity}s/{id}/claims`                              | GET           | identity      | Retrieves all claims assigned to a specific user.                           |
-| `/{entity}s/{id}/claims/assign`                       | POST          | identity      | Assigns a new claim to a user.                                              |
-| `/{entity}s/{id}/claims/replace`                      | PUT           | identity      | Replaces an existing claim of a user.                                       |
-| `/{entity}s/{id}/claims/assign-or-replace`            | PUT           | identity      | Assigns or replaces a claim of a user.                                      |
-| `/{entity}s/{id}/claims/remove`                       | POST / DELETE | identity      | Removes a claim from a user.                                                |
-| `/{entity}s/{id}/external-logins`                     | GET           | identity      | Retrieves the external login providers associated with a user.              |
-| `/{entity}s/{id}/external-logins/add/facebook`        | POST          | identity      | Adds a Facebook external login to a user account.                           |
-| `/{entity}s/{id}/external-logins/add/google`          | POST          | identity      | Adds a Google external login to a user account.                             |
-| `/{entity}s/{id}/external-logins/add/microsoft`       | POST          | identity      | Adds a Microsoft external login to a user account.                          |
-| `/{entity}s/{id}/external-logins/remove/facebook`     | POST / DELETE | identity      | Removes a Facebook external login from a user account.                      |
-| `/{entity}s/{id}/external-logins/remove/google`       | POST / DELETE | identity      | Removes a Google external login from a user account.                        |
-| `/{entity}s/{id}/external-logins/remove/microsoft`    | POST / DELETE | identity      | Removes a Microsoft external login from a user account.                     |
-| `/{entity}s/{id}/refresh-tokens`                      | GET           | identity      | Retrieves all refresh tokens associated with a specific user.               |
-| `/{entity}s/{id}/refresh-tokens/active`               | GET           | identity      | Retrieves all active refresh tokens for a specific user.                    |
-| `/{entity}s/refresh-tokens/{refreshTokenId}`          | DELETE        | identity      | Deletes a specific refresh token by its identifier.                         |
-| `/{entity}s/{id}/api-keys`                            | GET           | identity      | Retrieves all API keys associated with a specific user.                     |
-| `/{entity}s/{id}/api-keys/create`                     | POST          | identity      | Creates a new API key for a user.                                           |
-| `/{entity}s/api-keys/{apiKeyId}/edit`                 | PUT / POST    | identity      | Edits an existing API key.                                                  |
-| `/{entity}s/api-keys/{apiKeyId}/revoke`               | DELETE        | identity      | Revokes a specific API key.                                                 |
-| `/{entity}s/roles`                                    | GET           | administrator | Retrieves all roles in the system.                                          |
-| `/{entity}s/roles/create`                             | POST          | administrator | Creates a new role.                                                         |
-| `/{entity}s/roles/delete`                             | POST / DELETE | administrator | Deletes a role from the system.                                             |
-| `/{entity}s/roles/{roleId}/claims`                    | GET           | administrator | Retrieves all claims associated with a role.                                |
-| `/{entity}s/roles/{roleId}/claims/assign`             | POST          | administrator | Assigns a claim to a role.                                                  |
-| `/{entity}s/roles/{roleId}/claims/replace`            | PUT           | administrator | Replaces a claim of a role.                                                 |
-| `/{entity}s/roles/{roleId}/claims/assign-or-replace`  | PUT           | administrator | Assigns or replaces a claim of a role.                                      |
-| `/{entity}s/roles/{roleId}/claims/remove`             | POST / DELETE | administrator | Removes a claim from a role.                                                |
+| Endpoint                                                | Method        | Role          | Description                                                                                                                               |
+|-------------------------------------------------------- | ------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `/{entity}s/password/options`                           | GET           | Anonymous     | Retrieves the configured password options.                                                                                                |
+| `/{entity}s/email/is-taken`                             | GET           | Anonymous     | Determines whether an email address is already in use.                                                                                    |
+| `/{entity}s/phone/is-taken`                             | GET           | Anonymous     | Determines whether a phone number is already in use.                                                                                      |
+| `/{entity}s/signup`                                     | POST          | Anonymous     | Registers a new user.                                                                                                                     |
+| `/{entity}s/signup/external/{providerName}`             | POST          | Anonymous     | Registers a new user via an external login provider. An endpoint is exposed for each registered external provider.                        |
+| `/{entity}s/{id}/username/set`                          | POST          | Anonymous     | Sets the username of a user.                                                                                                              |
+| `/{entity}s/{id}/password/set`                          | POST          | identity      | Assigns a password to a user that does not already have one.                                                                              |
+| `/{entity}s/{id}/password/change`                       | POST          | identity      | Changes the password of an existing user.                                                                                                 |
+| `/{entity}s/{id}/password/reset`                        | POST          | Anonymous     | Resets the password of a user using a reset token.                                                                                        |
+| `/{entity}s/password/reset/token`                       | POST          | Anonymous     | Generates a password reset token.                                                                                                         |
+| `/{entity}s/{id}/email/change`                          | POST          | identity      | Changes the email address of a user.                                                                                                      |
+| `/{entity}s/{id}/email/change/token`                    | POST          | identity      | Generates an email change token.                                                                                                          |
+| `/{entity}s/{id}/email/confirm`                         | POST          | identity      | Confirms the email address of a user.                                                                                                     |
+| `/{entity}s/{id}/email/confirm/token`                   | POST          | identity      | Generates an email confirmation token.                                                                                                    |
+| `/{entity}s/{id}/phone/change`                          | POST          | identity      | Changes the phone number of a user.                                                                                                       |
+| `/{entity}s/{id}/phone/change/token`                    | POST          | identity      | Generates a phone number change token.                                                                                                    |
+| `/{entity}s/{id}/phone/confirm`                         | POST          | identity      | Confirms the phone number of a user.                                                                                                      |
+| `/{entity}s/{id}/phone/confirm/token`                   | POST          | identity      | Generates a phone number confirmation token.                                                                                              |
+| `/{entity}s/{id}/custom-purpose/confirm`                | POST          | identity      | Generates a custom-purpose token for a user.                                                                                              |
+| `/{entity}s/{id}/custom-purpose/confirm/token`          | POST          | identity      | Confirms a previously generated custom-purpose token.                                                                                     |
+| `/{entity}s/{id}/activate`                              | POST          | identity      | Activates the user with the specified identifier.                                                                                         |
+| `/{entity}s/{id}/deactivate`                            | POST / DELETE | identity      | Deactivates the user with the specified identifier.                                                                                       |
+| `/{entity}s/{id}/delete`                                | POST / DELETE | deleter       | Deletes the user with the specified identifier.                                                                                           |
+| `/{entity}s/delete/many`                                | POST / DELETE | deleter       | Deletes multiple users with the specified identifiers.                                                                                    |
+| `/{entity}s/{id}/roles`                                 | GET           | identity      | Retrieves all roles assigned to a specific user.                                                                                          |
+| `/{entity}s/{id}/roles/assign`                          | POST          | identity      | Assigns a role to a user.                                                                                                                 |
+| `/{entity}s/{id}/roles/remove`                          | POST / DELETE | identity      | Removes a role from a user.                                                                                                               |
+| `/{entity}s/{id}/claims`                                | GET           | identity      | Retrieves all claims assigned to a specific user.                                                                                         |
+| `/{entity}s/{id}/claims/assign`                         | POST          | identity      | Assigns a new claim to a user.                                                                                                            |
+| `/{entity}s/{id}/claims/replace`                        | PUT           | identity      | Replaces an existing claim of a user.                                                                                                     |
+| `/{entity}s/{id}/claims/assign-or-replace`              | PUT           | identity      | Assigns or replaces a claim of a user.                                                                                                    |
+| `/{entity}s/{id}/claims/remove`                         | POST / DELETE | identity      | Removes a claim from a user.                                                                                                              |
+| `/{entity}s/{id}/external-logins`                       | GET           | identity      | Retrieves the external login providers associated with a user.                                                                            |
+| `/{entity}s/{id}/external-logins/add/{providerName}`    | POST          | identity      | Adds an external login to a user account. An endpoint is exposed for each registered external provider.                                   |
+| `/{entity}s/{id}/external-logins/remove/{providerName}` | POST / DELETE | identity      | Removes an external login from a user account. An endpoint is exposed for each registered external provider.                              |
+| `/{entity}s/{id}/refresh-tokens`                        | GET           | identity      | Retrieves all refresh tokens associated with a specific user.                                                                             |
+| `/{entity}s/{id}/refresh-tokens/active`                 | GET           | identity      | Retrieves all active refresh tokens for a specific user.                                                                                  |
+| `/{entity}s/refresh-tokens/{refreshTokenId}`            | DELETE        | identity      | Deletes a specific refresh token by its identifier.                                                                                       |
+| `/{entity}s/{id}/api-keys`                              | GET           | identity      | Retrieves all API keys associated with a specific user.                                                                                   |
+| `/{entity}s/{id}/api-keys/create`                       | POST          | identity      | Creates a new API key for a user.                                                                                                         |
+| `/{entity}s/api-keys/{apiKeyId}/edit`                   | PUT / POST    | identity      | Edits an existing API key.                                                                                                                |
+| `/{entity}s/api-keys/{apiKeyId}/revoke`                 | DELETE        | identity      | Revokes a specific API key.                                                                                                               |
+| `/{entity}s/roles`                                      | GET           | administrator | Retrieves all roles in the system.                                                                                                        |
+| `/{entity}s/roles/create`                               | POST          | administrator | Creates a new role.                                                                                                                       |
+| `/{entity}s/roles/delete`                               | POST / DELETE | administrator | Deletes a role from the system.                                                                                                           |
+| `/{entity}s/roles/{roleId}/claims`                      | GET           | administrator | Retrieves all claims associated with a role.                                                                                              |
+| `/{entity}s/roles/{roleId}/claims/assign`               | POST          | administrator | Assigns a claim to a role.                                                                                                                |
+| `/{entity}s/roles/{roleId}/claims/replace`              | PUT           | administrator | Replaces a claim of a role.                                                                                                               |
+| `/{entity}s/roles/{roleId}/claims/assign-or-replace`    | PUT           | administrator | Assigns or replaces a claim of a role.                                                                                                    |
+| `/{entity}s/roles/{roleId}/claims/remove`               | POST / DELETE | administrator | Removes a claim from a role.                                                                                                              |
+
+Endpoints for user refresh tokens are only exposed if JWT authentication is configured. Similarly, endpoints for API keys are only exposed when API key authentication is configured.  
 
 > 📖 Learn more about **[Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#identity)**.
 
@@ -2000,19 +2011,15 @@ simply derive a concrete controller from one of these base classes. There is no 
 The following endpoints are available in the `BaseAuthController` for managing authentication. Nano only exposes endpoints that match the current configuration; any features that 
 are not configured will not be registered or available in the controller.  
 
-| Endpoint                                    | Method | Role      | Description                                                                          |
-| ------------------------------------------- | ------ | --------- | ------------------------------------------------------------------------------------ |
-| `/auth/login`                               | POST   | Anonymous | Authenticates a user and returns an access token (JWT).                              |
-| `/auth/login/root`                          | POST   | Anonymous | Authenticates the root user from configuration and returns an access token.          |
-| `/auth/login/external/facebook`             | POST   | Anonymous | Signs in a user via external Facebook authentication.                                |
-| `/auth/login/external/facebook/transient`   | POST   | Anonymous | Signs in a transient user via external Facebook authentication.                      |
-| `/auth/login/external/google`               | POST   | Anonymous | Signs in a user via external Google authentication.                                  |
-| `/auth/login/external/google/transient`     | POST   | Anonymous | Signs in a transient user via external Google authentication.                        |
-| `/auth/login/external/microsoft`            | POST   | Anonymous | Signs in a user via external Microsoft authentication (auth-code flow).              |
-| `/auth/login/external/microsoft/transient`  | POST   | Anonymous | Signs in a transient user via external Microsoft authentication (auth-code flow).    |
-| `/auth/login/refresh`                       | POST   | Anonymous | Refreshes an existing access token.                                                  |
-| `/auth/logout`                              | POST   | Anonymous | Logs out the current user and clears external authentication cookies.                |
-| `/auth/external/schemes`                    | GET    | Anonymous | Retrieves all configured external authentication schemes (e.g., Google, Facebook).   |
+| Endpoint                                         | Method | Role      | Description                                                                                                                                                                          |
+| ------------------------------------------------ | ------ | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `/auth/login`                                    | POST   | Anonymous | Authenticates a user and returns an access token (JWT).                                                                                                                              |
+| `/auth/login/root`                               | POST   | Anonymous | Authenticates the root user from configuration and returns an access token.                                                                                                          |
+| `/auth/login/external/{providerName}`            | POST   | Anonymous | Signs in a user using external provider authentication. An endpoint is exposed for each registered external provider. Only exposed when Identity has been configured.                |
+| `/auth/login/external/{providerName}/transient`  | POST   | Anonymous | Signs in a transient user using external provider authentication. An endpoint is exposed for each registered external provider. Only exposed when Identity has not been configured.  |
+| `/auth/login/refresh`                            | POST   | Anonymous | Refreshes an existing access token.                                                                                                                                                  |
+| `/auth/logout`                                   | POST   | Anonymous | Logs out the current user.                                                                                                                                                           |
+| `/auth/external/schemes`                         | GET    | Anonymous | Retrieves all configured external authentication methods (e.g., Google, Facebook).                                                                                                   |
 
 > 📖 Learn more about **[Authentication](#authentication)**.
 

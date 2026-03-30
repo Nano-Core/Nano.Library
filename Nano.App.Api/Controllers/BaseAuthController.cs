@@ -40,7 +40,7 @@ public abstract class BaseAuthController<TIdentity>(ILogger<BaseAuthController<T
     #region Login
 
     /// <summary>
-    /// Retrieves all configured external authentication schemes, e.g., Google, Facebook.
+    /// Retrieves all configured external authentication methods, e.g., Google, Facebook.
     /// </summary>
     /// <param name="cancellationToken">Token to cancel the request.</param>
     /// <returns>A collection of external authentication providers.</returns>
@@ -170,7 +170,7 @@ public abstract class BaseAuthController<TIdentity>(ILogger<BaseAuthController<T
     }
 
     /// <summary>
-    /// Logs out the current user and clears external authentication cookies.
+    /// Logs out the current user.
     /// </summary>
     /// <param name="cancellationToken">Token to cancel the request.</param>
     /// <returns>Returns HTTP 200 on success.</returns>

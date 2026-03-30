@@ -75,47 +75,47 @@ public abstract class BaseAuthIdentityRepository<TIdentity> : IAuthIdentityRepos
     }
 
     /// <inheritdoc />
-    public virtual async Task<AccessToken> LogInExternalAsync(LogInExternal logInExternalDirect, CancellationToken cancellationToken = default)
+    public virtual async Task<AccessToken> LogInExternalAsync(LogInExternal logInExternal, CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(logInExternalDirect);
+        ArgumentNullException.ThrowIfNull(logInExternal);
 
         var identityUser = await this.identityRepository
             .SignInExternalAsync(new SignInExternal
             {
                 ExternalProvider =
                 {
-                    Name = logInExternalDirect.ExternalAuthenticationData.ExternalToken.Name,
-                    UserId = logInExternalDirect.ExternalAuthenticationData.Id
+                    Name = logInExternal.ExternalAuthenticationData.ExternalToken.Name,
+                    UserId = logInExternal.ExternalAuthenticationData.Id
                 }
             }, cancellationToken);
 
         var claims = await this.identityRepository
-            .GetAllClaims(identityUser, logInExternalDirect.TransientRoles, logInExternalDirect.TransientClaims, cancellationToken);
+            .GetAllClaims(identityUser, logInExternal.TransientRoles, logInExternal.TransientClaims, cancellationToken);
 
         var accessToken = this.authJwtRepository
             .GenerateJwtToken(new GenerateJwtToken
             {
-                AppId = logInExternalDirect.AppId,
+                AppId = logInExternal.AppId,
                 UserId = identityUser.Id.ToString(),
                 UserName = identityUser.UserName,
                 UserEmail = identityUser.Email,
                 Claims = claims,
-                ExternalToken = logInExternalDirect.ExternalAuthenticationData.ExternalToken
+                ExternalToken = logInExternal.ExternalAuthenticationData.ExternalToken
             });
 
-        accessToken.RefreshToken = logInExternalDirect.IsRefreshable
-            ? await this.CreateRefreshToken(identityUser, logInExternalDirect.AppId)
+        accessToken.RefreshToken = logInExternal.IsRefreshable
+            ? await this.CreateRefreshToken(identityUser, logInExternal.AppId)
             : null;
 
         return accessToken;
     }
 
     /// <inheritdoc />
-    public virtual async Task<AccessToken> LogInExternalAsync<TFlow>(string providerName, LogInExternal<TFlow> logInExternal, CancellationToken cancellationToken = default)
+    public virtual async Task<AccessToken> LogInExternalAsync<TFlow>(string providerName, LogInExternal<TFlow> logInExternalFlow, CancellationToken cancellationToken = default)
         where TFlow : BaseAuthFlow
     {
         ArgumentNullException.ThrowIfNull(providerName);
-        ArgumentNullException.ThrowIfNull(logInExternal);
+        ArgumentNullException.ThrowIfNull(logInExternalFlow);
 
         if (this.authExternalRepository == null)
         {
@@ -123,17 +123,17 @@ public abstract class BaseAuthIdentityRepository<TIdentity> : IAuthIdentityRepos
         }
 
         var authenticationData = await this.authExternalRepository
-            .AuthenticateAsync(providerName, logInExternal.Flow, cancellationToken);
+            .AuthenticateAsync(providerName, logInExternalFlow.Flow, cancellationToken);
 
-        var claims = logInExternal.TransientClaims
+        var claims = logInExternalFlow.TransientClaims
             .Merge(authenticationData.TransientClaims);
 
         return await this.LogInExternalAsync(new LogInExternal
         {
-            AppId = logInExternal.AppId,
-            IsRefreshable = logInExternal.IsRefreshable,
+            AppId = logInExternalFlow.AppId,
+            IsRefreshable = logInExternalFlow.IsRefreshable,
             ExternalAuthenticationData = authenticationData,
-            TransientRoles = logInExternal.TransientRoles,
+            TransientRoles = logInExternalFlow.TransientRoles,
             TransientClaims = claims
         }, cancellationToken);
     }

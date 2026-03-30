@@ -73,16 +73,19 @@ internal static class ApplicationBuilderExtensions
             .UseCors()
             .Use((context, next) =>
             {
-                context.Response
-                    .OnStarting(() =>
-                    {
-                        context.Response
-                            .AddCrossOriginEmbedderPolicyHeader(options.Origin.EmbedderPolicy)
-                            .AddCrossOriginOpenerPolicyHeader(options.Origin.OpenerPolicy)
-                            .AddCrossOriginResourcePolicyHeader(options.Origin.ResourcePolicy);
+                if (!context.Response.HasStarted)
+                {
+                    context.Response
+                        .OnStarting(() =>
+                        {
+                            context.Response
+                                .AddCrossOriginEmbedderPolicyHeader(options.Origin.EmbedderPolicy)
+                                .AddCrossOriginOpenerPolicyHeader(options.Origin.OpenerPolicy)
+                                .AddCrossOriginResourcePolicyHeader(options.Origin.ResourcePolicy);
 
-                        return Task.CompletedTask;
-                    });
+                            return Task.CompletedTask;
+                        });
+                }
 
                 return next();
             });
@@ -130,14 +133,17 @@ internal static class ApplicationBuilderExtensions
         applicationBuilder
             .Use((context, next) =>
             {
-                context.Response
-                    .OnStarting(() =>
-                    {
-                        context.Response
-                            .AddXRobotsHeader(options);
+                if (!context.Response.HasStarted)
+                {
+                    context.Response
+                        .OnStarting(() =>
+                        {
+                            context.Response
+                                .AddXRobotsHeader(options);
 
-                        return Task.CompletedTask;
-                    });
+                            return Task.CompletedTask;
+                        });
+                }
 
                 return next();
             });
@@ -157,14 +163,17 @@ internal static class ApplicationBuilderExtensions
         applicationBuilder
             .Use((context, next) =>
             {
-                context.Response
-                    .OnStarting(() =>
-                    {
-                        context.Response
-                            .AddXFrameOptionsPolicyHeader(options.FrameOptionsPolicyHeader);
+                if (!context.Response.HasStarted)
+                {
+                    context.Response
+                        .OnStarting(() =>
+                        {
+                            context.Response
+                                .AddXFrameOptionsPolicyHeader(options.FrameOptionsPolicyHeader);
 
-                        return Task.CompletedTask;
-                    });
+                            return Task.CompletedTask;
+                        });
+                }
 
                 return next();
             });
@@ -184,14 +193,17 @@ internal static class ApplicationBuilderExtensions
         applicationBuilder
             .Use((context, next) =>
             {
-                context.Response
-                    .OnStarting(() =>
-                    {
-                        context.Response
-                            .AddXXssProtectionPolicyHeader(options);
+                if (!context.Response.HasStarted)
+                {
+                    context.Response
+                        .OnStarting(() =>
+                        {
+                            context.Response
+                                .AddXXssProtectionPolicyHeader(options);
 
-                        return Task.CompletedTask;
-                    });
+                            return Task.CompletedTask;
+                        });
+                }
 
                 return next();
             });
@@ -211,14 +223,17 @@ internal static class ApplicationBuilderExtensions
         applicationBuilder
             .Use((context, next) =>
             {
-                context.Response
-                    .OnStarting(() =>
-                    {
-                        context.Response
-                            .AddContentTypeOptionsHeader(options);
+                if (!context.Response.HasStarted)
+                {
+                    context.Response
+                        .OnStarting(() =>
+                        {
+                            context.Response
+                                .AddContentTypeOptionsHeader(options);
 
-                        return Task.CompletedTask;
-                    });
+                            return Task.CompletedTask;
+                        });
+                }
 
                 return next();
             });
@@ -238,14 +253,17 @@ internal static class ApplicationBuilderExtensions
         applicationBuilder
             .Use((context, next) =>
             {
-                context.Response
-                    .OnStarting(() =>
-                    {
-                        context.Response
-                            .AddReferrerPolicyHeader(options);
+                if (!context.Response.HasStarted)
+                {
+                    context.Response
+                        .OnStarting(() =>
+                        {
+                            context.Response
+                                .AddReferrerPolicyHeader(options);
 
-                        return Task.CompletedTask;
-                    });
+                            return Task.CompletedTask;
+                        });
+                }
 
                 return next();
             });
@@ -280,14 +298,17 @@ internal static class ApplicationBuilderExtensions
         applicationBuilder
             .Use((context, next) =>
             {
-                context.Response
-                    .OnStarting(() =>
-                    {
-                        context.Response
-                            .AddContentSecurityPolicyHeader(options);
+                if (!context.Response.HasStarted)
+                {
+                    context.Response
+                        .OnStarting(() =>
+                        {
+                            context.Response
+                                .AddContentSecurityPolicyHeader(options);
 
-                        return Task.CompletedTask;
-                    });
+                            return Task.CompletedTask;
+                        });
+                }
 
                 return next();
             });
@@ -297,14 +318,17 @@ internal static class ApplicationBuilderExtensions
             applicationBuilder
                 .Use((context, next) =>
                 {
-                    context.Response
-                        .OnStarting(() =>
-                        {
-                            context.Response
-                                .AddContentSecurityPolicyPermissionsHeader(options.PermissionsPolicy);
+                    if (!context.Response.HasStarted)
+                    {
+                        context.Response
+                            .OnStarting(() =>
+                            {
+                                context.Response
+                                    .AddContentSecurityPolicyPermissionsHeader(options.PermissionsPolicy);
 
-                            return Task.CompletedTask;
-                        });
+                                return Task.CompletedTask;
+                            });
+                    }
 
                     return next();
                 });
@@ -315,14 +339,17 @@ internal static class ApplicationBuilderExtensions
             applicationBuilder
                 .Use((context, next) =>
                 {
-                    context.Response
-                        .OnStarting(() =>
-                        {
-                            context.Response
-                                .AddContentSecurityPolicyReportToHeader(options.ReportTo);
+                    if (!context.Response.HasStarted)
+                    {
+                        context.Response
+                            .OnStarting(() =>
+                            {
+                                context.Response
+                                    .AddContentSecurityPolicyReportToHeader(options.ReportTo);
 
-                            return Task.CompletedTask;
-                        });
+                                return Task.CompletedTask;
+                            });
+                    }
 
                     return next();
                 });
@@ -408,13 +435,16 @@ internal static class ApplicationBuilderExtensions
 
                 context.Request.Headers[NanoHeaderNames.REQUEST_ID] = context.TraceIdentifier;
 
-                context.Response
-                    .OnStarting(() =>
-                    {
-                        context.Response.Headers[NanoHeaderNames.REQUEST_ID] = context.TraceIdentifier;
+                if (!context.Response.HasStarted)
+                {
+                    context.Response
+                        .OnStarting(() =>
+                        {
+                            context.Response.Headers[NanoHeaderNames.REQUEST_ID] = context.TraceIdentifier;
 
-                        return Task.CompletedTask;
-                    });
+                            return Task.CompletedTask;
+                        });
+                }
 
                 return next();
             });
@@ -429,18 +459,21 @@ internal static class ApplicationBuilderExtensions
         applicationBuilder
             .Use((context, next) =>
             {
-                context.Response
-                    .OnStarting(() =>
-                    {
-                        if (context.RequestedApiVersion != null)
+                if (!context.Response.HasStarted)
+                {
+                    context.Response
+                        .OnStarting(() =>
                         {
-                            var versionString = $"{context.RequestedApiVersion?.MajorVersion ?? 0}.{context.RequestedApiVersion?.MinorVersion ?? 0}";
+                            if (context.RequestedApiVersion != null)
+                            {
+                                var versionString = $"{context.RequestedApiVersion?.MajorVersion ?? 0}.{context.RequestedApiVersion?.MinorVersion ?? 0}";
 
-                            context.Response.Headers[NanoHeaderNames.API_VERSION] = versionString;
-                        }
+                                context.Response.Headers[NanoHeaderNames.API_VERSION] = versionString;
+                            }
 
-                        return Task.CompletedTask;
-                    });
+                            return Task.CompletedTask;
+                        });
+                }
 
                 return next();
             });

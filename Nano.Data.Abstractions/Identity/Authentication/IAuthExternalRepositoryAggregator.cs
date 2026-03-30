@@ -11,7 +11,7 @@ namespace Nano.Data.Abstractions.Identity.Authentication;
 public interface IAuthExternalRepositoryAggregator
 {
     /// <summary>
-    /// Retrieves all configured external authentication provider schemes available for sign-in.
+    /// Retrieves all configured external authentication providers available.
     /// </summary>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a collectionof <see cref="ExternalLoginProvider"/> representing the available external authentication providers.</returns>
