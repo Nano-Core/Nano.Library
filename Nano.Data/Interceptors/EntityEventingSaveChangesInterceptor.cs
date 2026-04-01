@@ -13,7 +13,6 @@ namespace Nano.Data.Interceptors;
 // BUG: ENTITY EVENT: Entity Event Map
 // 1. Make a map of Publish Attributes and their property names.
 // 2. When SaveChanges then check if any property names are affected (e.g. User.IdentityUser.Email is changed, then User needs to be fetched and published)
-// NB: Maybe make startup validation of Publish properties and use of include ???
 // also we need to detect if there are changes compared to original values, because only then we should publish update events
 // Should use property values from entities when publishing not pre-save. Move all set properites to post save in publish except setting Id, CreatedAt and State
 // Test with Triggers
