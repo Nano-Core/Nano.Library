@@ -3,14 +3,14 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Data.Abstractions.Identity.Models;
 
 /// <summary>
-/// Represents a request to remove a claim from a user.
+/// Represents a request to sign in with api key.
 /// </summary>
-public class RemoveUserClaim
+public class SignInApiKey
 {
     /// <summary>
-    /// The claim type to remove.
+    /// The api key signing in.
     /// </summary>
     [Required]
     [MaxLength(256)]
-    public virtual string ClaimType { get; set; } = null!;
+    public virtual string ApiKey { get; set; } = null!;
 }

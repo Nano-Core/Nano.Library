@@ -14,7 +14,7 @@ public class AssignUserClaimRequest : AssignUserClaimRequest<Guid>;
 /// Request to assign a claim to a user.
 /// </summary>
 /// <typeparam name="TIdentity">Type of the user identifier.</typeparam>
-[PostAction(ActionRoutes.IDENTITY_CLAIMS_ASSIGN)]
+[PostAction(ActionRoutes.IDENTITY_USER_CLAIMS_ASSIGN)]
 public class AssignUserClaimRequest<TIdentity> : BaseRequest
     where TIdentity : IEquatable<TIdentity>
 {
@@ -23,5 +23,5 @@ public class AssignUserClaimRequest<TIdentity> : BaseRequest
     /// </summary>
     [Required]
     [Body]
-    public virtual AssignUserClaim AssignUserClaim { get; set; } = new();
+    public virtual AssignClaim AssignClaim { get; set; } = new();
 }

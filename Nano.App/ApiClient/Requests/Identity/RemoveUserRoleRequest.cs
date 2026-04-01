@@ -14,7 +14,7 @@ public class RemoveUserRoleRequest : RemoveUserRoleRequest<Guid>;
 /// Represents a request to remove a role from a user.
 /// </summary>
 /// <typeparam name="TIdentity">The type of the user identifier.</typeparam>
-[DeleteAction(ActionRoutes.IDENTITY_ROLES_USER_REMOVE)]
+[DeleteAction(ActionRoutes.IDENTITY_USER_ROLES_REMOVE)]
 public class RemoveUserRoleRequest<TIdentity> : BaseRequest
     where TIdentity : IEquatable<TIdentity>
 {
@@ -23,5 +23,5 @@ public class RemoveUserRoleRequest<TIdentity> : BaseRequest
     /// </summary>
     [Required]
     [Body]
-    public virtual RemoveUserRole RemoveUserRole { get; set; } = new();
+    public virtual RemoveRole RemoveRole { get; set; } = new();
 }

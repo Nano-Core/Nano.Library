@@ -49,9 +49,19 @@ public enum AuditIdentityFlags
     ApiKey = 1 << 6,
 
     /// <summary>
-    /// Standard Identity models audited: User, UserRole, ApiKey.
+    /// Audit IdentityApiKeyClaim model.
     /// </summary>
-    Standard = User | UserRole | ApiKey,
+    ApiKeyClaim = 1 << 7,
+
+    /// <summary>
+    /// Audit IdentityApiKeyRole model.
+    /// </summary>
+    ApiKeyRole = 1 << 8,
+
+    /// <summary>
+    /// Standard Identity models audited: User, UserRole, ApiKey and ApiKeyRole.
+    /// </summary>
+    Standard = User | UserRole | ApiKey | ApiKeyRole,
 
     /// <summary>
     /// Audit all Identity model.

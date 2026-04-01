@@ -3,13 +3,13 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Data.Abstractions.Identity.Models;
 
 /// <summary>
-/// Represents a request to get a specific claim.
+/// Represents a request to validate an API key for a user.
 /// </summary>
-public class GetClaim
+public class ValidateApiKey
 {
     /// <summary>
-    /// The type of claim to retrieve.
+    /// The API key.
     /// </summary>
     [Required]
-    public virtual string ClaimType { get; set; } = null!;
+    public virtual string ApiKey { get; set; } = null!;
 }

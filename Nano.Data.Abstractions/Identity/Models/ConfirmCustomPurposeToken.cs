@@ -1,24 +1,12 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Data.Abstractions.Identity.Models;
 
-/// <inheritdoc />
-public class ConfirmCustomPurposeToken : ConfirmCustomPurposeToken<Guid>;
-
 /// <summary>
 /// Represents a request to confirm a custom purpose using a token.
 /// </summary>
-/// <typeparam name="TIdentity">The identity key type.</typeparam>
-public class ConfirmCustomPurposeToken<TIdentity>
-    where TIdentity : IEquatable<TIdentity>
+public class ConfirmCustomPurposeToken
 {
-    /// <summary>
-    /// The identifier of the user whose custom purpose is being confirmed.
-    /// </summary>
-    [Required]
-    public virtual TIdentity UserId { get; set; } = default!;
-
     /// <summary>
     /// The token used to confirm the custom purpose.
     /// </summary>

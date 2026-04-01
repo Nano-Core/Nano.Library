@@ -11,7 +11,8 @@ using System.Reflection;
 
 namespace Nano.Data.Identity;
 
-internal sealed class RegisterDataIdentityEndpointsTask<TIdentity>(IEnumerable<IAuthExternalRepository> repositories) : IRegisterDataIdentityEndpointsTask
+internal sealed class RegisterDataIdentityEndpointsTask<TIdentity>(IEnumerable<IAuthExternalRepository> repositories) 
+    : IRegisterDataIdentityEndpointsTask
     where TIdentity : IEquatable<TIdentity>
 {
     private readonly IEnumerable<IAuthExternalRepository> repositories = repositories ?? throw new NullReferenceException(nameof(repositories));

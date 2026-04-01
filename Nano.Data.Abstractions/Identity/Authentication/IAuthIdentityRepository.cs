@@ -57,6 +57,14 @@ public interface IAuthIdentityRepository<in TIdentity>
         where TFlow : BaseAuthFlow;
 
     /// <summary>
+    /// Signs in using an api-key.
+    /// </summary>
+    /// <param name="logInApiKey">The api key login.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <returns>An <see cref="AccessToken"/> for authentication.</returns>
+    Task<AccessToken> LogInApiKeyAsync(LogInApiKey logInApiKey, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Refreshes an existing access token using a valid refresh token, generating a new JWT and refresh token.
     /// </summary>
     /// <param name="logInRefresh">The refresh login request containing the original token, refresh token, roles, and claims.</param>

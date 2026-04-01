@@ -13,6 +13,8 @@ internal static class TableNames
     internal const string IDENTITY_ROLE_CLAIM = "__EFIdentityRoleClaim";
     internal const string IDENTITY_ROLE = "__EFIdentityRole";
     internal const string IDENTITY_API_KEY = "__EFIdentityApiKey";
+    internal const string IDENTITY_API_KEY_CLAIM = "__EFIdentityApiKeyClaim";
+    internal const string IDENTITY_API_KEY_ROLE = "__EFIdentityApiKeyRole";
     internal const string IDENTITY_DATA_PROTECTION_KEYS = "__EFDataProtectionKeys";
     internal const string IDENTITY_USER_CHANGE_DATA = "__EFIdentityUserChangeData";
     internal const string IDENTITY_USER_REFRESH_TOKEN = "__EFIdentityUserRefreshToken";

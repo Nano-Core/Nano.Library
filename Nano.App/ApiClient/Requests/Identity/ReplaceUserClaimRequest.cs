@@ -14,7 +14,7 @@ public class ReplaceUserClaimRequest : ReplaceUserClaimRequest<Guid>;
 /// Represents a request to replace a user's claim.
 /// </summary>
 /// <typeparam name="TIdentity">The type of the user identifier.</typeparam>
-[PutAction(ActionRoutes.IDENTITY_CLAIMS_REPLACE)]
+[PutAction(ActionRoutes.IDENTITY_USER_CLAIMS_REPLACE)]
 public class ReplaceUserClaimRequest<TIdentity> : BaseRequest
     where TIdentity : IEquatable<TIdentity>
 {
@@ -23,5 +23,5 @@ public class ReplaceUserClaimRequest<TIdentity> : BaseRequest
     /// </summary>
     [Required]
     [Body]
-    public virtual ReplaceUserClaim ReplaceUserClaim { get; set; } = new();
+    public virtual ReplaceClaim ReplaceClaim { get; set; } = new();
 }

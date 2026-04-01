@@ -26,7 +26,9 @@ internal static class AuditConfigurationExtensions
             .ConfigureIdentityUserLogin<TIdentity>(options.UseAudit)
             .ConfigureIdentityRole<TIdentity>(options.UseAudit)
             .ConfigureIdentityRoleClaim<TIdentity>(options.UseAudit)
-            .ConfigureIdentityApiKey<TIdentity>(options.UseAudit);
+            .ConfigureIdentityApiKey<TIdentity>(options.UseAudit)
+            .ConfigureIdentityApiKeyClaim<TIdentity>(options.UseAudit)
+            .ConfigureIdentityApiKeyRole<TIdentity>(options.UseAudit);
 
         configuration
             .Exclude<IdentityUserToken<TIdentity>>()
@@ -156,6 +158,38 @@ internal static class AuditConfigurationExtensions
         else
         {
             configuration.Exclude<IdentityApiKey<TIdentity>>();
+        }
+
+        return configuration;
+    }
+    private static AuditConfiguration ConfigureIdentityApiKeyClaim<TIdentity>(this AuditConfiguration configuration, AuditIdentityFlags auditIdentityFlags)
+        where TIdentity : IEquatable<TIdentity>
+    {
+        ArgumentNullException.ThrowIfNull(configuration);
+
+        if (auditIdentityFlags.HasFlag(AuditIdentityFlags.ApiKeyClaim))
+        {
+            configuration.Include<IdentityApiKeyClaim<TIdentity>>();
+        }
+        else
+        {
+            configuration.Exclude<IdentityApiKeyClaim<TIdentity>>();
+        }
+
+        return configuration;
+    }
+    private static AuditConfiguration ConfigureIdentityApiKeyRole<TIdentity>(this AuditConfiguration configuration, AuditIdentityFlags auditIdentityFlags)
+        where TIdentity : IEquatable<TIdentity>
+    {
+        ArgumentNullException.ThrowIfNull(configuration);
+
+        if (auditIdentityFlags.HasFlag(AuditIdentityFlags.ApiKeyRole))
+        {
+            configuration.Include<IdentityApiKeyRole<TIdentity>>();
+        }
+        else
+        {
+            configuration.Exclude<IdentityApiKeyRole<TIdentity>>();
         }
 
         return configuration;

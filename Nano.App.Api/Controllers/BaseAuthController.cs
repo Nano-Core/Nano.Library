@@ -136,6 +136,39 @@ public abstract class BaseAuthController<TIdentity>(ILogger<BaseAuthController<T
     }
 
     /// <summary>
+    /// Authenticates the api-key and returns an access token.
+    /// </summary>
+    /// <param name="logInApiKey">The api-key login.</param>
+    /// <param name="cancellationToken">Token to cancel the request.</param>
+    /// <returns>The generated <see cref="AccessToken"/>.</returns>
+    /// <response code="200">Authentication succeeded and token returned.</response>
+    /// <response code="400">Invalid request data.</response>
+    /// <response code="401">Authentication failed.</response>
+    /// <response code="404">Root user not found.</response>
+    /// <response code="500">Internal server error.</response>
+    [HttpPost]
+    [Route(ActionRoutes.AUTH_LOGIN_API_KEY)]
+    [Consumes(HttpContentType.JSON)]
+    [Produces(HttpContentType.JSON)]
+    [ProducesResponseType(typeof(AccessToken), (int)HttpStatusCode.OK)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+    public virtual async Task<IActionResult> LogInApiKeyAsync([FromBody][Required] LogInApiKey logInApiKey, CancellationToken cancellationToken = default)
+    {
+        if (this.authRepository.AuthIdentityRepository == null)
+        {
+            return this.NotFound();
+        }
+
+        var accessToken = await this.authRepository.AuthIdentityRepository
+            .LogInApiKeyAsync(logInApiKey, cancellationToken);
+
+        return this.Ok(accessToken);
+    }
+
+    /// <summary>
     /// Refreshes an existing access token for a user.
     /// </summary>
     /// <param name="logInRefresh">The refresh token request.</param>

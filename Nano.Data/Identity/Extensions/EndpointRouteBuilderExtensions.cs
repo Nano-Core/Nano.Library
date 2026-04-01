@@ -16,6 +16,40 @@ namespace Nano.Data.Identity.Extensions;
 
 internal static class EndpointRouteBuilderExtensions
 {
+    internal static IEndpointRouteBuilder MapEndpointLogInExternal<TFlow, TIdentity>(this IEndpointRouteBuilder builder, string providerName, string version, string root)
+        where TFlow : BaseAuthFlow
+        where TIdentity : IEquatable<TIdentity>
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(providerName);
+        ArgumentNullException.ThrowIfNull(version);
+        ArgumentNullException.ThrowIfNull(root);
+
+        var route = ActionRoutes.AUTH_LOGIN_EXTERNAL
+            .Replace("{providerName}", providerName.ToLower());
+
+        var summary = $"Signs in a user using external {providerName} authentication.";
+        const string TAG = ControllerRoutes.AUTH;
+
+        builder
+            .MapPost($"{root}/{TAG.ToLower()}/{route}", LogInExternalAsync)
+            .WithEndpointDefaults<LogInExternal<TFlow>, AccessToken>(summary, TAG, version, true);
+
+        builder
+            .MapPost($"{root}/{ControllerRoutes.ROUTE_VERSION_PREFIX}/{TAG.ToLower()}/{route}", LogInExternalAsync)
+            .WithEndpointDefaults<LogInExternal<TFlow>, AccessToken>(summary, TAG, version, true);
+
+        return builder;
+
+        async Task<IResult> LogInExternalAsync(LogInExternal<TFlow> logInExternal, IAuthIdentityRepository<TIdentity> authIdentityRepository, CancellationToken cancellationToken)
+        {
+            var accessToken = await authIdentityRepository
+                .LogInExternalAsync(providerName, logInExternal, cancellationToken);
+
+            return Results.Ok(accessToken);
+        }
+    }
+
     internal static IEndpointRouteBuilder MapEndpointIdentitySignUpExternal<TFlow, TUser, TIdentity>(this IEndpointRouteBuilder builder, string providerName, string version, string root)
         where TFlow : BaseAuthFlow
         where TUser : class, IEntityUser<TIdentity>
@@ -156,40 +190,6 @@ internal static class EndpointRouteBuilderExtensions
                 .RemoveExternalLoginAsync(id, providerName, cancellationToken);
 
             return Results.Ok();
-        }
-    }
-
-    internal static IEndpointRouteBuilder MapEndpointLogInExternal<TFlow, TIdentity>(this IEndpointRouteBuilder builder, string providerName, string version, string root)
-        where TFlow : BaseAuthFlow
-        where TIdentity : IEquatable<TIdentity>
-    {
-        ArgumentNullException.ThrowIfNull(builder);
-        ArgumentNullException.ThrowIfNull(providerName);
-        ArgumentNullException.ThrowIfNull(version);
-        ArgumentNullException.ThrowIfNull(root);
-
-        var route = ActionRoutes.AUTH_LOGIN_EXTERNAL
-            .Replace("{providerName}", providerName.ToLower());
-
-        var summary = $"Signs in a user using external {providerName} authentication.";
-        const string TAG = ControllerRoutes.AUTH;
-
-        builder
-            .MapPost($"{root}/{TAG.ToLower()}/{route}", LogInExternalAsync)
-            .WithEndpointDefaults<LogInExternal<TFlow>, AccessToken>(summary, TAG, version, true);
-
-        builder
-            .MapPost($"{root}/{ControllerRoutes.ROUTE_VERSION_PREFIX}/{TAG.ToLower()}/{route}", LogInExternalAsync)
-            .WithEndpointDefaults<LogInExternal<TFlow>, AccessToken>(summary, TAG, version, true);
-
-        return builder;
-
-        async Task<IResult> LogInExternalAsync(LogInExternal<TFlow> logInExternal, IAuthIdentityRepository<TIdentity> authIdentityRepository, CancellationToken cancellationToken)
-        {
-            var accessToken = await authIdentityRepository
-                .LogInExternalAsync(providerName, logInExternal, cancellationToken);
-
-            return Results.Ok(accessToken);
         }
     }
 }

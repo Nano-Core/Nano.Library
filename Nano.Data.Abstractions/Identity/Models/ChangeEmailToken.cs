@@ -1,24 +1,12 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Data.Abstractions.Identity.Models;
 
-/// <inheritdoc />
-public class ChangeEmailToken : ChangeEmailToken<Guid>;
-
 /// <summary>
 /// Represents a request to change a user's email address using a confirmation token.
 /// </summary>
-/// <typeparam name="TIdentity">The identity key type.</typeparam>
-public class ChangeEmailToken<TIdentity>
-    where TIdentity : IEquatable<TIdentity>
+public class ChangeEmailToken
 {
-    /// <summary>
-    /// The identifier of the user whose email is being changed.
-    /// </summary>
-    [Required]
-    public virtual TIdentity UserId { get; set; } = default!;
-
     /// <summary>
     /// The token used to authorize the email change.
     /// </summary>

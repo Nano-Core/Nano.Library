@@ -13,7 +13,7 @@ public class GetClaimsRequest : GetClaimsRequest<Guid>;
 /// Request to retrieve claims for a user.
 /// </summary>
 /// <typeparam name="TIdentity">Type of the user identifier.</typeparam>
-[GetAction(ActionRoutes.IDENTITY_CLAIMS)]
+[GetAction(ActionRoutes.IDENTITY_USER_CLAIMS)]
 public class GetClaimsRequest<TIdentity> : BaseRequest
 {
     /// <summary>

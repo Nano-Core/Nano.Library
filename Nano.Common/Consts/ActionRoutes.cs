@@ -143,6 +143,11 @@ public class ActionRoutes
     public const string AUTH_LOGOUT = "logout";
 
     /// <summary>
+    /// Route for api key login.
+    /// </summary>
+    public const string AUTH_LOGIN_API_KEY = "login/apikey";
+
+    /// <summary>
     /// Route for external provider login.
     /// </summary>
     public const string AUTH_LOGIN_EXTERNAL = "login/external/{providerName}";
@@ -161,6 +166,11 @@ public class ActionRoutes
     /// Route for retrieving available external authentication schemes.
     /// </summary>
     public const string AUTH_EXTERNAL_SCHEMES = "external/schemes";
+
+    /// <summary>
+    /// Route for retrieving details of a single deactivated user by identifier.
+    /// </summary>
+    public const string IDENTITY_DETAILS_DEACTIVATED = "{id}/details";
 
     /// <summary>
     /// Route for retrieving password configuration options.
@@ -275,42 +285,42 @@ public class ActionRoutes
     /// <summary>
     /// Route for retrieving a user's roles.
     /// </summary>
-    public const string IDENTITY_ROLES_USER = "{id}/roles";
+    public const string IDENTITY_USER_ROLES = "{id}/roles";
 
     /// <summary>
     /// Route for removing roles from a user.
     /// </summary>
-    public const string IDENTITY_ROLES_USER_REMOVE = "{id}/roles/remove";
+    public const string IDENTITY_USER_ROLES_REMOVE = "{id}/roles/remove";
 
     /// <summary>
     /// Route for assigning roles to a user.
     /// </summary>
-    public const string IDENTITY_ROLES_USER_ASSIGN = "{id}/roles/assign";
+    public const string IDENTITY_USER_ROLES_ASSIGN = "{id}/roles/assign";
 
     /// <summary>
     /// Route for retrieving a user's claims.
     /// </summary>
-    public const string IDENTITY_CLAIMS = "{id}/claims";
+    public const string IDENTITY_USER_CLAIMS = "{id}/claims";
 
     /// <summary>
     /// Route for assigning claims to a user.
     /// </summary>
-    public const string IDENTITY_CLAIMS_ASSIGN = "{id}/claims/assign";
+    public const string IDENTITY_USER_CLAIMS_ASSIGN = "{id}/claims/assign";
 
     /// <summary>
     /// Route for replacing a user's claims.
     /// </summary>
-    public const string IDENTITY_CLAIMS_REPLACE = "{id}/claims/replace";
+    public const string IDENTITY_USER_CLAIMS_REPLACE = "{id}/claims/replace";
 
     /// <summary>
-    /// Route for assigning or replacing claims.
+    /// Route for assigning or replacing claims from a user.
     /// </summary>
-    public const string IDENTITY_CLAIMS_ASSIGN_OR_REPLACE = "{id}/claims/assign-or-replace";
+    public const string IDENTITY_USER_CLAIMS_ASSIGN_OR_REPLACE = "{id}/claims/assign-or-replace";
 
     /// <summary>
     /// Route for removing claims from a user.
     /// </summary>
-    public const string IDENTITY_CLAIMS_REMOVE = "{id}/claims/remove";
+    public const string IDENTITY_USER_CLAIMS_REMOVE = "{id}/claims/remove";
 
     /// <summary>
     /// Route for retrieving a user's external logins.
@@ -353,6 +363,11 @@ public class ActionRoutes
     public const string IDENTITY_API_KEYS_CREATE = "{id}/api-keys/create";
 
     /// <summary>
+    /// Route for validating an API key.
+    /// </summary>
+    public const string IDENTITY_API_KEYS_VALIDATE = "api-keys/validate";
+
+    /// <summary>
     /// Route for editing an API key.
     /// </summary>
     public const string IDENTITY_API_KEYS_EDIT = "api-keys/{apiKeyId}/edit";
@@ -361,6 +376,46 @@ public class ActionRoutes
     /// Route for revoking an API key.
     /// </summary>
     public const string IDENTITY_API_KEYS_REVOKE = "api-keys/{apiKeyId}/revoke";
+
+    /// <summary>
+    /// Route for retrieving a api key's roles.
+    /// </summary>
+    public const string IDENTITY_API_KEY_ROLES = "api-keys/{apiKeyId}/roles";
+
+    /// <summary>
+    /// Route for removing roles from an api key.
+    /// </summary>
+    public const string IDENTITY_API_KEY_ROLES_REMOVE = "api-keys/{apiKeyId}/roles/remove";
+
+    /// <summary>
+    /// Route for assigning roles to an api key.
+    /// </summary>
+    public const string IDENTITY_API_KEY_ROLES_ASSIGN = "api-keys/{apiKeyId}/roles/assign";
+
+    /// <summary>
+    /// Route for retrieving a api key's claims.
+    /// </summary>
+    public const string IDENTITY_API_KEY_CLAIMS = "api-keys/{apiKeyId}/claims";
+
+    /// <summary>
+    /// Route for assigning claims to an api key.
+    /// </summary>
+    public const string IDENTITY_API_KEY_CLAIMS_ASSIGN = "api-keys/{apiKeyId}/claims/assign";
+
+    /// <summary>
+    /// Route for replacing a api key's claims.
+    /// </summary>
+    public const string IDENTITY_API_KEY_CLAIMS_REPLACE = "api-keys/{apiKeyId}/claims/replace";
+
+    /// <summary>
+    /// Route for assigning or replacing api key claims.
+    /// </summary>
+    public const string IDENTITY_API_KEY_CLAIMS_ASSIGN_OR_REPLACE = "api-keys/{apiKeyId}/claims/assign-or-replace";
+
+    /// <summary>
+    /// Route for removing claims from an api key.
+    /// </summary>
+    public const string IDENTITY_API_KEY_CLAIMS_REMOVE = "api-keys/{apiKeyId}/claims/remove";
 
     /// <summary>
     /// Route for retrieving roles.
@@ -402,89 +457,3 @@ public class ActionRoutes
     /// </summary>
     public const string IDENTITY_ROLES_CLAIMS_REMOVE = "roles/{roleId}/claims/remove";
 }
-
-//public class ActionRoutes
-//{
-//    public const string CSP_REPORT_TO = "/csp/report-to";
-
-//    public const string INDEX = "index";
-//    public const string DETAILS = "{id}/details";
-//    public const string DETAILS_MANY = "details/many";
-//    public const string QUERY = "query";
-//    public const string QUERY_FIRST = "query/first";
-//    public const string QUERY_COUNT = "query/count";
-//    public const string EDIT = "edit";
-//    public const string EDIT_GET = "edit/reload";
-//    public const string EDIT_MANY = "edit/many";
-//    public const string EDIT_MANY_BULK = "edit/many/bulk";
-//    public const string EDIT_QUERY = "edit/query";
-//    public const string EDIT_QUERY_BULK = "edit/query/bulk";
-//    public const string DELETE = "{id}/delete";
-//    public const string DELETE_MANY = "delete/many";
-//    public const string DELETE_MANY_BULK = "delete/many/bulk";
-//    public const string DELETE_QUERY = "delete/query";
-//    public const string DELETE_QUERY_BULK = "delete/query/bulk";
-//    public const string CREATE = "create";
-//    public const string CREATE_OR_GET = "create/get";
-//    public const string CREATE_AND_GET = "create/reload";
-//    public const string CREATE_OR_EDIT = "create/edit";
-//    public const string CREATE_MANY = "create/many";
-//    public const string CREATE_MANY_BULK = "create/many/bulk";
-
-//    public const string AUTH_LOGIN = "login";
-//    public const string AUTH_LOGIN_ROOT = "login/root";
-//    public const string AUTH_LOGOUT = "logout";
-//    public const string AUTH_LOGIN_EXTERNAL = "login/external/{providerName}";
-//    public const string AUTH_LOGIN_EXTERNAL_TRANSIENT = "login/external/{providerName}/transient";
-//    public const string AUTH_LOGIN_REFRESH = "login/refresh";
-//    public const string AUTH_EXTERNAL_SCHEMES = "external/schemes";
-
-//    public const string IDENTITY_PASSWORD_OPTIONS = "password/options";
-//    public const string IDENTITY_EMAIL_IS_TAKEN = "email/is-taken";
-//    public const string IDENTITY_PHONE_IS_TAKEN = "phone/is-taken";
-//    public const string IDENTITY_SIGNUP = "signup";
-//    public const string IDENTITY_SIGNUP_EXTERNAL = "signup/external/{providerName}";
-//    public const string IDENTITY_USERNAME_SET = "{id}/username/set";
-//    public const string IDENTITY_PASSWORD_SET = "{id}/password/set";
-//    public const string IDENTITY_PASSWORD_CHANGE = "{id}/password/change";
-//    public const string IDENTITY_PASSWORD_RESET = "{id}/password/reset";
-//    public const string IDENTITY_PASSWORD_RESET_TOKEN = "password/reset/token";
-//    public const string IDENTITY_EMAIL_CHANGE = "{id}/email/change";
-//    public const string IDENTITY_EMAIL_CHANGE_TOKEN = "{id}/email/change/token";
-//    public const string IDENTITY_EMAIL_CONFIRM = "{id}/email/confirm";
-//    public const string IDENTITY_EMAIL_CONFIRM_TOKEN = "{id}/email/confirm/token";
-//    public const string IDENTITY_PHONE_CHANGE = "{id}/phone/change";
-//    public const string IDENTITY_PHONE_CHANGE_TOKEN = "{id}/phone/change/token";
-//    public const string IDENTITY_PHONE_CONFIRM = "{id}/phone/confirm";
-//    public const string IDENTITY_PHONE_CONFIRM_TOKEN = "{id}/phone/confirm/token";
-//    public const string IDENTITY_CUSTOM_PURPOSE_CONFIRM = "{id}/custom-purpose/confirm";
-//    public const string IDENTITY_CUSTOM_PURPOSE_CONFIRM_TOKEN = "{id}/custom-purpose/confirm/token";
-//    public const string IDENTITY_ACTIVATE = "{id}/activate";
-//    public const string IDENTITY_DEACTIVATE = "{id}/deactivate";
-//    public const string IDENTITY_ROLES_USER = "{id}/roles";
-//    public const string IDENTITY_ROLES_USER_REMOVE = "{id}/roles/remove";
-//    public const string IDENTITY_ROLES_USER_ASSIGN = "{id}/roles/assign";
-//    public const string IDENTITY_CLAIMS = "{id}/claims";
-//    public const string IDENTITY_CLAIMS_ASSIGN = "{id}/claims/assign";
-//    public const string IDENTITY_CLAIMS_REPLACE = "{id}/claims/replace";
-//    public const string IDENTITY_CLAIMS_ASSIGN_OR_REPLACE = "{id}/claims/assign-or-replace";
-//    public const string IDENTITY_CLAIMS_REMOVE = "{id}/claims/remove";
-//    public const string IDENTITY_EXTERNAL_LOGINS = "{id}/external-logins";
-//    public const string IDENTITY_EXTERNAL_LOGINS_ADD = "{id}/external-logins/add/{providerName}";
-//    public const string IDENTITY_EXTERNAL_LOGINS_REMOVE = "{id}/external-logins/remove/{providerName}";
-//    public const string IDENTITY_REFRESH_TOKENS = "{id}/refresh-tokens";
-//    public const string IDENTITY_REFRESH_TOKENS_ACTIVE = "{id}/refresh-tokens/active";
-//    public const string IDENTITY_REFRESH_TOKENS_DELETE = "refresh-tokens/{refreshTokenId}/delete";
-//    public const string IDENTITY_API_KEYS = "{id}/api-keys";
-//    public const string IDENTITY_API_KEYS_CREATE = "{id}/api-keys/create";
-//    public const string IDENTITY_API_KEYS_EDIT = "api-keys/{apiKeyId}/edit";
-//    public const string IDENTITY_API_KEYS_REVOKE = "api-keys/{apiKeyId}/revoke";
-//    public const string IDENTITY_ROLES = "roles";
-//    public const string IDENTITY_ROLES_CREATE = "roles/create";
-//    public const string IDENTITY_ROLES_DELETE = "roles/delete";
-//    public const string IDENTITY_ROLES_CLAIMS = "roles/{roleId}/claims";
-//    public const string IDENTITY_ROLES_CLAIMS_ASSIGN = "roles/{roleId}/claims/assign";
-//    public const string IDENTITY_ROLES_CLAIMS_REPLACE = "roles/{roleId}/claims/replace";
-//    public const string IDENTITY_ROLES_CLAIMS_ASSIGN_OR_REPLACE = "roles/{roleId}/claims/assign-or-replace";
-//    public const string IDENTITY_ROLES_CLAIMS_REMOVE = "roles/{roleId}/claims/remove";
-//}

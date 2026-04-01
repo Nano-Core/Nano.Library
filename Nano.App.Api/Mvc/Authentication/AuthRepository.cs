@@ -20,8 +20,8 @@ public class AuthRepository<TIdentity>(IAuthExternalRepositoryAggregator authExt
     public IAuthIdentityRepository<TIdentity>? AuthIdentityRepository { get; } = authIdentityRepository;
 
     /// <inheritdoc />
-    public IAuthTransientRepository? AuthTransientRepository { get; } = authTransientRepository;
+    public IAuthRootRepository? AuthRootRepository { get; } = authRootRepository;
 
     /// <inheritdoc />
-    public IAuthRootRepository? AuthRootRepository { get; } = authRootRepository;
+    public IAuthTransientRepository? AuthTransientRepository { get; } = authTransientRepository;
 }

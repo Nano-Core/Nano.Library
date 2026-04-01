@@ -1,6 +1,3 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -8,6 +5,9 @@ using Nano.App.Api.Mvc.Authentication.Abstractions;
 using Nano.Common.Consts;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Nano.Data.Abstractions.Identity.Extensions;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Nano.App.Api.Mvc.Authentication.Extensions;
 

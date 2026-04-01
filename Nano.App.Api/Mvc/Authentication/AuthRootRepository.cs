@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Nano.App.Api.Mvc.Authentication.Abstractions;
 using Nano.App.ApiClient.Requests.Auth.Models;
@@ -31,7 +32,7 @@ public class AuthRootRepository : IAuthRootRepository
     }
 
     /// <inheritdoc />
-    public virtual async Task<AccessToken> LogInRootAsync(LogInRoot logInRoot)
+    public virtual async Task<AccessToken> LogInRootAsync(LogInRoot logInRoot, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(logInRoot);
 

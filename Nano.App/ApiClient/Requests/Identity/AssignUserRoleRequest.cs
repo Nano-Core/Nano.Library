@@ -14,7 +14,7 @@ public class AssignUserRoleRequest : AssignUserRoleRequest<Guid>;
 /// Request to assign a role to a user.
 /// </summary>
 /// <typeparam name="TIdentity">Type of the user identifier.</typeparam>
-[PostAction(ActionRoutes.IDENTITY_ROLES_USER_ASSIGN)]
+[PostAction(ActionRoutes.IDENTITY_USER_ROLES_ASSIGN)]
 public class AssignUserRoleRequest<TIdentity> : BaseRequest
     where TIdentity : IEquatable<TIdentity>
 {
@@ -23,5 +23,5 @@ public class AssignUserRoleRequest<TIdentity> : BaseRequest
     /// </summary>
     [Required]
     [Body]
-    public virtual AssignUserRole AssignUserRole { get; set; } = new();
+    public virtual AssignRole AssignRole { get; set; } = new();
 }

@@ -32,14 +32,11 @@ internal static class ServiceCollectionExtensions
                 else
                 {
                     x.DefaultPolicy = new AuthorizationPolicyBuilder()
-                        .AddAuthenticationSchemes(AuthenticationSchemes.JWT)
                         .RequireAuthenticatedUser()
                         .Build();
 
                     x.AddPolicy(AuthorizationPolicies.ADD_OR_EDIT, y =>
                     {
-                        y.AddAuthenticationSchemes(AuthenticationSchemes.JWT);
-
                         y.RequireAuthenticatedUser();
 
                         y.RequireAssertion(z =>

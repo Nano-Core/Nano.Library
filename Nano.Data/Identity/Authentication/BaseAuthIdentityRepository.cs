@@ -55,7 +55,7 @@ public abstract class BaseAuthIdentityRepository<TIdentity> : IAuthIdentityRepos
         }
 
         var claims = await this.identityRepository
-            .GetAllClaims(identityUser, logIn.TransientRoles, logIn.TransientClaims, cancellationToken);
+            .GetAllUserClaims(identityUser, logIn.TransientRoles, logIn.TransientClaims, cancellationToken);
 
         var accessToken = this.authJwtRepository
             .GenerateJwtToken(new GenerateJwtToken
@@ -90,7 +90,7 @@ public abstract class BaseAuthIdentityRepository<TIdentity> : IAuthIdentityRepos
             }, cancellationToken);
 
         var claims = await this.identityRepository
-            .GetAllClaims(identityUser, logInExternal.TransientRoles, logInExternal.TransientClaims, cancellationToken);
+            .GetAllUserClaims(identityUser, logInExternal.TransientRoles, logInExternal.TransientClaims, cancellationToken);
 
         var accessToken = this.authJwtRepository
             .GenerateJwtToken(new GenerateJwtToken
@@ -176,7 +176,7 @@ public abstract class BaseAuthIdentityRepository<TIdentity> : IAuthIdentityRepos
             .ValidateTokenForRefresh(logInRefresh.Token);
 
         var claims = await this.identityRepository
-            .GetAllClaims(identityUser, logInRefresh.TransientRoles, logInRefresh.TransientClaims, cancellationToken);
+            .GetAllUserClaims(identityUser, logInRefresh.TransientRoles, logInRefresh.TransientClaims, cancellationToken);
 
         var externalProviderName = claims
             .Where(x => x.Type == ClaimTypesExtended.ExternalProviderName)
@@ -210,6 +210,33 @@ public abstract class BaseAuthIdentityRepository<TIdentity> : IAuthIdentityRepos
             });
 
         accessToken.RefreshToken = await this.CreateRefreshToken(identityUser, appId);
+
+        return accessToken;
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<AccessToken> LogInApiKeyAsync(LogInApiKey logInApiKey, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(logInApiKey);
+
+        var identityApiKey = await this.identityRepository
+            .SignInApiKeyAsync(new SignInApiKey
+            {
+                ApiKey = logInApiKey.ApiKey
+            }, cancellationToken);
+
+        var claims = await identityRepository
+            .GetAllApiKeyClaims(identityApiKey, logInApiKey.TransientRoles, logInApiKey.TransientClaims, cancellationToken);
+
+        var accessToken = authJwtRepository
+            .GenerateJwtToken(new GenerateJwtToken
+            {
+                AppId = logInApiKey.AppId,
+                UserId = identityApiKey.IdentityUserId.ToString(),
+                UserName = $"{identityApiKey.IdentityUser.UserName} ({identityApiKey.Name})",
+                UserEmail = identityApiKey.IdentityUser.Email,
+                Claims = claims
+            });
 
         return accessToken;
     }

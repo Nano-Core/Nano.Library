@@ -3,20 +3,19 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Data.Abstractions.Identity.Models;
 
 /// <summary>
-/// Represents a request to assign a claim to a role.
+/// Represents a request to replace a claim with a new value.
 /// </summary>
-public class AssignRoleClaim
+public class ReplaceClaim
 {
     /// <summary>
-    /// The claim type to assign.
+    /// The claim type to replace.
     /// </summary>
     [Required]
-    [MaxLength(256)]
     public virtual string ClaimType { get; set; } = null!;
 
     /// <summary>
-    /// The claim value to assign.
+    /// The new value for the claim.
     /// </summary>
     [Required]
-    public virtual string ClaimValue { get; set; } = null!;
+    public virtual string NewClaimValue { get; set; } = null!;
 }

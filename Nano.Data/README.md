@@ -206,18 +206,20 @@ access control.
 
 The following values can be used for the `UseAudit` configuration setting. Multiple values can be specified as a comma-separated list in `appsettings.json`.
 
-| Value        | Description                                                     |
-| ------------ | --------------------------------------------------------------- |
-| `None`       | No identity model audited.                                      | 
-| `Standard`   | Standard idenity models are audited (User, UserRole, ApiKey).   | 
-| `All`        | All identity models are audited.                                | 
-| `User`       | The identity user model is audited.                             | 
-| `UserRole`   | The identity user role model is audited.                        | 
-| `UserClaim`  | The identity user claim model is audited.                       | 
-| `UserLogin`  | The identity user login model is audited.                       | 
-| `Role`       | The identity role model is audited.                             | 
-| `RoleClaim`  | The identity role claim model is audited.                       | 
-| `ApiKey`     | The identity apikey model is audited.                           | 
+| Value         | Description                                                                 |
+| ------------- | --------------------------------------------------------------------------- |
+| `None`        | No identity model audited.                                                  | 
+| `Standard`    | Standard idenity models are audited (User, UserRole, ApiKey, ApiKeyRole).   | 
+| `All`         | All identity models are audited.                                            | 
+| `User`        | The identity user model is audited.                                         | 
+| `UserRole`    | The identity user role model is audited.                                    | 
+| `UserClaim`   | The identity user claim model is audited.                                   | 
+| `UserLogin`   | The identity user login model is audited.                                   | 
+| `Role`        | The identity role model is audited.                                         | 
+| `RoleClaim`   | The identity role claim model is audited.                                   | 
+| `ApiKey`      | The identity apikey model is audited.                                       | 
+| `ApiKeyClaim` | The identity apikey claim model is audited.                                 | 
+| `ApiKeyRole`  | The identity apikey role model is audited.                                  | 
 
 > ⚠️ All sensitive properties, as well as properties used internally for non-business, technical, or derived purposes, are automatically excluded.
 
@@ -381,6 +383,8 @@ The following entity identity models are available in Nano.
 | `IdentityRole<TIdentity>`              | `__EFIdentityRole`              | The identity Roles.                                                            |
 | `IdentityRoleClaim<TIdentity>`         | `__EFIdentityRoleClaim`         | Claims associated with identity roles.                                         |
 | `IdentityApiKey<TIdentity>`            | `__EFIdentityApiKey`            | Api keys for identity users.                                                   |
+| `IdentityApiKeyClaim<TIdentity>`       | `__EFIdentityApiKeyClaim`       | Claims for Api keys.                                                           |
+| `IdentityApiKeyRole<TIdentity>`        | `__EFIdentityApiKeyRole`        | Roles for Api keys.                                                            |
 
 > ⚠️ Even when Identity is not configured, the tables are still created to preserve the data model in case Identity is enabled later.
 
@@ -571,6 +575,7 @@ identity logic through a single, consistent repository.
 | --------------------------------------- | -------------------- | --------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | `SignInAsync`                           | Login                | signIn                                        | Attempts to sign in a user using the specified credentials. Returns the authenticated user if successful.            |
 | `SignInExternalAsync`                   | Login                | signInExternal                                | Attempts to sign in a user using an external authentication provider. Returns the authenticated user if successful.  |
+| `SignInApiKeyAsync`                     | Login                | signInApiKey                                  | Attempts to sign in a user using an api key.                                                                         |
 | `SignOutAsync`                          | Login                | userId, appId                                 | Signs out the currently authenticated user and removes any associated refresh tokens.                                |
 | `IsEmailAddressTakenAsync`              | Sign Up              | emailAddress                                  | Checks whether the specified email address is already registered. Returns true if taken.                             |
 | `IsPhoneNumberTakenAsync`               | Sign Up              | phoneNumber                                   | Checks whether the specified phone number is already registered. Returns true if taken.                              |
@@ -579,6 +584,7 @@ identity logic through a single, consistent repository.
 | `SignUpExternalAsync<TUser>`            | Sign Up              | signUpExternal                                | Registers a new user using external login provider information. Returns the created user entity.                     |
 | `GetIdentityUserAsync`                  | User                 | id                                            | Retrieves the identity user by its identifier. Throws if the user is not found.                                      |
 | `GetIdentityUserOrDefaultAsync`         | User                 | id                                            | Retrieves the identity user by its identifier, or returns null if the user does not exist.                           |
+| `GetDeactivatedUserAsync`               | User                 | id                                            | Retrieves the deactivated identity user by its identifier. Throws if the user is not found.                          |
 | `SetUsernameAsync`                      | User                 | id, setUsername                               | Updates the username of the specified user.                                                                          |
 | `SetPasswordAsync`                      | User                 | id, setPassword                               | Sets a password for the specified user.                                                                              |
 | `ChangePasswordAsync`                   | User                 | id, changePassword                            | Changes the password of a user given the old and new passwords.                                                      |
@@ -601,14 +607,14 @@ identity logic through a single, consistent repository.
 | `GetUserRolesAsync`                     | User Roles           | identityUser                                  | Retrieves the role names assigned to a specific user instance.                                                       |
 | `AssignUserRoleAsync`                   | User Roles           | id, assignUserRole                            | Assigns a role to a user.                                                                                            |
 | `RemoveUserRoleAsync`                   | User Roles           | id, removeUserRole                            | Removes a role from a user.                                                                                          |
-| `GetAllClaims`                          | User Claims          | identityUser, transientRoles, transientClaims | Retrieves all claims of a user, including role-based and optional transient claims.                                  |
-| `GetUserClaimAsync`                     | User Claims          | id, getClaim                                  | Retrieves a specific claim of a user by claim type. Returns null if not found.                                       |
+| `GetAllUserClaims`                      | User Claims          | identityUser, transientRoles, transientClaims | Retrieves all claims of a user, including role-based and optional transient claims.                                  |
+| `GetUserClaimAsync`                     | User Claims          | id, getUserClaim                              | Retrieves a specific claim of a user by claim type. Returns null if not found.                                       |
 | `GetUserClaimsAsync`                    | User Claims          | id                                            | Retrieves all claims of a user by user ID. Throws if the user does not exist.                                        |
 | `GetUserClaimsAsync`                    | User Claims          | identityUser                                  | Retrieves all claims of a user. Throws if identityUser is null.                                                      |
-| `AssignUserClaimAsync`                  | User Claims          | id, assignUserClaim                           | Assigns a claim to a user. Returns the created user claim.                                                           |
-| `ReplaceUserClaimAsync`                 | User Claims          | id, replaceUserClaim                          | Replaces an existing claim of a user with a new value. Returns the updated claim.                                    |
-| `AssignOrReplaceUserClaimAsync`         | User Claims          | id, assignOrReplaceUserClaim                  | Assigns a claim to a user, or replaces it if it already exists. Returns the resulting claim.                         |
-| `RemoveUserClaimAsync`                  | User Claims          | id, removeUserClaim                           | Removes a claim from a user.                                                                                         |
+| `AssignUserClaimAsync`                  | User Claims          | id, assignClaim                               | Assigns a claim to a user. Returns the created user claim.                                                           |
+| `ReplaceUserClaimAsync`                 | User Claims          | id, replaceClaim                              | Replaces an existing claim of a user with a new value. Returns the updated claim.                                    |
+| `AssignOrReplaceUserClaimAsync`         | User Claims          | id, assignOrReplaceClaim                      | Assigns a claim to a user, or replaces it if it already exists. Returns the resulting claim.                         |
+| `RemoveUserClaimAsync`                  | User Claims          | id, removeClaim                               | Removes a claim from a user.                                                                                         |
 | `GetUserExternalLoginAsync`             | User External Logins | id, providerName                              | Retrieves a specific external login provider associated with a user by user id.                                      |
 | `GetUserExternalLoginAsync`             | User External Logins | identityUser, providerName                    | Retrieves a specific external login provider associated with a user by identity user instance.                       |
 | `GetUserExternalLoginsAsync`            | User External Logins | id                                            | Retrieves all external login providers associated with a user by user id.                                            |
@@ -623,18 +629,26 @@ identity logic through a single, consistent repository.
 | `GetApiKeyAsync`                        | Api Keys             | apiKeyId                                      | Retrieves an API key by its identifier. Returns null if not found.                                                   |
 | `GetApiKeysAsync`                       | Api Keys             | id                                            | Retrieves all API keys associated with a specific user.                                                              |
 | `CreateApiKeyAsync`                     | Api Keys             | id, createApiKey                              | Creates a new API key for a user. Returns the created API key and outputs the plaintext key.                         |
-| `ValidateApiKeyAsync`                   | Api Keys             | apiKey                                        | Validates a provided API key and returns its associated record if valid; otherwise null.                             |
+| `ValidateApiKeyAsync`                   | Api Keys             | validateApiKey                                | Validates a provided API key and returns its associated record if valid; otherwise null.                             |
 | `EditApiKeyAsync`                       | Api Keys             | apiKeyId, editApiKey                          | Updates the name or metadata of an existing API key. Returns the updated API key or null.                            |
 | `RevokeApiKeyAsync`                     | Api Keys             | apiKeyId, revokeApiKey                        | Revokes an API key, marking it as inactive. Returns the updated API key or null.                                     |
+| `GetAllApiKeyClaims`                    | Api Key Claims       | identityUser, transientRoles, transientClaims | Retrieves all claims of an api key, including role-based and optional transient claims.                                  |
+| `GetRoleClaimAsync`                     | Api Key Claims       | roleId, getClaim                          | Retrieves a specific claim of an api key by claim type.                                                                  |
+| `GetRoleClaimsAsync`                    | Api Key Claims       | roleId                                        | Retrieves all claims of an api key by apikeyId.                                                                           |
+| `GetRoleClaimsAsync`                    | Api Key Claims       | identityRole                                  | Retrieves all claims of a api key instance.                                                                             |
+| `AssignRoleClaimAsync`                  | Api Key Claims       | roleId, assignClaim                           | Assigns a claim to an api key.                                                                                           |
+| `ReplaceRoleClaimAsync`                 | Api Key Claims       | roleId, replaceClaim                          | Replaces an existing claim of an api key with a new value.                                                               |
+| `AssignOrReplaceRoleClaimAsync`         | Api Key Claims       | roleId, assignOrReplaceClaim                  | Assigns a claim to an api key or replaces it if it already exists.                                                       |
+| `RemoveRoleClaimAsync`                  | Api Key Claims       | roleId, removeClaim                           | Removes a claim from an api key.                                                                                         |
 | `GetRolesAsync`                         | Roles                | —                                             | Retrieves all roles in the system.                                                                                   |
 | `CreateRoleAsync`                       | Roles                | roleName                                      | Creates a new role. Returns the created role.                                                                        |
 | `DeleteRoleAsync`                       | Roles                | roleName                                      | Deletes an existing role.                                                                                            |
-| `GetRoleClaimAsync`                     | Role Claims          | getClaim                                      | Retrieves a specific claim of a role by claim type.                                                                  |
+| `GetRoleClaimAsync`                     | Role Claims          | roleId, getClaim                              | Retrieves a specific claim of a role by claim type.                                                                  |
 | `GetRoleClaimsAsync`                    | Role Claims          | roleId                                        | Retrieves all claims of a role by role ID.                                                                           |
 | `GetRoleClaimsAsync`                    | Role Claims          | identityRole                                  | Retrieves all claims of a role instance.                                                                             |
 | `AssignRoleClaimAsync`                  | Role Claims          | roleId, assignClaim                           | Assigns a claim to a role.                                                                                           |
 | `ReplaceRoleClaimAsync`                 | Role Claims          | roleId, replaceClaim                          | Replaces an existing claim of a role with a new value.                                                               |
-| `AssignOrReplaceRoleClaimAsync`         | Role Claims          | roleId, assignOrReplaceRoleClaim              | Assigns a claim to a role or replaces it if it already exists.                                                       |
+| `AssignOrReplaceRoleClaimAsync`         | Role Claims          | roleId, assignOrReplaceClaim                  | Assigns a claim to a role or replaces it if it already exists.                                                       |
 | `RemoveRoleClaimAsync`                  | Role Claims          | roleId, removeClaim                           | Removes a claim from a role.                                                                                         |
 
 Try it out yourself using the **[Api.Data.Identity](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Mysql)** example.    

@@ -46,29 +46,46 @@ internal sealed class ConditionalActionsConvention(MvcEndpointVisibility mvcEndp
                     return true;
                 }
 
-                if (nameof(BaseAuthController<>.LogInAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasIdentity)
+                if (!this.mvcEndpointVisibility.HasIdentity)
                 {
-                    return true;
+                    if (nameof(BaseAuthController<>.LogInAsync).ReplaceAsync() == x.ActionName)
+                    {
+                        return true;
+                    }
+
+                    if (nameof(BaseAuthController<>.LogInRefreshAsync).ReplaceAsync() == x.ActionName)
+                    {
+                        return true;
+                    }
+
+                    if (nameof(BaseAuthController<>.LogOutAsync).ReplaceAsync() == x.ActionName)
+                    {
+                        return true;
+                    }
                 }
 
-                if (nameof(BaseAuthController<>.LogInRootAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasAuthRoot)
+                if (!this.mvcEndpointVisibility.HasAuthRoot)
                 {
-                    return true;
+                    if (nameof(BaseAuthController<>.LogInRootAsync).ReplaceAsync() == x.ActionName)
+                    {
+                        return true;
+                    }
                 }
 
-                if (nameof(BaseAuthController<>.LogInRefreshAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasIdentity)
+                if (!this.mvcEndpointVisibility.HasAuthExternalLogins)
                 {
-                    return true;
+                    if (nameof(BaseAuthController<>.GetExternalSchemesAsync).ReplaceAsync() == x.ActionName)
+                    {
+                        return true;
+                    }
                 }
 
-                if (nameof(BaseAuthController<>.LogOutAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasIdentity)
+                if (!this.mvcEndpointVisibility.HasApiKey)
                 {
-                    return true;
-                }
-
-                if (nameof(BaseAuthController<>.GetExternalSchemesAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasAuthExternalLogins)
-                {
-                    return true;
+                    if (nameof(BaseAuthController<>.LogInApiKeyAsync).ReplaceAsync() == x.ActionName)
+                    {
+                        return true;
+                    }
                 }
 
                 return false;
@@ -99,44 +116,93 @@ internal sealed class ConditionalActionsConvention(MvcEndpointVisibility mvcEndp
             .AddRange(controller.Actions
                 .Where(x =>
                 {
-                    if (nameof(BaseEntityUserController<,,>.GetExternalLoginsAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasAuthExternalLogins)
+                    if (!this.mvcEndpointVisibility.HasAuthExternalLogins)
                     {
-                        return true;
+                        if (nameof(BaseEntityUserController<,,>.GetExternalLoginsAsync).ReplaceAsync() == x.ActionName)
+                        {
+                            return true;
+                        }
                     }
 
-                    if (nameof(BaseEntityUserController<,,>.GetApiKeysAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasApiKey)
+                    if (!this.mvcEndpointVisibility.HasJwt)
                     {
-                        return true;
+                        if (nameof(BaseEntityUserController<,,>.GetRefreshTokensAsync).ReplaceAsync() == x.ActionName)
+                        {
+                            return true;
+                        }
+
+                        if (nameof(BaseEntityUserController<,,>.GetActiveRefreshTokensAsync).ReplaceAsync() == x.ActionName)
+                        {
+                            return true;
+                        }
+
+                        if (nameof(BaseEntityUserController<,,>.DeleteRefreshTokenAsync).ReplaceAsync() == x.ActionName)
+                        {
+                            return true;
+                        }
                     }
 
-                    if (nameof(BaseEntityUserController<,,>.CreateApiKeyAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasApiKey)
+                    if (!this.mvcEndpointVisibility.HasApiKey)
                     {
-                        return true;
-                    }
+                        if (nameof(BaseEntityUserController<,,>.GetApiKeysAsync).ReplaceAsync() == x.ActionName)
+                        {
+                            return true;
+                        }
 
-                    if (nameof(BaseEntityUserController<,,>.EditApiKeyAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasApiKey)
-                    {
-                        return true;
-                    }
+                        if (nameof(BaseEntityUserController<,,>.CreateApiKeyAsync).ReplaceAsync() == x.ActionName)
+                        {
+                            return true;
+                        }
 
-                    if (nameof(BaseEntityUserController<,,>.RevokeApiKeyAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasApiKey)
-                    {
-                        return true;
-                    }
+                        if (nameof(BaseEntityUserController<,,>.EditApiKeyAsync).ReplaceAsync() == x.ActionName)
+                        {
+                            return true;
+                        }
 
-                    if (nameof(BaseEntityUserController<,,>.GetRefreshTokensAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasJwt)
-                    {
-                        return true;
-                    }
+                        if (nameof(BaseEntityUserController<,,>.RevokeApiKeyAsync).ReplaceAsync() == x.ActionName)
+                        {
+                            return true;
+                        }
 
-                    if (nameof(BaseEntityUserController<,,>.GetActiveRefreshTokensAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasJwt)
-                    {
-                        return true;
-                    }
+                        if (nameof(BaseEntityUserController<,,>.GetApiKeyRolesAsync).ReplaceAsync() == x.ActionName)
+                        {
+                            return true;
+                        }
 
-                    if (nameof(BaseEntityUserController<,,>.DeleteRefreshTokenAsync).ReplaceAsync() == x.ActionName && !this.mvcEndpointVisibility.HasJwt)
-                    {
-                        return true;
+                        if (nameof(BaseEntityUserController<,,>.AssignApiKeyRoleAsync).ReplaceAsync() == x.ActionName)
+                        {
+                            return true;
+                        }
+
+                        if (nameof(BaseEntityUserController<,,>.RemoveApiKeyRoleAsync).ReplaceAsync() == x.ActionName)
+                        {
+                            return true;
+                        }
+
+                        if (nameof(BaseEntityUserController<,,>.GetApiKeyClaimsAsync).ReplaceAsync() == x.ActionName)
+                        {
+                            return true;
+                        }
+
+                        if (nameof(BaseEntityUserController<,,>.AssignApiKeyClaimAsync).ReplaceAsync() == x.ActionName)
+                        {
+                            return true;
+                        }
+
+                        if (nameof(BaseEntityUserController<,,>.ReplaceApiKeyClaimAsync).ReplaceAsync() == x.ActionName)
+                        {
+                            return true;
+                        }
+
+                        if (nameof(BaseEntityUserController<,,>.AssignOrReplaceApiKeyClaimAsync).ReplaceAsync() == x.ActionName)
+                        {
+                            return true;
+                        }
+
+                        if (nameof(BaseEntityUserController<,,>.RemoveApiKeyClaimAsync).ReplaceAsync() == x.ActionName)
+                        {
+                            return true;
+                        }
                     }
 
                     return false;

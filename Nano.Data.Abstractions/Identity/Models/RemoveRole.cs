@@ -3,12 +3,12 @@ using System.ComponentModel.DataAnnotations;
 namespace Nano.Data.Abstractions.Identity.Models;
 
 /// <summary>
-/// Represents a request to assign a role to a user.
+/// Represents a request to remove a role.
 /// </summary>
-public class AssignUserRole
+public class RemoveRole
 {
     /// <summary>
-    /// The name of the role to assign.
+    /// The name of the role to remove.
     /// </summary>
     [Required]
     [MaxLength(256)]

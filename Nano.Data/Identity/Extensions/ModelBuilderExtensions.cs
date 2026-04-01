@@ -32,6 +32,8 @@ internal static class ModelBuilderExtensions
 
         modelBuilder
             .AddMapping<IdentityApiKey<TIdentity>, TIdentity, IdentityApiKeyMapping<TIdentity>>()
+            .AddMapping<IdentityApiKeyClaim<TIdentity>, TIdentity, IdentityApiKeyClaimMapping<TIdentity>>()
+            .AddMapping<IdentityApiKeyRole<TIdentity>, TIdentity, IdentityApiKeyRoleMapping<TIdentity>>()
             .AddMapping<IdentityUserChangeData<TIdentity>, TIdentity, IdentityUserChangeDataMapping<TIdentity>>()
             .AddMapping<IdentityUserRefreshToken<TIdentity>, TIdentity, IdentityUserRefreshTokenMapping<TIdentity>>();
 

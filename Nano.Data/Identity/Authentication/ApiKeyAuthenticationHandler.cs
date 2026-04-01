@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using Nano.Common.Consts;
 using Nano.Data.Abstractions.Identity;
 using Nano.Data.Abstractions.Identity.Consts;
+using Nano.Data.Abstractions.Identity.Models;
 
 namespace Nano.Data.Identity.Authentication;
 
@@ -70,7 +71,10 @@ public class ApiKeyAuthenticationHandler<TIdentity> : AuthenticationHandler<Auth
         }
 
         var identityApiKey = await this.identityRepository
-            .ValidateApiKeyAsync(apiKey);
+            .ValidateApiKeyAsync(new ValidateApiKey
+            {
+                ApiKey = apiKey
+            });
 
         if (identityApiKey == null)
         {
@@ -96,7 +100,7 @@ public class ApiKeyAuthenticationHandler<TIdentity> : AuthenticationHandler<Auth
         };
 
         var claims = await this.identityRepository
-            .GetAllClaims(identityUser, transientClaims: transientClaims);
+            .GetAllApiKeyClaims(identityApiKey, transientClaims: transientClaims);
 
         var identity = new ClaimsIdentity(claims, nameof(ApiKeyAuthenticationHandler<>));
         var ticket = new AuthenticationTicket(new ClaimsPrincipal(identity), this.Scheme.Name);

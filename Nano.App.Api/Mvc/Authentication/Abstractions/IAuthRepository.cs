@@ -31,7 +31,7 @@ public interface IAuthRepository<in TIdentity>
     IAuthRootRepository? AuthRootRepository { get; }
 
     /// <summary>
-    /// Defines a transient authentication repository for handling external login flows,
+    /// Defines a transient authentication repository for handling external login flows.
     /// </summary>
     IAuthTransientRepository? AuthTransientRepository { get; }
 }
