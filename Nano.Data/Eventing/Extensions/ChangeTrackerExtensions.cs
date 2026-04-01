@@ -21,7 +21,7 @@ internal static class ChangeTrackerExtensions
         return changeTracker
             .Entries<IEntity>()
             .Where(x =>
-                x.Entity.GetType().IsTypeOf(typeof(BaseEntity<>)) &&
+                x.Entity.GetType().IsTypeOf(typeof(BaseEntity<>)) && // BUG: This could be more specific
                 x.Entity.GetType().GetCustomAttributes<PublishAttribute>().Any() &&
                 x.State is EntityState.Added or EntityState.Modified or EntityState.Deleted)
             .Select(x => x

@@ -10,13 +10,6 @@ using Nano.Eventing.Abstractions;
 
 namespace Nano.Data.Interceptors;
 
-// BUG: ENTITY EVENT: Entity Event Map
-// 1. Make a map of Publish Attributes and their property names.
-// 2. When SaveChanges then check if any property names are affected (e.g. User.IdentityUser.Email is changed, then User needs to be fetched and published)
-// also we need to detect if there are changes compared to original values, because only then we should publish update events
-// Should use property values from entities when publishing not pre-save. Move all set properites to post save in publish except setting Id, CreatedAt and State
-// Test with Triggers
-
 internal sealed class EntityEventingSaveChangesInterceptor(IEventing eventing) : SaveChangesInterceptor
 {
     private ConcurrentQueue<EntityEvent> pendingEvents = [];
@@ -39,7 +32,7 @@ internal sealed class EntityEventingSaveChangesInterceptor(IEventing eventing) :
 
     public override int SavedChanges(SaveChangesCompletedEventData eventData, int result)
     {
-        this.PublishEntityEvents().Wait();
+        this.PublishEntityEvents().GetAwaiter().GetResult();
 
         return base.SavedChanges(eventData, result);
     }
@@ -90,5 +83,24 @@ internal sealed class EntityEventingSaveChangesInterceptor(IEventing eventing) :
 
             this.pendingEvents = [];
         }
+    }
+
+
+    // BUG: Before we refresh like for audit when a entity with [Publish] and property-names
+
+
+
+
+
+    // BUG: ENTITY EVENT: Entity Event Map
+    // 1. Make a map of Publish Attributes and their property names.
+    // 2. When SaveChanges then check if any property names are affected (e.g. User.IdentityUser.Email is changed, then User needs to be fetched and published)
+    // also we need to detect if there are changes compared to original values, because only then we should publish update events
+    // Should use property values from entities when publishing not pre-save. Move all set properites to post save in publish except setting Id, CreatedAt and State
+    // Test with Triggers
+
+    private void GetEntityMap(DbContext context)
+    {
+        // BUG: 
     }
 }
