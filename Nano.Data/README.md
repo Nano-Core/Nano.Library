@@ -782,6 +782,20 @@ entity properties. More complex logic should be handled in dedicated services wi
 Try it out yourself using the **[Api.Data.Triggers](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Triggers)**.  
 
 ## Entity Events
+automatic cross-entity event propagation based on navigation + reverse dependencies.
+
+Using entity events requires eventing to be configured for the application.
+
+
+When annotating entities with `PublishAttribute` you can define it on a non-abstract base class and that will be the type being published. That means you can have a entity descriminator 
+pattern in one application, but publush the base type to other services. If you define the `PublishAttribute` on both the base class and the derived type, the derived class will be used
+when publishing. PropertyNames on the `PublishAttribute` is aggregated acroos inheritance, so you can define property names on a base class and additional ones on the derived classes.
+
+This implementation enforces:
+* Each intermediate segment must be a reference navigation
+* Collections are not allowed anywhere in the path
+* Only the final segment is allowed to be scalar
+
 !!!!If Publish on a enity model, on update we will do a select with includes to be sure to have the navigations that might be in the Publish properties.
 
 

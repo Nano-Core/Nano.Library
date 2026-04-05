@@ -6,11 +6,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Nano.Common.Config.Extensions;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Config;
-using Nano.Data.Abstractions.Eventing;
 using Nano.Data.Abstractions.Identity.Extensions;
 using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
-using Nano.Data.Eventing;
+using Nano.Data.Eventing.Extensions;
 using Nano.Data.Identity.Authentication.Extensions;
 using Nano.Data.Identity.Extensions;
 using System;
@@ -90,8 +89,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<IDbMigrationTask, DbMigrationTask<TIdentity>>();
 
         services
-            .AddScoped<EntityEventingHandler<TIdentity>>()
-            .AddScoped<IRegisterEntityEventingHandlersTask, RegisterEntityEventingHandlersTask>();
+            .AddEntityEventing<TContext, TIdentity>();
 
         services
             .AddAuthentication()
@@ -111,23 +109,21 @@ public static class ServiceCollectionExtensions
         if (options.ConnectionPool == null)
         {
             services
-                .AddDbContext<TContext>((provider, builder) =>
-                {
-                    builder
-                        .AddDataContext<TProvider>(provider, options);
-                });
+                .AddDbContext<TContext>(Configure);
         }
         else
         {
             services
-                .AddDbContextPool<TContext>((provider, builder) =>
-                {
-                    builder
-                        .AddDataContext<TProvider>(provider, options);
-                }, options.ConnectionPool.PoolSize);
+                .AddDbContextPool<TContext>(Configure, options.ConnectionPool.PoolSize);
         }
 
         return services;
+
+        void Configure(IServiceProvider serviceProvider, DbContextOptionsBuilder builder)
+        {
+            builder
+                .AddDataContext<TProvider>(serviceProvider, options);
+        }
     }
     private static IServiceCollection AddAudit<TIdentity>(this IServiceCollection services, DataOptions options)
         where TIdentity : IEquatable<TIdentity>
@@ -135,13 +131,15 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(options);
 
+        // TODO: Test more with Audit. Will identity work when i first exclude them with predicate.
         AuditManager.DefaultConfiguration.Include<IEntityAuditable>();
+        AuditManager.DefaultConfiguration.Exclude(x => !x.GetType().IsAssignableFrom(typeof(IEntityAuditable)));
         AuditManager.DefaultConfiguration.IncludeDataAnnotation();
         AuditManager.DefaultConfiguration.IncludeIdentity<TIdentity>(options.Identity);
-        AuditManager.DefaultConfiguration.Exclude<AuditEntry<TIdentity>>();
-        AuditManager.DefaultConfiguration.Exclude<AuditEntryProperty<TIdentity>>();
-        AuditManager.DefaultConfiguration.Exclude<DataProtectionKey>();
-        AuditManager.DefaultConfiguration.ExcludeDataAnnotation();
+        //AuditManager.DefaultConfiguration.Exclude<AuditEntry<TIdentity>>();
+        //AuditManager.DefaultConfiguration.Exclude<AuditEntryProperty<TIdentity>>();
+        //AuditManager.DefaultConfiguration.Exclude<DataProtectionKey>();
+        //AuditManager.DefaultConfiguration.ExcludeDataAnnotation();
 
         AuditManager.DefaultConfiguration.UseUtcDateTime = true;
         AuditManager.DefaultConfiguration.AutoSavePreAction = AutoSavePreAction<TIdentity>;
@@ -189,7 +187,7 @@ public static class ServiceCollectionExtensions
                         })
                         .Where(y =>
                             y.NewValue != y.OldValue &&
-                            y.PropertyName != x.Entry.GetKeyName())
+                            y.PropertyName != x.Entry.GetAuditKeyName().ToString())
                         .ToArray()
                 };
             });

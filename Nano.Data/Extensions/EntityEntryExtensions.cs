@@ -7,7 +7,7 @@ namespace Nano.Data.Extensions;
 
 internal static class EntityEntryExtensions
 {
-    internal static string GetKeyName(this EntityEntry entityEntry)
+    internal static object GetAuditKeyName(this EntityEntry entityEntry)
     {
         ArgumentNullException.ThrowIfNull(entityEntry);
 
@@ -21,20 +21,16 @@ internal static class EntityEntryExtensions
         return keyPropertyName;
     }
 
-    internal static TIdentity? GetKeyValue<TIdentity>(this EntityEntry entityEntry)
+    internal static TIdentity? GetAuditKeyValue<TIdentity>(this EntityEntry entityEntry)
         where TIdentity : IEquatable<TIdentity>
     {
         ArgumentNullException.ThrowIfNull(entityEntry);
 
-        var primaryKey = entityEntry.Metadata
-            .FindPrimaryKey()!;
+        var entityKey = entityEntry
+            .GetAuditKeyName();
 
         var entityType = entityEntry.Entity
             .GetType();
-
-        var entityKey = primaryKey.Properties
-            .Select(x => entityEntry.Property(x.Name).CurrentValue)
-            .First();
 
         if (entityType.IsGenericType)
         {
@@ -54,5 +50,13 @@ internal static class EntityEntryExtensions
         }
 
         return (TIdentity?)entityKey;
+    }
+
+    internal static bool HasOriginalValues(this EntityEntry entityEntry)
+    {
+        ArgumentNullException.ThrowIfNull(entityEntry);
+
+        return entityEntry.Properties
+            .Any(x => !Equals(x.OriginalValue, x.CurrentValue));
     }
 }

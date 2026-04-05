@@ -14,7 +14,7 @@ internal static class AuditEntryExtensions
         ArgumentNullException.ThrowIfNull(auditEntry);
 
         var entityKey = auditEntry.Entry
-            .GetKeyValue<TIdentity>();
+            .GetAuditKeyValue<TIdentity>();
 
         return entityKey!;
     }

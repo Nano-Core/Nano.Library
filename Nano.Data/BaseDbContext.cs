@@ -17,7 +17,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Z.EntityFramework.Plus;
 
 namespace Nano.Data;
@@ -34,6 +33,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
     where TIdentity : IEquatable<TIdentity>
 {
     private readonly IOptionsMonitor<DataOptions> options;
+    private readonly EntityHydrator<TIdentity> hydrator;
 
     /// <summary>
     /// Gets or sets the DbSet for data protection keys.
@@ -49,135 +49,218 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
         : base(contextOptions)
     {
         this.options = options ?? throw new ArgumentNullException(nameof(options));
+        this.hydrator = new EntityHydrator<TIdentity>(this);
     }
 
-    /// <summary>
-    /// Updates an entity in the context.
-    /// </summary>
-    /// <param name="entity">The entity to update.</param>
-    /// <returns>The <see cref="EntityEntry"/> representing the entity.</returns>
+    /// <inheritdoc />
+    public override EntityEntry Add(object entity)
+    {
+        ArgumentNullException.ThrowIfNull(entity);
+
+        var entry = base.Add(entity);
+
+        this.ProcessAddedEntry(entry);
+
+        return entry;
+    }
+
+    /// <inheritdoc />
+    public override EntityEntry<TEntity> Add<TEntity>(TEntity entity)
+    {
+        ArgumentNullException.ThrowIfNull(entity);
+
+        var entry = base.Add(entity);
+
+        this.ProcessAddedEntry(entry);
+
+        return entry;
+    }
+
+    /// <inheritdoc />
+    public override async ValueTask<EntityEntry> AddAsync(object entity, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(entity);
+
+        var entry = await base.AddAsync(entity, cancellationToken);
+
+        this.ProcessAddedEntry(entry);
+
+        return entry;
+    }
+
+    /// <inheritdoc />
+    public override async ValueTask<EntityEntry<TEntity>> AddAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(entity);
+
+        var entry = await base.AddAsync(entity, cancellationToken);
+
+        this.ProcessAddedEntry(entry);
+
+        return entry;
+    }
+
+    /// <inheritdoc />
+    public override void AddRange(params object[] entities)
+    {
+        ArgumentNullException.ThrowIfNull(entities);
+
+        foreach (var entity in entities)
+        {
+            this.Add(entity);
+        }
+    }
+
+    /// <inheritdoc />
+    public override void AddRange(IEnumerable<object> entities)
+    {
+        ArgumentNullException.ThrowIfNull(entities);
+
+        foreach (var entity in entities)
+        {
+            this.Add(entity);
+        }
+    }
+
+    /// <inheritdoc />
+    public override async Task AddRangeAsync(params object[] entities)
+    {
+        ArgumentNullException.ThrowIfNull(entities);
+
+        foreach (var entity in entities)
+        {
+            await this.AddAsync(entity);
+        }
+    }
+
+    /// <inheritdoc />
+    public override async Task AddRangeAsync(IEnumerable<object> entities, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(entities);
+
+        foreach (var entity in entities)
+        {
+            await this.AddAsync(entity, cancellationToken);
+        }
+    }
+
+    /// <inheritdoc />
     public override EntityEntry Update(object entity)
     {
         ArgumentNullException.ThrowIfNull(entity);
 
-        var isAuditable = entity is IEntityAuditable;
+        var entry = base.Update(entity);
 
-        if (!isAuditable)
-        {
-            return base.Update(entity);
-        }
+        this.ProcessUpdatedEntry(entry);
 
-        var entry = this.Entry(entity);
-        var entityType = entity.GetType();
-
-        if (entry.State != EntityState.Detached)
-        {
-            return base.Update(entity);
-        }
-
-        var key = this.Model
-            .FindEntityType(entityType)!
-            .FindPrimaryKey()!;
-
-        var keyValues = key.Properties
-            .Select(x => entry.Property(x.Name).CurrentValue)
-            .ToArray();
-
-        var dbSet = this.SetDynamic(entity.GetType().Name);
-
-        var untracked = dbSet
-            .AsNoTracking()
-            .Cast<object>()
-            .FirstOrDefault(x => EF.Property<object>(x, key.Properties[0].Name).Equals(keyValues[0]));
-
-        if (untracked != null)
-        {
-            entry.OriginalValues
-                .SetValues(untracked);
-
-            this.UpdateGeneratedProperties(entity);
-        }
-
-        return base.Update(entity);
+        return entry;
     }
 
-    /// <summary>
-    /// Updates a typed entity in the context.
-    /// </summary>
-    /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="entity">The entity to update.</param>
-    /// <returns>The <see cref="EntityEntry{TEntity}"/> representing the entity.</returns>
+    /// <inheritdoc />
     public override EntityEntry<TEntity> Update<TEntity>(TEntity entity)
         where TEntity : class
     {
         ArgumentNullException.ThrowIfNull(entity);
 
-        var isAuditable = entity is IEntityAuditable;
+        var entry = base.Update(entity);
 
-        if (!isAuditable)
-        {
-            return base.Update(entity);
-        }
+        this.ProcessUpdatedEntry(entry);
 
-        var entry = this.Entry(entity);
-
-        if (entry.State != EntityState.Detached)
-        {
-            return base.Update(entity);
-        }
-
-        var entityType = this.Model
-            .FindEntityType(entity.GetType());
-
-        var key = entityType!
-            .FindPrimaryKey();
-
-        var keyValues = key!
-            .Properties
-            .Select(x => entry.Property(x.Name).CurrentValue)
-            .ToArray();
-
-        var untracked = this
-            .Set<TEntity>()
-            .AsNoTracking()
-            .FirstOrDefault(x => EF.Property<TIdentity>(x, key.Properties[0].Name).Equals(keyValues[0]));
-
-        if (untracked != null)
-        {
-            entry.OriginalValues
-                .SetValues(untracked);
-
-            this.UpdateGeneratedProperties(entity);
-        }
-
-        return base.Update(entity);
+        return entry;
     }
 
-    /// <summary>
-    /// Updates a range of entities in the context.
-    /// </summary>
-    /// <param name="entities">The entities to update.</param>
-    public override void UpdateRange(IEnumerable<object> entities)
-    {
-        ArgumentNullException.ThrowIfNull(entities);
-
-        foreach (var entity in entities)
-        {
-            this.Update(entity);
-        }
-    }
-
-    /// <summary>
-    /// Updates a range of entities in the context.
-    /// </summary>
-    /// <param name="entities">The entities to update.</param>
+    /// <inheritdoc />
     public override void UpdateRange(params object[] entities)
     {
         ArgumentNullException.ThrowIfNull(entities);
 
+        var entries = entities
+            .Select(this.Entry)
+            .ToArray();
+
+        base.UpdateRange(entities);
+
+        foreach (var entry in entries)
+        {
+            this.ProcessUpdatedEntry(entry);
+        }
+    }
+
+    /// <inheritdoc />
+    public override void UpdateRange(IEnumerable<object> entities)
+    {
+        ArgumentNullException.ThrowIfNull(entities);
+
+        var entitiesArray = entities
+            .ToArray();
+
+        var entries = entitiesArray
+            .Select(this.Entry);
+
+        base.UpdateRange(entitiesArray);
+
+        foreach (var entry in entries)
+        {
+            this.ProcessUpdatedEntry(entry);
+        }
+    }
+
+    /// <inheritdoc />
+    public override EntityEntry Remove(object entity)
+    {
+        ArgumentNullException.ThrowIfNull(entity);
+
+        var entry = base.Remove(entity);
+
+        this.ProcessDeletedEntry(entry);
+
+        return entry;
+    }
+
+    /// <inheritdoc />
+    public override EntityEntry<TEntity> Remove<TEntity>(TEntity entity)
+    {
+        ArgumentNullException.ThrowIfNull(entity);
+
+        var entry = base.Remove(entity);
+
+        this.ProcessDeletedEntry(entry);
+
+        return entry;
+    }
+
+    /// <inheritdoc />
+    public override void RemoveRange(params object[] entities)
+    {
+        ArgumentNullException.ThrowIfNull(entities);
+
+        base.RemoveRange(entities);
+
         foreach (var entity in entities)
         {
-            this.Update(entity);
+            var entry = this.Entry(entity);
+
+            this.ProcessDeletedEntry(entry);
+        }
+    }
+
+    /// <inheritdoc />
+    public override void RemoveRange(IEnumerable<object> entities)
+    {
+        ArgumentNullException.ThrowIfNull(entities);
+
+        var entitiesArray = entities
+            .ToArray();
+
+        var entries = entitiesArray
+            .Select(this.Entry)
+            .ToArray();
+
+        base.RemoveRange(entitiesArray);
+
+        foreach (var entry in entries)
+        {
+            this.ProcessDeletedEntry(entry);
         }
     }
 
@@ -329,42 +412,22 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
     }
 
 
-    private void UpdateGeneratedProperties<TEntity>(TEntity entity)
-        where TEntity : class
+    private void ProcessAddedEntry(EntityEntry entry)
     {
-        var entry = this.Entry(entity);
-        var entityType = entry.Metadata;
-
-        if (entry.State != EntityState.Detached)
-        {
-            return;
-        }
-
-        var dbValues = entry
-            .GetDatabaseValues();
-
-        if (dbValues == null)
-        {
-            return;
-        }
-
-        foreach (var property in entityType.GetProperties())
-        {
-            if (property.IsPrimaryKey() || property.IsShadowProperty() || entityType.FindNavigation(property.Name) != null)
-            {
-                continue;
-            }
-
-            var valueGenerated = property.ValueGenerated;
-            var afterSaveBehavior = property.GetAfterSaveBehavior();
-
-            if (valueGenerated == ValueGenerated.OnAdd || valueGenerated == ValueGenerated.OnAddOrUpdate || afterSaveBehavior == PropertySaveBehavior.Ignore)
-            {
-                entry
-                    .Property(property.Name).CurrentValue = dbValues[property.Name];
-
-                entry.OriginalValues[property.Name] = dbValues[property.Name];
-            }
-        }
+        this.hydrator
+            .HydrateEntry(entry);
+    }
+    private void ProcessUpdatedEntry(EntityEntry entry)
+    {
+        this.hydrator
+            .Hydrate(entry);
+        
+        this.hydrator
+            .HydrateReverseDependencies(entry);
+    }
+    private void ProcessDeletedEntry(EntityEntry entry)
+    {
+        this.hydrator
+            .HydrateReverseDependencies(entry);
     }
 }

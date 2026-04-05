@@ -1,11 +1,12 @@
-using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Config;
+using Nano.Data.Eventing.Interceptors;
 using Nano.Data.Interceptors;
 using Nano.Eventing.Abstractions;
+using System;
 
 namespace Nano.Data.Extensions;
 
@@ -74,6 +75,7 @@ internal static class DbContextOptionsBuilderExtensions
             builder
                 .AddInterceptors(new EntityEventingSaveChangesInterceptor(eventing));
         }
+
 
         return builder;
     }

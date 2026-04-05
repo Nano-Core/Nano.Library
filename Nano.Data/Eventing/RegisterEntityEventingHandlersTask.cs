@@ -1,35 +1,19 @@
 using System;
-using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.Data.Abstractions.Eventing;
-using Nano.Data.Abstractions.Eventing.Annotations;
 using Nano.Data.Abstractions.Eventing.Models;
+using Nano.Data.Eventing.TypeMap;
 using Nano.Eventing.Abstractions;
 
 namespace Nano.Data.Eventing;
 
 /// <inheritdoc />
-internal sealed class RegisterEntityEventingHandlersTask : IRegisterEntityEventingHandlersTask
+internal sealed class RegisterEntityEventingHandlersTask(IEventing? eventing = null)
+    : IRegisterEntityEventingHandlersTask
 {
-    private readonly DbContext dbContext;
-    private readonly IEventing? eventing;
-
-    /// <summary>
-    /// Instantiates and instance of <see cref="RegisterEntityEventingHandlersTask"/>.
-    /// </summary>
-    /// <param name="dbContext">The <see cref="DbContext"/>.</param>
-    /// <param name="eventing">The <see cref="IEventing"/>.</param>
-    /// <exception cref="ArgumentNullException"></exception>
-    public RegisterEntityEventingHandlersTask(DbContext dbContext, IEventing? eventing = null)
-    {
-        this.dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-        this.eventing = eventing;
-    }
-
     /// <inheritdoc />
     public async Task RegisterEntityEventHandlers(IServiceProvider serviceProvider, CancellationToken cancellationToken = default)
     {
@@ -37,18 +21,17 @@ internal sealed class RegisterEntityEventingHandlersTask : IRegisterEntityEventi
 
         await Task.CompletedTask;
 
-        if (this.eventing == null)
+        if (eventing == null)
         {
             return;
         }
 
-        var entityTypes = dbContext.Model
-            .GetEntityTypes()
-            .Where(x =>
-                !x.ClrType.IsAbstract &&
-                x.ClrType.GetCustomAttributes<SubscribeAttribute>(true).Any());
+        var dbContext = serviceProvider
+            .GetRequiredService<DbContext>();
 
-        foreach (var entityType in entityTypes)
+        var entityMap = EntityEventingTypeMapCache.GetOrCreate(dbContext);
+
+        foreach (var entityType in entityMap)
         {
             var eventType = typeof(EntityEvent);
 
@@ -61,7 +44,7 @@ internal sealed class RegisterEntityEventingHandlersTask : IRegisterEntityEventi
 
             subscribeMethod?
                 .MakeGenericMethod(eventType)
-                .Invoke(eventing, [eventHandler, entityType.ClrType.Name, null, CancellationToken.None]);
+                .Invoke(eventing, [eventHandler, entityType.Key.Name, null, CancellationToken.None]);
         }
     }
 }
