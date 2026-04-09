@@ -1,5 +1,4 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,14 +15,3 @@ internal sealed class ReversePublishPlan
 
     public required HashSet<string> WatchedProperties { get; init; }
 }
-
-internal sealed class NavigationStep
-{
-
-    public required string NavigationName { get; init; }
-
-    public required IForeignKey ForeignKey { get; init; }
-
-    public required bool IsOnDependent { get; init; }
-}
-

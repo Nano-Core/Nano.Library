@@ -249,16 +249,6 @@ internal sealed class EntityEventingSaveChangesInterceptor(IEventing eventing)
 
             var data = new Dictionary<string, object?>();
 
-            // BUG: We have a problem here, the paths are full. but if we don't make them full we need unique names.
-            //"Data": {
-            //    "Name": "name",
-            //    "NavigationId": "a27f8d80-25e9-42e8-8300-9d09f17f6ec6",
-            //    "NavigationNullable.NavigationName": null,
-            //    "NavigationIncluded.NavigationName": "navigation-name-included",
-            //    "ParentName": "parent-name",
-            //    "CreatedAt": "2026-04-08T10:22:58.5791203+00:00"
-            //}
-
             foreach (var path in metadata.Properties)
             {
                 var accessorKey = (entityType, path);
@@ -270,7 +260,7 @@ internal sealed class EntityEventingSaveChangesInterceptor(IEventing eventing)
                 }
 
                 var value = accessor(entry!.Entity);
-                data[path] = value;
+                data[path.Split('.').Last()] = value;
             }
 
             entityEvent.Data = data;
