@@ -8,15 +8,14 @@ namespace Nano.Data.Eventing.Extensions;
 
 internal static class ServiceCollectionExtensions
 {
-    internal static IServiceCollection AddEntityEventing<TContext, TIdentity>(this IServiceCollection services)
-        where TContext : BaseDbContext<TIdentity>
+    internal static IServiceCollection AddEntityEventing<TIdentity>(this IServiceCollection services)
         where TIdentity : IEquatable<TIdentity>
     {
         ArgumentNullException.ThrowIfNull(services);
 
         services
             .AddScoped(typeof(IEventingHandler<EntityEvent>), typeof(EntityEventingHandler<TIdentity>))
-            .AddScoped<IRegisterEntityEventingHandlersTask, RegisterEntityEventingHandlersTask>();
+            .AddScoped<IRegisterEntityEventingTask, RegisterEntityEventingTask>();
 
         return services;
     }

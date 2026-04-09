@@ -46,13 +46,13 @@ internal static class WebApplicationExtensions
         webApplication
             .MapControllers();
 
-        using var scope = webApplication.Services
+        using var serviceScope = webApplication.Services
             .CreateScope();
 
-        scope.ServiceProvider
+        serviceScope
             .UseNanoEndpoints(webApplication, options)
             .UseEventHandlers()
-            .UseEntityEventHandlers()
+            .UseEntityEventing()
             .UseNanoDbMigrations();
 
         return webApplication;

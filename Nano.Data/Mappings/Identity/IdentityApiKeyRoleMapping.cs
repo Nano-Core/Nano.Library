@@ -28,6 +28,9 @@ public class IdentityApiKeyRoleMapping<TIdentity> : BaseEntityIdentityMapping<Id
             .ToTable(TableNames.IDENTITY_API_KEY_ROLE);
 
         builder
+            .HasQueryFilter(x => x.ApiKey.IdentityUser.IsActive);
+
+        builder
             .HasOne(x => x.ApiKey)
             .WithMany()
             .IsRequired();

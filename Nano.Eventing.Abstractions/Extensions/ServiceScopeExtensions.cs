@@ -4,9 +4,9 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Nano.Eventing.Abstractions.Extensions;
 
 /// <summary>
-/// Service provider extensions to automatically register and subscribe all event handlers during app startup.
+/// Service scope extensions to automatically register and subscribe all event handlers during app startup.
 /// </summary>
-public static class ServiceProviderExtensions
+public static class ServiceScopeExtensions
 {
     /// <summary>
     /// Scans for all implementations of <see cref="IEventingHandler{TEvent}"/> in the application,
@@ -15,20 +15,20 @@ public static class ServiceProviderExtensions
     ///     Should be called once during application startup (e.g., in <c>Program.cs</c> or <c>Startup.Configure</c>).
     /// </para>
     /// </summary>
-    /// <param name="serviceProvider">The <see cref="IServiceProvider"/>.</param>
-    /// <returns>The same <see cref="IServiceProvider"/> instance, for chaining.</returns>
-    public static IServiceProvider UseEventHandlers(this IServiceProvider serviceProvider)
+    /// <param name="serviceScope">The <see cref="IServiceScope"/>.</param>
+    /// <returns>The same <see cref="IServiceScope"/> instance, for chaining.</returns>
+    public static IServiceScope UseEventHandlers(this IServiceScope serviceScope)
     {
-        ArgumentNullException.ThrowIfNull(serviceProvider);
+        ArgumentNullException.ThrowIfNull(serviceScope);
 
-        var registerEventHandlersTask = serviceProvider
+        var registerEventHandlersTask = serviceScope.ServiceProvider
             .GetService<IRegisterEventingHandlersTask>();
 
         registerEventHandlersTask?
-            .RegisterEventHandlers(serviceProvider)
+            .RegisterEventHandlers(serviceScope.ServiceProvider)
             .GetAwaiter()
             .GetResult();
 
-        return serviceProvider;
+        return serviceScope;
     }
 }

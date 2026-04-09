@@ -5,43 +5,44 @@ using Microsoft.Extensions.DependencyInjection;
 using Nano.App.Api.Config;
 using Nano.App.Api.Controllers;
 using Nano.App.Api.Mvc.Authentication.Abstractions;
+using Nano.Common.Extensions;
 using Nano.Common.Helpers;
 using Nano.Data.Abstractions.Identity;
 
 namespace Nano.App.Api.Extensions;
 
-internal static class ServiceProviderExtensions
+internal static class ServiceScopeExtensions
 {
-    internal static IServiceProvider UseNanoEndpoints(this IServiceProvider serviceProvider, IEndpointRouteBuilder builder, ApiOptions options)
+    internal static IServiceScope UseNanoEndpoints(this IServiceScope serviceScope, IEndpointRouteBuilder builder, ApiOptions options)
     {
-        ArgumentNullException.ThrowIfNull(serviceProvider);
+        ArgumentNullException.ThrowIfNull(serviceScope);
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(options);
 
         var hasAuthController = TypesHelper
             .GetAllTypes()
-            .Any(x => Common.Extensions.TypeExtensions.IsTypeOf(x, typeof(BaseAuthController)));
+            .Any(x => x.IsTypeOf(typeof(BaseAuthController)));
 
-        var hasIdentity = serviceProvider
+        var hasIdentity = serviceScope
             .MapNanoIdentityEndpoints(builder, options, hasAuthController);
 
         if (!hasIdentity && hasAuthController)
         {
-            serviceProvider
+            serviceScope
                 .MapNanoTransientAuthEndpoints(builder, options);
         }
 
-        return serviceProvider;
+        return serviceScope;
     }
 
 
-    private static bool MapNanoTransientAuthEndpoints(this IServiceProvider serviceProvider, IEndpointRouteBuilder builder, ApiOptions options)
+    private static bool MapNanoTransientAuthEndpoints(this IServiceScope serviceScope, IEndpointRouteBuilder builder, ApiOptions options)
     {
-        ArgumentNullException.ThrowIfNull(serviceProvider);
+        ArgumentNullException.ThrowIfNull(serviceScope);
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(options);
 
-        var authEndpointsTask = serviceProvider
+        var authEndpointsTask = serviceScope.ServiceProvider
             .GetService<IRegisterTransientAuthEndpointsTask>();
 
         if (authEndpointsTask == null)
@@ -54,9 +55,9 @@ internal static class ServiceProviderExtensions
 
         return true;
     }
-    private static bool MapNanoIdentityEndpoints(this IServiceProvider serviceProvider, IEndpointRouteBuilder builder, ApiOptions options, bool hasAuth)
+    private static bool MapNanoIdentityEndpoints(this IServiceScope serviceScope, IEndpointRouteBuilder builder, ApiOptions options, bool hasAuth)
     {
-        ArgumentNullException.ThrowIfNull(serviceProvider);
+        ArgumentNullException.ThrowIfNull(serviceScope);
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(options);
 
@@ -68,7 +69,7 @@ internal static class ServiceProviderExtensions
             .Select(x => x!.GetGenericArguments()[0])
             .ToArray();
 
-        var identityEndpointsTask = serviceProvider
+        var identityEndpointsTask = serviceScope.ServiceProvider
             .GetService<IRegisterDataIdentityEndpointsTask>();
 
         if (identityEndpointsTask == null)

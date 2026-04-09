@@ -7,7 +7,7 @@ namespace Nano.Data.Extensions;
 
 internal static class EntityEntryExtensions
 {
-    internal static object GetAuditKeyName(this EntityEntry entityEntry)
+    internal static string GetAuditKeyName(this EntityEntry entityEntry)
     {
         ArgumentNullException.ThrowIfNull(entityEntry);
 
@@ -26,8 +26,12 @@ internal static class EntityEntryExtensions
     {
         ArgumentNullException.ThrowIfNull(entityEntry);
 
-        var entityKey = entityEntry
-            .GetAuditKeyName();
+        var primaryKey = entityEntry.Metadata
+            .FindPrimaryKey()!;
+
+        var entityKey = primaryKey.Properties
+            .Select(x => entityEntry.Property(x.Name).CurrentValue)
+            .First();
 
         var entityType = entityEntry.Entity
             .GetType();

@@ -29,7 +29,7 @@ public sealed class EntityEventingHandler<TIdentity>(BaseDbContext<TIdentity> db
             .Select(x => x.ClrType)
             .Where(x => x
                 .IsTypeOf(typeof(IEntityIdentity<>)))
-            .First(x => x.Name == @event.Type);
+            .First(x => x.Name == @event.TypeName);
 
         var isGuid = Guid.TryParse(@event.Id.ToString(), out var guid);
         var id = isGuid ? guid : @event.Id;
@@ -132,7 +132,7 @@ public sealed class EntityEventingHandler<TIdentity>(BaseDbContext<TIdentity> db
                 continue;
             }
 
-            var value = pair.Value.ToString();
+            var value = pair.Value?.ToString();
 
             if (value == null)
             {

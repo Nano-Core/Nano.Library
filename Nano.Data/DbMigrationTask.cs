@@ -42,18 +42,30 @@ internal sealed class DbMigrationTask<TIdentity>(ILogger<DbMigrationTask<TIdenti
         return this.dbContext.Database
             .EnsureCreatedAsync(cancellationToken);
     }
-    private Task EnsureMigratedAsync(CancellationToken cancellationToken = default)
+    private async Task EnsureMigratedAsync(CancellationToken cancellationToken = default)
     {
         if (this.options.CurrentValue.StartupAction != DatabaseStartupAction.Migrate)
         {
-            return Task.CompletedTask;
+            return;
         }
 
         this.logger
             .LogInformation("Applying Migrations at start-up.");
 
-        return this.dbContext.Database
-            .MigrateAsync(cancellationToken);
+        const int MAX_RETRIES = 5;
+
+        for (var i = 0; i < MAX_RETRIES; i++)
+        {
+            try
+            {
+                await this.dbContext.Database
+                    .MigrateAsync(cancellationToken);
+            }
+            catch
+            {
+                await Task.Delay(2000, cancellationToken);
+            }
+        }
     }
     private async Task EnsureIdentityAsync(CancellationToken cancellationToken = default)
     {

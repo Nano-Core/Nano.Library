@@ -89,7 +89,7 @@ public static class ServiceCollectionExtensions
             .AddScoped<IDbMigrationTask, DbMigrationTask<TIdentity>>();
 
         services
-            .AddEntityEventing<TContext, TIdentity>();
+            .AddEntityEventing<TIdentity>();
 
         services
             .AddAuthentication()
@@ -132,6 +132,9 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(options);
 
         // TODO: Test more with Audit. Will identity work when i first exclude them with predicate.
+        // - In Audit lesson test for entity that shouldn't audit
+        // - Also test nested navigation gets original values
+
         AuditManager.DefaultConfiguration.Include<IEntityAuditable>();
         AuditManager.DefaultConfiguration.Exclude(x => !x.GetType().IsAssignableFrom(typeof(IEntityAuditable)));
         AuditManager.DefaultConfiguration.IncludeDataAnnotation();
@@ -187,7 +190,7 @@ public static class ServiceCollectionExtensions
                         })
                         .Where(y =>
                             y.NewValue != y.OldValue &&
-                            y.PropertyName != x.Entry.GetAuditKeyName().ToString())
+                            y.PropertyName != x.Entry.GetAuditKeyName())
                         .ToArray()
                 };
             });

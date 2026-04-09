@@ -28,6 +28,9 @@ public class IdentityApiKeyClaimMapping<TIdentity> : BaseEntityIdentityMapping<I
             .ToTable(TableNames.IDENTITY_API_KEY_CLAIM);
 
         builder
+            .HasQueryFilter(x => x.ApiKey.IdentityUser.IsActive);
+
+        builder
             .HasOne(x => x.ApiKey)
             .WithMany()
             .IsRequired();

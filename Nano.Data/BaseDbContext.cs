@@ -33,7 +33,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
     where TIdentity : IEquatable<TIdentity>
 {
     private readonly IOptionsMonitor<DataOptions> options;
-    private readonly EntityHydrator<TIdentity> hydrator;
+    private readonly EntityGraphHydrator graphHydrator;
 
     /// <summary>
     /// Gets or sets the DbSet for data protection keys.
@@ -49,99 +49,7 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
         : base(contextOptions)
     {
         this.options = options ?? throw new ArgumentNullException(nameof(options));
-        this.hydrator = new EntityHydrator<TIdentity>(this);
-    }
-
-    /// <inheritdoc />
-    public override EntityEntry Add(object entity)
-    {
-        ArgumentNullException.ThrowIfNull(entity);
-
-        var entry = base.Add(entity);
-
-        this.ProcessAddedEntry(entry);
-
-        return entry;
-    }
-
-    /// <inheritdoc />
-    public override EntityEntry<TEntity> Add<TEntity>(TEntity entity)
-    {
-        ArgumentNullException.ThrowIfNull(entity);
-
-        var entry = base.Add(entity);
-
-        this.ProcessAddedEntry(entry);
-
-        return entry;
-    }
-
-    /// <inheritdoc />
-    public override async ValueTask<EntityEntry> AddAsync(object entity, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(entity);
-
-        var entry = await base.AddAsync(entity, cancellationToken);
-
-        this.ProcessAddedEntry(entry);
-
-        return entry;
-    }
-
-    /// <inheritdoc />
-    public override async ValueTask<EntityEntry<TEntity>> AddAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(entity);
-
-        var entry = await base.AddAsync(entity, cancellationToken);
-
-        this.ProcessAddedEntry(entry);
-
-        return entry;
-    }
-
-    /// <inheritdoc />
-    public override void AddRange(params object[] entities)
-    {
-        ArgumentNullException.ThrowIfNull(entities);
-
-        foreach (var entity in entities)
-        {
-            this.Add(entity);
-        }
-    }
-
-    /// <inheritdoc />
-    public override void AddRange(IEnumerable<object> entities)
-    {
-        ArgumentNullException.ThrowIfNull(entities);
-
-        foreach (var entity in entities)
-        {
-            this.Add(entity);
-        }
-    }
-
-    /// <inheritdoc />
-    public override async Task AddRangeAsync(params object[] entities)
-    {
-        ArgumentNullException.ThrowIfNull(entities);
-
-        foreach (var entity in entities)
-        {
-            await this.AddAsync(entity);
-        }
-    }
-
-    /// <inheritdoc />
-    public override async Task AddRangeAsync(IEnumerable<object> entities, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(entities);
-
-        foreach (var entity in entities)
-        {
-            await this.AddAsync(entity, cancellationToken);
-        }
+        this.graphHydrator = new EntityGraphHydrator(this);
     }
 
     /// <inheritdoc />
@@ -202,65 +110,6 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
         foreach (var entry in entries)
         {
             this.ProcessUpdatedEntry(entry);
-        }
-    }
-
-    /// <inheritdoc />
-    public override EntityEntry Remove(object entity)
-    {
-        ArgumentNullException.ThrowIfNull(entity);
-
-        var entry = base.Remove(entity);
-
-        this.ProcessDeletedEntry(entry);
-
-        return entry;
-    }
-
-    /// <inheritdoc />
-    public override EntityEntry<TEntity> Remove<TEntity>(TEntity entity)
-    {
-        ArgumentNullException.ThrowIfNull(entity);
-
-        var entry = base.Remove(entity);
-
-        this.ProcessDeletedEntry(entry);
-
-        return entry;
-    }
-
-    /// <inheritdoc />
-    public override void RemoveRange(params object[] entities)
-    {
-        ArgumentNullException.ThrowIfNull(entities);
-
-        base.RemoveRange(entities);
-
-        foreach (var entity in entities)
-        {
-            var entry = this.Entry(entity);
-
-            this.ProcessDeletedEntry(entry);
-        }
-    }
-
-    /// <inheritdoc />
-    public override void RemoveRange(IEnumerable<object> entities)
-    {
-        ArgumentNullException.ThrowIfNull(entities);
-
-        var entitiesArray = entities
-            .ToArray();
-
-        var entries = entitiesArray
-            .Select(this.Entry)
-            .ToArray();
-
-        base.RemoveRange(entitiesArray);
-
-        foreach (var entry in entries)
-        {
-            this.ProcessDeletedEntry(entry);
         }
     }
 
@@ -412,22 +261,13 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
     }
 
 
-    private void ProcessAddedEntry(EntityEntry entry)
-    {
-        this.hydrator
-            .HydrateEntry(entry);
-    }
     private void ProcessUpdatedEntry(EntityEntry entry)
     {
-        this.hydrator
-            .Hydrate(entry);
-        
-        this.hydrator
-            .HydrateReverseDependencies(entry);
-    }
-    private void ProcessDeletedEntry(EntityEntry entry)
-    {
-        this.hydrator
-            .HydrateReverseDependencies(entry);
+        ArgumentNullException.ThrowIfNull(entry);
+
+        var visited = new HashSet<object>(ReferenceEqualityComparer.Instance);
+
+        this.graphHydrator
+            .HydrateAudit(entry, visited);
     }
 }

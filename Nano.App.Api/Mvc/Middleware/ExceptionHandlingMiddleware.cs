@@ -149,6 +149,9 @@ public sealed class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddlew
         }
         finally
         {
+            // TODO: Handle DbUpdateException for all Data Providers, and return a bad request.
+            // - ExceptionHandlingMiddleware: could we make a bad request when we see duplicate exceptions, attach "type" and "id".
+
             if (exception != null)
             {
                 if (!httpContext.Response.HasStarted)
