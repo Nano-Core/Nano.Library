@@ -64,30 +64,35 @@ internal sealed class EntityEventingSaveChangesInterceptor(IEventing eventing)
         return await base.SavedChangesAsync(eventData, result, cancellationToken);
     }
 
-
     private void PreSaveEntityEvents(DbContext dbContext)
     {
         ArgumentNullException.ThrowIfNull(dbContext);
 
-        var model = EntityEventingModelCache.GetOrCreate(dbContext);
         var hydrator = new EntityGraphHydrator(dbContext);
+        var entityEventingModel = EntityEventingModelCache.GetOrCreate(dbContext);
 
         var directEntities = new HashSet<(Type type, CompositeKey key)>();
 
         var entries = dbContext.ChangeTracker.Entries()
-            .Where(e =>
-                e.State is EntityState.Added or EntityState.Modified or EntityState.Deleted &&
-                model.ReversePlans.ContainsKey(e.Entity.GetType()))
-            .ToList();
+            .Where(x => x.State is EntityState.Added or EntityState.Modified or EntityState.Deleted && entityEventingModel.ReversePlans.ContainsKey(x.Entity.GetType()))
+            .ToArray();
 
         foreach (var entry in entries)
         {
-            var type = entry.Entity.GetType();
+            var type = entry.Entity
+                .GetType();
 
-            if (!model.ReversePlans.TryGetValue(type, out var plans))
+            if (!entityEventingModel.ReversePlans.TryGetValue(type, out var plans))
+            {
                 continue;
+            }
 
-            hydrator.HydrateEntry(entry);
+            hydrator
+                .HydrateEntry(entry);
+
+            // BUG: what if we have nested properties that has changed. Loading something with include and change nested and then update
+            // This seems right for reverse because if this entry hasn't changed any relevant properties, but for update through another like Customer -> profile change
+            // would abort here, no?
 
             HashSet<string>? changedProperties = null;
 
@@ -119,25 +124,26 @@ internal sealed class EntityEventingSaveChangesInterceptor(IEventing eventing)
                 }
                 else
                 {
-                    shouldTrigger = true; // Added / Deleted
+                    shouldTrigger = true;
                 }
 
                 if (!shouldTrigger)
                     continue;
+
 
                 var visited = new HashSet<object>(ReferenceEqualityComparer.Instance);
 
                 // Direct entity
                 if (plan.Path.Count == 0)
                 {
-                    hydrator.HydrateAlongPath(entry, plan);
+                    hydrator.HydrateEntry(entry);
+
+                    hydrator.HydratePublish(entry, plan.RootType, visited);
 
                     var key = GetKey(entry);
 
                     if (!directEntities.Add((plan.RootType, key)))
                         continue;
-
-                    hydrator.HydratePublish(entry, visited);
 
                     var entityEvent = GetEntityEvent(entry, plan.RootType);
 
@@ -145,7 +151,39 @@ internal sealed class EntityEventingSaveChangesInterceptor(IEventing eventing)
                 }
                 else
                 {
-                    var rootEntries = hydrator.ResolveFromHydratedGraph(entry, plan);
+                    var rootEntries = new List<EntityEntry> { entry };
+
+                    foreach (var step in plan.Path.Reverse())
+                    {
+                        var nextEntries = new List<EntityEntry>();
+
+                        foreach (var entry2 in rootEntries)
+                        {
+                            var fk = step.ForeignKey;
+
+                            if (!step.IsOnDependent)
+                            {
+                                if (entry2.Metadata != fk.DeclaringEntityType)
+                                    continue;
+
+                                nextEntries.AddRange(GetRelatedEntries(entry2, fk, goToPrincipal: true));
+                            }
+                            else
+                            {
+                                if (entry2.Metadata != fk.PrincipalEntityType)
+                                    continue;
+
+                                nextEntries.AddRange(GetRelatedEntries(entry2, fk, goToPrincipal: false));
+                            }
+                        }
+
+                        rootEntries = nextEntries;
+
+                        if (rootEntries.Count == 0)
+                        {
+                            break;
+                        }
+                    }
 
                     foreach (var rootEntry in rootEntries)
                     {
@@ -154,7 +192,7 @@ internal sealed class EntityEventingSaveChangesInterceptor(IEventing eventing)
                         if (!directEntities.Add((plan.RootType, key)))
                             continue;
 
-                        hydrator.HydratePublish(rootEntry, visited);
+                        hydrator.HydratePublish(rootEntry, plan.RootType, visited);
 
                         var entityEvent = GetEntityEvent(rootEntry, plan.RootType);
 
@@ -164,6 +202,42 @@ internal sealed class EntityEventingSaveChangesInterceptor(IEventing eventing)
             }
         }
     }
+    private static IEnumerable<EntityEntry> GetRelatedEntries(EntityEntry entry, IForeignKey fk, bool goToPrincipal)
+    {
+        if (goToPrincipal)
+        {
+            var navigation = entry.Navigations
+                .FirstOrDefault(n => n.Metadata is INavigation nav && nav.ForeignKey == fk);
+
+            if (navigation?.CurrentValue == null)
+                yield break;
+
+            yield return entry.Context.Entry(navigation.CurrentValue);
+        }
+        else
+        {
+            foreach (var navigation in entry.Metadata.GetNavigations()
+                         .Where(n => n.ForeignKey == fk))
+            {
+                var navEntry = entry.Navigation(navigation.Name);
+
+                if (!navEntry.IsLoaded)
+                    navEntry.Load();
+
+                if (navEntry.CurrentValue is IEnumerable<object> collection)
+                {
+                    foreach (var item in collection)
+                        yield return entry.Context.Entry(item);
+                }
+                else if (navEntry.CurrentValue != null)
+                {
+                    yield return entry.Context.Entry(navEntry.CurrentValue);
+                }
+            }
+        }
+    }
+
+
     private CompositeKey GetKey(EntityEntry entry)
     {
         ArgumentNullException.ThrowIfNull(entry);
