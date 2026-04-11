@@ -5,11 +5,11 @@ namespace Nano.Data.Eventing.Models;
 
 internal sealed class NavigationStep
 {
-    public required string NavigationName { get; init; }
+    internal required string NavigationName { get; init; }
 
-    public required IForeignKey ForeignKey { get; init; }
+    internal required IForeignKey ForeignKey { get; init; }
 
-    public required bool IsOnDependent { get; init; }
+    internal required bool IsOnDependent { get; init; }
 
-    public required Type TargetType { get; init; }
+    internal required Type TargetType { get; init; }
 }

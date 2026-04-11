@@ -179,12 +179,10 @@ internal class EntityGraphHydrator(DbContext dbContext)
             return;
         }
 
-        if (!this.entityEventingModel.TraversalGraphs.TryGetValue(rootType, out var graph))
-        {
-            return;
-        }
+        var navigations = this.entityEventingModel.Navigations
+            .GetNavigations(rootType, entry.Metadata.ClrType);
 
-        if (!graph.TryGetNavigations(entry.Metadata.ClrType, out var navigations))
+        if (navigations.Count == 0)
         {
             return;
         }

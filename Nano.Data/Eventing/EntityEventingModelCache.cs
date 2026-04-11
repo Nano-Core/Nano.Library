@@ -4,16 +4,13 @@ using Nano.Common.Extensions;
 using Nano.Data.Abstractions.Eventing.Annotations;
 using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
-using Nano.Data.Eventing.Extensions;
 using Nano.Data.Eventing.Models;
-using Newtonsoft.Json;
 using System;
-using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
+using Nano.Data.Eventing.Extensions;
 
 namespace Nano.Data.Eventing;
 
@@ -45,38 +42,144 @@ internal static class EntityEventingModelCache
         foreach (var entityType in entityTypes)
         {
             var clrType = entityType.ClrType;
-            var publishProperties = GetPublishProperties(entityType, clrType);
+            var publishPaths = GetPublishProperties(entityType);
 
-            if (clrType.IsTypeOf(typeof(BaseEntityReadOnly<>)))
+            if (publishPaths == null)
             {
-                publishProperties
-                    .Add(nameof(BaseEntity<>.CreatedAt));
+                continue;
             }
 
-            entityEventingModel.Metadata[clrType] = new PublishMetadata
-            {
-                Properties = publishProperties
-                    .ToArray()
-            };
+            entityEventingModel.Paths
+                .AddRange(BuildPaths(clrType, publishPaths));
 
-            foreach (var property in publishProperties)
-            {
-                entityEventingModel.Accessors[(clrType, property)] = CompileAccessor(clrType, property);
+            entityEventingModel.Accessors
+                .AddRange(BuildAccessors(clrType, publishPaths));
 
-                BuildReversePlans(entityEventingModel, entityType, clrType, publishProperties);
-            }
+            entityEventingModel.ReversePlans
+                .AddRange(BuildReversePublishPlans(entityType, clrType, publishPaths));
+
+            entityEventingModel.Navigations
+                .AddRange(BuildNavigationCache(entityEventingModel.ReversePlans));
         }
 
         return entityEventingModel;
     }
-    private static HashSet<string> GetPublishProperties(IEntityType entityType, Type clrType)
+    
+    private static Paths BuildPaths(Type rootClrType, IEnumerable<string> publishPaths)
+    {
+        ArgumentNullException.ThrowIfNull(rootClrType);
+        ArgumentNullException.ThrowIfNull(publishPaths);
+
+        return new Paths
+        {
+            [rootClrType] = publishPaths.ToArray()
+        };
+    }
+    private static PropertyAccessors BuildAccessors(Type rootClrType, IEnumerable<string> publishPaths)
+    {
+        ArgumentNullException.ThrowIfNull(rootClrType);
+        ArgumentNullException.ThrowIfNull(publishPaths);
+
+        var propertyAccessors = new PropertyAccessors();
+
+        foreach (var path in publishPaths)
+        {
+            propertyAccessors[(rootClrType, path)] = propertyAccessors
+                .CreateAccessor(rootClrType, path);
+        }
+
+        return propertyAccessors;
+    }
+    private static Navigations BuildNavigationCache(ReversePublishPlans reversePublishPlans)
+    {
+        ArgumentNullException.ThrowIfNull(reversePublishPlans);
+
+        var navigations = new Navigations();
+
+        foreach (var planGroup in reversePublishPlans.Values)
+        {
+            foreach (var plan in planGroup)
+            {
+                var currentType = plan.RootType;
+
+                foreach (var step in plan.Path)
+                {
+                    navigations
+                        .AddNavigation(plan.RootType, currentType, step.NavigationName);
+
+                    currentType = step.TargetType;
+                }
+            }
+        }
+
+        return navigations;
+    }
+    private static ReversePublishPlans BuildReversePublishPlans(IEntityType rootEntityType, Type rootClrType, IEnumerable<string> publishPaths)
+    {
+        ArgumentNullException.ThrowIfNull(rootClrType);
+        ArgumentNullException.ThrowIfNull(rootEntityType);
+        ArgumentNullException.ThrowIfNull(publishPaths);
+
+        var reversePublishPlans = new ReversePublishPlans();
+
+        foreach (var path in publishPaths)
+        {
+            var segments = path
+                .Split('.', StringSplitOptions.RemoveEmptyEntries);
+
+            var current = rootEntityType;
+            var navigationSegments = new List<INavigation>();
+
+            foreach (var segment in segments)
+            {
+                var navigation = current
+                    .FindNavigation(segment);
+
+                if (navigation == null)
+                {
+                    var changedClrType = current.ClrType;
+
+                    var navigationSteps = reversePublishPlans
+                        .GetNavigationSteps(changedClrType, navigationSegments);
+
+                    if (reversePublishPlans.TryAddWatchedProperty(rootClrType, changedClrType, navigationSegments, segment))
+                    {
+                        break;
+                    }
+
+                    var publishPlans = reversePublishPlans
+                        .GetOrCreatePlans(changedClrType);
+
+                    publishPlans
+                        .Add(new ReversePublishPlan
+                        {
+                            RootType = rootClrType,
+                            ChangedType = changedClrType,
+                            Path = navigationSteps,
+                            WatchedProperties = [segment]
+                        });
+
+                    break;
+                }
+
+                navigationSegments
+                    .Add(navigation);
+                
+                current = navigation.TargetEntityType;
+            }
+        }
+
+        return reversePublishPlans;
+    }
+    
+    private static HashSet<string>? GetPublishProperties(IEntityType entityType)
     {
         ArgumentNullException.ThrowIfNull(entityType);
-        ArgumentNullException.ThrowIfNull(clrType);
 
-        var properties = new HashSet<string>();
+        var current = entityType.ClrType;
 
-        var current = clrType;
+        var hasPublishAttribute = false;
+        var paths = new HashSet<string>();
 
         while (current != typeof(object) && current.IsTypeOf(typeof(IEntityIdentity<>)))
         {
@@ -85,9 +188,11 @@ internal static class EntityEventingModelCache
 
             if (publishAttribute != null)
             {
-                foreach (var name in publishAttribute.PropertyNames)
+                hasPublishAttribute = true;
+
+                foreach (var name in publishAttribute.Paths)
                 {
-                    properties
+                    paths
                         .Add(name);
                 }
             }
@@ -95,149 +200,28 @@ internal static class EntityEventingModelCache
             current = current.BaseType!;
         }
 
-        return properties;
+        if (!hasPublishAttribute)
+        {
+            return null;
+        }
+
+        if (entityType.ClrType.IsTypeOf(typeof(BaseEntityReadOnly<>)))
+        {
+            paths
+                .Add(nameof(BaseEntity<>.CreatedAt));
+        }
+
+        ValidatePublishPathUniqueness(paths);
+        ValidatePublishPathsResolvability(entityType, paths);
+
+        return paths;
     }
-    private static Func<object, object?> CompileAccessor(Type rootType, string path)
-    {
-        ArgumentNullException.ThrowIfNull(rootType);
-        ArgumentNullException.ThrowIfNull(path);
-
-        var parameter = Expression.Parameter(typeof(object), "obj");
-        Expression current = Expression.Convert(parameter, rootType);
-
-        foreach (var part in path.Split('.'))
-        {
-            var property = current.Type.GetProperty(part) ?? throw new InvalidOperationException($"Property '{part}' not found on '{current.Type.Name}'");
-
-            var equalExpression = Expression.Equal(current, Expression.Constant(null));
-            var trueExpression = Expression.Default(property.PropertyType);
-            var falsexpression = Expression.Property(current, property);
-
-            current = Expression.Condition(equalExpression, trueExpression, falsexpression);
-        }
-
-        var lambda = Expression.Lambda<Func<object, object?>>(Expression.Convert(current, typeof(object)), parameter);
-            
-        return lambda
-            .Compile();
-    }
-
-
-
-
-
-
-    private static void BuildReversePlans(EntityEventingModel model, IEntityType rootEntityType, Type rootClrType, IEnumerable<string> publishPaths)
-    {
-        foreach (var path in publishPaths)
-        {
-            var segments = path.Split('.', StringSplitOptions.RemoveEmptyEntries);
-
-            var current = rootEntityType;
-            var navigationSegments = new List<INavigation>();
-
-            for (int i = 0; i < segments.Length; i++)
-            {
-                var segment = segments[i];
-
-                var navigation = current.FindNavigation(segment);
-                if (navigation == null)
-                {
-                    // reached scalar → previous entity is the ChangedType
-                    var changedType = current.ClrType;
-                    var leafProperty = segment;
-
-                    RegisterPlan(model, rootClrType, changedType, navigationSegments, leafProperty);
-
-                    break;
-                }
-
-                navigationSegments.Add(navigation);
-                current = navigation.TargetEntityType;
-            }
-        }
-    }
-    private static void RegisterPlan(EntityEventingModel model, Type rootType, Type changedType, List<INavigation> navigationPath, string leafProperty)
-    {
-        if (!model.ReversePlans.TryGetValue(changedType, out var plans))
-        {
-            plans = [];
-            model.ReversePlans[changedType] = plans;
-        }
-
-        var existing = plans.FirstOrDefault(p =>
-            p.RootType == rootType &&
-            PathEquals(p.Path, navigationPath));
-
-        if (existing != null)
-        {
-            existing.WatchedProperties.Add(leafProperty);
-            return;
-        }
-
-        var plan = new ReversePublishPlan
-        {
-            RootType = rootType,
-            ChangedType = changedType,
-            Path = navigationPath.Select(n => new NavigationStep
-            {
-                NavigationName = n.Name,
-                TargetType = n.ClrType,
-                ForeignKey = n.ForeignKey,
-                IsOnDependent = n.IsOnDependent
-            }).ToArray(),
-            WatchedProperties = new HashSet<string> { leafProperty }
-        };
-
-        plans.Add(plan);
-
-
-        if (plan.Path.Count == 0)
-            return;
-
-        if (!model.TraversalGraphs.TryGetValue(plan.RootType, out var graph))
-        {
-            graph = new TraversalGraph();
-            model.TraversalGraphs[plan.RootType] = graph;
-        }
-
-        var currentType = plan.RootType;
-
-        foreach (var step in plan.Path)
-        {
-            graph.AddEdge(currentType, step.NavigationName);
-            currentType = step.TargetType;
-        }
-    }
-    private static bool PathEquals(IReadOnlyList<NavigationStep> a, IReadOnlyList<INavigation> b)
-    {
-        if (a.Count != b.Count)
-            return false;
-
-        for (int i = 0; i < a.Count; i++)
-        {
-            if (a[i].NavigationName != b[i].Name)
-                return false;
-        }
-
-        return true;
-    }
-
-
-
-
-
-
-
-
-    private static void ValidatePublishProperties(IEntityType rootEntityType, IEnumerable<string> paths)
+    private static void ValidatePublishPathsResolvability(IEntityType rootEntityType, IEnumerable<string> publishProperties)
     {
         ArgumentNullException.ThrowIfNull(rootEntityType);
-        ArgumentNullException.ThrowIfNull(paths);
+        ArgumentNullException.ThrowIfNull(publishProperties);
 
-        // BUG: We should validate that no paths ends with the same name. the contract is flatten when publishing, so it would create duplicates
-
-        foreach (var path in paths)
+        foreach (var path in publishProperties)
         {
             var segments = path
                 .Split('.', StringSplitOptions.RemoveEmptyEntries);
@@ -269,83 +253,20 @@ internal static class EntityEventingModelCache
             }
         }
     }
+    private static void ValidatePublishPathUniqueness(IEnumerable<string> paths)
+    {
+        ArgumentNullException.ThrowIfNull(paths);
 
+        var duplicates = paths
+            .Select(x => x.Split('.', StringSplitOptions.RemoveEmptyEntries).Last())
+            .GroupBy(x => x)
+            .Where(x => x.Count() > 1)
+            .Select(x => x.Key)
+            .ToArray();
 
-
-
-    //private static void AddToTraversalGraph(EntityEventingModel model, ReversePublishPlan plan)
-    //{
-    //    if (plan.Path.Count == 0)
-    //        return;
-
-    //    if (!model.TraversalGraphs.TryGetValue(plan.RootType, out var graph))
-    //    {
-    //        graph = new TraversalGraph();
-    //        model.TraversalGraphs[plan.RootType] = graph;
-    //    }
-
-    //    var currentType = plan.RootType;
-
-    //    foreach (var step in plan.Path)
-    //    {
-    //        graph.AddEdge(currentType, step.NavigationName);
-    //        currentType = step.TargetType;
-    //    }
-    //}
-
-    //private static Dictionary<Type, TraversalGraph> BuildTraversalGraph(EntityEventingModel model)
-    //{
-    //    var result = new Dictionary<Type, TraversalGraph>();
-
-    //    foreach (var kvp in model.ReversePlans)
-    //    {
-    //        var changedType = kvp.Key;
-    //        var plans = kvp.Value;
-
-    //        foreach (var plan in plans)
-    //        {
-    //            if (!result.TryGetValue(plan.RootType, out var graph))
-    //            {
-    //                graph = new TraversalGraph();
-    //                result[plan.RootType] = graph;
-    //            }
-
-    //            BuildFromPlan(graph, plan);
-    //        }
-    //    }
-
-    //    return result;
-    //}
-    //private static void BuildFromPlan(TraversalGraph graph, ReversePublishPlan plan)
-    //{
-    //    if (plan.Path.Count == 0)
-    //    {
-    //        return;
-    //    }
-
-    //    var currentType = plan.RootType;
-
-    //    foreach (var step in plan.Path)
-    //    {
-    //        // Register edge: currentType -> navigation
-    //        graph.AddEdge(currentType, step.NavigationName);
-
-    //        // Move to next type
-    //        currentType = ResolveNextType(currentType, step);
-    //    }
-    //}
-    //private static Type ResolveNextType(Type currentType, NavigationStep step)
-    //{
-    //    // IMPORTANT:
-    //    // You likely already have FK metadata available when building plans.
-    //    // If NavigationStep doesn't include target type, you MUST add it.
-
-    //    if (step.TargetType is null)
-    //    {
-    //        throw new InvalidOperationException(
-    //            $"NavigationStep for '{step.NavigationName}' is missing TargetType.");
-    //    }
-
-    //    return step.TargetType;
-    //}
+        if (duplicates.Length > 0)
+        {
+            throw new InvalidOperationException($"Duplicate leaf property names detected: {string.Join(", ", duplicates)}. " + "Flattened publish contract would overwrite values.");
+        }
+    }
 }

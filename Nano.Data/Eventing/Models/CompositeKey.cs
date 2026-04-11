@@ -3,6 +3,8 @@ using System.Linq;
 
 namespace Nano.Data.Eventing.Models;
 
+// BUG: Try get rid of this
+
 internal sealed class CompositeKey : IEquatable<CompositeKey>
 {
     private readonly int hashCode;

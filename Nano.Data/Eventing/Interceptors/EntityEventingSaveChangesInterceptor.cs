@@ -64,6 +64,8 @@ internal sealed class EntityEventingSaveChangesInterceptor(IEventing eventing)
         return await base.SavedChangesAsync(eventData, result, cancellationToken);
     }
 
+
+
     private void PreSaveEntityEvents(DbContext dbContext)
     {
         ArgumentNullException.ThrowIfNull(dbContext);
@@ -89,10 +91,6 @@ internal sealed class EntityEventingSaveChangesInterceptor(IEventing eventing)
 
             hydrator
                 .HydrateEntry(entry);
-
-            // BUG: what if we have nested properties that has changed. Loading something with include and change nested and then update
-            // This seems right for reverse because if this entry hasn't changed any relevant properties, but for update through another like Customer -> profile change
-            // would abort here, no?
 
             HashSet<string>? changedProperties = null;
 
@@ -236,8 +234,6 @@ internal sealed class EntityEventingSaveChangesInterceptor(IEventing eventing)
             }
         }
     }
-
-
     private CompositeKey GetKey(EntityEntry entry)
     {
         ArgumentNullException.ThrowIfNull(entry);
@@ -316,14 +312,14 @@ internal sealed class EntityEventingSaveChangesInterceptor(IEventing eventing)
 
         if (entityEvent.State is "Added" or "Modified")
         {
-            if (!entityEventingModel.Metadata.TryGetValue(entityType, out var metadata))
+            if (!entityEventingModel.Paths.TryGetValue(entityType, out var metadata))
             {
                 return Task.CompletedTask;
             }
 
             var data = new Dictionary<string, object?>();
 
-            foreach (var path in metadata.Properties)
+            foreach (var path in metadata)
             {
                 var accessorKey = (entityType, path);
 

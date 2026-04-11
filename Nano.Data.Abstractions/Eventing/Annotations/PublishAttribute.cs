@@ -15,7 +15,7 @@ public class PublishAttribute : Attribute
     /// Gets the names of the properties that should be included in the <see cref="EntityEvent"/>.
     /// If empty, only Id and CreatedAt is published.
     /// </summary>
-    public IEnumerable<string> PropertyNames { get; set; }
+    public IEnumerable<string> Paths { get; set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="PublishAttribute"/> class.
@@ -24,6 +24,6 @@ public class PublishAttribute : Attribute
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="propertyNames"/> is <c>null</c>.</exception>
     public PublishAttribute(params string[] propertyNames)
     {
-        this.PropertyNames = propertyNames ?? throw new ArgumentNullException(nameof(propertyNames));
+        this.Paths = propertyNames ?? throw new ArgumentNullException(nameof(propertyNames));
     }
 }
