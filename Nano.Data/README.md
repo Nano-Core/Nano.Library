@@ -782,40 +782,62 @@ entity properties. More complex logic should be handled in dedicated services wi
 Try it out yourself using the **[Api.Data.Triggers](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Triggers)**.  
 
 ## Entity Events
-automatic cross-entity event propagation based on navigation + reverse dependencies.
+In Nano, entity events provide a straightforward way to synchronize data changes across applications. They enable automatic propagation of entity state changes based on navigation properties and 
+reverse dependency tracking, ensuring that related models remain consistent across service boundaries. In a microservice architecture, managing relationships and consistency between distributed data models is 
+inherently complex. Entity events address this challenge by introducing a lightweight, attribute-driven eventing model that abstracts cross-service communication. Instead of manually implementing integration 
+logic, developers can declaratively define event behavior using attributes. 
 
-Using entity events requires eventing to be configured for the application.
+The `PublishAttribute` is used to emit an `EntityEvent` whenever an entity is created, modified, or deleted. These events represent the intent and outcome of a state change in a structured and consistent format.
+On the receiving side, models annotated with the `SubscribeAttribute` can react to these events. The built-in `EntityEventHandler` processes incoming events and automatically applies the corresponding 
+create, update, or delete operations to the local model.  
 
+This approach provides a simple and consistent mechanism for maintaining data synchronization across services, reducing integration complexity while preserving clear ownership boundaries between applications.  
 
-When annotating entities with `PublishAttribute` you can define it on a non-abstract base class and that will be the type being published. That means you can have a entity descriminator 
-pattern in one application, but publush the base type to other services. If you define the `PublishAttribute` on both the base class and the derived type, the derived class will be used
-when publishing. PropertyNames on the `PublishAttribute` is aggregated acroos inheritance, so you can define property names on a base class and additional ones on the derived classes.
+> ⚠️ Entity Events require eventing to be configured in the application.
 
-This implementation enforces:
-* Each intermediate segment must be a reference navigation
-* Collections are not allowed anywhere in the path
-* Only the final segment is allowed to be scalar
+Only entities implementing `IEntityIdentity<TIdentity>` are eligible for participation in entity eventing. The attribute allows a configurable list of publish properties, which determines the data included 
+in the generated event payload. For entities deriving from `BaseEntity`, the `CreatedAt` property is automatically included to ensure consistent timestamp synchronization between publishers and subscribers.
 
-!!!!If Publish on a enity model, on update we will do a select with includes to be sure to have the navigations that might be in the Publish properties.
+The attribute supports inheritance, allowing publish behavior to be defined across base and derived types in a flexible way. The most specific type marked with `PublishAttribute` determines the published 
+event type. If only a base class has the attribute, any derived entity will be published as that base type, which is useful for exposing a simplified contract model to subscribers while preserving internal 
+inheritance structures. If both the base and derived types are annotated, each is published according to its own definition. When the base class is abstract, it does not emit events directly but instead 
+contributes publish property definitions that are inherited by derived types.  
 
+Publish properties can traverse navigation paths, like `Customer.Address.StreetName`. Only valid Entity Framework scalar types are allowed as the final segment of a navigation path. To ensure 
+deterministic event structure, the final property segment must be unique across all defined navigation paths. For instance, it is not allowed to publish both `BillingAddress.StreetName` and 
+`DeliveryAddress.StreetName`, as they would conflict on the same terminal property name. In addition, only reference or owned navigations are supported. Collection navigations are explicitly excluded, 
+since collections should be modeled and published as separate entities rather than embedded within a single entity event definition.
 
-
-Adding eventing annotations to model implementations, provides a way of synchronizing entities between applications. 
-
-When building micro-service applications, managing relations and dependencies of shared models, becomes a challenge. The eventing attributes provides a very simple method publishing change notifications in one application, and subscribing to it in another.  
-Eventing attributes is similar to database foreign-key relations, just in between services. The ```PublishAttribute``` publishes an ```EntityEvent``` whenever an instance is either created, updated or deleted. When receiving an event subscribed to by a model annotated with the ```SubscribeAttribute```, the built-in ```EntityEventHandler``` handles the event, and likewise creates, updates or deletes the instance.  
-The contract between the publisher and the subscriber is the type ```EntityEvent```, using the entity type name (```Type.Name```, and not ```Type.FullName```), when routing the event. The subscriber doesn't have any knowledge about the event being fired, and shouldn't. By convention, the relationship is loosely coupled.  
+When publish properties include navigation paths, Nano ensures that all required data is available before an event is created. During direct operations (create or update), Nano traverses the defined navigation 
+paths and automatically hydrates missing data from the database where necessary. This guarantees that the emitted entity event is fully populated, even if related entities were not explicitly loaded. For reverse 
+change scenarios, where a dependent entity is modified or deleted, Nano traverses the relationship graph in the opposite direction. It identifies all affected root entities and emits corresponding entity 
+events for each impacted aggregate. To optimize performance, hydration is skipped entirely when a modification does not affect any defined publish properties. In such cases, no event is generated, 
+since there is no relevant change to propagate.  
 
 ```csharp
-[Publish(params)]
+[Publish(nameof(Name))]
+public class Customer : BaseEntity
+{
+    public string Name { get; set; }
+}
+```
+
+> ⚠️ Avoid overly complex publish path configurations, as they may trigger unnecessary data hydration and impact performance.
+
+The `SubscribeAttribute` defines how an entity reacts to incoming `EntityEvent`s. It is applied to models that should be synchronized with published changes from other applications. The subscribing model 
+represents a flattened projection of the publish properties, where each subscribed field is mapped using the name of the final segment in the publish path. When an event is received, the built-in event handling 
+pipeline resolves the target entity and applies the incoming changes automatically. Based on the event type, the model is created, modified, or deleted accordingly.  
+
+```csharp
 [Subscribe]
 public class MyEntity : DefaultEntity
 {
-    [InternationalPhone]
-    public virtual string PhoneNumber { get; set; }
+    public string Name { get; set; }
 }
 ```
-If the ```Publish``` is used on a base class, that entity type will be used when publishing the entity event. This allows discriminated types in the master service to be published as the base to subscribing services. Also, it's possible through the ```params``` parameter of the ```Publish``` annotation, to pass additional properties in the event. Also nested classes are supported by using the ```.``` operator. Property names can be split on derived and base class Subscribe annotation, and when publishing the derived class, the property names of both itself and the base class will be concatenated. Be aware that changes to properties on related entities, won't trigger a publish. In this case you need to trigger the update of the entity after the related entity has been saved.  
-Publish/Subscribe can also work bi-directionally, but it would required the models in each service to have the same required properties, and probably best to keep them identical in this case.  
 
-**NOTE**: Avoid sharing models having ```SubscribeAttribute```, with other Nano services, as the eventing subscription will be initialized unintentionally for that service as well.  
+> 💡 Entity eventing can also be applied to identity-based models, enabling seamless synchronization of identity data across applications. For example, a `User` entity can 
+publish properties such as `IdentityUser.Email` or `IdentityUser.Phone`, allowing downstream services like email or SMS systems to subscribe and receive all required data upfront. 
+This enables each service to independently fulfill its responsibility without additional lookups or coupling to the source system.
+
+Try it out yourself using the **[Api.Data.EntityEvents](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.EntityEvents)**.  

@@ -13,6 +13,8 @@ using Nano.Eventing.Abstractions;
 
 namespace Nano.Data.Eventing;
 
+// BUG: 000: Fix event handlers and dbcontext, registration is wrong
+
 /// <inheritdoc />
 internal sealed class RegisterEntityEventingTask(DbContext dbContext, IEventing? eventing = null)
     : IRegisterEntityEventingTask

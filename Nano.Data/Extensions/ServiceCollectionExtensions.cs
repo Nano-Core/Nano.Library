@@ -18,6 +18,8 @@ using Z.EntityFramework.Plus;
 
 namespace Nano.Data.Extensions;
 
+// BUG: 000: When no auth things work but it shows IsInRole failures in log. Figure out why and if we can remove it
+
 /// <summary>
 /// Provides extension methods for registering Nano Library data providers and related services in an <see cref="IServiceCollection"/>.
 /// </summary>
@@ -130,7 +132,7 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(options);
 
-        // TODO: Test more with Audit. Will identity work when i first exclude them with predicate.
+        // BUG: Audit. Will identity work when i first exclude them with predicate.
         // - In Audit lesson test for entity that shouldn't audit
         // - Also test nested navigation gets original values
 

@@ -14,6 +14,8 @@ using Nano.Data.Eventing.Extensions;
 
 namespace Nano.Data.Eventing;
 
+// BUG: 000: Final review of entity eventing with Chat-GPT
+
 internal static class EntityEventingModelCache
 {
     private static readonly ConcurrentDictionary<Type, EntityEventingModel> cache = new();
