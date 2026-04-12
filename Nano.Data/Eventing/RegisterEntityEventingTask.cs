@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Nano.Common.Helpers;
 using Nano.Data.Abstractions.Eventing;
 using Nano.Data.Abstractions.Eventing.Annotations;
 using Nano.Data.Abstractions.Eventing.Models;
@@ -15,10 +14,20 @@ namespace Nano.Data.Eventing;
 
 // BUG: 000: Fix event handlers and dbcontext, registration is wrong
 
+// BUG: 000: Final review of entity eventing with Chat-GPT
+
+// BUG: 000: When no auth things work but it shows IsInRole failures in log. Figure out why and if we can remove it
+
+// BUG: new migrations for all data lessons
+// BUG: check if all nullable suppressions properties should just have required keyword
+
 /// <inheritdoc />
 internal sealed class RegisterEntityEventingTask(DbContext dbContext, IEventing? eventing = null)
     : IRegisterEntityEventingTask
 {
+    private readonly DbContext dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+    private readonly IEventing? eventing = eventing;
+
     /// <inheritdoc />
     public async Task InitializeEntityEventing(CancellationToken cancellationToken = default)
     {

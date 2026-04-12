@@ -18,8 +18,6 @@ using Z.EntityFramework.Plus;
 
 namespace Nano.Data.Extensions;
 
-// BUG: 000: When no auth things work but it shows IsInRole failures in log. Figure out why and if we can remove it
-
 /// <summary>
 /// Provides extension methods for registering Nano Library data providers and related services in an <see cref="IServiceCollection"/>.
 /// </summary>

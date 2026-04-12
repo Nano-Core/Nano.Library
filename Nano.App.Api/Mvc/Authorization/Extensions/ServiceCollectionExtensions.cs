@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.App.Api.Config;
 using Nano.App.Api.Mvc.Authorization.Consts;
-using Nano.Data.Abstractions.Identity.Authentication.Consts;
 using Nano.Data.Abstractions.Identity.Consts;
 using System;
 using Nano.App.Api.Mvc.Authorization.Requirements;

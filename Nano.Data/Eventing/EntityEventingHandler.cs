@@ -122,6 +122,8 @@ public sealed class EntityEventingHandler<TIdentity>(BaseDbContext<TIdentity> db
         ArgumentNullException.ThrowIfNull(type);
         ArgumentNullException.ThrowIfNull(entity);
 
+        // BUG: 000: We should be able to make this smarter using EF
+
         foreach (var pair in @event.Data)
         {
             var dataProperty = type

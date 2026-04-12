@@ -11,7 +11,7 @@ using System.Reflection;
 
 namespace Nano.Data.Identity;
 
-internal sealed class RegisterDataIdentityEndpointsTask<TIdentity>(IEnumerable<IAuthExternalRepository> repositories) 
+internal sealed class RegisterDataIdentityEndpointsTask<TIdentity>(IEnumerable<IAuthExternalRepository> repositories)
     : IRegisterDataIdentityEndpointsTask
     where TIdentity : IEquatable<TIdentity>
 {

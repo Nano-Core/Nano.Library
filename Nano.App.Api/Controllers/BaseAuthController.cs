@@ -130,7 +130,7 @@ public abstract class BaseAuthController<TIdentity>(ILogger<BaseAuthController<T
         }
 
         var accessToken = await this.authRepository.AuthRootRepository
-            .LogInRootAsync(logInRoot);
+            .LogInRootAsync(logInRoot, cancellationToken);
 
         return this.Ok(accessToken);
     }

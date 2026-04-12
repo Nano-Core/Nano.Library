@@ -14,8 +14,6 @@ using Nano.Data.Eventing.Extensions;
 
 namespace Nano.Data.Eventing;
 
-// BUG: 000: Final review of entity eventing with Chat-GPT
-
 internal static class EntityEventingModelCache
 {
     private static readonly ConcurrentDictionary<Type, EntityEventingModel> cache = new();
@@ -53,7 +51,7 @@ internal static class EntityEventingModelCache
 
             entityEventingModel.Accessors
                 .AddRange(BuildAccessors(clrType, publishPaths));
-            
+
             entityEventingModel.ReversePlans
                 .AddRange(BuildReversePublishPlans(entityType, clrType, publishPaths));
 
@@ -152,14 +150,14 @@ internal static class EntityEventingModelCache
 
                 navigationSegments
                     .Add(navigation);
-                
+
                 current = navigation.TargetEntityType;
             }
         }
 
         return reversePublishPlans;
     }
-    
+
     private static HashSet<string>? GetPublishProperties(IEntityType entityType)
     {
         ArgumentNullException.ThrowIfNull(entityType);

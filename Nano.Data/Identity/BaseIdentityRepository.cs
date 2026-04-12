@@ -1369,7 +1369,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
                     .AddAsync(new IdentityApiKeyRole<TIdentity>
                     {
                         ApiKeyId = identityApiKey.Id,
-                        RoleId = identityRole.Id,
+                        RoleId = identityRole.Id
                     }, cancellationToken);
             }
 

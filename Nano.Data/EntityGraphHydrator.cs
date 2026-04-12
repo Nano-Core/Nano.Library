@@ -17,7 +17,7 @@ namespace Nano.Data;
 internal class EntityGraphHydrator(DbContext dbContext)
 {
     private static readonly ConcurrentDictionary<Type, Func<DbContext, IEntityType, object[], object?>> loaderCache = new();
-    
+
     private readonly DbContext dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
     private readonly HashSet<object> hydratedEntities = new(ReferenceEqualityComparer.Instance);
     private readonly EntityEventingModel entityEventingModel = EntityEventingModelCache.GetOrCreate(dbContext);
@@ -125,6 +125,8 @@ internal class EntityGraphHydrator(DbContext dbContext)
 
                 break;
             }
+            default:
+                throw new ArgumentOutOfRangeException(nameof(entityEntry.State), entityEntry.State, "Argument out of range.");
         }
     }
 
@@ -222,7 +224,7 @@ internal class EntityGraphHydrator(DbContext dbContext)
 
             var childEntry = this.dbContext
                 .Entry(currentValue);
-            
+
             this.HydratePublish(childEntry, rootType, visited);
         }
     }

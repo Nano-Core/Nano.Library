@@ -10,7 +10,7 @@ internal sealed class PropertyAccessors : Dictionary<Type, PropertyAccessorEntry
     internal PropertyAccessorEntry[] Get(Type type)
         => this.TryGetValue(type, out var list)
             ? list
-            : Array.Empty<PropertyAccessorEntry>();
+            : [];
 
     internal void Add(Type rootType, string path)
     {

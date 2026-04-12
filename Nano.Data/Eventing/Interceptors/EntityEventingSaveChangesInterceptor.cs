@@ -9,6 +9,7 @@ using Nano.Eventing.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -214,7 +215,7 @@ internal sealed class EntityEventingSaveChangesInterceptor(IEventing eventing)
         }
     }
 
-    private static string[] GetChangedProperties(EntityEntry entry, List<ReversePlan> reversePlans)
+    private static string[] GetChangedProperties(EntityEntry entry, IReadOnlyCollection<ReversePlan> reversePlans)
     {
         ArgumentNullException.ThrowIfNull(entry);
         ArgumentNullException.ThrowIfNull(reversePlans);
@@ -243,7 +244,7 @@ internal sealed class EntityEventingSaveChangesInterceptor(IEventing eventing)
         return changedProperties
             .ToArray();
     }
-    private static EntityEvent GetEntityEvent(EntityEntry entry, Type type)
+    private static EntityEvent GetEntityEvent(EntityEntry entry, MemberInfo type)
     {
         ArgumentNullException.ThrowIfNull(entry);
         ArgumentNullException.ThrowIfNull(type);

@@ -61,12 +61,12 @@ public class NanoConsoleApplication : BaseNanoApplication<IConsoleApplication, I
         this.application = this.applicationBuilder
             .Build();
 
-        using var scope = this.application.Services
+        using var serviceScope = this.application.Services
             .CreateScope();
 
-        scope.ServiceProvider
+        serviceScope
             .UseEventHandlers()
-            .UseEntityEventHandlers()
+            .UseEntityEventing()
             .UseNanoDbMigrations();
 
         return this;
