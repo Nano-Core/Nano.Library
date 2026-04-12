@@ -61,6 +61,11 @@ internal class EntityGraphHydrator(DbContext dbContext)
             }
             case EntityState.Modified:
             {
+                if (entityEntry.Metadata.IsOwned())
+                {
+                    return;
+                }
+
                 var dbEntry = this.LoadDbEntry(entityEntry);
 
                 if (dbEntry == null)
@@ -93,6 +98,11 @@ internal class EntityGraphHydrator(DbContext dbContext)
             }
             case EntityState.Deleted:
             {
+                if (entityEntry.Metadata.IsOwned())
+                {
+                    return;
+                }
+
                 var dbEntry = this.LoadDbEntry(entityEntry);
 
                 if (dbEntry == null)
@@ -214,6 +224,73 @@ internal class EntityGraphHydrator(DbContext dbContext)
                 .Entry(currentValue);
             
             this.HydratePublish(childEntry, rootType, visited);
+        }
+    }
+
+    internal IEnumerable<EntityEntry> HydratePublishReverse(EntityEntry entry, NavigationStep navigationStep)
+    {
+        ArgumentNullException.ThrowIfNull(entry);
+        ArgumentNullException.ThrowIfNull(navigationStep);
+
+        if (navigationStep.IsOnDependent)
+        {
+            if (entry.State == EntityState.Added)
+            {
+                yield break;
+            }
+
+            if (entry.Metadata != navigationStep.ForeignKey.PrincipalEntityType)
+            {
+                yield break;
+            }
+
+            var navigations = entry.Metadata
+                .GetNavigations()
+                .Where(x => x.ForeignKey == navigationStep.ForeignKey);
+
+            foreach (var navigation in navigations)
+            {
+                var navigationEntry = entry
+                    .Navigation(navigation.Name);
+
+                if (!navigationEntry.IsLoaded)
+                {
+                    navigationEntry
+                        .Load();
+                }
+
+                if (navigationEntry.CurrentValue is IEnumerable<object> collection)
+                {
+                    foreach (var item in collection)
+                    {
+                        yield return entry.Context
+                            .Entry(item);
+                    }
+                }
+                else if (navigationEntry.CurrentValue != null)
+                {
+                    yield return entry.Context
+                        .Entry(navigationEntry.CurrentValue);
+                }
+            }
+        }
+        else
+        {
+            if (entry.Metadata != navigationStep.ForeignKey.DeclaringEntityType)
+            {
+                yield break;
+            }
+
+            var navigation = entry.Navigations
+                .FirstOrDefault(n => n.Metadata is INavigation nav && nav.ForeignKey == navigationStep.ForeignKey);
+
+            if (navigation?.CurrentValue == null)
+            {
+                yield break;
+            }
+
+            yield return entry.Context
+                .Entry(navigation.CurrentValue);
         }
     }
 

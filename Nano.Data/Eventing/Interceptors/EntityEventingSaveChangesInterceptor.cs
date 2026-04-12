@@ -1,12 +1,11 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Nano.Data.Abstractions.Eventing.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
+using Nano.Data.Eventing.Extensions;
 using Nano.Data.Eventing.Models;
 using Nano.Eventing.Abstractions;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,12 +13,6 @@ using System.Threading;
 using System.Threading.Tasks;
 
 namespace Nano.Data.Eventing.Interceptors;
-
-// BUG: TEST: Try with creating an ExampleNavigation with a list of Examples, and see that all Examples are published
-// BUG: TEST: try with triple dependency, to verify we can handle deeper dependencies
-// BUG: TEST: Triggers (we want update events to have trigger changes included in the event - newest value)
-// BUG: TEST: Soft Delete (we want to publish a deleted state, so subscriber can decide soft delete or not)
-// BUG: TEST: Reverse update. Update ExampleNavigation and see Example is published
 
 internal sealed class EntityEventingSaveChangesInterceptor(IEventing eventing)
     : SaveChangesInterceptor
@@ -65,12 +58,11 @@ internal sealed class EntityEventingSaveChangesInterceptor(IEventing eventing)
     }
 
 
-
     private void PreSaveEntityEvents(DbContext dbContext)
     {
         ArgumentNullException.ThrowIfNull(dbContext);
 
-        var hydrator = new EntityGraphHydrator(dbContext);
+        var graphHydrator = new EntityGraphHydrator(dbContext);
         var entityEventingModel = EntityEventingModelCache.GetOrCreate(dbContext);
 
         var directEntities = new HashSet<(Type type, CompositeKey key)>();
@@ -81,98 +73,64 @@ internal sealed class EntityEventingSaveChangesInterceptor(IEventing eventing)
 
         foreach (var entry in entries)
         {
-            var type = entry.Entity
-                .GetType();
+            var type = entry.Metadata.ClrType;
 
-            if (!entityEventingModel.ReversePlans.TryGetValue(type, out var plans))
+            var reversePlans = entityEventingModel.ReversePlans
+                .GetPlans(type);
+
+            graphHydrator
+                .HydrateEntry(entry);
+
+            var changedProperties = GetChangedProperties(entry, reversePlans);
+
+            if (entry.State == EntityState.Modified && changedProperties.Length == 0)
             {
                 continue;
             }
 
-            hydrator
-                .HydrateEntry(entry);
-
-            HashSet<string>? changedProperties = null;
-
-            if (entry.State == EntityState.Modified)
+            foreach (var plan in reversePlans)
             {
-                var relevantProperties = plans
-                    .SelectMany(p => p.WatchedProperties)
-                    .ToHashSet();
-
-                changedProperties = entry.Properties
-                    .Where(p =>
-                        relevantProperties.Contains(p.Metadata.Name) &&
-                        !Equals(p.OriginalValue, p.CurrentValue))
-                    .Select(p => p.Metadata.Name)
-                    .ToHashSet();
-
-                if (changedProperties.Count == 0)
-                    continue;
-            }
-
-            foreach (var plan in plans)
-            {
-                bool shouldTrigger;
-
-                if (entry.State == EntityState.Modified)
-                {
-                    shouldTrigger = plan.WatchedProperties
-                        .Any(p => changedProperties!.Contains(p));
-                }
-                else
-                {
-                    shouldTrigger = true;
-                }
+                var shouldTrigger = entry.State != EntityState.Modified || plan.WatchedProperties
+                    .Any(x => changedProperties.Contains(x));
 
                 if (!shouldTrigger)
+                {
                     continue;
-
+                }
 
                 var visited = new HashSet<object>(ReferenceEqualityComparer.Instance);
 
-                // Direct entity
-                if (plan.Path.Count == 0)
+                if (plan.NavigationSteps.Count == 0)
                 {
-                    hydrator.HydrateEntry(entry);
-
-                    hydrator.HydratePublish(entry, plan.RootType, visited);
-
-                    var key = GetKey(entry);
-
-                    if (!directEntities.Add((plan.RootType, key)))
+                    if (!directEntities.Add((plan.RootType, entry.GetCompositeKey())))
+                    {
                         continue;
+                    }
 
-                    var entityEvent = GetEntityEvent(entry, plan.RootType);
+                    graphHydrator
+                        .HydrateEntry(entry);
 
-                    this.pendingEvents.Add((plan.RootType, entityEvent, entry.Entity));
+                    graphHydrator
+                        .HydratePublish(entry, plan.RootType, visited);
+
+                    this.pendingEvents
+                        .Add((plan.RootType, GetEntityEvent(entry, plan.RootType), entry.Entity));
                 }
                 else
                 {
                     var rootEntries = new List<EntityEntry> { entry };
 
-                    foreach (var step in plan.Path.Reverse())
+                    foreach (var navigationStep in plan.NavigationSteps.Reverse())
                     {
                         var nextEntries = new List<EntityEntry>();
 
-                        foreach (var entry2 in rootEntries)
+                        foreach (var rootEntry in rootEntries)
                         {
-                            var fk = step.ForeignKey;
+                            var entityEntries = graphHydrator
+                                .HydratePublishReverse(rootEntry, navigationStep);
 
-                            if (!step.IsOnDependent)
-                            {
-                                if (entry2.Metadata != fk.DeclaringEntityType)
-                                    continue;
-
-                                nextEntries.AddRange(GetRelatedEntries(entry2, fk, goToPrincipal: true));
-                            }
-                            else
-                            {
-                                if (entry2.Metadata != fk.PrincipalEntityType)
-                                    continue;
-
-                                nextEntries.AddRange(GetRelatedEntries(entry2, fk, goToPrincipal: false));
-                            }
+                            nextEntries
+                                .AddRange(entityEntries);
                         }
 
                         rootEntries = nextEntries;
@@ -185,71 +143,105 @@ internal sealed class EntityEventingSaveChangesInterceptor(IEventing eventing)
 
                     foreach (var rootEntry in rootEntries)
                     {
-                        var key = GetKey(rootEntry);
-
-                        if (!directEntities.Add((plan.RootType, key)))
+                        if (!directEntities.Add((plan.RootType, rootEntry.GetCompositeKey())))
+                        {
                             continue;
+                        }
 
-                        hydrator.HydratePublish(rootEntry, plan.RootType, visited);
+                        graphHydrator
+                            .HydratePublish(rootEntry, plan.RootType, visited);
 
-                        var entityEvent = GetEntityEvent(rootEntry, plan.RootType);
-
-                        this.pendingEvents.Add((plan.RootType, entityEvent, rootEntry.Entity));
+                        this.pendingEvents
+                            .Add((plan.RootType, GetEntityEvent(rootEntry, plan.RootType), rootEntry.Entity));
                     }
                 }
             }
         }
     }
-    private static IEnumerable<EntityEntry> GetRelatedEntries(EntityEntry entry, IForeignKey fk, bool goToPrincipal)
+    private async Task PublishEntityEvents(DbContext dbContext, CancellationToken cancellationToken = default)
     {
-        if (goToPrincipal)
+        ArgumentNullException.ThrowIfNull(dbContext);
+
+        var entityEventingModel = EntityEventingModelCache.GetOrCreate(dbContext);
+
+        var entries = dbContext.ChangeTracker
+            .Entries()
+            .ToList();
+
+        var lookup = entries
+            .ToLookup(x => (Type: x.Entity.GetType(), Key: x.GetPrimaryKeyValue()), x => x);
+
+        try
         {
-            var navigation = entry.Navigations
-                .FirstOrDefault(n => n.Metadata is INavigation nav && nav.ForeignKey == fk);
+            var tasks = this.pendingEvents
+                .Select(x =>
+                {
+                    var key = (x.Type, x.Event.Id);
+                    var entry = lookup[key].FirstOrDefault();
 
-            if (navigation?.CurrentValue == null)
-                yield break;
+                    switch (x.Event.State)
+                    {
+                        case "Added":
+                        case "Modified":
+                            if (entry == null)
+                            {
+                                return Task.CompletedTask;
+                            }
 
-            yield return entry.Context.Entry(navigation.CurrentValue);
+                            var accessors = entityEventingModel.Accessors
+                                .Get(x.Type);
+
+                            foreach (var accessor in accessors)
+                            {
+                                x.Event.Data[accessor.Name] = accessor.Accessor(entry.Entity);
+                            }
+
+                            break;
+
+                        case "Deleted":
+                            break;
+                    }
+
+                    return this.eventing
+                        .PublishAsync(x.Event, x.Event.TypeName, cancellationToken);
+                });
+
+            await Task.WhenAll(tasks);
         }
-        else
+        finally
         {
-            foreach (var navigation in entry.Metadata.GetNavigations()
-                         .Where(n => n.ForeignKey == fk))
-            {
-                var navEntry = entry.Navigation(navigation.Name);
-
-                if (!navEntry.IsLoaded)
-                    navEntry.Load();
-
-                if (navEntry.CurrentValue is IEnumerable<object> collection)
-                {
-                    foreach (var item in collection)
-                        yield return entry.Context.Entry(item);
-                }
-                else if (navEntry.CurrentValue != null)
-                {
-                    yield return entry.Context.Entry(navEntry.CurrentValue);
-                }
-            }
+            this.pendingEvents.Clear();
         }
     }
-    private CompositeKey GetKey(EntityEntry entry)
+
+    private static string[] GetChangedProperties(EntityEntry entry, List<ReversePlan> reversePlans)
     {
         ArgumentNullException.ThrowIfNull(entry);
+        ArgumentNullException.ThrowIfNull(reversePlans);
 
-        var primaryKey = entry.Metadata.FindPrimaryKey();
-
-        if (primaryKey == null)
+        if (entry.State != EntityState.Modified || reversePlans.Count == 0)
         {
-            throw new InvalidOperationException($"Entity type '{entry.Metadata.Name}' does not have a primary key.");
+            return [];
         }
 
-        var values = primaryKey.Properties
-            .Select(p => entry.Property(p.Name).CurrentValue)
-            .ToArray();
+        var relevantProperties = reversePlans
+            .SelectMany(p => p.WatchedProperties)
+            .ToHashSet();
 
-        return new CompositeKey(values!);
+        var changedProperties = entry.Properties
+            .Where(p =>
+                relevantProperties.Contains(p.Metadata.Name) &&
+                !Equals(p.OriginalValue, p.CurrentValue))
+            .Select(p => p.Metadata.Name)
+            .ToHashSet();
+
+        if (changedProperties.Count == 0)
+        {
+            return [];
+        }
+
+        return changedProperties
+            .ToArray();
     }
     private static EntityEvent GetEntityEvent(EntityEntry entry, Type type)
     {
@@ -268,84 +260,5 @@ internal sealed class EntityEventingSaveChangesInterceptor(IEventing eventing)
             IEntityIdentity<string> x => new EntityEvent(x.Id, type.Name, state),
             _ => throw new ArgumentOutOfRangeException(nameof(entry.Entity), entry.Entity, "Argument out of range.")
         };
-    }
-
-    private async Task PublishEntityEvents(DbContext dbContext, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(dbContext);
-
-        var entityEventingModel = EntityEventingModelCache.GetOrCreate(dbContext);
-
-        var entries = dbContext.ChangeTracker.Entries()
-            .ToList();
-
-        var lookup = entries
-            .ToLookup(x => (Type: x.Entity.GetType(), Key: GetPrimaryKeyValue(x)), x => x);
-
-        try
-        {
-            var tasks = this.pendingEvents
-                .Select(x => this.ProcessEvent(dbContext, entityEventingModel, x.Type, x.Event, lookup!, cancellationToken));
-
-            await Task.WhenAll(tasks);
-        }
-        finally
-        {
-            this.pendingEvents.Clear();
-        }
-    }
-    private Task ProcessEvent(DbContext dbContext, EntityEventingModel entityEventingModel, Type entityType, EntityEvent entityEvent, ILookup<(Type Type, object Key), EntityEntry> lookup, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(dbContext);
-        ArgumentNullException.ThrowIfNull(entityEventingModel);
-        ArgumentNullException.ThrowIfNull(entityType);
-        ArgumentNullException.ThrowIfNull(entityEvent);
-
-        var key = (entityType, entityEvent.Id);
-
-        var entry = lookup[key].FirstOrDefault();
-
-        if (entry == null && entityEvent.State != "Deleted")
-        {
-            return Task.CompletedTask;
-        }
-
-        if (entityEvent.State is "Added" or "Modified")
-        {
-            if (!entityEventingModel.Paths.TryGetValue(entityType, out var metadata))
-            {
-                return Task.CompletedTask;
-            }
-
-            var data = new Dictionary<string, object?>();
-
-            foreach (var path in metadata)
-            {
-                var accessorKey = (entityType, path);
-
-                if (!entityEventingModel.Accessors.TryGetValue(accessorKey, out var accessor))
-                {
-                    throw new InvalidOperationException(
-                        $"Accessor not found for type '{entityEvent.TypeName}' and path '{path}'");
-                }
-
-                var value = accessor(entry!.Entity);
-                data[path.Split('.').Last()] = value;
-            }
-
-            entityEvent.Data = data;
-        }
-
-        Console.WriteLine(JsonConvert.SerializeObject(entityEvent, Formatting.Indented)); // TODO: remove
-
-        return this.eventing.PublishAsync(entityEvent, entityEvent.TypeName, cancellationToken);
-    }
-    private static object? GetPrimaryKeyValue(EntityEntry entry)
-    {
-        var key = entry.Metadata.FindPrimaryKey();
-
-        return key?.Properties
-            .Select(p => entry.Property(p.Name).CurrentValue)
-            .FirstOrDefault();
     }
 }

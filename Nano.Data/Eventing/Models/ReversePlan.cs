@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Nano.Data.Eventing.Models;
 
-internal sealed class ReversePublishPlan
+internal sealed class ReversePlan
 {
     internal required Type RootType { get; init; }
 
@@ -11,5 +11,5 @@ internal sealed class ReversePublishPlan
 
     internal required HashSet<string> WatchedProperties { get; init; }
 
-    internal required IReadOnlyList<NavigationStep> Path { get; init; }
+    internal required IReadOnlyList<NavigationStep> NavigationSteps { get; init; }
 }

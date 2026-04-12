@@ -14,7 +14,7 @@ internal static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
 
         services
-            .AddScoped(typeof(IEventingHandler<EntityEvent>), typeof(EntityEventingHandler<TIdentity>))
+            .AddScoped<IEventingHandler<EntityEvent>, EntityEventingHandler<TIdentity>>()
             .AddScoped<IRegisterEntityEventingTask, RegisterEntityEventingTask>();
 
         return services;

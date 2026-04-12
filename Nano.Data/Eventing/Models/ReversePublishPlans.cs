@@ -5,51 +5,21 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace Nano.Data.Eventing.Models;
 
-internal sealed class ReversePublishPlans : Dictionary<Type, List<ReversePublishPlan>>
+internal sealed class ReversePublishPlans : Dictionary<Type, List<ReversePlan>>
 {
-    internal bool TryAddWatchedProperty(Type rootType, Type changedType, IReadOnlyList<INavigation> navigationSegments, string propertyName)
+    internal List<ReversePlan> GetPlans(Type changedType)
     {
-        ArgumentNullException.ThrowIfNull(rootType);
         ArgumentNullException.ThrowIfNull(changedType);
-        ArgumentNullException.ThrowIfNull(navigationSegments);
-        ArgumentNullException.ThrowIfNull(propertyName);
 
         if (!this.TryGetValue(changedType, out var publishPlans))
         {
-            return false;
+            return [];
         }
 
-        foreach (var plan in publishPlans)
-        {
-            if (plan.RootType != rootType)
-            {
-                continue;
-            }
-
-            if (plan.Path.Count != navigationSegments.Count)
-            {
-                continue;
-            }
-
-            var match = !navigationSegments
-                .Where((t, i) => plan.Path[i].NavigationName != t.Name)
-                .Any();
-
-            if (!match)
-            {
-                continue;
-            }
-
-            plan.WatchedProperties
-                .Add(propertyName);
-            
-            return true;
-        }
-
-        return false;
+        return publishPlans;
     }
 
-    internal List<ReversePublishPlan> GetOrCreatePlans(Type changedType)
+    internal List<ReversePlan> GetOrCreatePlans(Type changedType)
     {
         ArgumentNullException.ThrowIfNull(changedType);
 
@@ -73,15 +43,51 @@ internal sealed class ReversePublishPlans : Dictionary<Type, List<ReversePublish
         {
             var segment = navigationSegments[i];
 
-            navigationSteps[i] = new NavigationStep
-            {
-                NavigationName = segment.Name,
-                TargetType = segment.ClrType,
-                ForeignKey = segment.ForeignKey,
-                IsOnDependent = segment.IsOnDependent
-            };
+            navigationSteps[i] = new NavigationStep(segment.ClrType, segment.Name, segment.ForeignKey, segment.IsOnDependent);
         }
 
         return navigationSteps;
+    }
+
+    internal bool TryAddWatchedProperty(Type rootType, Type changedType, IReadOnlyList<INavigation> navigationSegments, string propertyName)
+    {
+        ArgumentNullException.ThrowIfNull(rootType);
+        ArgumentNullException.ThrowIfNull(changedType);
+        ArgumentNullException.ThrowIfNull(navigationSegments);
+        ArgumentNullException.ThrowIfNull(propertyName);
+
+        if (!this.TryGetValue(changedType, out var publishPlans))
+        {
+            return false;
+        }
+
+        foreach (var plan in publishPlans)
+        {
+            if (plan.RootType != rootType)
+            {
+                continue;
+            }
+
+            if (plan.NavigationSteps.Count != navigationSegments.Count)
+            {
+                continue;
+            }
+
+            var match = !navigationSegments
+                .Where((t, i) => plan.NavigationSteps[i].NavigationName != t.Name)
+                .Any();
+
+            if (!match)
+            {
+                continue;
+            }
+
+            plan.WatchedProperties
+                .Add(propertyName);
+
+            return true;
+        }
+
+        return false;
     }
 }

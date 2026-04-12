@@ -3,20 +3,17 @@ using System.Linq;
 
 namespace Nano.Data.Eventing.Models;
 
-// BUG: Try get rid of this
-
 internal sealed class CompositeKey : IEquatable<CompositeKey>
 {
     private readonly int hashCode;
-    private readonly object[] values;
 
     public CompositeKey(object[] values)
     {
-        this.values = values;
+        this.Values = values;
 
         var hash = new HashCode();
 
-        foreach (var value in this.values)
+        foreach (var value in this.Values)
         {
             hash
                 .Add(value);
@@ -26,17 +23,17 @@ internal sealed class CompositeKey : IEquatable<CompositeKey>
             .ToHashCode();
     }
 
-    public object[] Values => this.values;
+    public object[] Values { get; }
 
     public bool Equals(CompositeKey? other)
     {
-        if (other == null || other.values.Length != this.values.Length)
+        if (other == null || other.Values.Length != this.Values.Length)
         {
             return false;
         }
 
-        return !this.values
-            .Where((x, i) => !Equals(x, other.values[i]))
+        return !this.Values
+            .Where((x, i) => !Equals(x, other.Values[i]))
             .Any();
     }
 

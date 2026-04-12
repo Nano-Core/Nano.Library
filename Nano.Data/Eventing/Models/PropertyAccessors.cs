@@ -1,12 +1,35 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace Nano.Data.Eventing.Models;
 
-internal sealed class PropertyAccessors : Dictionary<(Type Type, string Path), Func<object, object?>>
+internal sealed class PropertyAccessors : Dictionary<Type, PropertyAccessorEntry[]>
 {
-    internal Func<object, object?> CreateAccessor(Type rootType, string path)
+    internal PropertyAccessorEntry[] Get(Type type)
+        => this.TryGetValue(type, out var list)
+            ? list
+            : Array.Empty<PropertyAccessorEntry>();
+
+    internal void Add(Type rootType, string path)
+    {
+        ArgumentNullException.ThrowIfNull(rootType);
+        ArgumentNullException.ThrowIfNull(path);
+
+        var name = path.Split('.').Last();
+        var accessor = CreateAccessor(rootType, path);
+        var propertyAccessorEntry = new PropertyAccessorEntry(rootType, path, name, accessor);
+
+        this.TryGetValue(rootType, out var existing);
+
+        this[rootType] = (existing ?? [])
+            .Append(propertyAccessorEntry)
+            .ToArray();
+    }
+
+
+    private static Func<object, object?> CreateAccessor(Type rootType, string path)
     {
         ArgumentNullException.ThrowIfNull(rootType);
         ArgumentNullException.ThrowIfNull(path);

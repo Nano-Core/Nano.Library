@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Nano.Common.Helpers;
 using Nano.Data.Abstractions.Eventing;
 using Nano.Data.Abstractions.Eventing.Annotations;
 using Nano.Data.Abstractions.Eventing.Models;
@@ -21,7 +22,7 @@ internal sealed class RegisterEntityEventingTask(DbContext dbContext, IEventing?
     {
         await Task.CompletedTask;
 
-        var a = EntityEventingModelCache.GetOrCreate(dbContext);
+        EntityEventingModelCache.GetOrCreate(dbContext);
     }
 
     /// <inheritdoc />

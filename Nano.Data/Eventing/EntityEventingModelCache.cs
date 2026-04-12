@@ -49,12 +49,9 @@ internal static class EntityEventingModelCache
                 continue;
             }
 
-            entityEventingModel.Paths
-                .AddRange(BuildPaths(clrType, publishPaths));
-
             entityEventingModel.Accessors
                 .AddRange(BuildAccessors(clrType, publishPaths));
-
+            
             entityEventingModel.ReversePlans
                 .AddRange(BuildReversePublishPlans(entityType, clrType, publishPaths));
 
@@ -63,17 +60,6 @@ internal static class EntityEventingModelCache
         }
 
         return entityEventingModel;
-    }
-    
-    private static Paths BuildPaths(Type rootClrType, IEnumerable<string> publishPaths)
-    {
-        ArgumentNullException.ThrowIfNull(rootClrType);
-        ArgumentNullException.ThrowIfNull(publishPaths);
-
-        return new Paths
-        {
-            [rootClrType] = publishPaths.ToArray()
-        };
     }
     private static PropertyAccessors BuildAccessors(Type rootClrType, IEnumerable<string> publishPaths)
     {
@@ -84,8 +70,8 @@ internal static class EntityEventingModelCache
 
         foreach (var path in publishPaths)
         {
-            propertyAccessors[(rootClrType, path)] = propertyAccessors
-                .CreateAccessor(rootClrType, path);
+            propertyAccessors
+                .Add(rootClrType, path);
         }
 
         return propertyAccessors;
@@ -102,7 +88,7 @@ internal static class EntityEventingModelCache
             {
                 var currentType = plan.RootType;
 
-                foreach (var step in plan.Path)
+                foreach (var step in plan.NavigationSteps)
                 {
                     navigations
                         .AddNavigation(plan.RootType, currentType, step.NavigationName);
@@ -139,9 +125,6 @@ internal static class EntityEventingModelCache
                 {
                     var changedClrType = current.ClrType;
 
-                    var navigationSteps = reversePublishPlans
-                        .GetNavigationSteps(changedClrType, navigationSegments);
-
                     if (reversePublishPlans.TryAddWatchedProperty(rootClrType, changedClrType, navigationSegments, segment))
                     {
                         break;
@@ -150,12 +133,15 @@ internal static class EntityEventingModelCache
                     var publishPlans = reversePublishPlans
                         .GetOrCreatePlans(changedClrType);
 
+                    var navigationSteps = reversePublishPlans
+                        .GetNavigationSteps(changedClrType, navigationSegments);
+
                     publishPlans
-                        .Add(new ReversePublishPlan
+                        .Add(new ReversePlan
                         {
                             RootType = rootClrType,
                             ChangedType = changedClrType,
-                            Path = navigationSteps,
+                            NavigationSteps = navigationSteps,
                             WatchedProperties = [segment]
                         });
 
@@ -248,6 +234,11 @@ internal static class EntityEventingModelCache
 
                 var navigation = current
                     .FindNavigation(segment) ?? throw new InvalidOperationException($"Navigation '{segment}' not found on '{current.Name}'");
+
+                if (navigation.IsCollection)
+                {
+                    throw new InvalidOperationException($"Collection navigation '{segment}' is not supported.");
+                }
 
                 current = navigation.TargetEntityType;
             }
