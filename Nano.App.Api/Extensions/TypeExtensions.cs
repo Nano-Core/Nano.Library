@@ -18,7 +18,7 @@ internal static class TypeExtensions
             if (current == genericBaseType)
                 return type;
 
-            type = type.BaseType!;
+            type = type.BaseType ?? throw new NullReferenceException(nameof(type.BaseType));
         }
 
         return null;

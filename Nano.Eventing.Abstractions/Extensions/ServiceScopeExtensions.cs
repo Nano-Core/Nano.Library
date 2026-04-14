@@ -16,8 +16,9 @@ public static class ServiceScopeExtensions
     /// </para>
     /// </summary>
     /// <param name="serviceScope">The <see cref="IServiceScope"/>.</param>
+    /// <param name="rootServiceProvider">The root <see cref="IServiceProvider"/>.</param>
     /// <returns>The same <see cref="IServiceScope"/> instance, for chaining.</returns>
-    public static IServiceScope UseEventHandlers(this IServiceScope serviceScope)
+    public static IServiceScope UseEventHandlers(this IServiceScope serviceScope, IServiceProvider rootServiceProvider)
     {
         ArgumentNullException.ThrowIfNull(serviceScope);
 
@@ -25,7 +26,7 @@ public static class ServiceScopeExtensions
             .GetService<IRegisterEventingHandlersTask>();
 
         registerEventHandlersTask?
-            .RegisterEventHandlers(serviceScope.ServiceProvider)
+            .RegisterEventHandlers(rootServiceProvider)
             .GetAwaiter()
             .GetResult();
 

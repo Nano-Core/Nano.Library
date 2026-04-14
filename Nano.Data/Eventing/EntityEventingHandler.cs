@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Nano.Common.Extensions;
 using Nano.Data.Abstractions.Eventing.Models;
@@ -20,7 +21,7 @@ public sealed class EntityEventingHandler<TIdentity>(BaseDbContext<TIdentity> db
     private readonly BaseDbContext<TIdentity> dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
 
     /// <inheritdoc />
-    public override async Task CallbackAsync(EntityEvent @event, bool isRedelivered)
+    public override async Task CallbackAsync(EntityEvent @event, bool isRedelivered, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(@event);
 
@@ -47,7 +48,7 @@ public sealed class EntityEventingHandler<TIdentity>(BaseDbContext<TIdentity> db
             case "Added":
             {
                 var existingEntity = await this.dbContext
-                    .FindAsync(type, id);
+                    .FindAsync(type, [id], cancellationToken);
 
                 if (existingEntity != null)
                 {
@@ -72,14 +73,14 @@ public sealed class EntityEventingHandler<TIdentity>(BaseDbContext<TIdentity> db
                 SetEntityEventProperties(@event, type, entityAdded);
 
                 await this.dbContext
-                    .AddAsync(entityAdded);
+                    .AddAsync(entityAdded, cancellationToken);
 
                 break;
             }
             case "Modified":
             {
                 var entityModified = await this.dbContext
-                    .FindAsync(type, id);
+                    .FindAsync(type, [id], cancellationToken);
 
                 if (entityModified == null)
                 {
@@ -97,7 +98,7 @@ public sealed class EntityEventingHandler<TIdentity>(BaseDbContext<TIdentity> db
             case "Deleted":
             {
                 var entityDeleted = await this.dbContext
-                    .FindAsync(type, id);
+                    .FindAsync(type, [id], cancellationToken);
 
                 if (entityDeleted == null)
                 {
@@ -112,143 +113,50 @@ public sealed class EntityEventingHandler<TIdentity>(BaseDbContext<TIdentity> db
         }
 
         await this.dbContext
-            .SaveChangesAsync();
+            .SaveChangesAsync(cancellationToken);
     }
 
 
-    private static void SetEntityEventProperties(EntityEvent @event, IReflect type, object entity)
+    private static void SetEntityEventProperties(EntityEvent @event, Type type, object entity)
     {
         ArgumentNullException.ThrowIfNull(@event);
         ArgumentNullException.ThrowIfNull(type);
         ArgumentNullException.ThrowIfNull(entity);
 
-        // BUG: 000: We should be able to make this smarter using EF
-
-        foreach (var pair in @event.Data)
+        foreach (var (key, value) in @event.Data)
         {
-            var dataProperty = type
-                .GetProperty(pair.Key, BindingFlags.Public | BindingFlags.Instance | BindingFlags.SetProperty);
+            var property = type
+                .GetProperty(key, BindingFlags.Public | BindingFlags.Instance);
 
-            if (dataProperty == null)
+            if (property == null || !property.CanWrite)
             {
                 continue;
             }
-
-            var value = pair.Value?.ToString();
 
             if (value == null)
             {
+                property
+                    .SetValue(entity, null);
+
                 continue;
             }
 
-            if (dataProperty.PropertyType == typeof(Guid) || dataProperty.PropertyType == typeof(Guid?))
-            {
-                var guidValue = Guid.Parse(value);
+            var targetType = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
 
-                dataProperty
-                    .SetValue(entity, guidValue);
-            }
-            else if (dataProperty.PropertyType == typeof(TimeSpan) || dataProperty.PropertyType == typeof(TimeSpan?))
+            var convertedValue = targetType switch
             {
-                var timeSpanValue = TimeSpan.Parse(value);
+                { IsEnum: true } => Enum.Parse(targetType, value.ToString()!, true),
+                not null when targetType == typeof(Guid) => Guid.Parse(value.ToString()!),
+                not null when targetType == typeof(DateTime) => DateTime.Parse(value.ToString()!),
+                not null when targetType == typeof(DateTimeOffset) => DateTimeOffset.Parse(value.ToString()!),
+                not null when targetType == typeof(TimeSpan) => TimeSpan.Parse(value.ToString()!),
+                not null when targetType == typeof(DateOnly) => DateOnly.Parse(value.ToString()!),
+                not null when targetType == typeof(TimeOnly) => TimeOnly.Parse(value.ToString()!),
+                _ => Convert.ChangeType(value, targetType!)
+            };
 
-                dataProperty
-                    .SetValue(entity, timeSpanValue);
-            }
-            else if (dataProperty.PropertyType == typeof(TimeOnly) || dataProperty.PropertyType == typeof(TimeOnly?))
-            {
-                var timeOnlyValue = TimeOnly.Parse(value);
-
-                dataProperty
-                    .SetValue(entity, timeOnlyValue);
-            }
-            else if (dataProperty.PropertyType == typeof(DateOnly) || dataProperty.PropertyType == typeof(DateOnly?))
-            {
-                var dateOnlyValue = DateOnly.Parse(value);
-
-                dataProperty
-                    .SetValue(entity, dateOnlyValue);
-            }
-            else if (dataProperty.PropertyType == typeof(DateTime) || dataProperty.PropertyType == typeof(DateTime?))
-            {
-                var dateTimeValue = DateTime.Parse(value);
-
-                dataProperty
-                    .SetValue(entity, dateTimeValue);
-            }
-            else if (dataProperty.PropertyType == typeof(DateTimeOffset) || dataProperty.PropertyType == typeof(DateTimeOffset?))
-            {
-                var dateTimeOffsetValue = DateTimeOffset.Parse(value);
-
-                dataProperty
-                    .SetValue(entity, dateTimeOffsetValue);
-            }
-            else if (dataProperty.PropertyType == typeof(int) || dataProperty.PropertyType == typeof(uint?) || dataProperty.PropertyType == typeof(uint) || dataProperty.PropertyType == typeof(uint?))
-            {
-                var intValue = int.Parse(value);
-
-                dataProperty
-                    .SetValue(entity, intValue);
-            }
-            else if (dataProperty.PropertyType == typeof(short) || dataProperty.PropertyType == typeof(short?) || dataProperty.PropertyType == typeof(ushort) || dataProperty.PropertyType == typeof(ushort?))
-            {
-                var shortValue = short.Parse(value);
-
-                dataProperty
-                    .SetValue(entity, shortValue);
-            }
-            else if (dataProperty.PropertyType == typeof(byte) || dataProperty.PropertyType == typeof(byte?))
-            {
-                var byteValue = byte.Parse(value);
-
-                dataProperty
-                    .SetValue(entity, byteValue);
-            }
-            else if (dataProperty.PropertyType == typeof(bool) || dataProperty.PropertyType == typeof(bool?))
-            {
-                var boolValue = bool.Parse(value);
-
-                dataProperty
-                    .SetValue(entity, boolValue);
-            }
-            else if (dataProperty.PropertyType == typeof(float) || dataProperty.PropertyType == typeof(float?))
-            {
-                var floatValue = float.Parse(value);
-
-                dataProperty
-                    .SetValue(entity, floatValue);
-            }
-            else if (dataProperty.PropertyType == typeof(double) || dataProperty.PropertyType == typeof(double?))
-            {
-                var doubleValue = double.Parse(value);
-
-                dataProperty
-                    .SetValue(entity, doubleValue);
-            }
-            else if (dataProperty.PropertyType == typeof(decimal) || dataProperty.PropertyType == typeof(decimal?))
-            {
-                var decimalValue = decimal.Parse(value);
-
-                dataProperty
-                    .SetValue(entity, decimalValue);
-            }
-            else if (dataProperty.PropertyType.IsEnum)
-            {
-                var enumValue = Enum.Parse(dataProperty.PropertyType, value);
-
-                dataProperty
-                    .SetValue(entity, enumValue);
-            }
-            else if (dataProperty.PropertyType == typeof(string))
-            {
-                dataProperty
-                    .SetValue(entity, value);
-            }
-            else
-            {
-                dataProperty
-                    .SetValue(entity, pair.Value);
-            }
+            property
+                .SetValue(entity, convertedValue);
         }
     }
 }

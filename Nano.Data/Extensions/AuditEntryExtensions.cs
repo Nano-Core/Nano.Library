@@ -16,7 +16,7 @@ internal static class AuditEntryExtensions
         var entityKey = auditEntry.Entry
             .GetAuditKeyValue<TIdentity>();
 
-        return entityKey!;
+        return entityKey ?? throw new NullReferenceException(nameof(entityKey));
     }
 
     internal static AuditState GetEntityState(this AuditEntry auditEntry)

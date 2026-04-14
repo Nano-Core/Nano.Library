@@ -793,7 +793,7 @@ create, update, or delete operations to the local model.
 
 This approach provides a simple and consistent mechanism for maintaining data synchronization across services, reducing integration complexity while preserving clear ownership boundaries between applications.  
 
-> ⚠️ Entity Events require eventing to be configured in the application.
+> ⚠️ Entity Events require **[Eventing](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Eventing)** to be configured in the application.
 
 Only entities implementing `IEntityIdentity<TIdentity>` are eligible for participation in entity eventing. The attribute allows a configurable list of publish properties, which determines the data included 
 in the generated event payload. For entities deriving from `BaseEntity`, the `CreatedAt` property is automatically included to ensure consistent timestamp synchronization between publishers and subscribers.

@@ -50,24 +50,24 @@ internal sealed class RegisterEventingHandlersTask(IEventing eventing) : IRegist
             var genericType = typeof(IEventingHandler<>)
                 .MakeGenericType(eventType);
 
-            var eventHandler = serviceProvider
+            var tempEventHandler = serviceProvider
                 .GetRequiredService(genericType);
 
             var routingKey = (string?)genericType
                 .GetProperty(nameof(IEventingHandler<>.RoutingKey))?
-                .GetValue(eventHandler);
+                .GetValue(tempEventHandler);
 
             var prefetchCount = (ushort?)genericType
                 .GetProperty(nameof(IEventingHandler<>.OverridePrefetchCount))?
-                .GetValue(eventHandler);
+                .GetValue(tempEventHandler);
 
-            var subscribeMethod = eventing
+            var subscribeMethod = this.eventing
                 .GetType()
                 .GetMethod(nameof(IEventing.SubscribeAsync));
 
             subscribeMethod?
                 .MakeGenericMethod(eventType)
-                .Invoke(eventing, [eventHandler, routingKey, prefetchCount, CancellationToken.None]);
+                .Invoke(this.eventing, [serviceProvider, routingKey, prefetchCount, cancellationToken]);
         }
     }
 }

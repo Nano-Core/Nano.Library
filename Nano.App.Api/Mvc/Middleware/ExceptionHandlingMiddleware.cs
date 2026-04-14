@@ -17,6 +17,13 @@ using Vivet.AspNetCore.RequestVirusScan.Exceptions;
 
 namespace Nano.App.Api.Mvc.Middleware;
 
+// BUG: 000: YES: check if all nullable suppressions properties should just have required keyword
+// BUG: When no auth things work but it shows IsInRole failures in log. Figure out why and if we can remove it
+
+// BUG: new migrations for all data lessons
+// BUG: Test Identity again with Audit and also if all the new "required" is screwing with anything
+// BUG: Final review of entitty evening with Chat-GPT
+
 /// <summary>
 /// Middleware to handle exceptions globally, log them, and return structured <see cref="ProblemDetails"/> responses.
 /// Supports various custom exceptions, translation, and UX-specific error handling.

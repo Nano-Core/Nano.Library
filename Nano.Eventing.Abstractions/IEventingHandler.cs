@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 using Nano.Eventing.Abstractions.Config;
 
@@ -34,6 +35,7 @@ public interface IEventingHandler<in TEvent>
     /// </summary>
     /// <param name="event">The event instance.</param>
     /// <param name="isRedelivered">Indicates whether the message is being redelivered due to a previous failure.</param>
+    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous callback operation.</returns>
-    Task CallbackAsync(TEvent @event, bool isRedelivered);
+    Task CallbackAsync(TEvent @event, bool isRedelivered, CancellationToken cancellationToken = default);
 }

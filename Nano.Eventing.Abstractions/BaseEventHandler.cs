@@ -1,3 +1,4 @@
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Nano.Eventing.Abstractions;
@@ -27,5 +28,5 @@ public abstract class BaseEventHandler<TEvent> : IEventingHandler<TEvent>
     }
 
     /// <inheritdoc />
-    public abstract Task CallbackAsync(TEvent @event, bool isRedelivered);
+    public abstract Task CallbackAsync(TEvent @event, bool isRedelivered, CancellationToken cancellationToken = default);
 }

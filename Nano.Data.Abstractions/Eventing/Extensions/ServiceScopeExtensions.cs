@@ -13,27 +13,23 @@ public static class ServiceScopeExtensions
     /// Initializes entity eventing and registers all entity event handlers in the application by executing the <see cref="IRegisterEntityEventingTask"/> at startup.
     /// </summary>
     /// <param name="serviceScope">The <see cref="IServiceScope"/> instance to configure.</param>
+    /// <param name="rootServiceProvider">The root <see cref="IServiceProvider"/>.</param>
     /// <returns>The <see cref="IServiceScope"/> instance for chaining.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="serviceScope"/> is <c>null</c>.</exception>
-    public static IServiceScope UseEntityEventing(this IServiceScope serviceScope)
+    public static IServiceScope UseEntityEventing(this IServiceScope serviceScope, IServiceProvider rootServiceProvider)
     {
         ArgumentNullException.ThrowIfNull(serviceScope);
 
         var registerEntityEventingTask = serviceScope.ServiceProvider
             .GetService<IRegisterEntityEventingTask>();
 
-        if (registerEntityEventingTask == null)
-        {
-            return serviceScope;
-        }
-
-        registerEntityEventingTask
+        registerEntityEventingTask?
             .InitializeEntityEventing()
             .GetAwaiter()
             .GetResult();
 
-        registerEntityEventingTask
-            .RegisterEntityEventHandlers(serviceScope.ServiceProvider)
+        registerEntityEventingTask?
+            .RegisterEntityEventHandlers(rootServiceProvider)
             .GetAwaiter()
             .GetResult();
 

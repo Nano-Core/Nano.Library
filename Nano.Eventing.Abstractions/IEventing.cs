@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,11 +28,11 @@ public interface IEventing
     /// Subscribes to messages of type <typeparamref name="TEvent"/> and invokes the provided handler when messages arrive.
     /// </summary>
     /// <typeparam name="TEvent">The type of message to consume.</typeparam>
-    /// <param name="eventHandler">The handler implementing <see cref="IEventingHandler{TMessage}"/> to process incoming messages.</param>
+    /// <param name="serviceProvider">The <see cref="IEventingHandler{TMessage}"/> from which to resolve required services.</param>
     /// <param name="routing">Optional routing key for selective subscription.</param>
     /// <param name="prefetchCount">Optional number of messages to prefetch for performance tuning.</param>
     /// <param name="cancellationToken">A <see cref="CancellationToken"/> to cancel the subscription.</param>
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-    Task SubscribeAsync<TEvent>(IEventingHandler<TEvent> eventHandler, string? routing = null, ushort? prefetchCount = null, CancellationToken cancellationToken = default)
+    Task SubscribeAsync<TEvent>(IServiceProvider serviceProvider, string? routing = null, ushort? prefetchCount = null, CancellationToken cancellationToken = default)
         where TEvent : class;
 }

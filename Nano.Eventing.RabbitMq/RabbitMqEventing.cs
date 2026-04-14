@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using EasyNetQ;
+using Microsoft.Extensions.DependencyInjection;
 using Nano.Common.Extensions;
 using Nano.Eventing.Abstractions;
 
@@ -49,10 +50,10 @@ public sealed class RabbitMqEventing : IEventing
     }
 
     /// <inheritdoc />
-    public async Task SubscribeAsync<TMessage>(IEventingHandler<TMessage> eventHandler, string? routing = null, ushort? prefetchCount = null, CancellationToken cancellationToken = default)
+    public async Task SubscribeAsync<TMessage>(IServiceProvider serviceProvider, string? routing = null, ushort? prefetchCount = null, CancellationToken cancellationToken = default)
         where TMessage : class
     {
-        ArgumentNullException.ThrowIfNull(eventHandler);
+        ArgumentNullException.ThrowIfNull(serviceProvider);
 
         var name = typeof(TMessage)
             .GetFriendlyName();
@@ -75,26 +76,33 @@ public sealed class RabbitMqEventing : IEventing
             .BindAsync(exchange, queue, routing, cancellationToken);
 
         await this.bus.Advanced
-            .ConsumeAsync<TMessage>(queue, (message, info) =>
+            .ConsumeAsync<TMessage>(queue, async (message, info, innerCancellatationToken) =>
             {
+                await using var serviceScope = serviceProvider
+                    .CreateAsyncScope();
+
+                var eventHandler = serviceScope.ServiceProvider
+                    .GetRequiredService<IEventingHandler<TMessage>>();
+
                 var callbackTask = eventHandler
                     .GetType()
                     .GetMethod(nameof(IEventingHandler<>.CallbackAsync))?
-                    .Invoke(eventHandler, [message.Body, info.Redelivered]);
+                    .Invoke(eventHandler, [message.Body, info.Redelivered, innerCancellatationToken]);
 
                 if (callbackTask == null)
                 {
                     throw new NullReferenceException(nameof(callbackTask));
                 }
 
-                return (Task)callbackTask;
+                await (Task)callbackTask;
             }, x =>
             {
                 if (prefetchCount.HasValue)
                 {
                     x.WithPrefetchCount(prefetchCount.Value);
                 }
-            });
+            })
+            .ConfigureAwait(false);
     }
 
 

@@ -51,8 +51,8 @@ internal static class WebApplicationExtensions
 
         serviceScope
             .UseNanoEndpoints(webApplication, options)
-            .UseEventHandlers()
-            .UseEntityEventing()
+            .UseEventHandlers(webApplication.Services)
+            .UseEntityEventing(webApplication.Services)
             .UseNanoDbMigrations();
 
         return webApplication;
