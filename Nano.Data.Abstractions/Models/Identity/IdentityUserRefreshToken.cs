@@ -15,7 +15,7 @@ public class IdentityUserRefreshToken<TIdentity> : BaseEntityIdentity<TIdentity>
     /// Gets or sets the identity user Id.
     /// </summary>
     [Required]
-    public virtual TIdentity IdentityUserId { get; set; } = default!;
+    public virtual required TIdentity IdentityUserId { get; set; }
 
     /// <summary>
     /// Gets or sets the associated identity user.
@@ -27,7 +27,7 @@ public class IdentityUserRefreshToken<TIdentity> : BaseEntityIdentity<TIdentity>
     /// </summary>
     [Required]
     [MaxLength(256)]
-    public virtual string AppId { get; set; } = null!;
+    public virtual required string AppId { get; set; }
 
     /// <summary>
     /// Gets or sets the token value.
@@ -35,7 +35,7 @@ public class IdentityUserRefreshToken<TIdentity> : BaseEntityIdentity<TIdentity>
     [Required]
     [MaxLength(256)]
     [ProtectedPersonalData]
-    public virtual string Value { get; set; } = null!;
+    public virtual required string Value { get; set; }
 
     /// <summary>
     /// Gets or sets the token expiration timestamp.

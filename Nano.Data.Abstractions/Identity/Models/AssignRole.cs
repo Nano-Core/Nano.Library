@@ -11,6 +11,5 @@ public class AssignRole
     /// The name of the role to assign.
     /// </summary>
     [Required]
-    [MaxLength(256)]
-    public virtual string RoleName { get; set; } = null!;
+    public virtual required string RoleName { get; set; }
 }

@@ -16,5 +16,5 @@ public class IsEmailAddressTakenRequest : BaseRequest
     /// </summary>
     [Required]
     [Query]
-    public virtual string EmailAddress { get; set; } = null!;
+    public virtual required string EmailAddress { get; set; }
 }

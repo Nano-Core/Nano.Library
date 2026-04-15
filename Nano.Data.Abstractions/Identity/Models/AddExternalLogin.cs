@@ -14,5 +14,5 @@ public class AddExternalLogin<TFlow>
     /// The external authentication flow.
     /// </summary>
     [Required]
-    public virtual TFlow Flow { get; set; } = null!;
+    public virtual required TFlow Flow { get; set; }
 }

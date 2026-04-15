@@ -11,13 +11,13 @@ public class GoogleOptions
     /// OAuth Client Id.
     /// </summary>
     [Required]
-    public virtual string ClientId { get; set; } = null!;
+    public virtual required string ClientId { get; set; }
 
     /// <summary>
     /// OAuth Client Secret.
     /// </summary>
     [Required]
-    public virtual string ClientSecret { get; set; } = null!;
+    public virtual required string ClientSecret { get; set; }
 
     /// <summary>
     /// OAuth Scopes.

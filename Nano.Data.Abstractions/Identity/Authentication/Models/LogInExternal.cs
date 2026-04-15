@@ -11,7 +11,7 @@ public class LogInExternal : BaseLogIn
     /// The external user data used to complete the login.
     /// </summary>
     [Required]
-    public virtual ExternalAuthenticationData ExternalAuthenticationData { get; set; } = new();
+    public virtual required ExternalAuthenticationData ExternalAuthenticationData { get; set; }
 }
 
 /// <summary>
@@ -25,5 +25,5 @@ public class LogInExternal<TFlow> : BaseLogIn
     /// The external authentication flow.
     /// </summary>
     [Required]
-    public virtual TFlow Flow { get; set; } = null!;
+    public virtual required TFlow Flow { get; set; }
 }

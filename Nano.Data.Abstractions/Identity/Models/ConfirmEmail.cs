@@ -11,5 +11,5 @@ public class ConfirmEmail
     /// The token used to confirm the user's email address.
     /// </summary>
     [Required]
-    public virtual string Token { get; set; } = null!;
+    public virtual required string Token { get; set; }
 }

@@ -11,5 +11,5 @@ public class ResetPasswordToken
     /// The token used to authorize the password reset.
     /// </summary>
     [Required]
-    public virtual string Token { get; set; } = null!;
+    public virtual required string Token { get; set; }
 }

@@ -12,7 +12,7 @@ public class ChangePhoneNumberToken
     /// The token used to authorize the phone number change.
     /// </summary>
     [Required]
-    public virtual string Token { get; set; } = null!;
+    public virtual required string Token { get; set; }
 
     /// <summary>
     /// The new phone number to assign to the user.
@@ -20,5 +20,5 @@ public class ChangePhoneNumberToken
     [Required]
     [MaxLength(20)]
     [InternationalPhone]
-    public virtual string NewPhoneNumber { get; set; } = null!;
+    public virtual required string NewPhoneNumber { get; set; }
 }

@@ -57,7 +57,7 @@ internal static class ServiceCollectionExtensions
             .AddNanoResponseCaching(options.ResponseCache)
             .AddNanoVersioning(options.Version)
             .AddNanoAuthentication(options.Authentication, apiKeyOptions)
-            .AddNanoAuthorization(options.Authentication)
+            .AddNanoAuthorization()
             .AddNanoRequestLocalization(options.Localization)
             .AddNanoRequestTimeZone(options.TimeZone)
             .AddNanoVirusScan(options.VirusScan)

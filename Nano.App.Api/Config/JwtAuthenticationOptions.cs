@@ -13,19 +13,19 @@ public class JwtAuthenticationOptions
     /// JWT issuer.
     /// </summary>
     [Required]
-    public virtual string Issuer { get; set; } = null!;
+    public virtual required string Issuer { get; set; }
 
     /// <summary>
     /// JWT audience.
     /// </summary>
     [Required]
-    public virtual string Audience { get; set; } = null!;
+    public virtual required string Audience { get; set; }
 
     /// <summary>
     /// Base64-encoded public key.
     /// </summary>
     [Required]
-    public virtual string PublicKey { get; set; } = null!;
+    public virtual required string PublicKey { get; set; }
 
     /// <summary>
     /// Base64-encoded private key.

@@ -16,7 +16,7 @@ public class AuditEntryProperty<TIdentity> : BaseEntity<TIdentity>
     /// Gets or sets the identifier of the parent audit entry.
     /// </summary>
     [Required]
-    public virtual Guid ParentId { get; set; }
+    public virtual Guid ParentId { get; set; } = Guid.Empty;
 
     /// <summary>
     /// Gets or sets the parent <see cref="AuditEntry{TIdentity}"/>.
@@ -28,7 +28,7 @@ public class AuditEntryProperty<TIdentity> : BaseEntity<TIdentity>
     /// </summary>
     [Required]
     [MaxLength(256)]
-    public virtual string PropertyName { get; set; } = null!;
+    public virtual required string PropertyName { get; set; }
 
     /// <summary>
     /// Gets or sets the relation name of the property audited.

@@ -22,6 +22,7 @@ using System.Net;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Nano.App.Api.Mvc.Authorization.Consts;
 using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 
 namespace Nano.App.Api.Controllers;
@@ -45,7 +46,7 @@ public abstract class BaseEntityUserController<TEntity, TCriteria> : BaseEntityU
 }
 
 /// <inheritdoc />
-[Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.IDENTITY)]
+[Authorize(Policy = AuthorizationPolicies.IDENTITY)]
 public abstract class BaseEntityUserController<TEntity, TIdentity, TCriteria> : BaseEntityUpdatableController<TEntity, TIdentity, TCriteria>
     where TEntity : class, IEntityUser<TIdentity>, new()
     where TIdentity : IEquatable<TIdentity>

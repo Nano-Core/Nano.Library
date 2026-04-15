@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Nano.Eventing.Abstractions.Config;
 
 /// <summary>
@@ -8,10 +10,12 @@ public class CredentialOptions
     /// <summary>
     /// Username or account id for authenticating with the broker.
     /// </summary>
-    public virtual string Id { get; set; } = null!;
+    [Required]
+    public virtual required string Id { get; set; }
 
     /// <summary>
     /// Passeword, secret or key for authenticating with the broker.
     /// </summary>
-    public virtual string Secret { get; set; } = null!;
+    [Required]
+    public virtual required string Secret { get; set; }
 }

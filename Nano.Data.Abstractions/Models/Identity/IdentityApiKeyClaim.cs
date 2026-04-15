@@ -14,7 +14,7 @@ public class IdentityApiKeyClaim<TIdentity> : BaseEntityIdentity<TIdentity>
     /// Gets or sets the identifier of the associated API key.
     /// </summary>
     [Required]
-    public virtual TIdentity ApiKeyId { get; set; } = default!;
+    public virtual required TIdentity ApiKeyId { get; set; }
 
     /// <summary>
     /// Gets or sets the associated API key.
@@ -24,7 +24,7 @@ public class IdentityApiKeyClaim<TIdentity> : BaseEntityIdentity<TIdentity>
     /// <summary>
     /// Gets or sets the type of the claim.
     /// </summary>
-    public virtual string ClaimType { get; set; } = null!;
+    public virtual required string ClaimType { get; set; }
 
     /// <summary>
     /// Gets or sets the value of the claim.

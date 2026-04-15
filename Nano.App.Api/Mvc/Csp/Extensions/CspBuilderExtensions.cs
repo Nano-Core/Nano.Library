@@ -1145,7 +1145,7 @@ internal static class CspBuilderExtensions
         if (styleOptions is { RequireSri: true })
         {
             requireSriFor
-                .Script();
+                .Style();
         }
 
         return builder;

@@ -15,7 +15,7 @@ public class IdentityApiKeyRole<TIdentity> : BaseEntityIdentity<TIdentity>
     /// Gets or sets the identifier of the associated API key.
     /// </summary>
     [Required]
-    public virtual TIdentity ApiKeyId { get; set; } = default!;
+    public virtual required TIdentity ApiKeyId { get; set; }
 
     /// <summary>
     /// Gets or sets the associated API key.
@@ -26,7 +26,7 @@ public class IdentityApiKeyRole<TIdentity> : BaseEntityIdentity<TIdentity>
     /// Gets or sets the identifier of the associated role.
     /// </summary>
     [Required]
-    public virtual TIdentity RoleId { get; set; } = default!;
+    public virtual required TIdentity RoleId { get; set; }
 
     /// <summary>
     /// Gets or sets the associated role.

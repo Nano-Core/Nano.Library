@@ -17,5 +17,5 @@ public class LogInRequest : BaseAuthRequest
     /// </summary>
     [Body]
     [Required]
-    public virtual LogIn LogIn { get; set; } = new();
+    public virtual required LogIn LogIn { get; set; }
 }

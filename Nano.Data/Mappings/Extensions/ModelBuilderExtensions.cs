@@ -31,7 +31,12 @@ internal static class ModelBuilderExtensions
 
         foreach (var mappingType in mappingTypes)
         {
-            var entityType = mappingType.BaseType!
+            if (mappingType.BaseType == null)
+            {
+                throw new NullReferenceException(nameof(mappingType.BaseType));
+            }
+
+            var entityType = mappingType.BaseType
                 .GetGenericArguments()[0];
 
             var isIdentityMapping = mappingType

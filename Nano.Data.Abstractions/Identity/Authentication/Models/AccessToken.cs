@@ -23,7 +23,7 @@ public class AccessToken
     /// The serialized access token value.
     /// </summary>
     [Required]
-    public virtual string Token { get; set; } = null!;
+    public virtual required string Token { get; set; }
 
     /// <summary>
     /// The UTC date and time at which the token expires.

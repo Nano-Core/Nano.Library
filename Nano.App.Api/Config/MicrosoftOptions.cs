@@ -11,19 +11,19 @@ public class MicrosoftOptions
     /// Tenant Id.
     /// </summary>
     [Required]
-    public virtual string TenantId { get; set; } = null!;
+    public virtual required string TenantId { get; set; }
 
     /// <summary>
     /// Client Id.
     /// </summary>
     [Required]
-    public virtual string ClientId { get; set; } = null!;
+    public virtual required string ClientId { get; set; }
 
     /// <summary>
     /// Client Secret.
     /// </summary>
     [Required]
-    public virtual string ClientSecret { get; set; } = null!;
+    public virtual required string ClientSecret { get; set; }
 
     /// <summary>
     /// OAuth scopes.

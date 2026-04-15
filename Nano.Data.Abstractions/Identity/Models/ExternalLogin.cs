@@ -12,11 +12,11 @@ public class ExternalLogin
     /// The provider-specific external login key.
     /// </summary>
     [Required]
-    public virtual string Key { get; set; } = null!;
+    public virtual required string Key { get; set; }
 
     /// <summary>
     /// The external authentication provider information.
     /// </summary>
     [Required]
-    public virtual ExternalLoginProvider Provider { get; set; } = new();
+    public virtual required ExternalLoginProvider Provider { get; set; }
 }

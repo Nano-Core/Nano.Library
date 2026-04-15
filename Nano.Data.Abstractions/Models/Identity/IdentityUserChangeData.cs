@@ -16,7 +16,7 @@ public class IdentityUserChangeData<TIdentity> : BaseEntityIdentity<TIdentity>
     /// Gets or sets the identity user Id.
     /// </summary>
     [Required]
-    public virtual TIdentity IdentityUserId { get; set; } = default!;
+    public virtual required TIdentity IdentityUserId { get; set; }
 
     /// <summary>
     /// Gets or sets the associated identity user.

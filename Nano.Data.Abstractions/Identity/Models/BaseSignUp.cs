@@ -36,5 +36,5 @@ public abstract class BaseSignUp<TUser, TIdentity> : BaseSignUp
     /// The user entity to be created during sign-up.
     /// </summary>
     [Required]
-    public virtual TUser User { get; set; } = default!;
+    public virtual required TUser User { get; set; }
 }

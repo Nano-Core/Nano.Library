@@ -130,18 +130,10 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(options);
 
-        // BUG: Audit. Will identity work when i first exclude them with predicate.
-        // - In Audit lesson test for entity that shouldn't audit
-        // - Also test nested navigation gets original values
-
+        AuditManager.DefaultConfiguration.Exclude(_ => true);
         AuditManager.DefaultConfiguration.Include<IEntityAuditable>();
-        AuditManager.DefaultConfiguration.Exclude(x => !x.GetType().IsAssignableFrom(typeof(IEntityAuditable)));
         AuditManager.DefaultConfiguration.IncludeDataAnnotation();
         AuditManager.DefaultConfiguration.IncludeIdentity<TIdentity>(options.Identity);
-        //AuditManager.DefaultConfiguration.Exclude<AuditEntry<TIdentity>>();
-        //AuditManager.DefaultConfiguration.Exclude<AuditEntryProperty<TIdentity>>();
-        //AuditManager.DefaultConfiguration.Exclude<DataProtectionKey>();
-        //AuditManager.DefaultConfiguration.ExcludeDataAnnotation();
 
         AuditManager.DefaultConfiguration.UseUtcDateTime = true;
         AuditManager.DefaultConfiguration.AutoSavePreAction = AutoSavePreAction<TIdentity>;

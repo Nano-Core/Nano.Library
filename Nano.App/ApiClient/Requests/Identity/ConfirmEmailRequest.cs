@@ -23,5 +23,5 @@ public class ConfirmEmailRequest<TIdentity> : BaseRequest
     /// </summary>
     [Required]
     [Body]
-    public virtual ConfirmEmail ConfirmEmail { get; set; } = new();
+    public virtual required ConfirmEmail ConfirmEmail { get; set; }
 }

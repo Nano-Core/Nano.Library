@@ -22,5 +22,5 @@ public class HttpsOptions
     /// <summary>
     /// SSL certificate configuration.
     /// </summary>
-    public virtual CertificateOptions Certificate { get; set; } = new();
+    public virtual required CertificateOptions Certificate { get; set; }
 }

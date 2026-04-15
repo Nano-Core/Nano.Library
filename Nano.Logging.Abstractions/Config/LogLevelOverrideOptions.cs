@@ -12,7 +12,7 @@ public class LogLevelOverrideOptions
     /// The namespace for which this log level override applies.
     /// </summary>
     [Required]
-    public virtual string Namespace { get; set; } = null!;
+    public virtual required string Namespace { get; set; }
 
     /// <summary>
     /// The <see cref="LogLevel"/> to use for the specified namespace.

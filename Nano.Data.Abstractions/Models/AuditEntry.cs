@@ -22,13 +22,13 @@ public class AuditEntry<TIdentity> : BaseEntity<TIdentity>
     /// </summary>
     [Required]
     [MaxLength(256)]
-    public virtual string CreatedBy { get; set; } = null!;
+    public virtual required string CreatedBy { get; set; }
 
     /// <summary>
     /// Gets or sets the Key of the audited entity.
     /// </summary>
     [Required]
-    public virtual TIdentity EntityKey { get; set; } = default!;
+    public virtual required TIdentity EntityKey { get; set; }
 
     /// <summary>
     /// Gets or sets the EF entity set name.
@@ -41,7 +41,7 @@ public class AuditEntry<TIdentity> : BaseEntity<TIdentity>
     /// </summary>
     [Required]
     [MaxLength(256)]
-    public virtual string EntityTypeName { get; set; } = null!;
+    public virtual required string EntityTypeName { get; set; }
 
     /// <summary>
     /// Gets or sets the entity state as integer (Added, Modified, Deleted).

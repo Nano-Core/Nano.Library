@@ -18,5 +18,5 @@ public class IsPhoneNumberTakenRequest : BaseRequest
     [Required]
     [Query]
     [InternationalPhone]
-    public virtual string PhoneNumber { get; set; } = null!;
+    public virtual required string PhoneNumber { get; set; }
 }

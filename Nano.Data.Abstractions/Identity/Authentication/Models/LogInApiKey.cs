@@ -11,5 +11,5 @@ public class LogInApiKey : BaseLogIn
     /// The api-key to use for logging.
     /// </summary>
     [Required]
-    public virtual string ApiKey { get; set; } = null!;
+    public virtual required string ApiKey { get; set; }
 }

@@ -17,5 +17,5 @@ public class CreateAndGetRequest : BaseRequest
     /// </summary>
     [Required]
     [Body]
-    public virtual IEntityCreatable Entity { get; set; } = null!;
+    public virtual required IEntityCreatable Entity { get; set; }
 }

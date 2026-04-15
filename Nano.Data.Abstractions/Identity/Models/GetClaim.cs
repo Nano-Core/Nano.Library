@@ -11,5 +11,5 @@ public class GetClaim
     /// The type of claim to retrieve.
     /// </summary>
     [Required]
-    public virtual string ClaimType { get; set; } = null!;
+    public virtual required string ClaimType { get; set; }
 }

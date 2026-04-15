@@ -11,5 +11,5 @@ public class ValidateApiKey
     /// The API key.
     /// </summary>
     [Required]
-    public virtual string ApiKey { get; set; } = null!;
+    public virtual required string ApiKey { get; set; }
 }

@@ -17,5 +17,5 @@ public class SetPasswordRequest : BaseRequest
     /// </summary>
     [Required]
     [Body]
-    public virtual SetPassword SetPassword { get; set; } = new();
+    public virtual required SetPassword SetPassword { get; set; }
 }

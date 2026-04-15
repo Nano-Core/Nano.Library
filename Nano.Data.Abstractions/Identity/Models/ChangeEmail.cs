@@ -11,5 +11,5 @@ public class ChangeEmail
     /// The token used to authorize the email change.
     /// </summary>
     [Required]
-    public virtual string Token { get; set; } = null!;
+    public virtual required string Token { get; set; }
 }

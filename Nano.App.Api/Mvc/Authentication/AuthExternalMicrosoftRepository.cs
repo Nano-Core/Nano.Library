@@ -109,7 +109,7 @@ public class AuthExternalMicrosoftRepository(MicrosoftOptions options, HttpClien
             Name = name,
             EmailAddress = email,
             Username = email,
-            ExternalToken =
+            ExternalToken = new ExternalAuthenticationToken
             {
                 Name = BuiltInExternalLogInProviderNames.MICROSOFT,
                 Token = accessToken,

@@ -5,6 +5,7 @@ using Nano.App.Api.Config;
 using Nano.App.Api.Mvc.Authentication.Abstractions;
 using Nano.App.Config;
 using Nano.Common.Consts;
+using Nano.Common.Helpers;
 using Nano.Data.Abstractions.Config;
 using Nano.Data.Abstractions.Identity.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Consts;
@@ -12,8 +13,6 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http;
-using Nano.Common.Helpers;
-using AuthenticationOptions = Nano.App.Api.Config.AuthenticationOptions;
 
 namespace Nano.App.Api.Mvc.Authentication.Extensions;
 

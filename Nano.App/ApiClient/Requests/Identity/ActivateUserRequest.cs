@@ -19,5 +19,5 @@ public class ActivateUserRequest<TIdentity> : BaseRequest
     /// The identifier of the user to activate.
     /// </summary>
     [Route(Order = 0)]
-    public virtual TIdentity Id { get; set; } = default!;
+    public virtual required TIdentity Id { get; set; }
 }

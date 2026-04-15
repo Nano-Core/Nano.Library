@@ -12,12 +12,12 @@ public class ExternalProvider
     /// </summary>
     [Required]
     [MaxLength(256)]
-    public virtual string Name { get; set; } = null!;
+    public virtual required string Name { get; set; }
 
     /// <summary>
     /// The unique key provided by the external provider for the user.
     /// </summary>
     [Required]
     [MaxLength(256)]
-    public virtual string UserId { get; set; } = null!;
+    public virtual required string UserId { get; set; }
 }

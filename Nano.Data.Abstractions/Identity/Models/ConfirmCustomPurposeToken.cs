@@ -11,12 +11,12 @@ public class ConfirmCustomPurposeToken
     /// The token used to confirm the custom purpose.
     /// </summary>
     [Required]
-    public virtual string Token { get; set; } = null!;
+    public virtual required string Token { get; set; }
 
     /// <summary>
     /// The name of the custom purpose being confirmed.
     /// </summary>
     [Required]
     [MaxLength(256)]
-    public virtual string Purpose { get; set; } = null!;
+    public virtual required string Purpose { get; set; }
 }

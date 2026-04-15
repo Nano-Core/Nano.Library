@@ -12,7 +12,7 @@ public class RefreshToken
     /// The serialized refresh token value.
     /// </summary>
     [Required]
-    public virtual string Token { get; set; } = null!;
+    public virtual required string Token { get; set; }
 
     /// <summary>
     /// The UTC date and time at which the refresh token expires.

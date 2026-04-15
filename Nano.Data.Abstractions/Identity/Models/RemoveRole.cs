@@ -12,5 +12,5 @@ public class RemoveRole
     /// </summary>
     [Required]
     [MaxLength(256)]
-    public virtual string RoleName { get; set; } = null!;
+    public virtual required string RoleName { get; set; }
 }

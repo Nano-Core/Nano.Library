@@ -2,9 +2,9 @@ using DynamicExpression.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Nano.App.Api.Mvc.Authorization.Consts;
 using Nano.Common.Consts;
 using Nano.Data.Abstractions;
-using Nano.Data.Abstractions.Identity.Consts;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Eventing.Abstractions;
 using System;
@@ -34,7 +34,7 @@ public abstract class BaseEntityReadOnlyController<TEntity, TCriteria> : BaseEnt
 /// <typeparam name="TEntity">The entity type managed by the repository.</typeparam>
 /// <typeparam name="TIdentity">The type of the entity's identifier.</typeparam>
 /// <typeparam name="TCriteria">The query criteria type implementing <see cref="IQueryCriteria"/>.</typeparam>
-[Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.CREATOR + "," + BuiltInUserRoles.EDITOR + "," + BuiltInUserRoles.DELETER + "," + BuiltInUserRoles.READER)]
+[Authorize(Policy = AuthorizationPolicies.READ)]
 public abstract class BaseEntityReadOnlyController<TEntity, TIdentity, TCriteria> : BaseEntityViewController<TEntity, TCriteria>
     where TEntity : class, IEntityIdentity<TIdentity>
     where TCriteria : class, IQueryCriteria, new()

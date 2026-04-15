@@ -41,7 +41,7 @@ public class AuthExternalGoogleRepository(GoogleOptions options)
             Name = payload.Name,
             EmailAddress = payload.Email,
             Username = payload.Email,
-            ExternalToken =
+            ExternalToken = new ExternalAuthenticationToken
             {
                 Name = BuiltInExternalLogInProviderNames.GOOGLE,
                 Token = flow.AccessToken

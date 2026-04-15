@@ -22,5 +22,5 @@ public class GetApiKeysRequest<TIdentity> : BaseRequest
     /// </summary>
     [Required]
     [Route(Order = 0)]
-    public virtual TIdentity UserId { get; set; } = default!;
+    public virtual required TIdentity UserId { get; set; }
 }

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Nano.App.Api.Config;
@@ -7,22 +8,16 @@ using Nano.App.Api.Mvc.HealthChecks.Const;
 using Nano.App.Consts;
 using Nano.App.Exceptions;
 using Nano.App.Extensions;
+using Nano.Data.Abstractions.Exceptions;
 using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Nano.Data.Abstractions.Exceptions;
+using Nano.App.Api.Mvc.Extensions;
 using Vivet.AspNetCore.RequestVirusScan.Exceptions;
 
 namespace Nano.App.Api.Mvc.Middleware;
-
-// BUG: 000: YES: check if all nullable suppressions properties should just have required keyword
-// BUG: When no auth things work but it shows IsInRole failures in log. Figure out why and if we can remove it
-
-// BUG: new migrations for all data lessons
-// BUG: Test Identity again with Audit and also if all the new "required" is screwing with anything
-// BUG: Final review of entitty evening with Chat-GPT
 
 /// <summary>
 /// Middleware to handle exceptions globally, log them, and return structured <see cref="ProblemDetails"/> responses.
@@ -130,6 +125,23 @@ public sealed class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddlew
 
             problemDetails = ex.ProblemDetails;
         }
+        catch (DbUpdateException ex)
+        {
+            exception = ex;
+
+            if (ex.IsUniqueViolation())
+            {
+                problemDetails.Type = "https://datatracker.ietf.org/doc/html/rfc9110-15.6.1#name-409-conflict";
+                problemDetails.Status = (int)HttpStatusCode.Conflict;
+                problemDetails.Title = "Conflict";
+            }
+            else
+            {
+                problemDetails.Type = "https://datatracker.ietf.org/doc/html/rfc9110-15.6.1#name-500-internal-server-error";
+                problemDetails.Status = (int)HttpStatusCode.InternalServerError;
+                problemDetails.Title = "Internal Server Error";
+            }
+        }
         catch (AggregateException ex)
         {
             exception = ex;
@@ -156,9 +168,6 @@ public sealed class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddlew
         }
         finally
         {
-            // BUG: Handle DbUpdateException for all Data Providers, and return a bad request.
-            // - ExceptionHandlingMiddleware: could we make a bad request when we see duplicate exceptions, attach "type" and "id".
-
             if (exception != null)
             {
                 if (!httpContext.Response.HasStarted)

@@ -11,7 +11,7 @@ public class ChangeEmailToken
     /// The token used to authorize the email change.
     /// </summary>
     [Required]
-    public virtual string Token { get; set; } = null!;
+    public virtual required string Token { get; set; }
 
     /// <summary>
     /// The new email address to assign to the user.
@@ -19,5 +19,5 @@ public class ChangeEmailToken
     [Required]
     [EmailAddress]
     [MaxLength(256)]
-    public virtual string NewEmailAddress { get; set; } = null!;
+    public virtual required string NewEmailAddress { get; set; }
 }

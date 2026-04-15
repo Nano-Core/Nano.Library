@@ -14,5 +14,5 @@ public class GenerateChangePhoneToken
     [Required]
     [MaxLength(20)]
     [InternationalPhone]
-    public virtual string NewPhoneNumber { get; set; } = null!;
+    public virtual required string NewPhoneNumber { get; set; }
 }

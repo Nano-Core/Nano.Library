@@ -23,5 +23,5 @@ public class RemoveUserClaimRequest<TIdentity> : BaseRequest
     /// </summary>
     [Required]
     [Body]
-    public virtual RemoveClaim RemoveClaim { get; set; } = new();
+    public virtual required RemoveClaim RemoveClaim { get; set; }
 }

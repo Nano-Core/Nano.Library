@@ -17,5 +17,5 @@ public class DeleteRoleRequest : BaseRequest
     /// </summary>
     [Required]
     [Body]
-    public virtual DeleteRole DeleteRole { get; set; } = new();
+    public virtual required DeleteRole DeleteRole { get; set; }
 }

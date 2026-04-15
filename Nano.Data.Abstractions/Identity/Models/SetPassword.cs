@@ -12,5 +12,5 @@ public class SetPassword
     /// </summary>
     [Required]
     [MaxLength(256)]
-    public virtual string NewPassword { get; set; } = null!;
+    public virtual required string NewPassword { get; set; }
 }

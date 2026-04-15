@@ -170,7 +170,7 @@ public class ActionRoutes
     /// <summary>
     /// Route for retrieving details of a single deactivated user by identifier.
     /// </summary>
-    public const string IDENTITY_DETAILS_DEACTIVATED = "{id}/details";
+    public const string IDENTITY_DETAILS_DEACTIVATED = "{id}/details/deactivated";
 
     /// <summary>
     /// Route for retrieving password configuration options.

@@ -15,7 +15,7 @@ public class UpdateQuery<TCriteria>
     /// The criteria used to select entities to update.
     /// </summary>
     [Required]
-    public virtual TCriteria Criteria { get; set; } = null!;
+    public virtual required TCriteria Criteria { get; set; }
 
     /// <summary>
     /// A dictionary of property names and their new values to update on the selected entities.

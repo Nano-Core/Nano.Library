@@ -11,5 +11,5 @@ public class ConfirmPhoneNumber
     /// The token used to confirm the user's phone number.
     /// </summary>
     [Required]
-    public virtual string Token { get; set; } = null!;
+    public virtual required string Token { get; set; }
 }

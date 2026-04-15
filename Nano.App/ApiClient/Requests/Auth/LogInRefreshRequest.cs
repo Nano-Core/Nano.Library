@@ -17,5 +17,5 @@ public class LogInRefreshRequest : BaseAuthRequest
     /// </summary>
     [Required]
     [Body]
-    public virtual LogInRefresh LogInRefresh { get; set; } = new();
+    public virtual required LogInRefresh LogInRefresh { get; set; }
 }

@@ -23,5 +23,5 @@ public class ReplaceUserClaimRequest<TIdentity> : BaseRequest
     /// </summary>
     [Required]
     [Body]
-    public virtual ReplaceClaim ReplaceClaim { get; set; } = new();
+    public virtual required ReplaceClaim ReplaceClaim { get; set; }
 }

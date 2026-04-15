@@ -21,5 +21,5 @@ public class GetRoleClaimsRequest<TIdentity> : BaseRequest
     /// </summary>
     [Required]
     [Route(Order = 0)]
-    public virtual TIdentity RoleId { get; set; } = default!;
+    public virtual required TIdentity RoleId { get; set; }
 }

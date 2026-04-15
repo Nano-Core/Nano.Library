@@ -13,5 +13,5 @@ public class GenerateChangeEmailToken
     [Required]
     [EmailAddress]
     [MaxLength(256)]
-    public virtual string NewEmailAddress { get; set; } = null!;
+    public virtual required string NewEmailAddress { get; set; }
 }

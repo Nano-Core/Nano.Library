@@ -23,5 +23,5 @@ public class EditApiKeyRequest<TIdentity> : BaseRequest
     /// </summary>
     [Required]
     [Body]
-    public virtual EditApiKey EditApiKey { get; set; } = new();
+    public virtual required EditApiKey EditApiKey { get; set; }
 }

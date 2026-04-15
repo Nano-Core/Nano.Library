@@ -13,21 +13,21 @@ public class ExternalAuthenticationData
     /// The unique identifier of the external user.
     /// </summary>
     [Required]
-    public virtual string Id { get; set; } = null!;
+    public virtual required string Id { get; set; }
 
     /// <summary>
     /// The name of the external user.
     /// </summary>
     [Required]
     [MaxLength(256)]
-    public virtual string Name { get; set; } = null!;
+    public virtual required string Name { get; set; }
 
     /// <summary>
     /// The username of the external user.
     /// </summary>
     [Required]
     [MaxLength(256)]
-    public virtual string Username { get; set; } = null!;
+    public virtual required string Username { get; set; }
 
     /// <summary>
     /// The email address of the external user.
@@ -35,7 +35,7 @@ public class ExternalAuthenticationData
     [Required]
     [EmailAddress]
     [MaxLength(256)]
-    public virtual string EmailAddress { get; set; } = null!;
+    public virtual required string EmailAddress { get; set; }
 
     /// <summary>
     /// The user's phone number (optional, international format supported).
@@ -46,7 +46,7 @@ public class ExternalAuthenticationData
     /// <summary>
     /// The authentication token associated with the external login.
     /// </summary>
-    public virtual ExternalAuthenticationToken ExternalToken { get; set; } = new();
+    public virtual required ExternalAuthenticationToken ExternalToken { get; set; }
 
     /// <summary>
     /// Non-persisted claims added to the issued JWT during login.

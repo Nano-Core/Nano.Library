@@ -117,7 +117,7 @@ public sealed class EntityEventingHandler<TIdentity>(BaseDbContext<TIdentity> db
     }
 
 
-    private static void SetEntityEventProperties(EntityEvent @event, Type type, object entity)
+    private static void SetEntityEventProperties(EntityEvent @event, IReflect type, object entity)
     {
         ArgumentNullException.ThrowIfNull(@event);
         ArgumentNullException.ThrowIfNull(type);

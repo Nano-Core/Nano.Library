@@ -23,5 +23,5 @@ public class ConfirmCustomPurposeRequest<TIdentity> : BaseRequest
     /// </summary>
     [Required]
     [Body]
-    public virtual ConfirmCustomPurpose ConfirmCustomPurpose { get; set; } = new();
+    public virtual required ConfirmCustomPurpose ConfirmCustomPurpose { get; set; }
 }

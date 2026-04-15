@@ -14,7 +14,7 @@ public class CreateApiKey
     /// </summary>
     [Required]
     [MaxLength(256)]
-    public virtual string Name { get; set; } = null!;
+    public virtual required string Name { get; set; }
 
     /// <summary>
     /// The optional expiration date of the API key.

@@ -11,7 +11,7 @@ public class FormItem
     /// The name of the form field.
     /// </summary>
     [Required]
-    public virtual string Name { get; set; } = null!;
+    public virtual required string Name { get; set; }
 
     /// <summary>
     /// The value of the form field.

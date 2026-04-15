@@ -11,11 +11,10 @@ public class ReplaceClaim
     /// The claim type to replace.
     /// </summary>
     [Required]
-    public virtual string ClaimType { get; set; } = null!;
+    public virtual required string ClaimType { get; set; }
 
     /// <summary>
     /// The new value for the claim.
     /// </summary>
-    [Required]
-    public virtual string NewClaimValue { get; set; } = null!;
+    public virtual string? NewClaimValue { get; set; }
 }

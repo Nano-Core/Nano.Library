@@ -11,7 +11,7 @@ public class ExternalLoginProvider
     /// The unique name of the external provider.
     /// </summary>
     [Required]
-    public virtual string Name { get; set; } = null!;
+    public virtual required string Name { get; set; }
 
     /// <summary>
     /// The human-readable display name of the provider.

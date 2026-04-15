@@ -11,13 +11,13 @@ public class ExternalAuthenticationToken
     /// The name of the external authentication provider.
     /// </summary>
     [Required]
-    public virtual string Name { get; set; } = null!;
+    public virtual required string Name { get; set; }
 
     /// <summary>
     /// The access token issued by the external provider.
     /// </summary>
     [Required]
-    public virtual string Token { get; set; } = null!;
+    public virtual required string Token { get; set; }
 
     /// <summary>
     /// The refresh token issued by the external provider, if supported.

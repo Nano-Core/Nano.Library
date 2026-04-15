@@ -12,5 +12,5 @@ public class ImplicitFlow() : BaseAuthFlow(AuthFlowType.Implicit)
     /// The access token issued by the external provider.
     /// </summary>
     [Required]
-    public virtual string AccessToken { get; set; } = null!;
+    public virtual required string AccessToken { get; set; }
 }

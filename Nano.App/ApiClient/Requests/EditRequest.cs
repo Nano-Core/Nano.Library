@@ -17,5 +17,5 @@ public class EditRequest : BaseRequest
     /// </summary>
     [Required]
     [Body]
-    public virtual IEntityUpdatable Entity { get; set; } = null!;
+    public virtual required IEntityUpdatable Entity { get; set; }
 }

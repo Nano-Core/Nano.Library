@@ -1,6 +1,7 @@
-using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using System;
+using Nano.Common.Config.Extensions;
 
 namespace Nano.App.Config.Extensions;
 
@@ -31,7 +32,7 @@ internal static class ServiceCollectionExtensions
 
         optionsBuilder
             .Bind(section)
-            .ValidateDataAnnotations()
+            .ValidateDataAnnotationsRecursively()
             .ValidateOnStart();
 
         return services;

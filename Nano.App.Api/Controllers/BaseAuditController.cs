@@ -2,11 +2,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Nano.App.Api.Controllers.Criteria;
+using Nano.App.Api.Mvc.Authorization.Consts;
+using Nano.Common.Consts;
 using Nano.Data.Abstractions;
-using Nano.Data.Abstractions.Identity.Consts;
 using Nano.Data.Abstractions.Models;
 using System;
-using Nano.Common.Consts;
 
 namespace Nano.App.Api.Controllers;
 
@@ -21,7 +21,7 @@ public abstract class BaseAuditController(ILogger<BaseAuditController> logger, I
 /// <param name="repository">The repository instance.</param>
 [Route(ControllerRoutes.AUDIT)]
 [Route($"{ControllerRoutes.ROUTE_VERSION_PREFIX}/{ControllerRoutes.AUDIT}")]
-[Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR)]
+[Authorize(Policy = AuthorizationPolicies.AUDIT)]
 public abstract class BaseAuditController<TIdentity>(ILogger<BaseAuditController<TIdentity>> logger, IRepository repository)
     : BaseEntityReadOnlyController<AuditEntry<TIdentity>, TIdentity, AuditEntryQueryCriteria<TIdentity>>(logger, repository)
     where TIdentity : IEquatable<TIdentity>;

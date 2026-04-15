@@ -23,5 +23,5 @@ public class SetUsernameRequest<TIdentity> : BaseRequest
     /// </summary>
     [Required]
     [Body]
-    public virtual SetUsername SetUsername { get; set; } = new();
+    public virtual required SetUsername SetUsername { get; set; }
 }

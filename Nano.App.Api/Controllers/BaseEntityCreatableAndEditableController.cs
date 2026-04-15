@@ -6,7 +6,6 @@ using Nano.App.Api.Mvc.Authorization.Consts;
 using Nano.App.ApiClient.Requests.Models;
 using Nano.Common.Consts;
 using Nano.Data.Abstractions;
-using Nano.Data.Abstractions.Identity.Consts;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Eventing.Abstractions;
 using System;
@@ -36,6 +35,7 @@ public abstract class BaseEntityCreatableAndEditableController<TEntity, TCriteri
 /// <typeparam name="TEntity">The entity type implementing <see cref="IEntity"/> handled by this controller.</typeparam>
 /// <typeparam name="TIdentity">The identifier type of <typeparamref name="TEntity"/>.</typeparam>
 /// <typeparam name="TCriteria">The query criteria type implementing <see cref="IQueryCriteria"/>.</typeparam>
+[Authorize(Policy = AuthorizationPolicies.EDIT)]
 public abstract class BaseEntityCreatableAndEditableController<TEntity, TIdentity, TCriteria> : BaseEntityCreatableController<TEntity, TIdentity, TCriteria>
     where TEntity : class, IEntityIdentity<TIdentity>, IEntityCreatableAndUpdatable
     where TCriteria : class, IQueryCriteria, new()
@@ -91,7 +91,6 @@ public abstract class BaseEntityCreatableAndEditableController<TEntity, TIdentit
     [HttpPut]
     [HttpPost]
     [Route(ActionRoutes.EDIT)]
-    [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.EDITOR)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
@@ -123,7 +122,6 @@ public abstract class BaseEntityCreatableAndEditableController<TEntity, TIdentit
     [HttpPut]
     [HttpPost]
     [Route(ActionRoutes.EDIT_GET)]
-    [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.EDITOR)]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
     [ProducesResponseType(typeof(IEntity), (int)HttpStatusCode.OK)]
@@ -154,7 +152,6 @@ public abstract class BaseEntityCreatableAndEditableController<TEntity, TIdentit
     [HttpPut]
     [HttpPost]
     [Route(ActionRoutes.EDIT_MANY)]
-    [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.EDITOR)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -185,7 +182,6 @@ public abstract class BaseEntityCreatableAndEditableController<TEntity, TIdentit
     [HttpPut]
     [HttpPost]
     [Route(ActionRoutes.EDIT_MANY_BULK)]
-    [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.EDITOR)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -213,7 +209,6 @@ public abstract class BaseEntityCreatableAndEditableController<TEntity, TIdentit
     [HttpPut]
     [HttpPost]
     [Route(ActionRoutes.EDIT_QUERY)]
-    [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.EDITOR)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
@@ -243,7 +238,6 @@ public abstract class BaseEntityCreatableAndEditableController<TEntity, TIdentit
     [HttpPut]
     [HttpPost]
     [Route(ActionRoutes.EDIT_QUERY_BULK)]
-    [Authorize(Roles = BuiltInUserRoles.ADMINISTRATOR + "," + BuiltInUserRoles.WRITER + "," + BuiltInUserRoles.EDITOR)]
     [Consumes(HttpContentType.JSON)]
     [ProducesResponseType((int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]

@@ -17,5 +17,5 @@ public class GenerateResetPasswordTokenRequest : BaseRequest
     /// </summary>
     [Required]
     [Body]
-    public virtual GenerateResetPasswordToken ResetPasswordToken { get; set; } = new();
+    public virtual required GenerateResetPasswordToken ResetPasswordToken { get; set; }
 }

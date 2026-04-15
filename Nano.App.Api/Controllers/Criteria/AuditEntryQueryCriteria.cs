@@ -47,10 +47,10 @@ public class AuditEntryQueryCriteria<TIdentity> : BaseQueryCriteria
 
         var expression = new CriteriaExpression();
 
-        if (!EqualityComparer<TIdentity>.Default.Equals(this.EntityKey!, default!))
+        if (!EqualityComparer<TIdentity>.Default.Equals(this.EntityKey, default))
         {
             expression
-                .Equal(nameof(AuditEntry<>.EntityKey), this.EntityKey!);
+                .Equal(nameof(AuditEntry<>.EntityKey), this.EntityKey);
         }
 
         if (this.EntityTypeName != null)

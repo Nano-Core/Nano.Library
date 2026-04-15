@@ -54,13 +54,13 @@ public abstract class BaseRequest
             .Where(x => x.attribute != null)
             .Select(x =>
             {
-                var name = x.attribute!.Name ?? x.property.Name;
+                var name = x.attribute?.Name ?? x.property.Name;
 
                 var value = x.property
                     .GetValue(this)?
                     .ToString();
 
-                return new KeyValuePair<string, string>(name, $"{x.attribute!.ValuePrefix}{value}");
+                return new KeyValuePair<string, string>(name, $"{x.attribute?.ValuePrefix}{value}");
             });
 
         return parameters;
@@ -89,7 +89,7 @@ public abstract class BaseRequest
                 return (property, attribute);
             })
             .Where(x => x.attribute != null)
-            .OrderBy(x => x.attribute!.Order)
+            .OrderBy(x => x.attribute?.Order)
             .Select(x =>
             {
                 var value = x.property

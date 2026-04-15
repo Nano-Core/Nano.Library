@@ -17,5 +17,5 @@ public class LogInRootRequest : BaseAuthRequest
     /// </summary>
     [Body]
     [Required]
-    public virtual LogInRoot LogInRoot { get; set; } = new();
+    public virtual required LogInRoot LogInRoot { get; set; }
 }

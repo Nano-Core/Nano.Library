@@ -13,14 +13,14 @@ public class LogInRoot
     /// </summary>
     [Required]
     [MaxLength(256)]
-    public virtual string Username { get; set; } = null!;
+    public virtual required string Username { get; set; }
 
     /// <summary>
     /// The password for login.
     /// </summary>
     [Required]
     [MaxLength(256)]
-    public virtual string Password { get; set; } = null!;
+    public virtual required string Password { get; set; }
 
     /// <summary>
     /// Non-persisted claims added to the issued JWT during login.

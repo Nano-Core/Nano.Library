@@ -23,5 +23,5 @@ public class AssignUserClaimRequest<TIdentity> : BaseRequest
     /// </summary>
     [Required]
     [Body]
-    public virtual AssignClaim AssignClaim { get; set; } = new();
+    public virtual required AssignClaim AssignClaim { get; set; }
 }

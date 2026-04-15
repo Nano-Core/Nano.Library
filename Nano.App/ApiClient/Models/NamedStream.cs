@@ -15,17 +15,17 @@ public sealed class NamedStream : IDisposable
     /// Only the file name part of the path is stored.
     /// </summary>
     [Required]
-    public string Name
+    public required string Name
     {
         get;
         set => field = Path.GetFileName(value);
-    } = null!;
+    }
 
     /// <summary>
     /// The underlying <see cref="Stream"/> associated with this named stream.
     /// </summary>
     [Required]
-    public Stream Stream { get; set; } = null!;
+    public required Stream Stream { get; set; }
 
     /// <inheritdoc />
     public void Dispose()

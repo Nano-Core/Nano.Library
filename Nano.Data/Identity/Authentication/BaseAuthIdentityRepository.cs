@@ -82,7 +82,7 @@ public abstract class BaseAuthIdentityRepository<TIdentity> : IAuthIdentityRepos
         var identityUser = await this.identityRepository
             .SignInExternalAsync(new SignInExternal
             {
-                ExternalProvider =
+                ExternalProvider = new ExternalProvider
                 {
                     Name = logInExternal.ExternalAuthenticationData.ExternalToken.Name,
                     UserId = logInExternal.ExternalAuthenticationData.Id

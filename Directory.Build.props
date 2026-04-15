@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 	    <TargetFramework>net10.0</TargetFramework>
-	    <NoWarn>NU1902; NU5104</NoWarn>
+	    <NoWarn>NU1901; NU1902; NU5104</NoWarn>
 		<Version>10.0.0-preview</Version>
 	    <AssemblyVersion>10.0.0.0</AssemblyVersion>
 		<FileVersion>10.0.0.0</FileVersion>

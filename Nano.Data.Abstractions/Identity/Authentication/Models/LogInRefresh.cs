@@ -11,13 +11,13 @@ public class LogInRefresh
     /// The expired or soon-to-expire access token.
     /// </summary>
     [Required]
-    public virtual string Token { get; set; } = null!;
+    public virtual required string Token { get; set; }
 
     /// <summary>
     /// The refresh token used to issue a new access token.
     /// </summary>
     [Required]
-    public virtual string RefreshToken { get; set; } = null!;
+    public virtual required string RefreshToken { get; set; }
 
     /// <summary>
     /// Non-persisted roles added to the issued JWT during refresh.

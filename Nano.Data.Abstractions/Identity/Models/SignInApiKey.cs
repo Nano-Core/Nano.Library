@@ -12,5 +12,5 @@ public class SignInApiKey
     /// </summary>
     [Required]
     [MaxLength(256)]
-    public virtual string ApiKey { get; set; } = null!;
+    public virtual required string ApiKey { get; set; }
 }

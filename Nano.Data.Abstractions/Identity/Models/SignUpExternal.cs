@@ -24,26 +24,26 @@ public class SignUpExternal<TUser, TIdentity> : BaseSignUp<TUser, TIdentity>
     /// </summary>
     [Required]
     [MaxLength(256)]
-    public virtual string Username { get; set; } = null!;
+    public virtual required string Username { get; set; }
 
     /// <summary>
     /// The user's email address.
     /// </summary>
     [Required]
     [EmailAddress]
-    public virtual string EmailAddress { get; set; } = null!;
+    public virtual required string EmailAddress { get; set; }
 
     /// <summary>
     /// The user's phone number (optional, international format supported).
     /// </summary>
     [InternationalPhone]
-    public virtual string? PhoneNumber { get; set; }
+    public virtual required string? PhoneNumber { get; set; }
 
     /// <summary>
     /// The external provider information.
     /// </summary>
     [Required]
-    public virtual ExternalProvider ExternalProvider { get; set; } = new();
+    public virtual required ExternalProvider ExternalProvider { get; set; }
 }
 
 /// <summary>
@@ -61,5 +61,5 @@ public class SignUpExternal<TFlow, TUser, TIdentity> : BaseSignUp<TUser, TIdenti
     /// The external authentication flow.
     /// </summary>
     [Required]
-    public virtual TFlow Flow { get; set; } = null!;
+    public virtual required TFlow Flow { get; set; }
 }

@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Nano.App.Exceptions;
 using Nano.Data.Abstractions.Config;
+using Nano.Data.Abstractions.Exceptions;
 using Nano.Data.Abstractions.Identity;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Nano.Data.Abstractions.Identity.Consts;
@@ -19,8 +21,6 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Nano.App.Exceptions;
-using Nano.Data.Abstractions.Exceptions;
 using PasswordOptions = Nano.Data.Abstractions.Config.PasswordOptions;
 
 namespace Nano.Data.Identity;
@@ -100,8 +100,13 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
         var now = DateTimeOffset.UtcNow;
         var secret = this.options.CurrentValue.Identity?.ApiKey?.Secret;
 
+        if (secret == null)
+        {
+            throw new NullReferenceException(nameof(secret));
+        }
+
         var base64Hash = signInApiKey.ApiKey
-            .HmacEncrypt(secret!);
+            .HmacEncrypt(secret);
 
         var identityApiKey = await this.dbContext
             .Set<IdentityApiKey<TIdentity>>()
@@ -912,7 +917,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
             .Set<IdentityRoleClaim<TIdentity>>()
             .Where(x => roles
                 .Select(y => y.Id).Contains(x.RoleId))
-            .Select(x => new Claim(x.ClaimType!, x.ClaimValue!))
+            .Select(x => new Claim(x.ClaimType!, x.ClaimValue ?? ""))
             .ToListAsync(cancellationToken);
 
         var rolesAsClaims = roles
@@ -976,7 +981,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
             throw new NotFoundException(nameof(identityUser));
         }
 
-        var claim = new Claim(assignClaim.ClaimType, assignClaim.ClaimValue);
+        var claim = new Claim(assignClaim.ClaimType, assignClaim.ClaimValue ?? "");
 
         var result = await this.userManager
             .AddClaimAsync(identityUser, claim);
@@ -1009,7 +1014,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
             throw new NotFoundException(nameof(existingClaim));
         }
 
-        var newClaim = new Claim(replaceClaim.ClaimType, replaceClaim.NewClaimValue);
+        var newClaim = new Claim(replaceClaim.ClaimType, replaceClaim.NewClaimValue ?? "");
 
         var result = await this.userManager
             .ReplaceClaimAsync(identityUser, existingClaim, newClaim);
@@ -1037,7 +1042,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
 
         var existingClaim = await this.GetUserClaimAsync(id, new GetClaim { ClaimType = assignOrReplaceClaim.ClaimType }, cancellationToken);
 
-        var newClaim = new Claim(assignOrReplaceClaim.ClaimType, assignOrReplaceClaim.ClaimValue);
+        var newClaim = new Claim(assignOrReplaceClaim.ClaimType, assignOrReplaceClaim.ClaimValue ?? "");
 
         var result = existingClaim == null
             ? await this.userManager
@@ -1331,10 +1336,17 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
             throw new NotFoundException(nameof(identityUser));
         }
 
+        var secret = this.options.CurrentValue.Identity?.ApiKey?.Secret;
+
+        if (secret == null)
+        {
+            throw new NullReferenceException(nameof(secret));
+        }
+
         var apiKey = SecurePasswordGenerator.Generate(new Microsoft.AspNetCore.Identity.PasswordOptions { RequiredLength = 48 });
 
         var base64Hash = apiKey
-            .HmacEncrypt(this.options.CurrentValue.Identity?.ApiKey?.Secret!);
+            .HmacEncrypt(secret);
 
         var identityApiKey = new IdentityApiKeyCreated<TIdentity>
         {
@@ -1404,8 +1416,13 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
         var now = DateTimeOffset.UtcNow;
         var secret = this.options.CurrentValue.Identity?.ApiKey?.Secret;
 
+        if (secret == null)
+        {
+            throw new NullReferenceException(nameof(secret));
+        }
+
         var base64Hash = validateApiKey.ApiKey
-            .HmacEncrypt(secret!);
+            .HmacEncrypt(secret);
 
         var identityApiKey = await this.dbContext
             .Set<IdentityApiKey<TIdentity>>()
@@ -1580,7 +1597,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
         var apiKeyClaims = await this.dbContext
             .Set<IdentityApiKeyClaim<TIdentity>>()
             .Where(x => x.ApiKeyId.Equals(identityApiKey.Id))
-            .Select(x => new Claim(x.ClaimType, x.ClaimValue!))
+            .Select(x => new Claim(x.ClaimType, x.ClaimValue ?? ""))
             .ToListAsync(cancellationToken);
 
         var query = from apiKeyRole in this.dbContext.Set<IdentityApiKeyRole<TIdentity>>()
@@ -1636,7 +1653,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
         return this.dbContext
             .Set<IdentityApiKeyClaim<TIdentity>>()
             .Where(x => x.ApiKeyId.Equals(apiKeyId))
-            .Select(x => new Claim(x.ClaimType, x.ClaimValue!));
+            .Select(x => new Claim(x.ClaimType, x.ClaimValue ?? ""));
     }
 
     /// <inheritdoc />
@@ -1649,7 +1666,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
         return this.dbContext
             .Set<IdentityApiKeyClaim<TIdentity>>()
             .Where(x => x.ApiKeyId.Equals(identityApiKey.Id))
-            .Select(x => new Claim(x.ClaimType, x.ClaimValue!));
+            .Select(x => new Claim(x.ClaimType, x.ClaimValue ?? ""));
     }
 
     /// <inheritdoc />
@@ -1668,7 +1685,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
         {
             ApiKeyId = identityApiKey.Id,
             ClaimType = assignClaim.ClaimType,
-            ClaimValue = assignClaim.ClaimValue
+            ClaimValue = assignClaim.ClaimValue ?? ""
         };
 
         await this.dbContext
@@ -1694,7 +1711,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
             throw new NotFoundException(nameof(identityApiKeyClaim));
         }
 
-        identityApiKeyClaim.ClaimValue = replaceClaim.NewClaimValue;
+        identityApiKeyClaim.ClaimValue = replaceClaim.NewClaimValue ?? "";
 
         this.dbContext
             .Update(identityApiKeyClaim);
@@ -1720,7 +1737,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
             {
                 ApiKeyId = apiKeyId,
                 ClaimType = assignOrReplaceClaim.ClaimType,
-                ClaimValue = assignOrReplaceClaim.ClaimValue
+                ClaimValue = assignOrReplaceClaim.ClaimValue ?? ""
             };
 
             await this.dbContext
@@ -1728,7 +1745,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
         }
         else
         {
-            identityApiKeyClaim.ClaimValue = assignOrReplaceClaim.ClaimValue;
+            identityApiKeyClaim.ClaimValue = assignOrReplaceClaim.ClaimValue ?? "";
 
             this.dbContext
                 .Update(identityApiKeyClaim);
@@ -2058,12 +2075,12 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
 
             if (ex.Message.Contains(EMAIL_INDEX_NAME) || (ex.InnerException != null && ex.InnerException.Message.Contains(EMAIL_INDEX_NAME)))
             {
-                ThrowIdentityExceptions([new IdentityErrorDescriber().DuplicateEmail(identityUser.Email!)]);
+                ThrowIdentityExceptions([new IdentityErrorDescriber().DuplicateEmail(identityUser.Email ?? "")]);
             }
 
             if (ex.Message.Contains(PHONE_NUMBER_INDEX_NAME) || (ex.InnerException != null && ex.InnerException.Message.Contains(PHONE_NUMBER_INDEX_NAME)))
             {
-                ThrowIdentityExceptions([new IdentityErrorDescriber().DuplicatePhoneNumber(identityUser.PhoneNumber!)]);
+                ThrowIdentityExceptions([new IdentityErrorDescriber().DuplicatePhoneNumber(identityUser.PhoneNumber ?? "")]);
             }
 
             throw;

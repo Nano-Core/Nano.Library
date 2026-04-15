@@ -11,11 +11,11 @@ public class CertificateOptions
     /// File path to the certificate.
     /// </summary>
     [Required]
-    public virtual string Path { get; set; } = null!;
+    public virtual required string Path { get; set; }
 
     /// <summary>
     /// Password for the certificate.
     /// </summary>
     [Required]
-    public virtual string Password { get; set; } = null!;
+    public virtual required string Password { get; set; }
 }

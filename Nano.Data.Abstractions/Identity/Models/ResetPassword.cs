@@ -11,12 +11,12 @@ public class ResetPassword
     /// The token used to authorize the password reset.
     /// </summary>
     [Required]
-    public virtual string Token { get; set; } = null!;
+    public virtual required string Token { get; set; }
 
     /// <summary>
     /// The new password to assign to the user.
     /// </summary>
     [Required]
     [MaxLength(256)]
-    public virtual string Password { get; set; } = null!;
+    public virtual required string Password { get; set; }
 }

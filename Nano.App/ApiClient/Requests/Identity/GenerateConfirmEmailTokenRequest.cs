@@ -22,5 +22,5 @@ public class GenerateConfirmEmailTokenRequest<TIdentity> : BaseRequest
     /// </summary>
     [Required]
     [Route(Order = 0)]
-    public virtual TIdentity Id { get; set; } = default!;
+    public virtual required TIdentity Id { get; set; }
 }

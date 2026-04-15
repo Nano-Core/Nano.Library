@@ -22,5 +22,5 @@ public class GenerateConfirmPhoneTokenRequest<TIdentity> : BaseRequest
     /// </summary>
     [Required]
     [Route]
-    public virtual TIdentity Id { get; set; } = default!;
+    public virtual required TIdentity Id { get; set; }
 }

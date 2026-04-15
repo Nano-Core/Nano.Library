@@ -8,5 +8,5 @@ public class SignInExternal
     /// <summary>
     /// The external provider information.
     /// </summary>
-    public virtual ExternalProvider ExternalProvider { get; set; } = new();
+    public virtual required ExternalProvider ExternalProvider { get; set; }
 }

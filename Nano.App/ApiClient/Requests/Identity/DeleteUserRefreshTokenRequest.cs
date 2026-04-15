@@ -20,5 +20,5 @@ public class DeleteUserRefreshTokenRequest<TIdentity> : BaseRequest
     /// The identifier of the refresh token to delete.
     /// </summary>
     [Route(Order = 0)]
-    public virtual TIdentity RefreshTokenId { get; set; } = default!;
+    public virtual required TIdentity RefreshTokenId { get; set; }
 }

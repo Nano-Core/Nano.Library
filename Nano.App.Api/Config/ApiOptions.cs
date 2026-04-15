@@ -11,6 +11,7 @@ public class ApiOptions : BaseAppOptions
     /// <summary>
     /// Number of seconds to wait after a SIGTERM signal before shutting down.
     /// </summary>
+    [Required]
     public virtual int ShutdownTimeout { get; set; } = 10;
 
     /// <summary>

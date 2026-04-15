@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.App.Api.Config;
-using Nano.Eventing.Abstractions.Extensions;
-using System;
 using Nano.Data.Abstractions.Eventing.Extensions;
 using Nano.Data.Abstractions.Extensions;
+using Nano.Eventing.Abstractions.Extensions;
+using System;
 
 namespace Nano.App.Api.Extensions;
 

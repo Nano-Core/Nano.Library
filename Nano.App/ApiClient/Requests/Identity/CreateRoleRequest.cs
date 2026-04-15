@@ -17,5 +17,5 @@ public class CreateRoleRequest : BaseRequest
     /// </summary>
     [Required]
     [Body]
-    public virtual CreateRole CreateRole { get; set; } = new();
+    public virtual required CreateRole CreateRole { get; set; }
 }

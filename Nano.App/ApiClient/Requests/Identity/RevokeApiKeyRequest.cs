@@ -22,11 +22,11 @@ public class RevokeApiKeyRequest<TIdentity> : BaseRequest
     /// </summary>
     [Required]
     [Route(Order = 0)]
-    public virtual TIdentity ApiKeyId { get; set; } = default!;
+    public virtual required TIdentity ApiKeyId { get; set; }
 
     /// <summary>
     /// Optional time at which the API key should be revoked.
     /// </summary>
     [Query]
-    public virtual DateTimeOffset? RevokeAt { get; set; } = new();
+    public virtual DateTimeOffset? RevokeAt { get; set; }
 }

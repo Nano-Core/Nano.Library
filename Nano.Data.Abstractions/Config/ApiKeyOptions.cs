@@ -12,5 +12,5 @@ public class ApiKeyOptions
     /// This value is required and cannot be <c>null</c>.
     /// </summary>
     [Required]
-    public virtual string Secret { get; set; } = null!;
+    public virtual required string Secret { get; set; }
 }

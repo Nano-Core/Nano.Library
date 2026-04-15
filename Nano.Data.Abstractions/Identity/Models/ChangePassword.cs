@@ -12,14 +12,14 @@ public class ChangePassword
     /// </summary>
     [Required]
     [MaxLength(256)]
-    public virtual string OldPassword { get; set; } = null!;
+    public virtual required string OldPassword { get; set; }
 
     /// <summary>
     /// The user's new password.
     /// </summary>
     [Required]
     [MaxLength(256)]
-    public virtual string NewPassword { get; set; } = null!;
+    public virtual required string NewPassword { get; set; }
 
     /// <summary>
     /// Confirmation of the new password. Must match <see cref="NewPassword"/>.
@@ -27,5 +27,5 @@ public class ChangePassword
     [Required]
     [MaxLength(256)]
     [Compare(nameof(NewPassword))]
-    public virtual string ConfirmNewPassword { get; set; } = null!;
+    public virtual required string ConfirmNewPassword { get; set; }
 }

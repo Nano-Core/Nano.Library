@@ -4,11 +4,11 @@ internal static class HealthzCheckUris
 {
     internal static string Path => "/healthz";
 
-    internal static string UiPath => $"{HealthzCheckUris.Path}-ui";
+    internal static string UiPath => $"{Path}-ui";
 
-    internal static string ApiPath => $"{HealthzCheckUris.Path}-api";
+    internal static string ApiPath => $"{Path}-api";
 
-    internal static string RexPath => $"{HealthzCheckUris.Path}-rex";
+    internal static string RexPath => $"{Path}-rex";
 
-    internal static string WebHooksPath => $"{HealthzCheckUris.Path}-hooks";
+    internal static string WebHooksPath => $"{Path}-hooks";
 }

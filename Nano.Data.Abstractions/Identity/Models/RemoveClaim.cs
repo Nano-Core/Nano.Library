@@ -11,5 +11,5 @@ public class RemoveClaim
     /// The claim type to remove.
     /// </summary>
     [Required]
-    public virtual string ClaimType { get; set; } = null!;
+    public virtual required string ClaimType { get; set; }
 }

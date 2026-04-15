@@ -11,14 +11,14 @@ public class HealthCheckWebHookOptions
     /// Name of the web-hook.
     /// </summary>
     [Required]
-    public virtual string Name { get; set; } = null!;
+    public virtual required string Name { get; set; }
 
     /// <summary>
     /// URL to which the web-hook will send requests.
     /// </summary>
     [Required]
     [Url]
-    public virtual string Uri { get; set; } = null!;
+    public virtual required string Uri { get; set; }
 
     /// <summary>
     /// Optional payload to include in the web-hook request.

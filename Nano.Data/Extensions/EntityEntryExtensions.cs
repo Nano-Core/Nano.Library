@@ -12,7 +12,12 @@ internal static class EntityEntryExtensions
         ArgumentNullException.ThrowIfNull(entityEntry);
 
         var primaryKey = entityEntry.Metadata
-            .FindPrimaryKey()!;
+            .FindPrimaryKey();
+
+        if (primaryKey == null)
+        {
+            throw new NullReferenceException(nameof(primaryKey));
+        }
 
         var keyPropertyName = primaryKey.Properties
             .Select(x => entityEntry.Property(x.Name).Metadata.Name)
@@ -27,7 +32,12 @@ internal static class EntityEntryExtensions
         ArgumentNullException.ThrowIfNull(entityEntry);
 
         var primaryKey = entityEntry.Metadata
-            .FindPrimaryKey()!;
+            .FindPrimaryKey();
+
+        if (primaryKey == null)
+        {
+            throw new NullReferenceException(nameof(primaryKey));
+        }
 
         var entityKey = primaryKey.Properties
             .Select(x => entityEntry.Property(x.Name).CurrentValue)

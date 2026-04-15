@@ -12,5 +12,5 @@ public class SetUsername
     /// </summary>
     [Required]
     [MaxLength(256)]
-    public virtual string NewUsername { get; set; } = null!;
+    public virtual required string NewUsername { get; set; }
 }

@@ -11,5 +11,5 @@ public class GenerateCustomPurposeToken
     /// The purpose for which the token is generated.
     /// </summary>
     [MaxLength(256)]
-    public virtual string Purpose { get; set; } = null!;
+    public virtual required string Purpose { get; set; }
 }

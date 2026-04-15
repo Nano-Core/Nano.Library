@@ -11,11 +11,10 @@ public class AssignClaim
     /// The claim type to assign.
     /// </summary>
     [Required]
-    public virtual string ClaimType { get; set; } = null!;
+    public virtual required string ClaimType { get; set; }
 
     /// <summary>
     /// The claim value to assign.
     /// </summary>
-    [Required]
-    public virtual string ClaimValue { get; set; } = null!;
+    public virtual string? ClaimValue { get; set; }
 }

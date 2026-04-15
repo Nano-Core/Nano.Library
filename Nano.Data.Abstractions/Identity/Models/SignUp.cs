@@ -23,14 +23,14 @@ public class SignUp<TUser, TIdentity> : BaseSignUp<TUser, TIdentity>
     /// </summary>
     [Required]
     [MaxLength(256)]
-    public virtual string Username { get; set; } = null!;
+    public virtual required string Username { get; set; }
 
     /// <summary>
     /// The user's password.
     /// </summary>
     [Required]
     [MaxLength(256)]
-    public virtual string Password { get; set; } = null!;
+    public virtual required string Password { get; set; }
 
     /// <summary>
     /// Confirmation of the user's password. Must match <see cref="Password"/>.
@@ -38,14 +38,14 @@ public class SignUp<TUser, TIdentity> : BaseSignUp<TUser, TIdentity>
     [Required]
     [MaxLength(256)]
     [Compare(nameof(Password))]
-    public virtual string ConfirmPassword { get; set; } = null!;
+    public virtual required string ConfirmPassword { get; set; }
 
     /// <summary>
     /// The user's email address.
     /// </summary>
     [Required]
     [EmailAddress]
-    public virtual string EmailAddress { get; set; } = null!;
+    public virtual required string EmailAddress { get; set; }
 
     /// <summary>
     /// The user's phone number (optional, international format supported).

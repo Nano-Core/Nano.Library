@@ -14,7 +14,7 @@ public class IdentityApiKey<TIdentity> : BaseEntityIdentity<TIdentity>
     /// Gets or sets the identity user Id.
     /// </summary>
     [Required]
-    public virtual TIdentity IdentityUserId { get; set; } = default!;
+    public virtual required TIdentity IdentityUserId { get; set; }
 
     /// <summary>
     /// Gets or sets the associated identity user.
@@ -26,13 +26,13 @@ public class IdentityApiKey<TIdentity> : BaseEntityIdentity<TIdentity>
     /// </summary>
     [Required]
     [MaxLength(256)]
-    public virtual string Name { get; set; } = null!;
+    public virtual required string Name { get; set; }
 
     /// <summary>
     /// Gets or sets the hashed value of the API key.
     /// </summary>
     [Required]
-    public virtual string Hash { get; set; } = null!;
+    public virtual required string Hash { get; set; }
 
     /// <summary>
     /// Gets or sets the timestamp when the API key was created.

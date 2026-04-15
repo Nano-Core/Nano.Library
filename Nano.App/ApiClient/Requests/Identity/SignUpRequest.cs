@@ -27,5 +27,5 @@ public class SignUpRequest<TUser, TIdentity> : BaseRequest
     /// </summary>
     [Required]
     [Body]
-    public virtual SignUp<TUser, TIdentity> SignUp { get; set; } = new();
+    public virtual required SignUp<TUser, TIdentity> SignUp { get; set; }
 }

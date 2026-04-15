@@ -15,7 +15,7 @@ public class CredentialOptions
     ///     (for example, it may represent an account name, tenant ID, or service identifier).
     /// </remarks>
     [Required]
-    public virtual string Id { get; set; } = null!;
+    public virtual required string Id { get; set; }
 
     /// <summary>
     /// Gets or sets the password, secret, key, or credential used to authenticate with the storage provider.
@@ -24,5 +24,5 @@ public class CredentialOptions
     ///     This value is treated as sensitive data and should be stored securely.
     /// </remarks>
     [Required]
-    public virtual string Secret { get; set; } = null!;
+    public virtual required string Secret { get; set; }
 }

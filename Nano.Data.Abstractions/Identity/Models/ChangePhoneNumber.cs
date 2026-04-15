@@ -11,5 +11,5 @@ public class ChangePhoneNumber
     /// The token used to authorize the phone number change.
     /// </summary>
     [Required]
-    public virtual string Token { get; set; } = null!;
+    public virtual required string Token { get; set; }
 }

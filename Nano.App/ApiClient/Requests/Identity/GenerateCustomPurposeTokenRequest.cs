@@ -23,5 +23,5 @@ public class GenerateCustomPurposeTokenRequest<TIdentity> : BaseRequest
     /// </summary>
     [Required]
     [Body]
-    public virtual GenerateCustomPurposeToken CustomPurposeToken { get; set; } = new();
+    public virtual required GenerateCustomPurposeToken CustomPurposeToken { get; set; }
 }

@@ -22,5 +22,5 @@ public class IdentityApiKeyCreated<TIdentity> : IdentityApiKey<TIdentity>
     /// Gets or sets the unencrypted hash of the API key.
     /// </summary>
     [Required]
-    public virtual string UnencryptedHash { get; set; } = null!;
+    public virtual required string UnencryptedHash { get; set; }
 }
