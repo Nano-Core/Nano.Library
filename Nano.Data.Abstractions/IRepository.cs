@@ -620,7 +620,7 @@ public interface IRepository : IDisposable
     /// <param name="propertyUpdates">A dictionary of property names and their new values.</param>
     /// <param name="cancellationToken">Optional <see cref="CancellationToken"/>.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    Task UpdateManyAsync<TEntity, TCriteria>(TCriteria criteria, Dictionary<string, object> propertyUpdates, CancellationToken cancellationToken = default)
+    Task UpdateManyAsync<TEntity, TCriteria>(TCriteria criteria, IDictionary<string, object> propertyUpdates, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityUpdatable
         where TCriteria : class, IQueryCriteria, new();
 
@@ -632,7 +632,7 @@ public interface IRepository : IDisposable
     /// <param name="propertyUpdates">A dictionary of property names and their new values.</param>
     /// <param name="cancellationToken">Optional <see cref="CancellationToken"/>.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    Task UpdateManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Dictionary<string, object> propertyUpdates, CancellationToken cancellationToken = default)
+    Task UpdateManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, IDictionary<string, object> propertyUpdates, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityUpdatable;
 
     /// <summary>
@@ -655,7 +655,7 @@ public interface IRepository : IDisposable
     /// <param name="propertyUpdates">A dictionary of property names and their new values.</param>
     /// <param name="cancellationToken">Optional <see cref="CancellationToken"/>.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    Task UpdateManyBulkAsync<TEntity, TCriteria>(TCriteria criteria, Dictionary<string, object> propertyUpdates, CancellationToken cancellationToken = default)
+    Task UpdateManyBulkAsync<TEntity, TCriteria>(TCriteria criteria, IDictionary<string, object> propertyUpdates, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityUpdatable
         where TCriteria : class, IQueryCriteria, new();
 
@@ -667,7 +667,7 @@ public interface IRepository : IDisposable
     /// <param name="propertyUpdates">A dictionary of property names and their new values.</param>
     /// <param name="cancellationToken">Optional <see cref="CancellationToken"/>.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    Task UpdateManyBulkAsync<TEntity>(Expression<Func<TEntity, bool>> where, Dictionary<string, object> propertyUpdates, CancellationToken cancellationToken = default)
+    Task UpdateManyBulkAsync<TEntity>(Expression<Func<TEntity, bool>> where, IDictionary<string, object> propertyUpdates, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityUpdatable;
 
     /// <summary>
@@ -975,7 +975,7 @@ public interface IRepository : IDisposable
     /// <param name="parameters">The name/value parameters to add to the stored procedure call.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The result of type <typeparamref name="TResult"/> of the stored procedure.</returns>
-    Task<TResult?> ExecuteProcedureAsync<TResult>(string procedureName, Dictionary<string, object?>? parameters = null, CancellationToken cancellationToken = default)
+    Task<TResult?> ExecuteProcedureAsync<TResult>(string procedureName, IDictionary<string, object?>? parameters = null, CancellationToken cancellationToken = default)
         where TResult : class, new();
 
     /// <summary>
@@ -986,7 +986,7 @@ public interface IRepository : IDisposable
     /// <param name="parameters">The name/value parameters to add to the stored procedure call.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The results of type <typeparamref name="TResult"/> of the stored procedure.</returns>
-    Task<List<TResult>> ExecuteProcedureListAsync<TResult>(string procedureName, Dictionary<string, object?>? parameters = null, CancellationToken cancellationToken = default)
+    Task<List<TResult>> ExecuteProcedureListAsync<TResult>(string procedureName, IDictionary<string, object?>? parameters = null, CancellationToken cancellationToken = default)
         where TResult : class, new();
 
     /// <summary>
@@ -997,7 +997,7 @@ public interface IRepository : IDisposable
     /// <param name="parameters">The name/value parameters to add to the stored procedure call.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The scalar result of type <typeparamref name="TResult"/> of the stored procedure.</returns>
-    Task<TResult> ExecuteProcedureScalarAsync<TResult>(string procedureName, Dictionary<string, object?>? parameters = null, CancellationToken cancellationToken = default);
+    Task<TResult> ExecuteProcedureScalarAsync<TResult>(string procedureName, IDictionary<string, object?>? parameters = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Persists all pending changes to the underlying data store.

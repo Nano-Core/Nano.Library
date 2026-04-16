@@ -19,6 +19,13 @@ public class GenerateChangeEmailTokenRequest<TIdentity> : BaseRequest
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
+    /// The identifier of the user.
+    /// </summary>
+    [Required]
+    [Route(Order = 0)]
+    public virtual required TIdentity Id { get; set; }
+
+    /// <summary>
     /// The change email token information.
     /// </summary>
     [Required]

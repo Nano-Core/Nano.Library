@@ -19,6 +19,13 @@ public class AssignOrReplaceRoleClaimRequest<TIdentity> : BaseRequest
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
+    /// The role identifier.
+    /// </summary>
+    [Required]
+    [Route(Order = 0)]
+    public virtual required TIdentity RoleId { get; set; }
+
+    /// <summary>
     /// The role claim assignment or replacement information.
     /// </summary>
     [Required]

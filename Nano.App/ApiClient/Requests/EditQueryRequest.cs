@@ -20,5 +20,5 @@ public class EditQueryRequest<TCriteria> : BaseRequest
     /// </summary>
     [Required]
     [Body]
-    public virtual required UpdateQuery<TCriteria> Query { get; set; }
+    public virtual UpdateQuery<TCriteria> Query { get; set; } = new();
 }

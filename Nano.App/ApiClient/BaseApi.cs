@@ -1,9 +1,4 @@
-﻿using System;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using Microsoft.Net.Http.Headers;
@@ -20,37 +15,45 @@ using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Nano.Data.Abstractions.Identity.Extensions;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Newtonsoft.Json;
+using System;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading;
+using System.Threading.Tasks;
 using Vivet.AspNetCore.RequestTimeZone.Providers;
 
 namespace Nano.App.ApiClient;
 
+// BUG: CHAT-GPT: talk about the injection of HttpClient in constructor, and if it's safe.
+// BUG: CHAT-GPT: and triple slash
+
 /// <summary>
 /// Base Api (abstract).
 /// </summary>
-public abstract class BaseApi
+public class ApiClient
 {
-    private volatile AccessToken? accessToken;
+    private volatile AccessToken? accessToken; // BUG: Volatile??? Refactor where it's used and it should be static and concurrent.
 
-    private readonly ApiClientOptions apiOptions;
+    private readonly ApiClientOptions options;
     private readonly HttpClient httpClient;
 
     /// <summary>
     /// The httpcontext accessor.
     /// Use to acecss headers and jwt token to pass through the api-client request.
     /// </summary>
-    protected internal readonly IHttpContextAccessor httpContextAccessor;
+    protected internal readonly IHttpContextAccessor? httpContextAccessor;
 
     /// <summary>
     /// Constructor.
     /// </summary>
-    /// <param name="apiClientOptions">The <see cref="ApiClientOptions"/>.</param>
+    /// <param name="options">The <see cref="ApiClientOptions"/>.</param>
     /// <param name="httpContextAccessor">The <see cref="IHttpContextAccessor"/>.</param>
     /// <param name="httpClient">The <see cref="HttpClient"/>.</param>
-    protected BaseApi(ApiClientOptions apiClientOptions, HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
+    protected internal ApiClient(ApiClientOptions options, HttpClient httpClient, IHttpContextAccessor? httpContextAccessor = null)
     {
-        this.apiOptions = apiClientOptions ?? throw new ArgumentNullException(nameof(apiClientOptions));
+        this.options = options ?? throw new ArgumentNullException(nameof(options));
         this.httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-        this.httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
+        this.httpContextAccessor = httpContextAccessor;
     }
 
     /// <summary>
@@ -60,7 +63,7 @@ public abstract class BaseApi
     /// <param name="request">The instance of type <typeparamref name="TRequest"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>Void.</returns>
-    protected virtual async Task InvokeAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
+    protected internal virtual async Task InvokeAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
         where TRequest : BaseRequest
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -81,7 +84,7 @@ public abstract class BaseApi
     /// <param name="request">The instance of type <typeparamref name="TRequest"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The instance of <typeparamref name="TResponse"/>.</returns>
-    protected virtual async Task<TResponse?> InvokeAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
+    protected internal virtual async Task<TResponse?> InvokeAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
         where TRequest : BaseRequest
         where TResponse : class
     {
@@ -106,7 +109,7 @@ public abstract class BaseApi
     /// <param name="request">The instance of type <typeparamref name="TRequest"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The instance of <typeparamref name="TResponse"/>.</returns>
-    protected virtual async Task<TResponse?> InvokeAsync<TEntity, TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
+    protected internal virtual async Task<TResponse?> InvokeAsync<TEntity, TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
         where TRequest : BaseRequest
         where TResponse : class
@@ -129,16 +132,16 @@ public abstract class BaseApi
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        var protocol = this.apiOptions.UseSsl
+        var protocol = this.options.UseSsl
             ? "https://"
             : "http://";
-        var host = this.apiOptions.Host.EndsWith('/')
-            ? this.apiOptions.Host[..^1]
-            : this.apiOptions.Host;
-        var port = this.apiOptions.Port;
-        var root = this.apiOptions.Root.EndsWith('/')
-            ? this.apiOptions.Root[..^1]
-            : this.apiOptions.Root;
+        var host = this.options.Host.EndsWith('/')
+            ? this.options.Host[..^1]
+            : this.options.Host;
+        var port = this.options.Port;
+        var root = this.options.Root.EndsWith('/')
+            ? this.options.Root[..^1]
+            : this.options.Root;
 
         var controller = string.IsNullOrEmpty(request.Controller)
             ? null
@@ -172,10 +175,12 @@ public abstract class BaseApi
         var jwtToken = await this.AuthenticateAsync(request, cancellationToken);
 
         StringValues requestIdHeader = default;
-        this.httpContextAccessor.HttpContext?.Request.Headers
+
+        var httpContext = this.httpContextAccessor?.HttpContext;
+
+        httpContext?.Request.Headers
             .TryGetValue(NanoHeaderNames.REQUEST_ID, out requestIdHeader);
 
-        var httpContext = this.httpContextAccessor.HttpContext;
         var httpRequestMessage = new HttpRequestMessage(method, uri);
 
         var headersToForward = new[]
@@ -232,14 +237,14 @@ public abstract class BaseApi
             return request.JwtTokenOverride;
         }
 
-        if (this.apiOptions.LogIn is not null)
+        if (this.options.LogIn is not null)
         {
             var logInRootRequest = new LogInRootRequest
             {
                 LogInRoot = new LogInRoot
                 {
-                    Username = this.apiOptions.LogIn.Username,
-                    Password = this.apiOptions.LogIn.Password
+                    Username = this.options.LogIn.Username,
+                    Password = this.options.LogIn.Password
                 }
             };
 
@@ -248,7 +253,8 @@ public abstract class BaseApi
             return this.accessToken?.Token;
         }
 
-        var jwtToken = this.httpContextAccessor.HttpContext?
+        // BUG: make this second choice before Root Login
+        var jwtToken = this.httpContextAccessor?.HttpContext?
             .GetJwtToken();
 
         return jwtToken ?? this.accessToken?.Token;
@@ -270,30 +276,30 @@ public abstract class BaseApi
         switch ((int)httpResponse.StatusCode)
         {
             case >= 400 and < 600:
-            {
-                var content = await httpResponse.Content
-                    .ReadAsStringAsync(cancellationToken);
-
-                try
                 {
-                    var serializerSettings = SerializerSettings.GetDefault();
-                    var problemDetails = JsonConvert.DeserializeObject<ProblemDetails>(content, serializerSettings);
+                    var content = await httpResponse.Content
+                        .ReadAsStringAsync(cancellationToken);
 
-                    if (problemDetails == null)
+                    try
                     {
-                        throw new NullReferenceException(nameof(problemDetails));
+                        var serializerSettings = SerializerSettings.GetDefault();
+                        var problemDetails = JsonConvert.DeserializeObject<ProblemDetails>(content, serializerSettings);
+
+                        if (problemDetails == null)
+                        {
+                            throw new NullReferenceException(nameof(problemDetails));
+                        }
+
+                        throw new ProblemDetailsException(problemDetails);
                     }
+                    catch (JsonException)
+                    {
+                        var exceptionMessage = content
+                            .RemoveQuotes();
 
-                    throw new ProblemDetailsException(problemDetails);
+                        throw new Exception(exceptionMessage);
+                    }
                 }
-                catch (JsonException)
-                {
-                    var exceptionMessage = content
-                        .RemoveQuotes();
-
-                    throw new Exception(exceptionMessage);
-                }
-            }
             default:
                 httpResponse
                     .EnsureSuccessStatusCode();
@@ -357,4 +363,49 @@ public abstract class BaseApi
             throw;
         }
     }
+}
+
+/// <summary>
+/// 
+/// </summary>
+public abstract class BaseApi(ApiClient apiClient) : BaseApi<Guid>(apiClient);
+
+/// <summary>
+/// 
+/// </summary>
+public abstract class BaseApi<TIdentity>(ApiClient apiClient)
+    where TIdentity : IEquatable<TIdentity>
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    public AuthApi Auth { get; } = new(apiClient);
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public AuditApi Audit { get; } = new(apiClient);
+}
+
+/// <summary>
+/// 
+/// </summary>
+/// <typeparam name="TUser"></typeparam>
+/// <param name="apiClient"></param>
+public abstract class BaseIdentityApi<TUser>(ApiClient apiClient) : BaseIdentityApi<TUser, Guid>(apiClient)
+    where TUser : class, IEntityUser<Guid>;
+
+/// <summary>
+/// 
+/// </summary>
+/// <typeparam name="TUser"></typeparam>
+/// <typeparam name="TIdentity"></typeparam>
+public abstract class BaseIdentityApi<TUser, TIdentity>(ApiClient apiClient) : BaseApi<TIdentity>(apiClient)
+    where TUser : class, IEntityUser<TIdentity>
+    where TIdentity : IEquatable<TIdentity>
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    public IdentityApi<TUser, TIdentity> Identity { get; } = new(apiClient);
 }

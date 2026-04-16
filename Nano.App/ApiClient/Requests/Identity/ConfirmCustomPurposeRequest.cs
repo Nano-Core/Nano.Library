@@ -19,6 +19,13 @@ public class ConfirmCustomPurposeRequest<TIdentity> : BaseRequest
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
+    /// The identifier of the user.
+    /// </summary>
+    [Required]
+    [Route(Order = 0)]
+    public virtual required TIdentity Id { get; set; }
+
+    /// <summary>
     /// Contains the custom purpose token to verify.
     /// </summary>
     [Required]

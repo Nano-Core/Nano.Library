@@ -26,7 +26,7 @@ internal static class ServiceCollectionExtensions
 
         var types = TypesHelper
             .GetAllTypes()
-            .Where(x => !x.IsAbstract && x.IsTypeOf(typeof(BaseApi)))
+            .Where(x => x is { IsAbstract: false, IsGenericType: false } && x.IsTypeOf(typeof(BaseApi)))
             .Distinct();
 
         foreach (var type in types)
@@ -76,7 +76,7 @@ internal static class ServiceCollectionExtensions
                         .GetRequiredKeyedService<ApiClientOptions>(optionsServiceId);
 
                     var httpContextAccessor = serviceProvider
-                        .GetRequiredService<IHttpContextAccessor>();
+                        .GetService<IHttpContextAccessor>();
 
                     var apiClient = Activator.CreateInstance(type, apiOptions, httpClient, httpContextAccessor);
 

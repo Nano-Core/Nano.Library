@@ -674,7 +674,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual Task UpdateManyAsync<TEntity, TCriteria>(TCriteria criteria, Dictionary<string, object> propertyUpdates, CancellationToken cancellationToken = default)
+    public virtual Task UpdateManyAsync<TEntity, TCriteria>(TCriteria criteria, IDictionary<string, object> propertyUpdates, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityUpdatable
         where TCriteria : class, IQueryCriteria, new()
     {
@@ -702,7 +702,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual Task UpdateManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, Dictionary<string, object> propertyUpdates, CancellationToken cancellationToken = default)
+    public virtual Task UpdateManyAsync<TEntity>(Expression<Func<TEntity, bool>> where, IDictionary<string, object> propertyUpdates, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityUpdatable
     {
         ArgumentNullException.ThrowIfNull(where);
@@ -743,7 +743,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual Task UpdateManyBulkAsync<TEntity, TCriteria>(TCriteria criteria, Dictionary<string, object> propertyUpdates, CancellationToken cancellationToken = default)
+    public virtual Task UpdateManyBulkAsync<TEntity, TCriteria>(TCriteria criteria, IDictionary<string, object> propertyUpdates, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityUpdatable
         where TCriteria : class, IQueryCriteria, new()
     {
@@ -759,7 +759,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual Task UpdateManyBulkAsync<TEntity>(Expression<Func<TEntity, bool>> where, Dictionary<string, object> propertyUpdates, CancellationToken cancellationToken = default)
+    public virtual Task UpdateManyBulkAsync<TEntity>(Expression<Func<TEntity, bool>> where, IDictionary<string, object> propertyUpdates, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityUpdatable
     {
         ArgumentNullException.ThrowIfNull(where);
@@ -1123,7 +1123,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public async Task<T?> ExecuteProcedureAsync<T>(string procedureName, Dictionary<string, object?>? parameters = null, CancellationToken cancellationToken = default)
+    public async Task<T?> ExecuteProcedureAsync<T>(string procedureName, IDictionary<string, object?>? parameters = null, CancellationToken cancellationToken = default)
         where T : class, new()
     {
         ArgumentNullException.ThrowIfNull(procedureName);
@@ -1139,7 +1139,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public async Task<List<T>> ExecuteProcedureListAsync<T>(string procedureName, Dictionary<string, object?>? parameters = null, CancellationToken cancellationToken = default)
+    public async Task<List<T>> ExecuteProcedureListAsync<T>(string procedureName, IDictionary<string, object?>? parameters = null, CancellationToken cancellationToken = default)
         where T : class, new()
     {
         ArgumentNullException.ThrowIfNull(procedureName);
@@ -1163,7 +1163,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public async Task<T> ExecuteProcedureScalarAsync<T>(string procedureName, Dictionary<string, object?>? parameters = null, CancellationToken cancellationToken = default)
+    public async Task<T> ExecuteProcedureScalarAsync<T>(string procedureName, IDictionary<string, object?>? parameters = null, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(procedureName);
 
@@ -1205,7 +1205,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
 
-    private static Expression<Action<TEntity>> BuildUpdateExpression<TEntity>(Dictionary<string, object> updates)
+    private static Expression<Action<TEntity>> BuildUpdateExpression<TEntity>(IDictionary<string, object> updates)
     {
         ArgumentNullException.ThrowIfNull(updates);
 
@@ -1228,7 +1228,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
 
         return Expression.Lambda<Action<TEntity>>(body, entityParam);
     }
-    private static Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> BuildBulkUpdateExpression<TEntity>(Dictionary<string, object> updates)
+    private static Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> BuildBulkUpdateExpression<TEntity>(IDictionary<string, object> updates)
         where TEntity : class
     {
         ArgumentNullException.ThrowIfNull(updates);
@@ -1262,7 +1262,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
 
         return Expression.Lambda<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>>(expression, parameter);
     }
-    private async ValueTask<DbCommand> CreateCommandAsync(string procedureName, Dictionary<string, object?>? parameters = null, CancellationToken cancellationToken = default)
+    private async ValueTask<DbCommand> CreateCommandAsync(string procedureName, IDictionary<string, object?>? parameters = null, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(procedureName);
 

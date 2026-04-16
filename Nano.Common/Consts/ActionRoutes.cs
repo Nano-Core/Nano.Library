@@ -43,6 +43,36 @@ public class ActionRoutes
     public const string QUERY_COUNT = "query/count";
 
     /// <summary>
+    /// Route for creating a new resource.
+    /// </summary>
+    public const string CREATE = "create";
+
+    /// <summary>
+    /// Route for creating a resource or retrieving it if it already exists.
+    /// </summary>
+    public const string CREATE_OR_GET = "create/get";
+
+    /// <summary>
+    /// Route for creating a resource and returning it.
+    /// </summary>
+    public const string CREATE_AND_GET = "create/reload";
+
+    /// <summary>
+    /// Route for creating a resource or editing it if it already exists.
+    /// </summary>
+    public const string CREATE_OR_EDIT = "create/edit";
+
+    /// <summary>
+    /// Route for creating multiple resources.
+    /// </summary>
+    public const string CREATE_MANY = "create/many";
+
+    /// <summary>
+    /// Route for bulk creating multiple resources.
+    /// </summary>
+    public const string CREATE_MANY_BULK = "create/many/bulk";
+
+    /// <summary>
     /// Route for editing a resource.
     /// </summary>
     public const string EDIT = "edit";
@@ -96,36 +126,6 @@ public class ActionRoutes
     /// Route for bulk deleting resources via query.
     /// </summary>
     public const string DELETE_QUERY_BULK = "delete/query/bulk";
-
-    /// <summary>
-    /// Route for creating a new resource.
-    /// </summary>
-    public const string CREATE = "create";
-
-    /// <summary>
-    /// Route for creating a resource or retrieving it if it already exists.
-    /// </summary>
-    public const string CREATE_OR_GET = "create/get";
-
-    /// <summary>
-    /// Route for creating a resource and returning it.
-    /// </summary>
-    public const string CREATE_AND_GET = "create/reload";
-
-    /// <summary>
-    /// Route for creating a resource or editing it if it already exists.
-    /// </summary>
-    public const string CREATE_OR_EDIT = "create/edit";
-
-    /// <summary>
-    /// Route for creating multiple resources.
-    /// </summary>
-    public const string CREATE_MANY = "create/many";
-
-    /// <summary>
-    /// Route for bulk creating multiple resources.
-    /// </summary>
-    public const string CREATE_MANY_BULK = "create/many/bulk";
 
     /// <summary>
     /// Route for user login.

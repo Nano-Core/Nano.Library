@@ -14,10 +14,17 @@ public class RemoveUserClaimRequest : RemoveUserClaimRequest<Guid>;
 /// Represents a request to remove a user's claim.
 /// </summary>
 /// <typeparam name="TIdentity">The type of the user identifier.</typeparam>
-[PostAction(ActionRoutes.IDENTITY_USER_CLAIMS_REMOVE)]
+[DeleteAction(ActionRoutes.IDENTITY_USER_CLAIMS_REMOVE)]
 public class RemoveUserClaimRequest<TIdentity> : BaseRequest
     where TIdentity : IEquatable<TIdentity>
 {
+    /// <summary>
+    /// The identifier of the user.
+    /// </summary>
+    [Required]
+    [Route(Order = 0)]
+    public virtual required TIdentity Id { get; set; }
+
     /// <summary>
     /// Contains the user claim removal information.
     /// </summary>

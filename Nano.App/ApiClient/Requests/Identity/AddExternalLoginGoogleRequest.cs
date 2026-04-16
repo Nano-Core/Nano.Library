@@ -1,11 +1,10 @@
-﻿//using Nano.App.ApiClient.Annotations.Actions;
-//using Nano.App.Consts;
-//using Nano.Data.Abstractions.Identity.Authentication.Models;
+﻿using Nano.Data.Abstractions.Identity.Authentication.Consts;
+using System;
 
-//namespace Nano.App.ApiClient.Requests.Identity;
+namespace Nano.App.ApiClient.Requests.Identity;
 
-///// <summary>
-///// Request to add an external Google login.
-///// </summary>
-//[PostAction(ActionRoutes.IDENTITY_EXTERNAL_LOGINS_ADD_GOOGLE)]
-//public class AddExternalLoginGoogleRequest : BaseAddExternalLoginRequest<LogInExternalGoogle>;
+/// <summary>
+/// Class for add external login Google request.
+/// </summary>
+public class AddExternalLoginGoogleRequest<TIdentity>() : AddExternalLoginImplicitRequest<TIdentity>(BuiltInExternalLogInProviderNames.GOOGLE)
+    where TIdentity : IEquatable<TIdentity>;

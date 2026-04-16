@@ -15,10 +15,10 @@ public class UpdateQuery<TCriteria>
     /// The criteria used to select entities to update.
     /// </summary>
     [Required]
-    public virtual required TCriteria Criteria { get; set; }
+    public virtual TCriteria Criteria { get; set; } = new();
 
     /// <summary>
     /// A dictionary of property names and their new values to update on the selected entities.
     /// </summary>
-    public virtual Dictionary<string, object> PropertyUpdates { get; set; } = new();
+    public virtual IDictionary<string, object> PropertyUpdates { get; set; } = new Dictionary<string, object>();
 }

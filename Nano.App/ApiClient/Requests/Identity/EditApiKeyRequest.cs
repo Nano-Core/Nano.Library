@@ -19,6 +19,13 @@ public class EditApiKeyRequest<TIdentity> : BaseRequest
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
+    /// The ID of the API key to revoke.
+    /// </summary>
+    [Required]
+    [Route(Order = 0)]
+    public virtual required TIdentity ApiKeyId { get; set; }
+
+    /// <summary>
     /// The API key edit information.
     /// </summary>
     [Required]

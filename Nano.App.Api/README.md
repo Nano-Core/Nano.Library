@@ -1443,6 +1443,7 @@ Nano provides built-in mappings between common exception types and HTTP error re
 | `ProblemDetailsException`    | `Any`                         | Used to throw a fully defined `ProblemDetails` directly.                                                                                                                                     |
 | `BadRequestException`        | `400` Bad Request             | Thrown for bad request errors. Can be `IsCoded`, exposing a machine-readable error code, or `IsTranslated` exposing a server-translated message. Always appears in `ProblemDetails.Detail`.  |
 | `NotFoundException`          | `404` Not Found               | Thrown for null errors.                                                                                                                                                                      |
+| `DbUpdateException`          | `409` Conflict                | Thrown by EF on update errors. When this is a unique constraint issue, Nano will return a `409 Conflict` http error.                                                                         |
 
 The exceptions above may be thrown anywhere in the application, and the Nano error handling middleware will automatically construct the appropriate `ProblemDetails` response.
 

@@ -19,6 +19,13 @@ public class RemoveRoleClaimRequest<TIdentity> : BaseRequest
     where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
+    /// The role identifier.
+    /// </summary>
+    [Required]
+    [Route(Order = 0)]
+    public virtual required TIdentity RoleId { get; set; }
+
+    /// <summary>
     /// Contains the role claim removal information.
     /// </summary>
     [Required]

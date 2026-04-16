@@ -15,6 +15,7 @@ public class GetRoleClaimsRequest : GetRoleClaimsRequest<Guid>;
 /// <typeparam name="TIdentity">The type of the role identifier.</typeparam>
 [GetAction(ActionRoutes.IDENTITY_ROLES_CLAIMS)]
 public class GetRoleClaimsRequest<TIdentity> : BaseRequest
+    where TIdentity : IEquatable<TIdentity>
 {
     /// <summary>
     /// The role identifier.

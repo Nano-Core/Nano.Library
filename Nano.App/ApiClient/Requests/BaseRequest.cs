@@ -70,7 +70,7 @@ public abstract class BaseRequest
     {
         var action = this
             .GetType()
-            .GetCustomAttribute<ActionAttribute>()?
+            .GetCustomAttribute<ActionAttribute>(true)?
             .ActionTemplate;
 
         return action ?? throw new NullReferenceException(nameof(action));
@@ -84,7 +84,7 @@ public abstract class BaseRequest
             .Select(x =>
             {
                 var property = x;
-                var attribute = x.GetCustomAttribute<RouteAttribute>();
+                var attribute = x.GetCustomAttribute<RouteAttribute>(true);
 
                 return (property, attribute);
             })

@@ -17,9 +17,9 @@ public class GetUserRolesRequest : GetUserRolesRequest<Guid>;
 public class GetUserRolesRequest<TIdentity> : BaseRequest
 {
     /// <summary>
-    /// The user identifier.
+    /// The identifier of the user.
     /// </summary>
     [Required]
     [Route(Order = 0)]
-    public virtual required TIdentity UserId { get; set; }
+    public virtual required TIdentity Id { get; set; }
 }

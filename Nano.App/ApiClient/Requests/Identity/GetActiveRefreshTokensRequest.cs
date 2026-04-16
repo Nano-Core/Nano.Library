@@ -21,5 +21,5 @@ public class GetActiveRefreshTokensRequest<TIdentity> : BaseRequest
     /// </summary>
     [Required]
     [Route(Order = 0)]
-    public virtual required TIdentity UserId { get; set; }
+    public virtual required TIdentity Id { get; set; }
 }
