@@ -82,10 +82,6 @@ This is intended as a safety fallback.
 > 📖 Learn more about [Nano Logging Providers](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging).  
 
 ## Api Clients
-AUDIT AND AUTH HAS FIXED ROUTES, CONSIDER HOW WE CAN COBMINE EVERYTHING IN ONE API. Maybe make compounds inside api-client to group methods better.
-
-HOW DO WE HANDLE AUDIT AND AUTH FOR API. THEY ARE SPECIAL RUOTES: Auth and Audits.
-
 Nano provides a generic api-client implementation, that can be used by other services to seamlessly connect and communicate with your micro-service. The implementation consists of an 
 abstract ```BaseApi``` class implementation, from which the concrete and specific implementation of the micro-service can be derived. The base class provides methods for accessing all 
 controllers and actions, using generic methods and conventions.  

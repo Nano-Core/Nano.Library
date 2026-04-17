@@ -13,7 +13,7 @@ namespace Nano.App.ApiClient.Extensions;
 
 internal static class HttpRequestMessageExtensions
 {
-    internal static async Task AddHttpHeaders<TRequest>(this HttpRequestMessage httpRequestMessage, TRequest request, string? jwtToken = null, string? requestIdHeader = null, CancellationToken cancellationToken = default)
+    internal static async Task AddHttpHeaders<TRequest>(this HttpRequestMessage httpRequestMessage, TRequest request, CancellationToken cancellationToken = default)
         where TRequest : BaseRequest
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -26,8 +26,11 @@ internal static class HttpRequestMessageExtensions
 
         foreach (var header in headers)
         {
-            httpRequestMessage.Headers
-                .Add(header.Key, header.Value);
+            if (!httpRequestMessage.Headers.Contains(header.Key))
+            {
+                httpRequestMessage.Headers
+                    .Add(header.Key, header.Value);
+            }
         }
     }
 

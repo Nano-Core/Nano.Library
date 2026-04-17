@@ -4,15 +4,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using DynamicExpression.Interfaces;
 using Nano.App.ApiClient.Requests;
+using Nano.Common.Consts;
 using Nano.Data.Abstractions.Models;
-using Nano.Data.Abstractions.Models.Abstractions;
 
 namespace Nano.App.ApiClient;
 
 /// <summary>
 /// 
 /// </summary>
-public sealed class AuditApi(ApiClient api)
+public sealed class AuditApi<TIdentity>(ApiClient api)
+    where TIdentity : IEquatable<TIdentity>
 {
     private readonly ApiClient api = api ?? throw new ArgumentNullException(nameof(api));
 
@@ -26,53 +27,52 @@ public sealed class AuditApi(ApiClient api)
     {
         ArgumentNullException.ThrowIfNull(request);
 
+        request.Controller = ControllerRoutes.AUDIT;
+
         return await this.api
             .InvokeAsync<IndexRequest, IEnumerable<AuditEntry<TIdentity>>>(request, cancellationToken) ?? [];
     }
 
     /// <summary>
-    /// Invokes the 'details' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Invokes the 'details' endpoint of the <see cref="AuditEntry{TIdentity}"/> in the api.
     /// </summary>
-    /// <typeparam name="TEntity">The entity type.</typeparam>
     /// <param name="request">The <see cref="DetailsRequest{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The matching entity.</returns>
-    public Task<TEntity?> DetailsAsync<TEntity>(DetailsRequest<TIdentity> request, CancellationToken cancellationToken = default)
-        where TEntity : class, IEntityIdentity<TIdentity>
+    public Task<AuditEntry<TIdentity>?> DetailsAsync(DetailsRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        return this.InvokeAsync<DetailsRequest<TIdentity>, TEntity>(request, cancellationToken);
+        request.Controller = ControllerRoutes.AUDIT;
+
+        return this.api
+            .InvokeAsync<DetailsRequest<TIdentity>, AuditEntry<TIdentity>>(request, cancellationToken);
     }
 
     /// <summary>
-    /// Invokes the 'details' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Invokes the 'details' endpoint of the <see cref="AuditEntry{TIdentity}"/> in the api.
     /// </summary>
-    /// <typeparam name="TEntity">The entity type.</typeparam>
     /// <param name="id">The id.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The matching entity.</returns>
-    public Task<TEntity?> GetAsync<TEntity>(TIdentity id, CancellationToken cancellationToken = default)
-        where TEntity : class, IEntityIdentity<TIdentity>
+    public Task<AuditEntry<TIdentity>?> GetAsync(TIdentity id, CancellationToken cancellationToken = default)
     {
-        return this.DetailsAsync<TEntity>(new DetailsRequest<TIdentity>
+        return this.DetailsAsync(new DetailsRequest<TIdentity>
         {
             Id = id
         }, cancellationToken);
     }
 
     /// <summary>
-    /// Invokes the 'details' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Invokes the 'details' endpoint of the <see cref="AuditEntry{TIdentity}"/> in the api.
     /// </summary>
-    /// <typeparam name="TEntity">The entity type.</typeparam>
     /// <param name="id">The id.</param>
     /// <param name="includeDepth">The include depth.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The matching entity.</returns>
-    public Task<TEntity?> GetAsync<TEntity>(TIdentity id, int includeDepth, CancellationToken cancellationToken = default)
-        where TEntity : class, IEntityIdentity<TIdentity>
+    public Task<AuditEntry<TIdentity>?> GetAsync(TIdentity id, int includeDepth, CancellationToken cancellationToken = default)
     {
-        return this.DetailsAsync<TEntity>(new DetailsRequest<TIdentity>
+        return this.DetailsAsync(new DetailsRequest<TIdentity>
         {
             Id = id,
             IncludeDepth = includeDepth
@@ -80,48 +80,45 @@ public sealed class AuditApi(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'details/many' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Invokes the 'details/many' endpoint of the <see cref="AuditEntry{TIdentity}"/> in the api.
     /// </summary>
-    /// <typeparam name="TEntity">The entity type.</typeparam>
     /// <param name="request">The <see cref="DetailsManyRequest{TIdentity}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The matching entities.</returns>
-    public async Task<IEnumerable<TEntity>> DetailsManyAsync<TEntity>(DetailsManyRequest<TIdentity> request, CancellationToken cancellationToken = default)
-        where TEntity : class, IEntityIdentity<TIdentity>
+    public async Task<IEnumerable<AuditEntry<TIdentity>>> DetailsManyAsync(DetailsManyRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        return await this.InvokeAsync<DetailsManyRequest<TIdentity>, IEnumerable<TEntity>>(request, cancellationToken) ?? [];
+        request.Controller = ControllerRoutes.AUDIT;
+
+        return await this.api
+            .InvokeAsync<DetailsManyRequest<TIdentity>, IEnumerable<AuditEntry<TIdentity>>>(request, cancellationToken) ?? [];
     }
 
     /// <summary>
-    /// Invokes the 'details/many' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Invokes the 'details/many' endpoint of the <see cref="AuditEntry{TIdentity}"/> in the api.
     /// </summary>
-    /// <typeparam name="TEntity">The entity type.</typeparam>
     /// <param name="ids">The ids.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The matching entities.</returns>
-    public Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(ICollection<TIdentity> ids, CancellationToken cancellationToken = default)
-        where TEntity : class, IEntityIdentity<TIdentity>
+    public Task<IEnumerable<AuditEntry<TIdentity>>> GetManyAsync(ICollection<TIdentity> ids, CancellationToken cancellationToken = default)
     {
-        return this.DetailsManyAsync<TEntity>(new DetailsManyRequest<TIdentity>
+        return this.DetailsManyAsync(new DetailsManyRequest<TIdentity>
         {
             Ids = ids
         }, cancellationToken);
     }
 
     /// <summary>
-    /// Invokes the 'details/many' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Invokes the 'details/many' endpoint of the <see cref="AuditEntry{TIdentity}"/> in the api.
     /// </summary>
-    /// <typeparam name="TEntity">The entity type.</typeparam>
     /// <param name="ids">The ids.</param>
     /// <param name="includeDepth">The include depth.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The matching entities.</returns>
-    public Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(ICollection<TIdentity> ids, int includeDepth, CancellationToken cancellationToken = default)
-        where TEntity : class, IEntityIdentity<TIdentity>
+    public Task<IEnumerable<AuditEntry<TIdentity>>> GetManyAsync(ICollection<TIdentity> ids, int includeDepth, CancellationToken cancellationToken = default)
     {
-        return this.DetailsManyAsync<TEntity>(new DetailsManyRequest<TIdentity>
+        return this.DetailsManyAsync(new DetailsManyRequest<TIdentity>
         {
             Ids = ids,
             IncludeDepth = includeDepth
@@ -129,58 +126,55 @@ public sealed class AuditApi(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'query' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Invokes the 'query' endpoint of the <see cref="AuditEntry{TIdentity}"/> in the api.
     /// </summary>
-    /// <typeparam name="TEntity">The entity type.</typeparam>
     /// <typeparam name="TCriteria">The criteria type</typeparam>
     /// <param name="request">The <see cref="QueryRequest{TCriteria}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The matching entities.</returns>
-    public async Task<IEnumerable<TEntity>> QueryAsync<TEntity, TCriteria>(QueryRequest<TCriteria> request, CancellationToken cancellationToken = default)
-        where TEntity : class, IEntity
+    public async Task<IEnumerable<AuditEntry<TIdentity>>> QueryAsync<TCriteria>(QueryRequest<TCriteria> request, CancellationToken cancellationToken = default)
         where TCriteria : IQueryCriteria, new()
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        return await this.InvokeAsync<QueryRequest<TCriteria>, IEnumerable<TEntity>>(request, cancellationToken) ?? [];
+        request.Controller = ControllerRoutes.AUDIT;
+
+        return await this.api
+            .InvokeAsync<QueryRequest<TCriteria>, IEnumerable<AuditEntry<TIdentity>>>(request, cancellationToken) ?? [];
     }
 
     /// <summary>
-    /// Invokes the 'query' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Invokes the 'query' endpoint of the <see cref="AuditEntry{TIdentity}"/> in the api.
     /// </summary>
-    /// <typeparam name="TEntity">The entity type.</typeparam>
     /// <typeparam name="TCriteria">The criteria type</typeparam>
     /// <param name="query">The query with criteria of type <typeparamref name="TCriteria"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The matching entities.</returns>
-    public Task<IEnumerable<TEntity>> QueryAsync<TEntity, TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
-        where TEntity : class, IEntity
+    public Task<IEnumerable<AuditEntry<TIdentity>>> QueryAsync<TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
         where TCriteria : IQueryCriteria, new()
     {
         ArgumentNullException.ThrowIfNull(query);
 
-        return this.QueryAsync<TEntity, TCriteria>(new QueryRequest<TCriteria>
+        return this.QueryAsync(new QueryRequest<TCriteria>
         {
             Query = query
         }, cancellationToken);
     }
 
     /// <summary>
-    /// Invokes the 'query' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Invokes the 'query' endpoint of the <see cref="AuditEntry{TIdentity}"/> in the api.
     /// </summary>
-    /// <typeparam name="TEntity">The entity type.</typeparam>
     /// <typeparam name="TCriteria">The criteria type</typeparam>
     /// <param name="query">The query with criteria of type <typeparamref name="TCriteria"/>.</param>
     /// <param name="includeDepth">The include depth.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The matching entities.</returns>
-    public Task<IEnumerable<TEntity>> QueryAsync<TEntity, TCriteria>(IQuery<TCriteria> query, int includeDepth, CancellationToken cancellationToken = default)
-        where TEntity : class, IEntity
+    public Task<IEnumerable<AuditEntry<TIdentity>>> QueryAsync<TCriteria>(IQuery<TCriteria> query, int includeDepth, CancellationToken cancellationToken = default)
         where TCriteria : IQueryCriteria, new()
     {
         ArgumentNullException.ThrowIfNull(query);
 
-        return this.QueryAsync<TEntity, TCriteria>(new QueryRequest<TCriteria>
+        return this.QueryAsync(new QueryRequest<TCriteria>
         {
             Query = query,
             IncludeDepth = includeDepth
@@ -189,38 +183,37 @@ public sealed class AuditApi(ApiClient api)
 
     /// <summary>
     /// Query.
-    /// Invokes the 'query/first' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Invokes the 'query/first' endpoint of the <see cref="AuditEntry{TIdentity}"/> in the api.
     /// </summary>
-    /// <typeparam name="TEntity">The entity type.</typeparam>
     /// <typeparam name="TCriteria">The criteria type</typeparam>
     /// <param name="request">The <see cref="QueryFirstRequest{TCriteria}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The first match entity.</returns>
-    public Task<TEntity?> QueryFirstAsync<TEntity, TCriteria>(QueryFirstRequest<TCriteria> request, CancellationToken cancellationToken = default)
-        where TEntity : class, IEntity
+    public Task<AuditEntry<TIdentity>?> QueryFirstAsync<TCriteria>(QueryFirstRequest<TCriteria> request, CancellationToken cancellationToken = default)
         where TCriteria : IQueryCriteria, new()
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        return this.InvokeAsync<QueryFirstRequest<TCriteria>, TEntity>(request, cancellationToken);
+        request.Controller = ControllerRoutes.AUDIT;
+
+        return this.api
+            .InvokeAsync<QueryFirstRequest<TCriteria>, AuditEntry<TIdentity>>(request, cancellationToken);
     }
 
     /// <summary>
     /// Query.
-    /// Invokes the 'query/first' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Invokes the 'query/first' endpoint of the <see cref="AuditEntry{TIdentity}"/> in the api.
     /// </summary>
-    /// <typeparam name="TEntity">The entity type.</typeparam>
     /// <typeparam name="TCriteria">The criteria type</typeparam>
     /// <param name="query">The query with criteria of type <typeparamref name="TCriteria"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The first match entity.</returns>
-    public Task<TEntity?> QueryFirstAsync<TEntity, TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
-        where TEntity : class, IEntity
+    public Task<AuditEntry<TIdentity>?> QueryFirstAsync<TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
         where TCriteria : IQueryCriteria, new()
     {
         ArgumentNullException.ThrowIfNull(query);
 
-        return this.QueryFirstAsync<TEntity, TCriteria>(new QueryFirstRequest<TCriteria>
+        return this.QueryFirstAsync(new QueryFirstRequest<TCriteria>
         {
             Query = query
         }, cancellationToken);
@@ -228,21 +221,19 @@ public sealed class AuditApi(ApiClient api)
 
     /// <summary>
     /// Query.
-    /// Invokes the 'query/first' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Invokes the 'query/first' endpoint of the <see cref="AuditEntry{TIdentity}"/> in the api.
     /// </summary>
-    /// <typeparam name="TEntity">The entity type.</typeparam>
     /// <typeparam name="TCriteria">The criteria type</typeparam>
     /// <param name="query">The query with criteria of type <typeparamref name="TCriteria"/>.</param>
     /// <param name="includeDepth">The include depth.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The first match entity.</returns>
-    public Task<TEntity?> QueryFirstAsync<TEntity, TCriteria>(IQuery<TCriteria> query, int includeDepth, CancellationToken cancellationToken = default)
-        where TEntity : class, IEntity
+    public Task<AuditEntry<TIdentity>?> QueryFirstAsync<TCriteria>(IQuery<TCriteria> query, int includeDepth, CancellationToken cancellationToken = default)
         where TCriteria : IQueryCriteria, new()
     {
         ArgumentNullException.ThrowIfNull(query);
 
-        return this.QueryFirstAsync<TEntity, TCriteria>(new QueryFirstRequest<TCriteria>
+        return this.QueryFirstAsync(new QueryFirstRequest<TCriteria>
         {
             Query = query,
             IncludeDepth = includeDepth
@@ -250,20 +241,21 @@ public sealed class AuditApi(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'query/count' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Invokes the 'query/count' endpoint of the <see cref="AuditEntry{TIdentity}"/> in the api.
     /// </summary>
-    /// <typeparam name="TEntity">The entity type.</typeparam>
     /// <typeparam name="TCriteria">The criteria type</typeparam>
     /// <param name="request">The <see cref="QueryCountRequest{TCriteria}"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The count of matching entities.</returns>
-    public async Task<int> QueryCountAsync<TEntity, TCriteria>(QueryCountRequest<TCriteria> request, CancellationToken cancellationToken = default)
-        where TEntity : class, IEntity
+    public async Task<int> QueryCountAsync<TCriteria>(QueryCountRequest<TCriteria> request, CancellationToken cancellationToken = default)
         where TCriteria : IQueryCriteria, new()
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        var response = await this.InvokeAsync<TEntity, QueryCountRequest<TCriteria>, string>(request, cancellationToken);
+        request.Controller = ControllerRoutes.AUDIT;
+
+        var response = await this.api
+            .InvokeAsync<AuditEntry<TIdentity>, QueryCountRequest<TCriteria>, string>(request, cancellationToken);
 
         int.TryParse(response, out var count);
 
@@ -271,20 +263,18 @@ public sealed class AuditApi(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'query/count' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Invokes the 'query/count' endpoint of the <see cref="AuditEntry{TIdentity}"/> in the api.
     /// </summary>
-    /// <typeparam name="TEntity">The entity type.</typeparam>
     /// <typeparam name="TCriteria">The criteria type</typeparam>
     /// <param name="criteria">The criteria of type <typeparamref name="TCriteria"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The count of matching entities.</returns>
-    public Task<int> QueryCountAsync<TEntity, TCriteria>(TCriteria criteria, CancellationToken cancellationToken = default)
-        where TEntity : class, IEntity
+    public Task<int> QueryCountAsync<TCriteria>(TCriteria criteria, CancellationToken cancellationToken = default)
         where TCriteria : IQueryCriteria, new()
     {
         ArgumentNullException.ThrowIfNull(criteria);
 
-        return this.QueryCountAsync<TEntity, TCriteria>(new QueryCountRequest<TCriteria>
+        return this.QueryCountAsync(new QueryCountRequest<TCriteria>
         {
             Criteria = criteria
         }, cancellationToken);
