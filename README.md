@@ -2,86 +2,58 @@
 [![Build and Deploy](https://github.com/Nano-Core/Nano.Library/actions/workflows/build-and-deploy.yml/badge.svg)](https://github.com/Nano-Core/Nano.Library/actions/workflows/build-and-deploy.yml)
 [![NuGet](https://img.shields.io/nuget/dt/NanoCore.svg)](https://www.nuget.org/packages/NanoCore/)
 [![NuGet](https://img.shields.io/nuget/v/NanoCore.svg)](https://www.nuget.org/packages/NanoCore/)
+![GitHub License](https://img.shields.io/github/license/Nano-Core/Nano.Library)
+![GitHub top language](https://img.shields.io/github/languages/top/Nano-Core/Nano.Library)
+![GitHub branch count](https://img.shields.io/github/branches/Nano-Core/Nano.Library)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/y/Nano-Core/Nano.Library)
+![GitHub Issues or Pull Requests](https://img.shields.io/github/issues/Nano-Core/Nano.Library)
+![GitHub Issues or Pull Requests](https://img.shields.io/github/issues-pr/Nano-Core/Nano.Library)
+![GitHub contributors](https://img.shields.io/github/contributors/Nano-Core/Nano.Library)
+![GitHub Sponsors](https://img.shields.io/github/sponsors/Nano-Core)
+![GitHub Discussions](https://img.shields.io/github/discussions/Nano-Core/Nano.Library)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/Nano-Core/Nano.Library)
 
-> _Nano - Your foundation for modern .NET._  
+> _Nano - Your light-weight foundation for building modern .NET applications._  
 
 ***
 
 ## Table of Contents
-* [Summary](#summary)
-* [Requirements](#requirements)
-* [NuGet Packages](#nuget-packages)
-* [Solution Composition](#solution-composition)
-* [Nano Architectures](#nano-architectures)
-* [Applications](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App)
-  * [Api](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api)
-  * [Console](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Console)
-  * [Web](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Web)
-* [Providers](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App)
-  * [Logging](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging)
-  * [Data](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data)
-  * [Eventing](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Eventing)
-  * [Storage](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage)
+* 💡 **[Summary](#summary)**
+* 🏛️ **[Nano Architectures](#nano-architectures)**
+* ✨ **[Highlighted Features](#highlighted-features)**
+* <img src="https://api.nuget.org/v3-flatcontainer/nuget.protocol/6.0.0/icon" width="19" /> **[NuGet Packages](#nuget-packages)**
+* 🧩 **[Solution Composition](#solution-composition)**
+* 🚀 **[Applications](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App)**
+  * **[Api](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api)**
+  * **[Console](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Console)**
+  * **[Web](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Web)**
+* 📦 **[Providers](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App)**
+  * **[Logging](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging)**
+  * **[Data](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data)**
+  * **[Eventing](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Eventing)**
+  * **[Storage](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage)**
 
 ## Summary
 Nano is a leight-weight library for rapidly building .NET applications.  
+
+These pages covers documentation, guides, samples and other relevant information, to assist you in understanding and using Nano.  
+
+But first let us briefly convince you why Nano is the right choice when building .NET applications.  
+
+Nano gives you everything you tecnically to start building micro-services 
+* Provides configurable implementations for non-business related aspects of an application, 
+* Combining the best practices, patterns, extensions and conventions of modern development. 
+* Inject providers and register custom dependencies.
+* Override, extend or disable any part of Nano, not suitable for the application. 
+* Derive concrete implementations, enriched with functionality, from base abstractions and interfaces, for all parts of the application.  
+* Avoid wasting valuable development resources, on matters not related to the business.
+* Remain focused on modelling data and operations of the business domain.
 
 It makes it easy to create and configure a web, api and console applications running in docker locally and in Kubernetes in staging and production environment. Nano enables registering
 providers during application startup. Providers represents the pillars in developing distributed services in layered architectures. Nano provides easy integration with
 Data, Eventing, Logging and Storage. Additionally, Nano exposes many features in data in distributed applications, allowing entity framework to synchronize entities across services
 using the Eventing provider. Also, the api-client in Nano features east integration and commincation between applications, making it seamless to create and maintain a 
 distributed archtiecure, even for small teams.
-
-Easily monitor application health, create startup-tasks, background workers, and more...
-
-Nano takes care of everything to build, deploy and host applications.
-Nano supplies it all; The application framework, easy configuration, configurable templates for Kubernetes and GitHub actions for build and deployment. Nano even supplies 
-GitHub Actions for deploying all the Azure and Kubernetes components required to use all the features of Nano.  
-
-Write about these special Nano feateurs: Entity events, include annotation, 
-
-
-
-
-
-
-
-
-
-
-
-Welcome to Nano Wiki.  
-
-These pages covers documentation, guides, samples and other relevant information, to assist you in understanding and using Nano.  
-
-It's recommended to start out by following our **[Quick Guide](Quick-Guide)**, to get familiarized with Nano. Also, inspect these **[Sample Templates](https://github.com/Nano-Core/Nano.Templates)**.  
-
-Next, continue reading **[The Library](The-Library)** section, to get a more comprehensive understanding, and to learn how to Configure, inject, extend, override and otherwise customize the behavior of Nano.  
-
-Last, use the **[The Appendix](Appendix)** as reference for key aspects of Nano.  
-
-*** 
-
-#### _Something you don't understand? Don't hesitate to ask._
-_Providing meaningful documentation, that accurately covers and explains the possibilities of Nano is of high priority. Should you notice any inconsistencies or are you experiencing any difficulties in understanding the content or using the library, don't hesitate to ask or report an issue._
-
-***
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 Configure your own Nano [Api](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api), [Web](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Web) 
 or [Console](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Console) application in less than an hour. 
@@ -94,315 +66,135 @@ of Nano Consoles applications, periodically run to ensure important batch tasks 
 Nano contains all the boiler-blate for fast and easy create and manage applications. 
 Additionally, Nano also provides the specifications for the infrastructure required to run Nano applications securily and scalable in Kubernetes on Azure.
 
-
-
 See **[Nano.Azure](https://github.com/Nano-Core/Nano.Azure)** and **[Nano.Azure.Kubernetes](https://github.com/Nano-Core/Nano.Azure.Kubernetes)**.
 
-Nano gives you everything you tecnically to start building micro-services 
-* Provides configurable implementations for non-business related aspects of an application, 
-* Combining the best practices, patterns, extensions and conventions of modern development. 
-* Inject providers and register custom dependencies.
-* Override, extend or disable any part of Nano, not suitable for the application. 
-* Derive concrete implementations, enriched with functionality, from base abstractions and interfaces, for all parts of the application.  
-* Avoid wasting valuable development resources, on matters not related to the business.
-* Remain focused on modelling data and operations of the business domain.
+Easily monitor application health, create startup-tasks, background workers, and more...
+Nano takes care of everything to build, deploy and host applications.
+Nano supplies it all; The application framework, easy configuration, configurable templates for Kubernetes and GitHub actions for build and deployment. Nano even supplies 
+GitHub Actions for deploying all the Azure and Kubernetes components required to use all the features of Nano.  
+
+Check out our ✨ **[Highlighted Features](#highlighted-features)**
+
+It's recommended to start out by following our **[Quick Guide](Quick-Guide)**, to get familiarized with Nano. 
+Also, inspect these **[Sample Templates](https://github.com/Nano-Core/Nano.Templates)**.  
+
+Next, continue reading the documentation of applications and providers, to get a more comprehensive understanding, and to learn how to Configure, inject, extend, override 
+and otherwise customize the behavior of Nano.  
 
 Also, don't forget to check out our **[Nano.Lessons](https://github.com/Nano-Core/Nano.Lessons)**. There are **100+** examples of Nano applications, show-casing each 
-feature individually.  
+feature individually in isolation.  
 
 > If you are new to Nano, it's recommended to follow your [Quick Start Guide](https://github.com/Nano-Core/Nano.Library/tree/master/QUICK_START.md)
 
-## Requirements
-Docker desktop
-Azure CLI
-GitHub Account
+## 🏛️ Nano Architectures
+* Solo application
+* micro-service orchestratration (top-down api-to-services)
+* micro-service orchestratration (service-to-service)
+
+## ✨ Highlighted features
+
+### ✨ Api Clients
 
 
-## NuGet Packages
+### ✨ Entity Eventing
+Entity Events in Nano provide a lightweight, attribute-driven mechanism for synchronizing entity changes across distributed applications. They automatically propagate create, update, and delete operations through structured `EntityEvent`s, reducing the need for manual integration logic in microservice architectures.  
+
+The `PublishAttribute` defines which entities emit events and which properties are included in the event payload, including support for navigation paths. The `SubscribeAttribute` enables models to react to incoming events and automatically apply changes through the built-in event handler.  
+
+Entity eventing supports inheritance, deterministic payload shaping, and automatic data hydration to ensure complete event consistency. Reverse dependency tracking allows changes in dependent entities to propagate back to root aggregates.  
+
+This model reduces coupling between services while maintaining data consistency across boundaries. 
+
+### ✨ Include Annotation (graph-lite)
+
+
+### ✨ Health Check Spider Web
+
+## 🧩 Solution Composition
+All Nano applications follow a consistent and predictable solution structure.  
+
+In local `Development`, the application is orchestrated using Docker Compose, while `Staging` and `Production` environments are deployed and managed using Kubernetes.  
+
+Continuous Integration and Continuous Delivery (CI/CD) is handled by GitHub Actions and is included as part of the Nano Visual Studio solution.  
+
+The solution root also contains several supporting files, such as Docker- and Git-related configuration files, along with various asset files used by 
+the Git repository and NuGet packages.
+
+In the following table shows the different files and folder strucutre.
+
+| Directory / File                                    | API | WEB | CON | Description                                                                                                                                                                                                                                     |
+| --------------------------------------------------- | --- | --- | --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `.docker/docker-compose.dcproj`                     | ✓   | ✓   | ✓   | The Docker Compose project used by Visual Studio for local orchestration.                                                                                                                                                                       |
+| `.docker/docker-compose.yml`                        | ✓   | ✓   | ✓   | The Docker Compose specification for orchestrating the application locally in the `Development` environment.                                                                                                                                    |
+| `.github/config/slack.yml`                          | ✓   | ✓   | ✓   | Configuration for posting build and deploy notifications to Slack _(optional)_.                                                                                                                                                                 |
+| `.github/workflows/build-and-deploy.yml`            | ✓   | ✓   | ✓   | GitHub Actions workflow that builds, tests, publishes artifacts, and deploys a Nano application.                                                                                                                                                |
+| `.kubernetes/configmap.yaml`                        | ✓   | ✓   | ✓   | [ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/) specification for Kubernetes.                                                                                                                                         |
+| `.kubernetes/autoscaler.yaml`                       | ✓   | ✓   | ✗  | [Horizontal Pod Autoscaler (HPA)](https://kubernetes.io/docs/concepts/workloads/autoscaling/horizontal-pod-autoscale/) specification.                                                                                                           |
+| `.kubernetes/deployment.yaml`                       | ✓   | ✓   | ✗  | [Deployment](https://kubernetes.io/docs/concepts/services-networking/ingress/) specification.                                                                                                                                                   |
+| `.kubernetes/service.yaml`                          | ✓   | ✓   | ✗  | [Service](https://kubernetes.io/docs/concepts/services-networking/service/) exposure specification.                                                                                                                                             |
+| `.kubernetes/ingress.yaml`                          | (✓) | (✓) | ✗  | [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/) specification _(Optional)_.                                                                                                                                         |
+| `.kubernetes/certificate.yaml`                      | (✓) | (✓) | ✗  | [SSL Certificate](https://cert-manager.io/docs/usage/certificate/) specification _(Optional)_.                                                                                                                                                  |
+| `.kubernetes/cronjob.yaml`                          | ✗  | ✗   | ✓   | [CronJob](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/) specification.                                                                                                                                                  |
+| `.tests/Tests.{name}.csproj`                        | ✓   | ✓   | ✓   | Test project, which is empty by default and included to demonstrate the structure and where unit or integration tests should be added.                                                                                                          |
+| `.tests/Properties/DoNotParallelize.cs`             | ✓   | ✓   | ✓   | Ensures tests are not Parallelized.                                                                                                                                                                                                             |
+| `{name}/{name}.csproj`                              | ✓   | ✓   | ✓   | The application project file.                                                                                                                                                                                                                   |
+| `{name}/Properties/InternalsVisibleTo.cs`           | ✓   | ✓   | ✓   | Exposes internal types to the test project.                                                                                                                                                                                                     |
+| `{name}/wwwroot`                                    | ✓   | ✓   | ✗   | Root folder for static and dnyamic web content.                                                                                                                                                                                                |
+| `{name}/appsettings.json`                           | ✓   | ✓   | ✓   | Default application configuration file.                                                                                                                                                                                                         |
+| `{name}/appsettings.{environment}.json`             | ✓   | ✓   | ✓   | Overrides application configuration files for for environments: `Development`, `Staging` and `Production`.                                                                                                                                      |
+| `{name}/Dockerfile.Local`                           | ✓   | ✓   | ✓   | Used by Docker Compose in `Development` environment; must remain in the application project folder.                                                                                                                                             |
+| `{name}/Program.cs`                                 | ✓   | ✓   | ✓   | The main entry point to the Nano application, and where the application is configured, build and run.                                                                                                                                           |
+| `{name}/{name}.Models.csproj`                       | ✓   | ✓   | ✗  | The application models project file. The project is configured to publish a NuGet for sharing models and api-client. Nano Nugets should be included here, as a minimum the [Nano.App](https://www.nuget.org/packages/Nano.App) NuGet package.   |
+| `.dockerignore`                                     | ✓   | ✓   | ✓   | Lists files and folders to ignore when building Docker images.                                                                                                                                                                                  |
+| `.gitignore`                                        | ✓   | ✓   | ✓   | Lists files and folders to ignore in Git version control.                                                                                                                                                                                       |
+| `Dockerfile`                                        | ✓   | ✓   | ✓   | The `Dockerfile` used to build the container image for `Staging` and `Production` deployments.                                                                                                                                                  |
+| `README.md`                                         | (✓) | (✓) | (✓) | Documentation asset for the Git repository and the application’s NuGet package _(Optional)_.                                                                                                                                                   |
+| `icon.png`                                          | (✓) | (✓) | ✗   | Icon asset for the application’s NuGet package _(Optional)_.                                                                                                                                                                                   |
+| `LICENSE`                                           | (✓) | (✓) | ✗   | License file for the Git repository and the application’s NuGet package _(Optional)_.                                                                                                                                                          |
+| `{name}.sln`                                        | ✓   | ✓   | ✓   | The visual studio solution file.                                                                                                                                                                                                                |
+
+## <img src="https://api.nuget.org/v3-flatcontainer/nuget.protocol/6.0.0/icon" width="27" /> NuGet Packages
 These packages are all-inclusive packages, where all other Nano packages are included. Easy to get started, but it's recommended to instead select only the
 packages needed by your application, to avoid unnecessary depdendencies.  
 
-| Name               | Description                                             | NuGet Pacakge                                                                                                                                                                                                                                                                            |
-| ------------------ | ------------------------------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| [Nano.All](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.All)   | Includes all other Nano.* NuGet packages.                                       | [![NuGet](https://img.shields.io/nuget/dt/Nano.All.svg)](https://www.nuget.org/packages/Nano.All/) [![NuGet](https://img.shields.io/nuget/v/Nano.All.svg)](https://www.nuget.org/packages/Nano.All/)   |
-| [NanoCore](https://github.com/Nano-Core/Nano.Library/tree/master/NanoCore)   | Includes Nano.All. _This is the older Nano package name, but still supported._  | [![NuGet](https://img.shields.io/nuget/dt/NanoCore.svg)](https://www.nuget.org/packages/NanoCore/) [![NuGet](https://img.shields.io/nuget/v/NanoCore.svg)](https://www.nuget.org/packages/NanoCore/)   |
-
+| Package                                                                      | Downloads                                                                                           |                                                                                                     |
+| ---------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| [Nano.All](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.All)   | [![NuGet](https://img.shields.io/nuget/dt/Nano.All.svg)](https://www.nuget.org/packages/Nano.All/)  | [![NuGet](https://img.shields.io/nuget/v/Nano.All.svg)](https://www.nuget.org/packages/Nano.All/)   |
+| [NanoCore](https://github.com/Nano-Core/Nano.Library/tree/master/NanoCore)   | [![NuGet](https://img.shields.io/nuget/dt/NanoCore.svg)](https://www.nuget.org/packages/NanoCore/)  | [![NuGet](https://img.shields.io/nuget/v/NanoCore.svg)](https://www.nuget.org/packages/NanoCore/)   |
 
 The next packages are application packages. Include only one matching the application type you want to create.  
 
-| Package                      | Type           | Downloads                                                                                                                                                                                                         |
-| ---------------------------- | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Nano.App                     | _`Transitive`_ | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
-| Nano.App.Api                 | `Application`  | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
-| Nano.App.Console             | `Application`  | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
-| Nano.App.Web                 | `Application`  | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
-
-Last, provider packages. These enable functionality related to a Nano provider.  
-
-| Package                      | Type          | Downloads                                                                                                |                                                                                                         |
-| ---------------------------- | ------------- | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| Nano.Data                    | _`Transitive`_    | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
-| Nano.Data.Abstractions       | _`Transitive`_    | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
-| Nano.Data.InMemory           | `Data`        | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
-| Nano.Data.MySql              | `Data`        | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
-| Nano.Data.PostgreSQL         | `Data`        | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
-| Nano.Data.SqLite             | `Data`        | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
-| Nano.Data.SqlServer          | `Data`        | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
-| Nano.Eventing                | _`Transitive`_    | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
-| Nano.Eventing.Abstractions   | _`Transitive`_    | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
-| Nano.Eventing.RabbitMq       | `Eventing`    | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
-| Nano.Logging                 | _`Transitive`_    | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
-| Nano.Logging.Abstractions    | _`Transitive`_    | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
-| Nano.Logging.Log4Net         | `Logging`     | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
-| Nano.Logging.Microsoft       | `Logging`     | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
-| Nano.Logging.NLog            | `Logging`     | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
-| Nano.Logging.Serilog         | `Logging`     | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
-| Nano.Storage                 | _`Transitive`_    | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
-| Nano.Storage.Abstractions    | _`Transitive`_    | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
-| Nano.Storage.Azure           | `Storage`     | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
-| Nano.Storage.Local           | `Storage`     | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/) |
-
-## Solution Composition
-CHECK WHERE WE LINK TO THIS, AND MAKE SURE ALL _Blank EXAMPLES LINKS TO IT.
-
-All Nano applications follow a consistent and predictable solution structure.  
-
-In local `Development`, the application is orchestrated using Docker Compose, while `Staging` and `Production` environments are deployed and managed using Kubernetes.  
-
-Continuous Integration and Continuous Delivery (CI/CD) is handled by GitHub Actions and is included as part of the Nano Visual Studio solution.  
-
-The solution root also contains several supporting files, such as Docker- and Git-related configuration files, along with various asset files used by 
-the Git repository and NuGet packages.
-
-In the following sections, each part of the solution is described in detail, with files listed alongside their purpose and responsibilities, 
-covering both the physical file structure and the Visual Studio solution.  
-
-### `.docker`
-This folder contains the Docker Compose project used to orchestrate the application in the local `Development` environment.
-
-> ⚠️ Rememmber to set the docker-compose project as startup project, before running the solution in Visual Studio.
-
-| File                               | API | WEB | CONSOLE | Description                                                                                                   |
-| -----------------------------------| --- | --- | ------- | ------------------------------------------------------------------------------------------------------------- |
-| `docker-compose.dcproj`            | ✓   | ✓   | ✓       | The Docker Compose project used by Visual Studio for local orchestration.                                     |
-| `docker-compose.yml`               | ✓   | ✓   | ✓       | The Docker Compose specification for orchestrating the application locally in the `Development` environment.  |
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#### `.github`
-
-| Directory | File                               | API | WEB | CONSOLE | Description                                                                       |
-|| ---------------------------------------------- | --- | --- | ------- | --------------------------------------------------------------------------------- |
-| `.github` | `config/slack.yml`                     | ✓   | ✓   | ✓       | Configuration for posting build notifications to Slack _(optional)_.   |
-|| `workflows/build-and-deploy.yml`       | ✓   | ✓   | ✓       | GitHub Actions workflow that builds, tests, publishes artifacts, and deploys a Nano application. The workflow performs the following steps: 1. Authenticate with Azure. 2. Build, test, and package the solution. 3. Apply database migrations. 4. Publish container images and NuGet packages (optional). 5. Apply changes to Kubernetes. 6. Create a GitHub release and send Slack notifications (optional)  |
-
-#### `.kubernetes`
-
-| Directory | File                               | API | WEB | CONSOLE | Description                                                                       |
-|| ---------------------------------------------- | --- | --- | ------- | --------------------------------------------------------------------------------- |
-| `.kubernetes` | `configmap.yaml`                   | ✓   | ✓   | ✓       | Configuration specification for Kubernetes.   |
-|| `autoscaler.yaml`                  | ✓   | ✓   | ✗      | [Horizontal Pod Autoscaler (HPA)](https://kubernetes.io/docs/concepts/workloads/autoscaling/horizontal-pod-autoscale/) specification.  |
-|| `deployment.yaml`                  | ✓   | ✓   | ✗      | Application [Deployment](https://kubernetes.io/docs/concepts/services-networking/ingress/) specification.    |
-|| `service.yaml`                     | ✓   | ✓   | ✗      | Application [Service](https://kubernetes.io/docs/concepts/services-networking/service/) exposure specification. |     
-|| `ingress.yaml`                     | ✓   | ✓   | ✗      | Application [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/) specification _(Optional)_.   |
-|| `certificate.yaml`                 | ✓   | ✓   | ✗      | Application TLS [Certificate](https://cert-manager.io/docs/usage/certificate/) specification _(Optional)_. |
-|| `cronjob.yaml`                     | ✗  | ✗   | ✓      | The scheduled job specification.  |
-
-### Commands
-* ```kubectl patch cronjob {{cronjob-name}} -p '{"spec": {"suspend": true}}'```  
-* ```kubectl create job --from=cronjob/{{cronjob-name}} {{job-name}}```
-
-
-
-#### `application`
-
-| Directory | File                               | API | WEB | CONSOLE | Description                                                                       |
-|| ---------------------------------------------- | --- | --- | ------- | --------------------------------------------------------------------------------- |
-| `.tests` | `Tests.{name}.csproj`                   | ✓   | ✓   | ✓       | Test project, which is empty by default and included to demonstrate the structure and where unit or integration tests should be added. |
-|| `Properties/DoNotParallelize.cs`        | ✓   | ✓   | ✓       | Ensures tests are not Parallelized. |
-
-#### `.tests`
-
-| Directory | File                               | API | WEB | CONSOLE | Description                                                                       |
-|| ---------------------------------------------- | --- | --- | ------- | --------------------------------------------------------------------------------- |
-| `{name}` | `Properties/InternalsVisibleTo.cs`      | ✓   | ✓   | ✓       | Exposes internal types to the test project.    |
-|| `Properties/launchSettings.json`        | ✓   | ✓   | ✓       | Included but empty.    |
-|| `wwwroot/`                              | ✓   | ✓   | ✗      | Root folder for static and dnyamic web content.   |
-|| `appsettings.json`                      | ✓   | ✓   | ✓       | Application configuration file. Overrides also included for environments: `Development`, `Staging` and `Production`.    |
-|| `Dockerfile.Local`                      | ✓   | ✓   | ✓       | Used by Docker Compose in `Development` environment; must remain in the application project folder. |
-|| `Program.cs`                            | ✓   | ✓   | ✓       | The main entry point to the Nano application.   |
-
-#### `Models`
-
-| Directory | File                               | API | WEB | CONSOLE | Description                                                                       |
-|| ---------------------------------------------- | --- | --- | ------- | --------------------------------------------------------------------------------- |
-| `{name}.Models` | `{name}.Models.csproj`           | ✓   | ✓   | ✗      | Designed to be packaged and published as a private NuGet during deployment |
-
-#### `/`
-
-| Directory | File                               | API | WEB | CONSOLE | Description                                                                       |
-|| ---------------------------------------------- | --- | --- | ------- | --------------------------------------------------------------------------------- |
-| `/` | `.dockerignore`                                | ✓   | ✓   | ✓       ||
-|| `.gitignore`                                   | ✓   | ✓   | ✓       ||
-|| `Dockerfile`                                   | ✓   | ✓   | ✓       ||
-|| `README.md`                                    | ✓   | ✓   | ✓       ||
-|| `icon.png`                                     | ✓   | ✓   | ✗      ||
-|| `LICENSE`                                      | ✓   | ✓   | ✗      ||
-|| `{name}.sln`                                   | ✓   | ✓   | ✓       ||
- 
-
-
- * [Solution Composition](#application-composition)
-  * [.docker](#-docker)
-  * [.github](#-github)
-  * [.kubernetes](#-kubernetes)
-  * [.solution](#-solution)
-  * [.tests](#-tests)
-  * [.application](#-application)
-
-## Solution Composition
-All Nano applications follow a consistent and predictable solution structure.  
-
-In local `Development`, the application is orchestrated using Docker Compose, while `Staging` and `Production` environments are deployed and managed using Kubernetes.  
-
-Continuous Integration and Continuous Delivery (CI/CD) is handled by GitHub Actions and is included as part of the Nano Visual Studio solution.  
-
-The solution root also contains several supporting files, such as Docker- and Git-related configuration files, along with various asset files used by 
-the Git repository and NuGet packages.
-
-In the following sections, each part of the solution is described in detail, with files listed alongside their purpose and responsibilities, 
-covering both the physical file structure and the Visual Studio solution.  
-
-## `.docker`
-This folder contains the Docker Compose project used to orchestrate the application in the local `Development` environment.
-
-> ⚠️ Rememmber to set the docker-compose project as startup project, before running the solution in Visual Studio.
-
-| File / Directory                      | Type      | Description                                                                                                   |
-| ------------------------------------- | --------- | ------------------------------------------------------------------------------------------------------------- |
-|  `docker-compose.dcproj`              | `dcproj`  | The Docker Compose project used by Visual Studio for local orchestration.                                     |
-|  `docker-compose/docker-compose.yml`  | `yaml`    | The Docker Compose specification for orchestrating the application locally in the `Development` environment.  |
-
-## `.github`
-This folder contains GitHub-specific configuration used primarily by GitHub Actions. It includes the `build-and-deploy.yml` workflow, 
-which is responsible for building, testing, publishing artifacts, and deploying the application to Kubernetes in the `Staging` and `Production` environments.
-
-The workflow relies on environment variables defined as GitHub variables and secrets, which must be created before the action can run successfully. All required 
-variables and secrets are explicitly declared in the `env:` section of the workflow file—there is no need to configure CI/CD across multiple files.
-
-The workflow performs the following steps:
-1. Authenticate with Azure
-2. Build, test, and package the solution
-3. Apply database migrations
-4. Publish container images and NuGet packages (optional)
-5. Apply changes to Kubernetes
-6. Create a GitHub release and send Slack notifications (optional)
-
-| File / Directory                   | Type    | Description                                                                                        |
-| ---------------------------------- | ------- | -------------------------------------------------------------------------------------------------- |
-|  `config/slack.yml`                | `yaml`  | Configuration for posting build notifications to Slack _(optional)_.                               |
-|  `workflows/build-and-deploy.yml`  | `yaml`  | GitHub Actions workflow that builds, tests, publishes artifacts, and deploys a Nano application.   |
-
-## `.kubernetes`
-This folder holds Kubernetes templates required for automated deployment of the application through GitHub Actions.  
-These templates are used exclusively in the `Staging` and `Production` environments.
-
-Different applications uses different Kubernetes templates depending on the type of application. Below is listed which application types used which templates
-
-**For All applications**
-
-| File / Directory     | Type    | Description                                                    |
-| -------------------- | ------- | -------------------------------------------------------------- |
-|  `configmap.yaml`    | `yaml`  | Configuration specification for Kubernetes.                    |
-
-**Only API and Web applications**
-
-| File / Directory     | Type    | Description                                                                                                                           |
-| -------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-|  `autoscaler.yaml`   | `yaml`  | [Horizontal Pod Autoscaler (HPA)](https://kubernetes.io/docs/concepts/workloads/autoscaling/horizontal-pod-autoscale/) specification. |
-|  `deployment.yaml`   | `yaml`  | Application [Deployment](https://kubernetes.io/docs/concepts/services-networking/ingress/) specification.                             |
-|  `service.yaml`      | `yaml`  | Application [Service](https://kubernetes.io/docs/concepts/services-networking/service/) exposure specification.                       |
-|  `ingress.yaml`      | `yaml`  | Application [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/) specification _(Optional)_.                   |
-|  `certificate.yaml`  | `yaml`  | Application TLS [Certificate](https://cert-manager.io/docs/usage/certificate/) specification _(Optional)_.                            |
-
-**Only Console applications**
-
-| File / Directory     | Type    | Description                                                    |
-| -------------------- | ------- | -------------------------------------------------------------- |
-|  `cronjob.yaml`      | `yaml`  | The scheduled job spec for Kubernetes.                         |
-
-## `.solution`
-The solution root directory contains several individual files used for repository management, Docker and Git configuration, and NuGet package assets.  
-These files are part of the solution in Visual Studio, organized under the `.solution` folder.  
-
-**Common for all applications**
-
-| File / Directory  | Description                                                                                   |
-| ----------------- | --------------------------------------------------------------------------------------------- |
-| `.dockerignore`   | Lists files and folders to ignore when building Docker images.                                |
-| `.gitignore`      | Lists files and folders to ignore in Git version control.                                     |
-| `Dockerfile`      | Dockerfile used to build the container image for `Staging` and `Production` deployments.      |
-| `README.md`       | Documentation asset for the Git repository and the application’s NuGet package _(Optional)_.  |
-
-**For API and Web applications**
-
-| File / Directory  | Description                                                                            |
-| ----------------- | -------------------------------------------------------------------------------------- |
-| `icon.png`        | Icon asset for the application’s NuGet package _(Optional)_.                           |
-| `LICENSE`         | License file for the Git repository and the application’s NuGet package _(Optional)_.  |
-
-## `.tests`
-This folder contains a test project, which is empty by default and included to demonstrate the structure and where unit or integration tests should be added.  
-
-| File / Directory         | Type      | Description                                                  |
-| ------------------------ | --------- | ------------------------------------------------------------ |
-| `Tests.{name}.csproj`    | `csproj`  | Empty Visual Studio test project, ready for adding tests.    |
-
-## `.application`
-The solution contains one or two projects depending on the application type:
-
-- **Console applications:** only the application project exists.  
-- **API and Web applications:** two projects exist — one for the application and one for models, which is designed to be packaged and published as a private NuGet during deployment.
-
-The application projects contains the main application implementation, including the `program.cs` file.  
-The project includes minimal configuration in `appsettings.json`, and empty override configurations for all three environments.
-
-Other important files:
-* `Properties/InternalsVisibleTo.cs` — exposes internal types to the test project.
-* `Dockerfile.Local` — used by Docker Compose in `Development` environment; must remain in the application project folder.
-* `launchSettings.json` — included but empty.
-
-The second project contains models that are packaged and published as a private NuGet, enabling internal sharing between services. This separation keeps 
-the application lightweight while allowing shared **models** to be versioned and distributed consistently across services.
-
-> ⚠️ The models project must reference the [Nano.App](https://www.nuget.org/packages/Nano.App) NuGet package.  
-> This provides access to the API client implementation and allows the models project to expose models along with the derived API client functionality.
-
-
-
-
-
-
-
-
-
-
-
-## Nano Architectures
-* Solo application
-* micro-service orchestratration
+| Package                      | Type              | Downloads                                                                                                           | Latest Version                                                                                                     |
+| ---------------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| Nano.App                     | _`Transitive`_    | [![NuGet](https://img.shields.io/nuget/dt/Nano.App.svg)](https://www.nuget.org/packages/Nano.App/) 0                | [![NuGet](https://img.shields.io/nuget/v/Nano.App.svg)](https://www.nuget.org/packages/Nano.App/)                  |
+| Nano.App.Api                 | `Application`     | [![NuGet](https://img.shields.io/nuget/dt/Nano.App.Api.svg)](https://www.nuget.org/packages/Nano.App.Api/)          | [![NuGet](https://img.shields.io/nuget/v/Nano.App.Api.svg)](https://www.nuget.org/packages/Nano.App.Api/)          |
+| Nano.App.Console             | `Application`     | [![NuGet](https://img.shields.io/nuget/dt/Nano.App.Console.svg)](https://www.nuget.org/packages/Nano.App.Console/)  | [![NuGet](https://img.shields.io/nuget/v/Nano.App.Console.svg)](https://www.nuget.org/packages/Nano.App.Console/)  |
+| Nano.App.Web                 | `Application`     | [![NuGet](https://img.shields.io/nuget/dt/Nano.App.Web.svg)](https://www.nuget.org/packages/Nano.App.Web/)          | [![NuGet](https://img.shields.io/nuget/v/Nano.App.Web.svg)](https://www.nuget.org/packages/Nano.App.Web/)          |
+
+Last, provider packages. These enable functionality related to Nano providers.  
+
+| Package                      | Type                         | Downloads                                                                                                                                | Latest Version                                                                                                                          |
+| ---------------------------- | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Nano.Data                    | `Data`, _`Transitive`_       | [![NuGet](https://img.shields.io/nuget/dt/Nano.Data.svg)](https://www.nuget.org/packages/Nano.Data/)                                     | [![NuGet](https://img.shields.io/nuget/v/Nano.Data.svg)](https://www.nuget.org/packages/Nano.Data/)                                     |
+| Nano.Data.Abstractions       | `Data`, _`Transitive`_       | [![NuGet](https://img.shields.io/nuget/dt/Nano.Data.Abstractions.svg)](https://www.nuget.org/packages/Nano.Data.Abstractions/)           | [![NuGet](https://img.shields.io/nuget/v/Nano.Data.Abstractions.svg)](https://www.nuget.org/packages/Nano.Data.Abstractions/)           |
+| Nano.Data.InMemory           | `Data`                       | [![NuGet](https://img.shields.io/nuget/dt/Nano.Data.InMemory.svg)](https://www.nuget.org/packages/Nano.Data.InMemory/)                   | [![NuGet](https://img.shields.io/nuget/v/Nano.Data.InMemory.svg)](https://www.nuget.org/packages/Nano.Data.InMemory/)                   |
+| Nano.Data.MySql              | `Data`                       | [![NuGet](https://img.shields.io/nuget/dt/Nano.Data.MySql.svg)](https://www.nuget.org/packages/Nano.Data.MySql/)                         | [![NuGet](https://img.shields.io/nuget/v/Nano.Data.MySql.svg)](https://www.nuget.org/packages/Nano.Data.MySql/)                         |
+| Nano.Data.PostgreSQL         | `Data`                       | [![NuGet](https://img.shields.io/nuget/dt/Nano.Data.PostgreSQL.svg)](https://www.nuget.org/packages/Nano.Data.PostgreSQL/)               | [![NuGet](https://img.shields.io/nuget/v/Nano.Data.PostgreSQL.svg)](https://www.nuget.org/packages/Nano.Data.PostgreSQL/)               |
+| Nano.Data.SqLite             | `Data`                       | [![NuGet](https://img.shields.io/nuget/dt/Nano.Data.SqLite.svg)](https://www.nuget.org/packages/Nano.Data.SqLite/)                       | [![NuGet](https://img.shields.io/nuget/v/Nano.Data.SqLite.svg)](https://www.nuget.org/packages/Nano.Data.SqLite/)                       |
+| Nano.Data.SqlServer          | `Data`                       | [![NuGet](https://img.shields.io/nuget/dt/Nano.Data.SqlServer.svg)](https://www.nuget.org/packages/Nano.Data.SqlServer/)                 | [![NuGet](https://img.shields.io/nuget/v/Nano.Data.SqlServer.svg)](https://www.nuget.org/packages/Nano.Data.SqlServer/)                 |
+|                              |                              |                                                                                                                                          |                                                                                                                                         | 
+| Nano.Eventing                | `Eventing`, _`Transitive`_   | [![NuGet](https://img.shields.io/nuget/dt/Nano.Eventing.svg)](https://www.nuget.org/packages/Nano.Eventing/)                             | [![NuGet](https://img.shields.io/nuget/v/Nano.Eventing.svg)](https://www.nuget.org/packages/Nano.Eventing/)                             |
+| Nano.Eventing.Abstractions   | `Eventing`, _`Transitive`_   | [![NuGet](https://img.shields.io/nuget/dt/Nano.Eventing.Abstractions.svg)](https://www.nuget.org/packages/Nano.Eventing.Abstractions/)   | [![NuGet](https://img.shields.io/nuget/v/Nano.Eventing.Abstractions.svg)](https://www.nuget.org/packages/Nano.Eventing.Abstractions/)   |
+| Nano.Eventing.RabbitMq       | `Eventing`                   | [![NuGet](https://img.shields.io/nuget/dt/Nano.Eventing.RabbitMq.svg)](https://www.nuget.org/packages/Nano.Eventing.RabbitMq/)           | [![NuGet](https://img.shields.io/nuget/v/Nano.Eventing.RabbitMq.svg)](https://www.nuget.org/packages/Nano.Eventing.RabbitMq/)           |
+|                              |                              |                                                                                                                                          |                                                                                                                                         |  
+| Nano.Logging                 | `Logging`, _`Transitive`_    | [![NuGet](https://img.shields.io/nuget/dt/Nano.Logging.svg)](https://www.nuget.org/packages/Nano.Logging/)                               | [![NuGet](https://img.shields.io/nuget/v/Nano.Logging.svg)](https://www.nuget.org/packages/Nano.Logging/)                               |
+| Nano.Logging.Abstractions    | `Logging`, _`Transitive`_    | [![NuGet](https://img.shields.io/nuget/dt/Nano.Logging.Abstractions.svg)](https://www.nuget.org/packages/Nano.Logging.Abstractions/)     | [![NuGet](https://img.shields.io/nuget/v/Nano.Logging.Abstractions.svg)](https://www.nuget.org/packages/Nano.Logging.Abstractions/)     |
+| Nano.Logging.Log4Net         | `Logging`                    | [![NuGet](https://img.shields.io/nuget/dt/Nano.Logging.Log4Net.svg)](https://www.nuget.org/packages/Nano.Logging.Log4Net/)               | [![NuGet](https://img.shields.io/nuget/v/Nano.Logging.Log4Net.svg)](https://www.nuget.org/packages/Nano.Logging.Log4Net/)               |
+| Nano.Logging.Microsoft       | `Logging`                    | [![NuGet](https://img.shields.io/nuget/dt/Nano.Logging.Microsoft.svg)](https://www.nuget.org/packages/Nano.Logging.Microsoft/)           | [![NuGet](https://img.shields.io/nuget/v/Nano.Logging.Microsoft.svg)](https://www.nuget.org/packages/Nano.Logging.Microsoft/)           |
+| Nano.Logging.NLog            | `Logging`                    | [![NuGet](https://img.shields.io/nuget/dt/Nano.Logging.NLog.svg)](https://www.nuget.org/packages/Nano.Logging.NLog/)                     | [![NuGet](https://img.shields.io/nuget/v/Nano.Logging.NLog.svg)](https://www.nuget.org/packages/Nano.Logging.NLog/)                     |
+| Nano.Logging.Serilog         | `Logging`                    | [![NuGet](https://img.shields.io/nuget/dt/Nano.Logging.Serilog.svg)](https://www.nuget.org/packages/Nano.Logging.Serilog/)               | [![NuGet](https://img.shields.io/nuget/v/Nano.Logging.Serilog.svg)](https://www.nuget.org/packages/Nano.Logging.Serilog/)               |
+|                              |                              |                                                                                                                                          |                                                                                                                                         | 
+| Nano.Storage                 | `Storage`, _`Transitive`_    | [![NuGet](https://img.shields.io/nuget/dt/Nano.Storage.svg)](https://www.nuget.org/packages/Nano.Storage/)                               | [![NuGet](https://img.shields.io/nuget/v/Nano.Storage.svg)](https://www.nuget.org/packages/Nano.Storage/)                               |
+| Nano.Storage.Abstractions    | `Storage`, _`Transitive`_    | [![NuGet](https://img.shields.io/nuget/dt/Nano.Storage.Abstractions.svg)](https://www.nuget.org/packages/Nano.Storage.Abstractions/)     | [![NuGet](https://img.shields.io/nuget/v/Nano.Storage.Abstractions.svg)](https://www.nuget.org/packages/Nano.Storage.Abstractions/)     |
+| Nano.Storage.Azure           | `Storage`                    | [![NuGet](https://img.shields.io/nuget/dt/Nano.Storage.Azure.svg)](https://www.nuget.org/packages/Nano.Storage.Azure/)                   | [![NuGet](https://img.shields.io/nuget/v/Nano.Storage.Azure.svg)](https://www.nuget.org/packages/Nano.Storage.Azure/)                   |
+| Nano.Storage.Local           | `Storage`                    | [![NuGet](https://img.shields.io/nuget/dt/Nano.Storage.Local.svg)](https://www.nuget.org/packages/Nano.Storage.Local/)                   | [![NuGet](https://img.shields.io/nuget/v/Nano.Storage.Local.svg)](https://www.nuget.org/packages/Nano.Storage.Local/)                   |

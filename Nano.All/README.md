@@ -8,8 +8,8 @@
 ***
 
 ## Table of Contents
-* [Home](https://github.com/Nano-Core/Nano.Library#nano-library)
-* [Summary](#summary)
+* **[Home](https://github.com/Nano-Core/Nano.Library#nano-library)**
+* **[Summary](#summary)**
 
 ## Summary
 Includes all Nano packages bundled into a single package for convenience.  

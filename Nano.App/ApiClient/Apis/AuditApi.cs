@@ -7,7 +7,7 @@ using Nano.App.ApiClient.Requests;
 using Nano.Common.Consts;
 using Nano.Data.Abstractions.Models;
 
-namespace Nano.App.ApiClient;
+namespace Nano.App.ApiClient.Apis;
 
 /// <summary>
 /// 

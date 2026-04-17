@@ -8,47 +8,47 @@
 ***
 
 ## Table of Contents
-* [Home](https://github.com/Nano-Core/Nano.Library#nano-library)
-* [Summary](#summary)
-* [Registration](#registration)
-* [Configuration](#configuration)
-  * [Hosting](#hosting)
-    * [Http](#http)
-    * [Https](#https)
-    * [Routing](#routing)
-    * [Multipart Limits](#multipart-limits)
-  * [Http Policy Headers](#http-policy-headers)
-    * [Content Type Options](#content-type-options) 
-    * [Referrer Policy](#referrer-policy) 
-    * [Frame Options](#frame-options)
-    * [Xss Protection](#xss-protection)
-    * [Content Security Policy (CSP))](#content-security-policy-csp)
-    * [Cors](#cors)
-    * [Strict Transport Security (HSTS)](#strict-transport-security-hsts)
-    * [Robots](#robots)
-    * [Forwarded Headers](#forwarded-headers)
-  * [Response Cache](#response-cache)
-  * [Response Compression](#response-cache)
-  * [Session](#session)
-  * [Cookies](#cookies)
-  * [TimeZone](#timezone)
-  * [Localization](#localization)
-  * [Versioning](#versioning)
-  * [Documentation](#documentation)
-  * [Health Checks](#health-checks)
-  * [Virus Scan](#virus-scan)
-  * [Content Negotiation](#content-negotiation)
-  * [Request Tracing](#request-tracing)
-  * [Error Handling](#error-handling)
-  * [Static Files](#static-files)
-  * [Authentication](#authentication)
-  * [Authorization](#authorization)
-  * [Api Clients](#api-clients)
-* [Controllers](#controllers)
-  * [Request Validation](#request-validation)
-  * [Request Multipart JSON](#request-multipart-json)
-  * [Response Serialization](#response-serialization)
-* [Startup Tasks](#startup-tasks)
+* **[Home](https://github.com/Nano-Core/Nano.Library#nano-library)**
+* **[Summary](#summary)**
+* **[Registration](#registration)**
+* **[Configuration](#configuration)**
+  * **[Hosting](#hosting)**
+    * **[Http](#http)**
+    * **[Https](#https)**
+    * **[Routing](#routing)**
+    * **[Multipart Limits](#multipart-limits)**
+  * **[Http Policy Headers](#http-policy-headers)**
+    * **[Content Type Options](#content-type-options)** 
+    * **[Referrer Policy](#referrer-policy)** 
+    * **[Frame Options](#frame-options)**
+    * **[Xss Protection](#xss-protection)**
+    * **[Content Security Policy (CSP))](#content-security-policy-csp)**
+    * **[Cors](#cors)**
+    * **[Strict Transport Security (HSTS)](#strict-transport-security-hsts)**
+    * **[Robots](#robots)**
+    * **[Forwarded Headers](#forwarded-headers)**
+  * **[Response Cache](#response-cache)**
+  * **[Response Compression](#response-cache)**
+  * **[Session](#session)**
+  * **[Cookies](#cookies)**
+  * **[TimeZone](#timezone)**
+  * **[Localization](#localization)**
+  * **[Versioning](#versioning)**
+  * **[Documentation](#documentation)**
+  * **[Health Checks](#health-checks)**
+  * **[Virus Scan](#virus-scan)**
+  * **[Content Negotiation](#content-negotiation)**
+  * **[Request Tracing](#request-tracing)**
+  * **[Error Handling](#error-handling)**
+  * **[Static Files](#static-files)**
+  * **[Authentication](#authentication)**
+  * **[Authorization](#authorization)**
+  * **[Api Clients](#api-clients)**
+* **[Controllers](#controllers)**
+  * **[Request Validation](#request-validation)**
+  * **[Request Multipart JSON](#request-multipart-json)**
+  * **[Response Serialization](#response-serialization)**
+* **[Startup Tasks](#startup-tasks)**
 
 ## Summary
 The `NanoApiApplication` is a ready-to-use application template for building APIs with Nano.  
@@ -164,7 +164,7 @@ If **[Https](#https)** is also enabled, consider turning on `UseHttpsRedirection
 
 > ⚠️ You should at least specify one HTTP or HTTPS port. 
 
-> ⚠️ Avoid using the default HTTP port (80), as it may trigger security warnings in Kubernetes.
+> 💡 Avoid using the default HTTP port (80), as it may trigger security warnings in Kubernetes.
 
 | Setting                | Type    | Default  | Description                               |
 | ---------------------- | ------- | -------- | ----------------------------------------- |
@@ -195,7 +195,7 @@ HTTPS is primarily intended for local development. In production environments, s
 
 > ⚠️ You should at least specify one HTTP or HTTPS port. 
 
-> ⚠️ Avoid using the default HTTP port (443), as it may trigger security warnings in Kubernetes.
+> 💡 Avoid using the default HTTP port (443), as it may trigger security warnings in Kubernetes.
 
 | Setting                 | Type    | Default  | Description                                   |
 | ----------------------- | ------- | -------- | --------------------------------------------- |
@@ -2125,7 +2125,7 @@ only after all configured start-up tasks have completed successfully. Until then
 especially useful in orchestrated environments, where readiness signals are required to control traffic flow and ensure the application 
 is fully initialized before becoming available.
 
-> ⚠️ When using health checks and startup tasks, configure the Kubernetes readiness probe correctly to prevent unwanted pod restarts.  
+> 💡 When using health checks and startup tasks, configure the Kubernetes readiness probe correctly to prevent unwanted pod restarts.  
 Keep startup tasks simple and fast to ensure smooth application startup
 
 > 📖 Learn more about **[Nano Startup Tasks](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#startup-tasks)**.

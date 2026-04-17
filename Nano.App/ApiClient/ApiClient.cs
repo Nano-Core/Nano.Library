@@ -24,10 +24,9 @@ using Vivet.AspNetCore.RequestTimeZone.Providers;
 
 namespace Nano.App.ApiClient;
 
-/// <summary>
-/// Base Api (abstract).
-/// </summary>
-public class ApiClient
+// BUG: Triple Slash
+
+public sealed class ApiClient(ApiClientOptions options, HttpClient httpClient, IAccessTokenProvider accessTokenProvider, IHttpContextAccessor? httpContextAccessor = null)
 {
     private static readonly string[] headersToForward =
     [
@@ -39,28 +38,16 @@ public class ApiClient
         NanoHeaderNames.X_FORWARDED_PREFIX,
         NanoHeaderNames.REQUEST_ID,
         HeaderNames.AcceptLanguage,
+        HeaderNames.AcceptCharset,
+        HeaderNames.AcceptEncoding,
+        HeaderNames.AcceptRanges,
         RequestTimeZoneHeaderProvider.Headerkey
     ];
 
-    private readonly ApiClientOptions options;
-    private readonly HttpClient httpClient;
-    private readonly IAccessTokenProvider accessTokenProvider;
-    internal readonly IHttpContextAccessor? httpContextAccessor;
-
-    /// <summary>
-    /// Constructor.
-    /// </summary>
-    /// <param name="options">The <see cref="ApiClientOptions"/>.</param>
-    /// <param name="accessTokenProvider"></param>
-    /// <param name="httpContextAccessor">The <see cref="IHttpContextAccessor"/>.</param>
-    /// <param name="httpClient">The <see cref="HttpClient"/>.</param>
-    protected internal ApiClient(ApiClientOptions options, HttpClient httpClient, IAccessTokenProvider accessTokenProvider, IHttpContextAccessor? httpContextAccessor = null)
-    {
-        this.options = options ?? throw new ArgumentNullException(nameof(options));
-        this.httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-        this.accessTokenProvider = accessTokenProvider ?? throw new ArgumentNullException(nameof(accessTokenProvider));
-        this.httpContextAccessor = httpContextAccessor;
-    }
+    private readonly ApiClientOptions options = options ?? throw new ArgumentNullException(nameof(options));
+    private readonly HttpClient httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+    private readonly IAccessTokenProvider accessTokenProvider = accessTokenProvider ?? throw new ArgumentNullException(nameof(accessTokenProvider));
+    internal readonly IHttpContextAccessor? httpContextAccessor = httpContextAccessor;
 
     /// <summary>
     /// Invokes the request.
@@ -69,7 +56,7 @@ public class ApiClient
     /// <param name="request">The instance of type <typeparamref name="TRequest"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>Void.</returns>
-    internal virtual async Task InvokeAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
+    internal async Task InvokeAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
         where TRequest : BaseRequest
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -90,7 +77,7 @@ public class ApiClient
     /// <param name="request">The instance of type <typeparamref name="TRequest"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The instance of <typeparamref name="TResponse"/>.</returns>
-    internal virtual async Task<TResponse?> InvokeAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
+    internal async Task<TResponse?> InvokeAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
         where TRequest : BaseRequest
         where TResponse : class
     {
@@ -115,7 +102,7 @@ public class ApiClient
     /// <param name="request">The instance of type <typeparamref name="TRequest"/>.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The instance of <typeparamref name="TResponse"/>.</returns>
-    internal virtual async Task<TResponse?> InvokeAsync<TEntity, TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
+    internal async Task<TResponse?> InvokeAsync<TEntity, TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
         where TRequest : BaseRequest
         where TResponse : class

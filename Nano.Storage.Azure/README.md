@@ -8,13 +8,13 @@
 *** 
 
 ## Table of Contents
-* [Home](https://github.com/Nano-Core/Nano.Library#nano-library)
-* [Summary](#summary)
-* [Registration](#registration)
-* [Configuration](#configuration)
-* [Docker Compose](#docker-compose)
-* [Kuberentes](#kuberentes)
-* [GitHub Actions](#github-actions)
+* **[Home](https://github.com/Nano-Core/Nano.Library#nano-library)**
+* **[Summary](#summary)**
+* **[Registration](#registration)**
+* **[Configuration](#configuration)**
+* **[Docker Compose](#docker-compose)**
+* **[Kuberentes](#kuberentes)**
+* **[GitHub Actions](#github-actions)**
 
 ## Summary
 Storage Provider implementation for Microsoft Azure File Shares.  

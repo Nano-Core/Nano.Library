@@ -3,18 +3,19 @@ using Nano.Data.Abstractions.Models.Abstractions;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Nano.App.ApiClient.Apis;
 
 namespace Nano.App.ApiClient;
 
 /// <summary>
 /// 
 /// </summary>
-public abstract class BaseApi(ApiClient apiClient) : BaseApi<Guid>(apiClient);
+public abstract class BaseApiClient(ApiClient apiClient) : BaseApiClient<Guid>(apiClient);
 
 /// <summary>
 /// 
 /// </summary>
-public abstract class BaseApi<TIdentity>(ApiClient apiClient)
+public abstract class BaseApiClient<TIdentity>(ApiClient apiClient)
     where TIdentity : IEquatable<TIdentity>
 {
     private readonly ApiClient apiClient = apiClient;

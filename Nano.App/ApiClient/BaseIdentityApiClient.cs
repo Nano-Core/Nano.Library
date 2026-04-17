@@ -1,4 +1,5 @@
 ﻿using System;
+using Nano.App.ApiClient.Apis;
 using Nano.Data.Abstractions.Models.Abstractions;
 
 namespace Nano.App.ApiClient;
@@ -8,7 +9,7 @@ namespace Nano.App.ApiClient;
 /// </summary>
 /// <typeparam name="TUser"></typeparam>
 /// <param name="apiClient"></param>
-public abstract class BaseIdentityApi<TUser>(ApiClient apiClient) : BaseIdentityApi<TUser, Guid>(apiClient)
+public abstract class BaseIdentityApiClient<TUser>(ApiClient apiClient) : BaseIdentityApiClient<TUser, Guid>(apiClient)
     where TUser : class, IEntityUser<Guid>;
 
 /// <summary>
@@ -16,7 +17,7 @@ public abstract class BaseIdentityApi<TUser>(ApiClient apiClient) : BaseIdentity
 /// </summary>
 /// <typeparam name="TUser"></typeparam>
 /// <typeparam name="TIdentity"></typeparam>
-public abstract class BaseIdentityApi<TUser, TIdentity>(ApiClient apiClient) : BaseApi<TIdentity>(apiClient)
+public abstract class BaseIdentityApiClient<TUser, TIdentity>(ApiClient apiClient) : BaseApiClient<TIdentity>(apiClient)
     where TUser : class, IEntityUser<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {

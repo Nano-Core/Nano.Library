@@ -10,27 +10,27 @@
 ***
 
 ## Table of Contents
-* [Home](https://github.com/Nano-Core/Nano.Library#nano-library)
-* [Summary](#summary)
-* [Registration](#registration)
-* [Configuration](#configuration)
-  * [Connection Pool](#connection-pool)
-  * [Identity](#identity)
-  * [Health Checks](#health-checks)
-* [Data Providers](#data-providers)
-* [Data Context](#data-context)
-* [Data Models](#data-models)
-* [Data Mappings](#data-mappings)
-* [Migrations](#migrations)
-* [Repositories](#repositories)
-  * [Autosave](#autosave)
-  * [Cache](#cache)
-  * [Include Annotation](#include-annotation)
-* [Audit](#audit)
-* [Soft Delete](#soft-delete)
-* [Lazy Loading](#lazy-loading)
-* [Triggers](#triggers)
-* [Entity Events](#entity-events)
+* **[Home](https://github.com/Nano-Core/Nano.Library#nano-library)**
+* **[Summary](#summary)**
+* **[Registration](#registration)**
+* **[Configuration](#configuration)**
+  * **[Connection Pool](#connection-pool)**
+  * **[Identity](#identity)**
+  * **[Health Checks](#health-checks)**
+* **[Data Providers](#data-providers)**
+* **[Data Context](#data-context)**
+* **[Data Models](#data-models)**
+* **[Data Mappings](#data-mappings)**
+* **[Migrations](#migrations)**
+* **[Repositories](#repositories)**
+  * **[Autosave](#autosave)**
+  * **[Cache](#cache)**
+  * **[Include Annotation](#include-annotation)**
+* **[Audit](#audit)**
+* **[Soft Delete](#soft-delete)**
+* **[Lazy Loading](#lazy-loading)**
+* **[Triggers](#triggers)**
+* **[Entity Events](#entity-events)**
 
 ## Summary
 Nano provides a data access implementation built on top of **[Entity Framework](https://learn.microsoft.com/en-us/ef/)**, enabling applications to integrate with SQL-based 
@@ -127,7 +127,7 @@ The `Data` section in the configuration defines the data provider and related se
 }
 ```
 
-> 💡 Learn more about **[Application Configuration](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#configuration)** here.  
+> 📖 Learn more about **[Application Configuration](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#configuration)** here.  
 
 ## Connection Pool
 Nano supports optional connection pooling for the underlying Entity Framework data provider. When enabled, database contexts are reused from a pool, which can improve performance 
@@ -346,7 +346,7 @@ For more advanced scenarios, if you do not want the built-in properties provided
 must implement the corresponding interfaces: `IEntityReadOnly`, `IEntityWritable`, `IEntityCreatable`, `IEntityCreatableAndUpdatable`, `IEntityUpdatable`, or `IEntityDeletable` 
 (`IEntityDeletableSoft`). These interfaces mirror the functionality of the CRUD base entity classes.  
 
-> ⚠️ For simplicity and maintainability, it is recommended to derive entity models from `BaseEntity` or one of the specific base classes rather than 
+> 💡 For simplicity and maintainability, it is recommended to derive entity models from `BaseEntity` or one of the specific base classes rather than 
 implementing the interfaces directly.  
 
 Try it out yourself using the **[Api.Data.Mysql](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Mysql)** or  
@@ -429,7 +429,7 @@ public class MyEntityMapping : BaseEntityMapping<MyEntity>
 Nano automatically applies all data mappings, so there is no need to manually register them. Only non-abstract, non-generic mapping classes are automatically 
 detected and applied.  
 
-> ⚠️ It is strongly recommended to map all properties of your entity models within your data mappings to ensure consistency and correctness.
+> 💡 It is strongly recommended to map all properties of your entity models within your data mappings to ensure consistency and correctness.
 
 When mapping a `BaseEntityUser`, derive the mapping implementation from `BaseEntityUserMapping<TEntity>`. Apart from this base class, the mapping is implemented in the same way 
 as for regular entity models.  
@@ -803,16 +803,17 @@ event type. If only a base class has the attribute, any derived entity will be p
 inheritance structures. If both the base and derived types are annotated, each is published according to its own definition. When the base class is abstract, it does not emit events directly but instead 
 contributes publish property definitions that are inherited by derived types.  
 
-Publish properties can traverse navigation paths, like `Customer.Address.StreetName`. Only valid Entity Framework scalar types are allowed as the final segment of a navigation path. To ensure 
-deterministic event structure, the final property segment must be unique across all defined navigation paths. For instance, it is not allowed to publish both `BillingAddress.StreetName` and 
-`DeliveryAddress.StreetName`, as they would conflict on the same terminal property name. In addition, only reference or owned navigations are supported. Collection navigations are explicitly excluded, 
-since collections should be modeled and published as separate entities rather than embedded within a single entity event definition.
+Publish properties are string names defined on the `PropertyNames` property of the `PublishAttribute`. Publish properties can traverse navigation paths, like `Customer.Address.StreetName`. Only valid 
+Entity Framework scalar types are allowed as the final segment of a navigation path. To ensure deterministic event structure, the final property segment must be unique across all defined navigation paths. 
+For instance, it is not allowed to publish both `BillingAddress.StreetName` and `DeliveryAddress.StreetName`, as they would conflict on the same terminal property name. In addition, only reference or 
+owned navigations are supported. Collection navigations are explicitly excluded, since collections should be modeled and published as separate entities rather than embedded within a single entity 
+event definition.
 
-When publish properties include navigation paths, Nano ensures that all required data is available before an event is created. During direct operations (create or update), Nano traverses the defined navigation 
-paths and automatically hydrates missing data from the database where necessary. This guarantees that the emitted entity event is fully populated, even if related entities were not explicitly loaded. For reverse 
-change scenarios, where a dependent entity is modified or deleted, Nano traverses the relationship graph in the opposite direction. It identifies all affected root entities and emits corresponding entity 
-events for each impacted aggregate. To optimize performance, hydration is skipped entirely when a modification does not affect any defined publish properties. In such cases, no event is generated, 
-since there is no relevant change to propagate.  
+When publish properties include navigation paths, Nano ensures that all required data is available before an event is created. During direct operations (create or update), Nano traverses the defined 
+navigation paths and automatically hydrates missing data from the database where necessary. This guarantees that the emitted entity event is fully populated, even if related entities were not explicitly 
+loaded. For reverse change scenarios, where a dependent entity is modified or deleted, Nano traverses the relationship graph in the opposite direction. It identifies all affected root entities and emits 
+corresponding entity events for each impacted aggregate. To optimize performance, hydration is skipped entirely when a modification does not affect any defined publish properties. In such cases, no event 
+is generated, since there is no relevant change to propagate.  
 
 ```csharp
 [Publish(nameof(Name))]

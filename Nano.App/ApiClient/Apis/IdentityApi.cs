@@ -1,4 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System;
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Nano.App.ApiClient.Requests;
 using Nano.App.ApiClient.Requests.Identity;
 using Nano.Data.Abstractions.Exceptions;
@@ -6,13 +11,8 @@ using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Nano.Data.Abstractions.Identity.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Data.Abstractions.Models.Identity;
-using System;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace Nano.App.ApiClient;
+namespace Nano.App.ApiClient.Apis;
 
 /// <summary>
 /// 

@@ -16,6 +16,9 @@
   * [3.3 Eventing](#eventing)
   * [3.4 Storage](#storage)
   
+Make sure you have Docker desktop and Visual Studio with latest .NET Core installed.
+
+
 ## Choosing Applcation Type
 Depending on the application you are building, choose the application type. Nano supports three types of applications
 
@@ -45,12 +48,21 @@ Show the same as the logging example, and also link to it
 
 ## Data
 Show the same as the data example, and also link to it
+`IEntityAuditable`, `IEntitySoftDelete`
+`Publish` / `Subscribe`
+`Include`
 
 ## Eventing
 Show the same as the eventing example, and also link to it
+`BaseEventHandler`
 
 ## Storage
 Show the same as the storage example, and also link to it
+
+
+## Api Client
+`BaseApiClient`
+
 
 
 

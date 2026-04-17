@@ -10,16 +10,16 @@
 ***
 
 ## Table of Contents
-* [Home](https://github.com/Nano-Core/Nano.Library#nano-library)
-* [Summary](#summary)
-* [Environment](#environment)
-* [Configuration](#configuration)
-  * [Null Logger](#null-logger)
-  * [Api Clients](#api-clients)
-* [Start-Up Tasks](#start-up-tasks)
-* [Custom Services](#custom-services)
-* [Custom Middleware](#custom-middleware)
-* [Custom Configuration Section](#custom-configuration-section)
+* **[Home](https://github.com/Nano-Core/Nano.Library#nano-library)**
+* **[Summary](#summary)**
+* **[Environment](#environment)**
+* **[Configuration](#configuration)**
+  * **[Null Logger](#null-logger)**
+  * **[Api Clients](#api-clients)**
+* **[Start-Up Tasks](#start-up-tasks)**
+* **[Custom Services](#custom-services)**
+* **[Custom Middleware](#custom-middleware)**
+* **[Custom Configuration Section](#custom-configuration-section)**
 
 ## Summary
 Applications are the core part of Nano.  
@@ -82,94 +82,151 @@ This is intended as a safety fallback.
 > 📖 Learn more about [Nano Logging Providers](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging).  
 
 ## Api Clients
-Nano provides a generic api-client implementation, that can be used by other services to seamlessly connect and communicate with your micro-service. The implementation consists of an 
-abstract ```BaseApi``` class implementation, from which the concrete and specific implementation of the micro-service can be derived. The base class provides methods for accessing all 
-controllers and actions, using generic methods and conventions.  
-The constructor of the ```BaseApi``` implementation, requires an instance of ```ApiOptions```. When deriving from a concrete implementation from ```BaseApi```, it's automatically 
-registered during startup as dependency and may be injected throughout the application. The ```ApiOptions```, get resolved automatically as well, reading the values 
-from ```appsettings.json```. For each api create a sections, named identical to the concrete class implementation of ```BaseApi```.
+Nano provides a generic api-client implementation, that can be used by other Nano applications to seamlessly connect and communicate with your application. 
+
+First, the application must implement and api-client, and naturally only api-based application types can meaningfully implement it. So this is not relevant for Console 
+applications. Derive an implementation from either `BaseApiClient` or `BaseApiClient<TIdentity>` and implement the constructor. Alternatively, if your application is an identity application where 
+an identity user model has been implemented, instead derive from `BaseIdentityApiClient<TUser>` or `BaseIdentityApiClient<TUser, TIdentity>`, where the `TUser` generic parameter is 
+the user type in your application. The classes contains groups of methods for invoking built-in Nano api methods in the application. The base class provides methods for 
+accessing all controllers and actions, using generic methods and conventions.  
+
+A minimal example of an api-client implementation is shown below.  
 
 ```csharp 
-public class MyApi : DefaultApi
-{
-    public MyApi(ApiOptions options)
-        : base(options)
-    {
-
-    }
-}
+public class MyApiClient(ApiClient apiClient) : BaseApiClient(apiClient);
 ``` 
 
-It's possible to derive form the ```BaseApi``` abstract implementation, though this will leave the api-client empty, expect for any custom method implementations. 
-Typically, this is the case when the default controller isn't used in the application, and all controller implementations are derived from ```BaseController```.  
+or with Identity.  
 
-SHOW CONFIG JSON AND TABLE
+```csharp 
+public class MyIdentityApiClient(ApiClient apiClient) : BaseIdentityApiClient(apiClient);
+``` 
+
+You don't actually need to do more, but read further down in this section and learn how to add custom api-clients methods with custom request and responses for custom endpoints 
+in the application.
+
+Second, the application consuming the api-client must add a configuratuon to `appsettings.json`, detailing the connection information and behavior. The configuration is a 
+dictionary, and you may add as many api-clients for other applications as needed, just ensure that the key names are unique.
+
+| Setting                        | Type      | Default    | Description                                                                                                                 |
+| ------------------------------ | --------- | ---------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `Host`                         | string    | localhost  | The API host address.                                                                                                       |
+| `Root`                         | string    | api        | The root path for the API endpoints.                                                                                        |
+| `Port`                         | int       | 80         | The port to connect to on the host.                                                                                         |
+| `UseSsl`                       | bool      | false      | Indicates whether to use SSL (HTTPS) for the connection.                                                                    |
+| `Timeout`                      | TimeSpan  | 00:00:30   | The request timeout duration.                                                                                               |
+| `LogInRoot`                    | object    | null       | Optional login root configuration for authentication.                                                                       |
+| `LogInRoot.Username`           | object    | null       | Optional login root configuration for authentication.                                                                       |
+| `LogInRoot.Password`           | object    | null       | Optional login root configuration for authentication.                                                                       |
+| `HealthCheck`                  | object    | null       | Optional health check configuration for the API client.                                                                     |
+| `HealthCheck.UnhealthyStatus`  | enum      | Unhealthy  | The health status reported when the api is unavailable. _Only relevant for `NanoApiApplication` and `NanoWebApplication`_.  |
 
 ```json
 "App": {
   "Apis": {
-    "MyApi": {
+    "MyApiClient": {
       "Host": "localhost",
       "Root": "api",
       "Port": 80,
       "UseSsl": false,
       "Timeout": "00:00:30",
-      "LogInRoot": null
-      "HealthCheck": null
+      "LogInRoot": {
+        "Username": null,
+        "Password": null
+      }
+      "HealthCheck": {
+        "UnhealthyStatus": Unhealthy
+      }
     }
   }
 }
-
 ```
-  
-Methods are available for all nano controller actions, such as finding, querying, adding, deleting and updating. Additionally, the api-client contains a custom action implementation, 
-where both controller and action can be set at execution-time.  
 
-Authentication:
-Authentication happens under-the-hood, when using the api-client implementation. By default, the jwt-token of the authorization request header, is passed along. 
-If the service being invoked, shares the same issuer, audience and secret key, the token can be used for authorization. If the endpoint is anonymous, an authentication 
-request is first made, using the login defined in the ```ApiOptions```, and that token is used to invoke the request. This is to ensure that if the outer service is anonymous, 
-it allows invocations to the nested service.  
+All api-client implementations are automatically registered with the options specified in the configuration during startup, and may be injected as needed.
 
-Url Conventions:
-When Nano is building the url to invoke, the base part is made up from the properties on ```ApiOptions```, like this.
-* http({UseSsl})://{Host}:{Port}/{Root}/  
+Now the application has access to three groups of endpoints in forms of properties inherited from the `BaseApiClient`, Auth, Audit and Entity. Implementation deriving 
+from `BaseIdentityApiClient` also has access to the Idenity group. Each group has endpoints relative to the name and their purpose. Endpoints not enabled or disabled by 
+configuration in the api application of the api-client will return 404 if invoked. For example idf authentication is disabled, and Auth group endpoints is invoked, a 404 response
+will be received.
 
+Entity: Methods are available for all nano controller actions, such as finding, querying, adding, deleting and updating. Additionally, the api-client contains a custom action implementation, where both controller and action can be set at execution-time.  
 The controller part, relates to the generic entity type, specified as generic type parameter, when invoking one of the api-client methods. The pluralized name of the entity 
 is used for the name of the controller. Thus, having an model named ```User```, the corresponding controller should be named ```UsersController```.  
 Be aware, that when Nano pluralizes the name of the entity, just and 's' is appended to the name. So in order to use the api-client properly, always name your controllers 
 like: ```{EntityTypeName}s```.  
 
-Responses:
-Define a json response, and for files use either ```Stream``` or ```NamedStream``` as response.  
+| Setting                         | Parameters    | Description                                                                     |
+| ------------------------------- | ------------- | ------------------------------------------------------------------------------- |
+| `IndexAsync<TEntity>`           | IndexRequest  | Invokes the 'index' endpoint of the `TEntity` in the api.  |
+
+
 
 Auth:
-Auth api inheriting
+LISTS OF METHODS
+
+Identity: When identity is used in the application, and one or more controllers derived from ```IdentityController<TEntity, TCriteria>```, derived your api-client implementation from ```IdentityApi```, to gain access to all the same methods as it's counter-part controller implementation.
+LISTS OF METHODS
+
+It also possible, and in fact very easy, to add custom endpoints to the api-client. First define a custom request, and also optionally a custom response. 
+The request must derive from `BaseRequest` and have one of the action atributes annotated. It defines both the http method and the required `action` parameter defines the relative route of the request. Nano takes 
+care of building the base part of the route. Naturally both must match your custom endpoint. 
+
+Nano support the following Action attributes.  
+
+| Setting          | Http Method |
+| ---------------- | ----------- |
+| `OptionsAction`  | OPTIONS     |
+| `HeadAction`     | HEAD        |
+| `GetAction`      | GET         |
+| `QueryAction`    | QUERY       |
+| `PostAction`     | POST        |
+| `PutAction`      | PUT         |
+| `PatchAction`    | PATCH       |
+| `DeleteAction`   | DELETE      |
+| `ConnectAction`  | CONNECT     |
+
+Next add properties to the request, and annotate them with attributes for `[Route]`, `[Body]`, `[Query]` and `[Header]`.
+
+| Attribute   | Description                                                                                                                                                                                                                                                                                                                                                                                   |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `[Header]`  | Defines a header key/value that will be added to the request headers. The attribute contains two optional properties, the `Name` may be used to override the header key, that otherwise uses the property name, and the `ValuePrefix` as the names suggests, prefixes the value set for the header.                                                                                           |
+| `[Route]`   | Defines parameters for the route. Multiple properties may have the `[Route]` annotation, and the optional paramteer defines the order of which parameters should be replaced in the route of the `[Action]` annotation on the class.                                                                                                                                                          |
+| `[Query]`   | Defines querystring parameters. These should be scalar types. The optional `Name` parameter overrides the querystring parameter name, that is otherwise the name of property.                                                                                                                                                                                                                 |
+| `[Body]`    | Defines the body of the request. It should be a complex serializable type. Basically, you create a class contract holding the data of your request body, and Nano will serialize it when invoking the request. `NetTopologySuite` geometry types are supported and works with nano api-clients. Also Nano's built-in types for `Query`, `Pagination` and `Ordering` are supported as well.    |
+| `[Form]`    | Defines a form field to be included. Properties must be sclar or for files one of the following types (or IEnumerable of that): `IFormFile`, `FileInfo`, `FileStream`, `Stream` or `NamedStream`. > ⚠️ Complex objects is also supported but that requires the use of [`[FromFormBody]`](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api#request-multipart-json)  on your controllers.                                                                                                            |
+
+Below shows an implemenation derived from `BaseRequest`.
 
 ```csharp 
-public class MyApi : AuthApi
+[PostAction("{id}/custom")]
+public class MyCustomRequest : BaseRequest
 {
-    public MyApi(ApiOptions options)
-        : base(options)
-    {
+    [Route(Order = 0)]
+    public string Id { get; set; }
 
-    }
+    [Body]
+    public MyBody Body { get; set; }
+
+    [Query(Name = "MyQuery")]
+    public string Query { get; set; }
+
+    [Header(Name = "CustomHeader", ValuePrefix = "Custom-")]
+    public string Header { get; set; }
 }
-```
+``` 
 
-Identity:
-When identity is used in the application, and one or more controllers derived from ```IdentityController<TEntity, TCriteria>```, derived your api-client implementation from ```IdentityApi```, to gain access to all the same methods as it's counter-part controller implementation.
+Next, define and optional response, and for file responses use either `Stream` or `NamedStream` as response, whereas the later will preserve the filename. 
+It's also the pluralized type name of the response that defines the controller part of the route. Nano automatically infers this, but for custom request that doesn't have a response
+type contract, you must manually set the `request.Controller` property in your request class constructor.
 
-```csharp 
-public class MyApi : IdentityApi
-{
-    public MyApi(ApiOptions options)
-        : base(options)
-    {
+`Accept` Headers and all `X-Forwarded-` are automatically transferrred from the current httpcontext if present, and passed along in the request. The same goes for `Authorization` and 
+`X-Api-Key` header, as well as other built-in Nano headers. The list of headers is subject to change, but Nano api-client will always ensure that the request parameters set on outer 
+requests, get transffered to internal requests when appropriate.
 
-    }
-}
-```
+Authentication happens under-the-hood, when using the api-client implementation. By default, the jwt-token of the authorization request header, is passed along. 
+If the service being invoked, shares the same issuer, audience and secret key, the token can be used for authorization. If the endpoint is anonymous, an authentication 
+request is first made, using the login defined in the ```ApiOptions```, and that token is used to invoke the request. This is to ensure that if the outer service is anonymous, 
+it allows invocations to the nested service.  
 
 ## Start-Up Tasks
 Nano supports running background jobs during application start-up.  

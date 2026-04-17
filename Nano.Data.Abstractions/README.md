@@ -10,8 +10,8 @@
 ***
 
 ## Table of Contents
-* [Home](https://github.com/Nano-Core/Nano.Library#nano-library)
-* [Summary](#summary)
+* **[Home](https://github.com/Nano-Core/Nano.Library#nano-library)**
+* **[Summary](#summary)**
 
 ## Summary
 This NuGet provides the core configuration, interfaces, and base abstractions used across all data providers.

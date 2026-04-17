@@ -3,7 +3,7 @@
 namespace Nano.App.ApiClient.Annotations.Actions;
 
 /// <summary>
-/// Defines an PUT action of a Nano api-client Request.
+/// Defines an PATCH action of a Nano api-client Request.
 /// </summary>
 public sealed class PatchActionAttribute : ActionAttribute
 {

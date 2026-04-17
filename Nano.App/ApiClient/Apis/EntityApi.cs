@@ -7,7 +7,7 @@ using Nano.App.ApiClient.Requests;
 using Nano.Data.Abstractions.Exceptions;
 using Nano.Data.Abstractions.Models.Abstractions;
 
-namespace Nano.App.ApiClient;
+namespace Nano.App.ApiClient.Apis;
 
 /// <summary>
 /// 

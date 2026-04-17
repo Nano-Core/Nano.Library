@@ -68,10 +68,10 @@ internal static class HttpRequestMessageExtensions
         {
             using var formContent = new MultipartFormDataContent();
 
-            foreach (var x in request.GetForm())
+            foreach (var formItem in request.GetForm())
             {
                 await formContent
-                    .AddFormItem(x, cancellationToken);
+                    .AddFormItem(formItem, cancellationToken);
             }
 
             httpRequestMessage.Content = formContent;

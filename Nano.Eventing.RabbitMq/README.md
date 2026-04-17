@@ -8,12 +8,12 @@
 *** 
 
 ## Table of Contents
-* [Home](https://github.com/Nano-Core/Nano.Library#nano-library)
-* [Summary](#summary)
-* [Registration](#registration)
-* [Configuration](#configuration)
-* [Docker Compose](#docker-compose)
-* [Kuberentes](#kuberentes)
+* **[Home](https://github.com/Nano-Core/Nano.Library#nano-library)**
+* **[Summary](#summary)**
+* **[Registration](#registration)**
+* **[Configuration](#configuration)**
+* **[Docker Compose](#docker-compose)**
+* **[Kuberentes](#kuberentes)**
 
 ## Summary
 Eventing Provider implementation for RabbitMq.  

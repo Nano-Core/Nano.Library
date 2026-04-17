@@ -8,15 +8,15 @@
 ***
 
 ## Table of Contents
-* [Home](https://github.com/Nano-Core/Nano.Library#nano-library)
-* [Summary](#summary)
-* [Registration](#registration)
-* [Configuration](#configuration)
-  * [Localization](#localization)
-  * [Exception Handling](#exception-handling)
-  * [Api Clients](api-clients)
-* [Console Workers](#console-workers) 
-* [Startup Tasks](#startup-tasks)
+* **[Home](https://github.com/Nano-Core/Nano.Library#nano-library)**
+* **[Summary](#summary)**
+* **[Registration](#registration)**
+* **[Configuration](#configuration)**
+  * **[Localization](#localization)**
+  * **[Exception Handling](#exception-handling)**
+  * **[Api Clients](api-clients)**
+* **[Console Workers](#console-workers)** 
+* **[Startup Tasks](#startup-tasks)**
 
 ## Summary
 The `NanoConsoleApplication` is a ready-to-use application template for building console-based workers with Nano.  
@@ -72,7 +72,7 @@ The `App` section in the configuration defines behavior related to the applicati
 }
 ```
 
-> 💡 Learn more about **[Application Configuration](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#configuration)** here.  
+> 📖 Learn more about **[Application Configuration](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#configuration)** here.  
 
 ## Localization
 The Nano configuration supports specifying a default `CultureInfo` for console applications, ensuring that culture-sensitive operations 

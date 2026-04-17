@@ -10,12 +10,12 @@
 ***
 
 ## Table of Contents
-* [Home](https://github.com/Nano-Core/Nano.Library#nano-library)
-* [Summary](#summary)
-* [Registration](#registration)
-* [Configuration](#configuration)
-  * [Razor](#razor)
-  * [Blazor](#blazor)
+* **[Home](https://github.com/Nano-Core/Nano.Library#nano-library)**
+* **[Summary](#summary)**
+* **[Registration](#registration)**
+* **[Configuration](#configuration)**
+  * **[Razor](#razor)**
+  * **[Blazor](#blazor)**
 
 ## Summary
 Extends the API application with built-in support for Razor Pages and Blazor through registered services and middleware.  

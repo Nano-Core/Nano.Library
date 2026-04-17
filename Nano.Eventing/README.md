@@ -10,14 +10,14 @@
 ***
 
 ## Table of Contents
-* [Home](https://github.com/Nano-Core/Nano.Library#nano-library)
-* [Summary](#summary)
-* [Registration](#registration)
-* [Configuration](#configuration)
-  * [Health Checks](#health-checks)
-* [Serialization](#serialization)
-* [Eventing Providers](#eventing-providers)
-* [Publish and Subscribe](#publish-and-subscribe)
+* **[Home](https://github.com/Nano-Core/Nano.Library#nano-library)**
+* **[Summary](#summary)**
+* **[Registration](#registration)**
+* **[Configuration](#configuration)**
+  * **[Health Checks](#health-checks)**
+* **[Serialization](#serialization)**
+* **[Eventing Providers](#eventing-providers)**
+* **[Publish and Subscribe](#publish-and-subscribe)**
 
 ## Summary
 Nano provides a robust eventing framework that enables applications to publish events and have them consumed by other applications. 
@@ -83,7 +83,7 @@ The ```Eventing``` section in the configuration defines the eventing provider an
 }
 ```
 
-> 💡 Learn more about **[Application Configuration](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#configuration)** here.  
+> 📖 Learn more about **[Application Configuration](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#configuration)** here.  
 
 ## Health Checks
 When health checks are enabled in the eventing configuration, Nano automatically registers a health check for the configured eventing provider.  

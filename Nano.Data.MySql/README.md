@@ -8,13 +8,13 @@
 *** 
 
 ## Table of Contents
-* [Home](https://github.com/Nano-Core/Nano.Library#nano-library)
-* [Summary](#summary)
-* [Registration](#registration)
-* [Configuration](#configuration)
-* [Docker-compose](#docker-compose)
-* [Kubernetes](#kubernetes)
-* [GitHub Actions](#github-actions)
+* **[Home](https://github.com/Nano-Core/Nano.Library#nano-library)**
+* **[Summary](#summary)**
+* **[Registration](#registration)**
+* **[Configuration](#configuration)**
+* **[Docker-compose](#docker-compose)**
+* **[Kubernetes](#kubernetes)**
+* **[GitHub Actions](#github-actions)**
 
 ## Summary
 Data Provider implementation for MySql data access.  

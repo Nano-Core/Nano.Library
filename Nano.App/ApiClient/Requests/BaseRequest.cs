@@ -101,7 +101,7 @@ public abstract class BaseRequest
 
     internal virtual string GetQuerystring()
     {
-        var querystring = this.GetQuerystringRecursive(this);
+        var querystring = GetQuerystringRecursive(this);
 
         return querystring.EndsWith('&')
             ? querystring[..^1]
@@ -137,7 +137,7 @@ public abstract class BaseRequest
     }
 
 
-    private string GetQuerystringRecursive(object value, string parentName = "")
+    private static string GetQuerystringRecursive(object value, string parentName = "")
     {
         ArgumentNullException.ThrowIfNull(value);
 
@@ -178,7 +178,7 @@ public abstract class BaseRequest
                             return $"{current}{parentName}{name}={Uri.EscapeDataString(item.ToString() ?? string.Empty)}&";
                         }
 
-                        return current + this.GetQuerystringRecursive(item, $"{parentName}{name}.");
+                        return current + GetQuerystringRecursive(item, $"{parentName}{name}.");
                     });
             }
             else
@@ -188,7 +188,7 @@ public abstract class BaseRequest
                     continue;
                 }
 
-                str += this.GetQuerystringRecursive(propertyValue, $"{parentName}{name}.");
+                str += GetQuerystringRecursive(propertyValue, $"{parentName}{name}.");
             }
         }
 

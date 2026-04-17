@@ -10,12 +10,12 @@
 ***
 
 ## Table of Contents
-* [Home](https://github.com/Nano-Core/Nano.Library#nano-library)
-* [Summary](#summary)
-* [Registration](#registration)
-* [Configuration](#configuration)
-  * [Health Checks](#health-checks)
-* [Storage Providers](#storage-providers)
+* **[Home](https://github.com/Nano-Core/Nano.Library#nano-library)**
+* **[Summary](#summary)**
+* **[Registration](#registration)**
+* **[Configuration](#configuration)**
+  * **[Health Checks](#health-checks)**
+* **[Storage Providers](#storage-providers)**
 
 ## Summary
 Add a flexible, provider-agnostic file storage layer to your Nano applications.
@@ -93,7 +93,7 @@ The ```Storage``` section in the configuration defines the storage provider and 
 }
 ```
 
-> 💡 Learn more about **[Application Configuration](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#configuration)** here.  
+> 📖 Learn more about **[Application Configuration](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#configuration)** here.  
 
 ## Health Checks
 When health checks are enabled in the storage configuration, Nano automatically registers a health check for the configured storage provider.  

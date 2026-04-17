@@ -26,7 +26,7 @@ internal static class ServiceCollectionExtensions
         {
             var type = TypesHelper
                 .GetAllTypes()
-                .Where(x => x.Name == name && x is { IsAbstract: false, IsGenericType: false } && x.IsTypeOf(typeof(BaseApi<>)))
+                .Where(x => x.Name == name && x is { IsAbstract: false, IsGenericType: false } && x.IsTypeOf(typeof(BaseApiClient<>)))
                 .Distinct()
                 .FirstOrDefault();
 

@@ -10,8 +10,8 @@
 ***
 
 ## Table of Contents
-* [Home](https://github.com/Nano-Core/Nano.Library#nano-library)
-* [Summary](#summary)
+* **[Home](https://github.com/Nano-Core/Nano.Library#nano-library)**
+* **[Summary](#summary)**
 
 ## Summary
 Shared building blocks and core implementations used across multiple parts of the Nano ecosystem. 
