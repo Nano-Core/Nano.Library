@@ -40,9 +40,9 @@ public class ApiClientOptions
     public virtual TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(30);
 
     /// <summary>
-    /// Optional login configuration for authentication.
+    /// Optional login root configuration for authentication.
     /// </summary>
-    public virtual LogInRootOptions? LogIn { get; set; }
+    public virtual LogInRootOptions? LogInRoot { get; set; }
 
     /// <summary>
     /// Optional health check configuration for the API client.

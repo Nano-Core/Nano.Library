@@ -177,15 +177,15 @@ public class ApiClient
         var accessToken2 = request.JwtTokenOverride ?? this.httpContextAccessor?.HttpContext?.GetJwtToken();
         var accessToken = accessToken2 == null ? null : new AccessToken { Token = accessToken2 };
 
-        if (accessToken == null && request is not LogInRootRequest && this.options.LogIn is not null)
+        if (accessToken == null && request is not LogInRootRequest && this.options.LogInRoot is not null)
         {
             accessToken ??= await this.accessTokenProvider
                 .GetRootAccessTokenAsync(x => this.InvokeAsync<LogInRootRequest, AccessToken>(new LogInRootRequest
                 {
                     LogInRoot = new LogInRoot
                     {
-                        Username = this.options.LogIn.Username,
-                        Password = this.options.LogIn.Password
+                        Username = this.options.LogInRoot.Username,
+                        Password = this.options.LogInRoot.Password
                     }
                 }, x), cancellationToken);
         }

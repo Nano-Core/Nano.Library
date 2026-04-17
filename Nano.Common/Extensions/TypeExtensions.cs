@@ -24,8 +24,11 @@ public static class TypeExtensions
         ArgumentNullException.ThrowIfNull(type);
         ArgumentNullException.ThrowIfNull(baseType);
 
-        return type
+        var a = type
             .GetParentTypes()
+            .ToArray();
+
+        return a
             .Any(x =>
                 x == baseType ||
                 (x.IsGenericType && x.GetGenericTypeDefinition() == baseType));
@@ -110,7 +113,7 @@ public static class TypeExtensions
 
         return type
             .GetInterfaces()
-            .Concat(type.GetBaseTypes());
+            .Concat(type.GetBaseTypes2());
     }
     private static string GetTypeString(this Type type)
     {
@@ -135,5 +138,18 @@ public static class TypeExtensions
 
         return output
             .ToString();
+    }
+
+    private static IEnumerable<Type> GetBaseTypes2(this Type type)
+    {
+        ArgumentNullException.ThrowIfNull(type);
+
+        var current = type.BaseType;
+
+        while (current != null && current != typeof(object))
+        {
+            yield return current;
+            current = current.BaseType;
+        }
     }
 }

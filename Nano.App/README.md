@@ -106,19 +106,20 @@ Typically, this is the case when the default controller isn't used in the applic
 SHOW CONFIG JSON AND TABLE
 
 ```json
-"MyApi": {
-    "Host": "localhost",
-    "Root": "api",
-    "Port": 80,
-    "UseSsl": false,
-    "TimeoutInSeconds": 30,
-    "UseHealthCheck": true,
-    "UnhealthyStatus": "Degraded",
-    "LogIn": {
-      "Username": null,
-      "Password": null
+"App": {
+  "Apis": {
+    "MyApi": {
+      "Host": "localhost",
+      "Root": "api",
+      "Port": 80,
+      "UseSsl": false,
+      "Timeout": "00:00:30",
+      "LogInRoot": null
+      "HealthCheck": null
     }
+  }
 }
+
 ```
   
 Methods are available for all nano controller actions, such as finding, querying, adding, deleting and updating. Additionally, the api-client contains a custom action implementation, 
