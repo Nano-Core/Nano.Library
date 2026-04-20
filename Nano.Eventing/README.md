@@ -123,7 +123,8 @@ To implement a new eventing provider:
 3. Add your provider to the application using:
 
 ```csharp
-services.AddNanoEventing<MyProvider>();
+services
+    .AddNanoEventing<MyProvider>();
 ```
 
 The following eventing providers are currently supported in Nano:
@@ -153,10 +154,10 @@ Next, to publish an event from one application:
 
 ```csharp
 await this.Eventing
-.PublishAsync(new MyEvent
-{
-    Text = "Message from another service"
-});
+    .PublishAsync(new MyEvent
+    {
+        Text = "Message from another service"
+    });
 ```
 
 ⚠️ IEventing also provides a `SubscribeAsync(...)` method, but manual invocation is not required. All `IEventingHandler<T>` implementations are automatically 
@@ -185,7 +186,10 @@ be set via the constructor.
 ```csharp
 public class MyEventingHandler() : BaseEventHandler<MyEvent>(routingKey: null, overridePrefetchCount: null)
 {
-    ...
+    public override Task CallbackAsync(MyEvent @event, bool isRedelivered, CancellationToken cancellationToken = default)
+    {
+        ...
+    }
 }
 ```
 

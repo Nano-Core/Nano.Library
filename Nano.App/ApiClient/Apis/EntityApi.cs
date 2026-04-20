@@ -21,12 +21,12 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     #region Read
 
     /// <summary>
-    /// Invokes the 'index' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Executes <c>index</c> for <typeparamref name="TEntity"/> to retrieve a collection of entities.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="request">The <see cref="IndexRequest"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The entities.</returns>
+    /// <param name="request">The index request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A collection of entities.</returns>
     public async Task<IEnumerable<TEntity>> IndexAsync<TEntity>(IndexRequest request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
     {
@@ -37,12 +37,12 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'details' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Executes <c>details</c> for <typeparamref name="TEntity"/> to retrieve a single entity by request.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="request">The <see cref="DetailsRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The matching entity.</returns>
+    /// <param name="request">The details request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The matching entity, or <c>null</c> if not found.</returns>
     public Task<TEntity?> DetailsAsync<TEntity>(DetailsRequest<TIdentity> request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<TIdentity>
     {
@@ -53,12 +53,12 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'details' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Executes <c>details</c> for <typeparamref name="TEntity"/> to retrieve a single entity by identifier.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="id">The id.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The matching entity.</returns>
+    /// <param name="id">The entity identifier.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The matching entity, or <c>null</c> if not found.</returns>
     public Task<TEntity?> GetAsync<TEntity>(TIdentity id, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<TIdentity>
     {
@@ -69,13 +69,13 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'details' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Executes <c>details</c> for <typeparamref name="TEntity"/> to retrieve a single entity with include depth.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="id">The id.</param>
-    /// <param name="includeDepth">The include depth.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The matching entity.</returns>
+    /// <param name="id">The entity identifier.</param>
+    /// <param name="includeDepth">The include depth level.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The matching entity, or <c>null</c> if not found.</returns>
     public Task<TEntity?> GetAsync<TEntity>(TIdentity id, int includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<TIdentity>
     {
@@ -87,12 +87,12 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'details/many' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Executes <c>details/many</c> for <typeparamref name="TEntity"/> to retrieve multiple entities by request.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="request">The <see cref="DetailsManyRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The matching entities.</returns>
+    /// <param name="request">The details-many request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A collection of entities.</returns>
     public async Task<IEnumerable<TEntity>> DetailsManyAsync<TEntity>(DetailsManyRequest<TIdentity> request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<TIdentity>
     {
@@ -103,12 +103,12 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'details/many' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Executes <c>details/many</c> for <typeparamref name="TEntity"/> to retrieve multiple entities by identifiers.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="ids">The ids.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The matching entities.</returns>
+    /// <param name="ids">The entity identifiers.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A collection of entities.</returns>
     public Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(ICollection<TIdentity> ids, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<TIdentity>
     {
@@ -119,13 +119,13 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'details/many' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Executes <c>details/many</c> for <typeparamref name="TEntity"/> to retrieve multiple entities by identifiers with include depth.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="ids">The ids.</param>
-    /// <param name="includeDepth">The include depth.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The matching entities.</returns>
+    /// <param name="ids">The entity identifiers.</param>
+    /// <param name="includeDepth">The include depth level.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A collection of entities.</returns>
     public Task<IEnumerable<TEntity>> GetManyAsync<TEntity>(ICollection<TIdentity> ids, int includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<TIdentity>
     {
@@ -137,13 +137,13 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'query' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Executes <c>query</c> for <typeparamref name="TEntity"/> to retrieve matching entities by request.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <typeparam name="TCriteria">The criteria type</typeparam>
-    /// <param name="request">The <see cref="QueryRequest{TCriteria}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The matching entities.</returns>
+    /// <typeparam name="TCriteria">The query criteria type.</typeparam>
+    /// <param name="request">The query request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A collection of matching entities.</returns>
     public async Task<IEnumerable<TEntity>> QueryAsync<TEntity, TCriteria>(QueryRequest<TCriteria> request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
         where TCriteria : IQueryCriteria, new()
@@ -155,13 +155,13 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'query' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Executes <c>query</c> for <typeparamref name="TEntity"/> using a query object.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <typeparam name="TCriteria">The criteria type</typeparam>
-    /// <param name="query">The query with criteria of type <typeparamref name="TCriteria"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The matching entities.</returns>
+    /// <typeparam name="TCriteria">The query criteria type.</typeparam>
+    /// <param name="query">The query object.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A collection of matching entities.</returns>
     public Task<IEnumerable<TEntity>> QueryAsync<TEntity, TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
         where TCriteria : IQueryCriteria, new()
@@ -175,14 +175,14 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'query' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Executes <c>query</c> for <typeparamref name="TEntity"/> using a query object with include depth.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <typeparam name="TCriteria">The criteria type</typeparam>
-    /// <param name="query">The query with criteria of type <typeparamref name="TCriteria"/>.</param>
-    /// <param name="includeDepth">The include depth.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The matching entities.</returns>
+    /// <typeparam name="TCriteria">The query criteria type.</typeparam>
+    /// <param name="query">The query object.</param>
+    /// <param name="includeDepth">The include depth level.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A collection of matching entities.</returns>
     public Task<IEnumerable<TEntity>> QueryAsync<TEntity, TCriteria>(IQuery<TCriteria> query, int includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
         where TCriteria : IQueryCriteria, new()
@@ -197,14 +197,13 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Query.
-    /// Invokes the 'query/first' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Executes <c>query/first</c> for <typeparamref name="TEntity"/> to retrieve the first matching entity by request.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <typeparam name="TCriteria">The criteria type</typeparam>
-    /// <param name="request">The <see cref="QueryFirstRequest{TCriteria}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The first match entity.</returns>
+    /// <typeparam name="TCriteria">The query criteria type.</typeparam>
+    /// <param name="request">The query-first request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The first matching entity, or <c>null</c> if none found.</returns>
     public Task<TEntity?> QueryFirstAsync<TEntity, TCriteria>(QueryFirstRequest<TCriteria> request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
         where TCriteria : IQueryCriteria, new()
@@ -216,14 +215,13 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Query.
-    /// Invokes the 'query/first' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Executes <c>query/first</c> for <typeparamref name="TEntity"/> using a query object.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <typeparam name="TCriteria">The criteria type</typeparam>
-    /// <param name="query">The query with criteria of type <typeparamref name="TCriteria"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The first match entity.</returns>
+    /// <typeparam name="TCriteria">The query criteria type.</typeparam>
+    /// <param name="query">The query object.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The first matching entity, or <c>null</c> if none found.</returns>
     public Task<TEntity?> QueryFirstAsync<TEntity, TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
         where TCriteria : IQueryCriteria, new()
@@ -237,15 +235,14 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Query.
-    /// Invokes the 'query/first' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Executes <c>query/first</c> for <typeparamref name="TEntity"/> using a query object with include depth.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <typeparam name="TCriteria">The criteria type</typeparam>
-    /// <param name="query">The query with criteria of type <typeparamref name="TCriteria"/>.</param>
-    /// <param name="includeDepth">The include depth.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The first match entity.</returns>
+    /// <typeparam name="TCriteria">The query criteria type.</typeparam>
+    /// <param name="query">The query object.</param>
+    /// <param name="includeDepth">The include depth level.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The first matching entity, or <c>null</c> if none found.</returns>
     public Task<TEntity?> QueryFirstAsync<TEntity, TCriteria>(IQuery<TCriteria> query, int includeDepth, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
         where TCriteria : IQueryCriteria, new()
@@ -260,13 +257,13 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'query/count' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Executes <c>query/count</c> for <typeparamref name="TEntity"/> to count matching entities by request.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <typeparam name="TCriteria">The criteria type</typeparam>
-    /// <param name="request">The <see cref="QueryCountRequest{TCriteria}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The count of matching entities.</returns>
+    /// <typeparam name="TCriteria">The query criteria type.</typeparam>
+    /// <param name="request">The query count request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The number of matching entities.</returns>
     public async Task<int> QueryCountAsync<TEntity, TCriteria>(QueryCountRequest<TCriteria> request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
         where TCriteria : IQueryCriteria, new()
@@ -282,13 +279,13 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'query/count' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Executes <c>query/count</c> for <typeparamref name="TEntity"/> to count matching entities by criteria.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <typeparam name="TCriteria">The criteria type</typeparam>
-    /// <param name="criteria">The criteria of type <typeparamref name="TCriteria"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The count of matching entities.</returns>
+    /// <typeparam name="TCriteria">The query criteria type.</typeparam>
+    /// <param name="criteria">The query criteria.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The number of matching entities.</returns>
     public Task<int> QueryCountAsync<TEntity, TCriteria>(TCriteria criteria, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
         where TCriteria : IQueryCriteria, new()
@@ -307,11 +304,11 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     #region Create
 
     /// <summary>
-    /// Invokes the 'create' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Invokes the 'create' endpoint of the entity in the api.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="request">The <see cref="CreateRequest"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <param name="request">The create request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The created entity.</returns>
     public async Task<TEntity> CreateAsync<TEntity>(CreateRequest request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityCreatable
@@ -325,11 +322,11 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'create' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Invokes the 'create' endpoint of the entity in the api.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="entity">The entity of type <see cref="IEntityCreatable"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <param name="entity">The entity to create.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The created entity.</returns>
     public Task<TEntity> CreateAsync<TEntity>(IEntityCreatable entity, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityCreatable
@@ -343,12 +340,12 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'create/get' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Invokes the 'create/get' endpoint of the entity in the api.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="request">The <see cref="CreateOrGetRequest"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The created entity.</returns>
+    /// <param name="request">The create-or-get request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The created or existing entity.</returns>
     public async Task<TEntity> CreateOrGetAsync<TEntity>(CreateOrGetRequest request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityCreatable, IEntityIdentity<TIdentity>
     {
@@ -361,12 +358,12 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'create/get' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Invokes the 'create/get' endpoint of the entity in the api.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="entity">The entity of type <see cref="IEntityCreatable"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The created entity.</returns>
+    /// <param name="entity">The entity to create or get.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The created or existing entity.</returns>
     public Task<TEntity> CreateOrGetAsync<TEntity>(IEntityCreatable entity, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityCreatable, IEntityIdentity<TIdentity>
     {
@@ -379,11 +376,11 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'create/reload' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Invokes the 'create/reload' endpoint of the entity in the api.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="request">The <see cref="CreateAndGetRequest"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <param name="request">The create-and-get request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The created entity.</returns>
     public async Task<TEntity?> CreateAndGetAsync<TEntity>(CreateAndGetRequest request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityCreatable, IEntityIdentity<TIdentity>
@@ -397,11 +394,11 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'create/reload' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Invokes the 'create/reload' endpoint of the entity in the api.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="entity">The entity of type <see cref="IEntityCreatable"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
+    /// <param name="entity">The entity to create and reload.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The created entity.</returns>
     public Task<TEntity?> CreateAndGetAsync<TEntity>(IEntityCreatable entity, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityCreatable, IEntityIdentity<TIdentity>
@@ -415,12 +412,12 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'create/many' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Invokes the 'create/many' endpoint of the entity in the api.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="request">The <see cref="CreateManyRequest"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Nothing.</returns>
+    /// <param name="request">The bulk create request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>Operation result.</returns>
     public async Task CreateManyAsync<TEntity>(CreateManyRequest request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityCreatable
     {
@@ -431,12 +428,12 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'create/many' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Invokes the 'create/many' endpoint of the entity in the api.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="entities">The entities of type <see cref="IEntityCreatable"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Nothing.</returns>
+    /// <param name="entities">The entities to create.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>Operation result.</returns>
     public Task CreateManyAsync<TEntity>(IEnumerable<IEntityCreatable> entities, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityCreatable
     {
@@ -449,12 +446,12 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'create/many' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Invokes the 'create/many' bulk endpoint of the entity in the api.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="request">The <see cref="CreateManyBulkRequest"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Nothing.</returns>
+    /// <param name="request">The bulk request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>Operation result.</returns>
     public Task CreateManyBulkAsync<TEntity>(CreateManyBulkRequest request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityCreatable
     {
@@ -465,12 +462,12 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'create/many' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Invokes the 'create/many/bulk' bulk endpoint of the entity in the api.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="entities">The entities of type <see cref="IEntityCreatable"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Nothing.</returns>
+    /// <param name="entities">The entities to create in bulk.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>Operation result.</returns>
     public Task CreateManyBulkAsync<TEntity>(IEnumerable<IEntityCreatable> entities, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityCreatable
     {
@@ -488,12 +485,13 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     #region Edit
 
     /// <summary>
-    /// Invokes the 'edit' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Updates an entity via the 'edit' endpoint.
+    /// Route: edit
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="request">The <see cref="EditRequest"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The updated entity.</returns>
+    /// <param name="request">The edit request containing the updated entity data.</param>
+    /// <param name="cancellationToken">A token to cancel the operation.</param>
+    /// <returns>The updated entity instance.</returns>
     public async Task<TEntity?> EditAsync<TEntity>(EditRequest request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityUpdatable
     {
@@ -506,12 +504,13 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'edit' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Updates an entity via the 'edit' endpoint using an updatable entity instance.
+    /// Route: edit
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="entity">The entity of type <see cref="IEntityUpdatable"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The updated entity.</returns>
+    /// <param name="entity">The entity containing updated values.</param>
+    /// <param name="cancellationToken">A token to cancel the operation.</param>
+    /// <returns>The updated entity instance.</returns>
     public Task<TEntity?> EditAsync<TEntity>(IEntityUpdatable entity, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityUpdatable
     {
@@ -524,12 +523,13 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'edit/get' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Updates and returns an entity via the 'edit/get' endpoint.
+    /// Route: edit/get
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="request">The <see cref="EditAndGetRequest"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The updated entity.</returns>
+    /// <param name="request">The edit-and-get request.</param>
+    /// <param name="cancellationToken">A token to cancel the operation.</param>
+    /// <returns>The updated entity instance.</returns>
     public async Task<TEntity?> EditAndGetAsync<TEntity>(EditAndGetRequest request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityUpdatable, IEntityIdentity<TIdentity>
     {
@@ -542,12 +542,13 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'edit/get' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Updates and returns an entity via the 'edit/get' endpoint using an entity instance.
+    /// Route: edit/get
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="entity">The entity of type <see cref="IEntityUpdatable"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The updated entity.</returns>
+    /// <param name="entity">The entity containing updated values.</param>
+    /// <param name="cancellationToken">A token to cancel the operation.</param>
+    /// <returns>The updated entity instance.</returns>
     public Task<TEntity?> EditGetAsync<TEntity>(IEntityUpdatable entity, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityUpdatable, IEntityIdentity<TIdentity>
     {
@@ -560,12 +561,13 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'edit/many' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Updates multiple entities via the 'edit/many' endpoint.
+    /// Route: edit/many
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="request">The <see cref="EditManyRequest"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Nothing.</returns>
+    /// <param name="request">The batch edit request.</param>
+    /// <param name="cancellationToken">A token to cancel the operation.</param>
+    /// <returns>A task representing the operation.</returns>
     public async Task EditManyAsync<TEntity>(EditManyRequest request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityUpdatable
     {
@@ -576,12 +578,13 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'edit/many' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Updates multiple entities via the 'edit/many' endpoint using entity instances.
+    /// Route: edit/many
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="entities">The entities of type <see cref="IEntityUpdatable"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Nothing.</returns>
+    /// <param name="entities">The entities to update.</param>
+    /// <param name="cancellationToken">A token to cancel the operation.</param>
+    /// <returns>A task representing the operation.</returns>
     public Task EditManyAsync<TEntity>(IEnumerable<IEntityUpdatable> entities, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityUpdatable
     {
@@ -594,12 +597,13 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'edit/many/bulk' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Bulk updates multiple entities via the 'edit/many/bulk' endpoint.
+    /// Route: edit/many/bulk
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="request">The <see cref="EditManyBulkRequest"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Nothing.</returns>
+    /// <param name="request">The bulk edit request.</param>
+    /// <param name="cancellationToken">A token to cancel the operation.</param>
+    /// <returns>A task representing the operation.</returns>
     public Task EditManyBulkAsync<TEntity>(EditManyBulkRequest request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityUpdatable
     {
@@ -610,12 +614,13 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'edit/many/bulk' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Bulk updates multiple entities via the 'edit/many/bulk' endpoint using entity instances.
+    /// Route: edit/many/bulk
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="entities">The entities of type <see cref="IEntityUpdatable"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Nothing.</returns>
+    /// <param name="entities">The entities to update.</param>
+    /// <param name="cancellationToken">A token to cancel the operation.</param>
+    /// <returns>A task representing the operation.</returns>
     public Task EditManyBulkAsync<TEntity>(IEnumerable<IEntityUpdatable> entities, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityUpdatable
     {
@@ -628,13 +633,14 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'edit/query' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Updates entities matching a query via the 'edit/query' endpoint.
+    /// Route: edit/query
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <typeparam name="TCriteria">The criteria type</typeparam>
-    /// <param name="request">The <see cref="EditQueryRequest{TCriteria}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Nothing.</returns>
+    /// <typeparam name="TCriteria">The query criteria type.</typeparam>
+    /// <param name="request">The query-based edit request.</param>
+    /// <param name="cancellationToken">A token to cancel the operation.</param>
+    /// <returns>A task representing the operation.</returns>
     public async Task EditQueryAsync<TEntity, TCriteria>(EditQueryRequest<TCriteria> request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityDeletable
         where TCriteria : class, IQueryCriteria, new()
@@ -646,14 +652,15 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'edit/query' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Updates entities matching a query via the 'edit/query' endpoint using criteria and property updates.
+    /// Route: edit/query
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <typeparam name="TCriteria">The criteria type</typeparam>
-    /// <param name="criteria">The criteria used to select entities to update.</param>
-    /// <param name="propertyUpdates">A dictionary of property names and their new values to update on the selected entities.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Nothing.</returns>
+    /// <typeparam name="TCriteria">The query criteria type.</typeparam>
+    /// <param name="criteria">Selection criteria for entities to update.</param>
+    /// <param name="propertyUpdates">Dictionary of property updates to apply.</param>
+    /// <param name="cancellationToken">A token to cancel the operation.</param>
+    /// <returns>A task representing the operation.</returns>
     public Task EditQueryAsync<TEntity, TCriteria>(TCriteria criteria, IDictionary<string, object> propertyUpdates, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityDeletable
         where TCriteria : class, IQueryCriteria, new()
@@ -672,13 +679,14 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'edit/query/bulk' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Bulk updates entities matching a query via the 'edit/query/bulk' endpoint.
+    /// Route: edit/query/bulk
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <typeparam name="TCriteria">The criteria type</typeparam>
-    /// <param name="request">The <see cref="EditQueryRequest{TCriteria}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Nothing.</returns>
+    /// <typeparam name="TCriteria">The query criteria type.</typeparam>
+    /// <param name="request">The bulk query edit request.</param>
+    /// <param name="cancellationToken">A token to cancel the operation.</param>
+    /// <returns>A task representing the operation.</returns>
     public async Task EditQueryBulkAsync<TEntity, TCriteria>(EditQueryBulkRequest<TCriteria> request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityDeletable
         where TCriteria : class, IQueryCriteria, new()
@@ -690,14 +698,15 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'edit/query/bulk' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Bulk updates entities matching a query via the 'edit/query/bulk' endpoint using criteria and property updates.
+    /// Route: edit/query/bulk
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <typeparam name="TCriteria">The criteria type</typeparam>
-    /// <param name="criteria">The criteria used to select entities to update.</param>
-    /// <param name="propertyUpdates">A dictionary of property names and their new values to update on the selected entities.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Nothing.</returns>
+    /// <typeparam name="TCriteria">The query criteria type.</typeparam>
+    /// <param name="criteria">Selection criteria for entities to update.</param>
+    /// <param name="propertyUpdates">Dictionary of property updates to apply.</param>
+    /// <param name="cancellationToken">A token to cancel the operation.</param>
+    /// <returns>A task representing the operation.</returns>
     public Task EditQueryBulkAsync<TEntity, TCriteria>(TCriteria criteria, IDictionary<string, object> propertyUpdates, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityDeletable
         where TCriteria : class, IQueryCriteria, new()
@@ -721,12 +730,12 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     #region Delete
 
     /// <summary>
-    /// Invokes the 'delete' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Deletes a single entity using the 'delete' endpoint.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="request">The <see cref="DeleteRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Nothing.</returns>
+    /// <param name="request">The request containing the entity identity.</param>
+    /// <param name="cancellationToken">A token to cancel the operation.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public async Task DeleteAsync<TEntity>(DeleteRequest<TIdentity> request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<TIdentity>, IEntityDeletable
     {
@@ -737,12 +746,12 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'delete' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Deletes a single entity by identifier using the 'delete' endpoint.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="id">The id.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Nothing.</returns>
+    /// <param name="id">The entity identifier.</param>
+    /// <param name="cancellationToken">A token to cancel the operation.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public Task DeleteAsync<TEntity>(TIdentity id, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<TIdentity>, IEntityDeletable
     {
@@ -753,12 +762,12 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'delete/many' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Deletes multiple entities using the 'delete/many' endpoint.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="request">The <see cref="DeleteManyRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Nothing.</returns>
+    /// <param name="request">The request containing entity identifiers.</param>
+    /// <param name="cancellationToken">A token to cancel the operation.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public async Task DeleteManyAsync<TEntity>(DeleteManyRequest<TIdentity> request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<TIdentity>, IEntityDeletable
     {
@@ -769,12 +778,12 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'delete/many' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Deletes multiple entities by identifiers using the 'delete/many' endpoint.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="ids">The ids.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Nothing.</returns>
+    /// <param name="ids">The entity identifiers.</param>
+    /// <param name="cancellationToken">A token to cancel the operation.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public Task DeleteManyAsync<TEntity>(IEnumerable<TIdentity> ids, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<TIdentity>, IEntityDeletable
     {
@@ -787,12 +796,12 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'delete/many/bulk' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Deletes multiple entities in bulk using the 'delete/many/bulk' endpoint.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="request">The <see cref="DeleteManyBulkRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Nothing.</returns>
+    /// <param name="request">The bulk delete request.</param>
+    /// <param name="cancellationToken">A token to cancel the operation.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public async Task DeleteManyBulkAsync<TEntity>(DeleteManyBulkRequest<TIdentity> request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<TIdentity>, IEntityDeletable
     {
@@ -803,12 +812,12 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'delete/many/bulk' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Deletes multiple entities in bulk by identifiers using the 'delete/many/bulk' endpoint.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="ids">The ids.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Nothing.</returns>
+    /// <param name="ids">The entity identifiers.</param>
+    /// <param name="cancellationToken">A token to cancel the operation.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public Task DeleteManyBulkAsync<TEntity>(IEnumerable<TIdentity> ids, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<TIdentity>, IEntityDeletable
     {
@@ -821,13 +830,13 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'delete/query' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Deletes entities matching a query using the 'delete/query' endpoint.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <typeparam name="TCriteria">The criteria type</typeparam>
-    /// <param name="request">The <see cref="DeleteQueryRequest{TCriteria}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Nothing.</returns>
+    /// <typeparam name="TCriteria">The criteria type.</typeparam>
+    /// <param name="request">The delete query request.</param>
+    /// <param name="cancellationToken">A token to cancel the operation.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public async Task DeleteQueryAsync<TEntity, TCriteria>(DeleteQueryRequest<TCriteria> request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityDeletable
         where TCriteria : IQueryCriteria, new()
@@ -839,13 +848,13 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'delete/query' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Deletes entities matching criteria using the 'delete/query' endpoint.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <typeparam name="TCriteria">The criteria type</typeparam>
-    /// <param name="criteria">The criteria used to select entities to update.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Nothing.</returns>
+    /// <typeparam name="TCriteria">The criteria type.</typeparam>
+    /// <param name="criteria">The selection criteria.</param>
+    /// <param name="cancellationToken">A token to cancel the operation.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public Task DeleteQueryAsync<TEntity, TCriteria>(TCriteria criteria, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityDeletable
         where TCriteria : IQueryCriteria, new()
@@ -859,13 +868,13 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'delete/query/bulk' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Deletes entities in bulk using a query via the 'delete/query/bulk' endpoint.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <typeparam name="TCriteria">The criteria type</typeparam>
-    /// <param name="request">The <see cref="DeleteQueryBulkRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Nothing.</returns>
+    /// <typeparam name="TCriteria">The criteria type.</typeparam>
+    /// <param name="request">The bulk delete query request.</param>
+    /// <param name="cancellationToken">A token to cancel the operation.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public async Task DeleteQueryBulkAsync<TEntity, TCriteria>(DeleteQueryBulkRequest<TCriteria> request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityDeletable
         where TCriteria : IQueryCriteria, new()
@@ -877,13 +886,13 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'delete/query/bulk' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Deletes entities in bulk matching criteria using the 'delete/query/bulk' endpoint.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <typeparam name="TCriteria">The criteria type</typeparam>
-    /// <param name="criteria">The criteria used to select entities to update.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Nothing.</returns>
+    /// <typeparam name="TCriteria">The criteria type.</typeparam>
+    /// <param name="criteria">The selection criteria.</param>
+    /// <param name="cancellationToken">A token to cancel the operation.</param>
+    /// <returns>A task representing the asynchronous operation.</returns>
     public Task DeleteQueryBulkAsync<TEntity, TCriteria>(TCriteria criteria, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<TIdentity>, IEntityDeletable
         where TCriteria : IQueryCriteria, new()

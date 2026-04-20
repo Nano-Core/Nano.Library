@@ -1900,7 +1900,7 @@ Nano entity controllers have two required constructor dependencies and one optio
 A controller using the default `Guid` as `TIdentity` would look like this.  
 
 ```csharp
-public class MyEntitysController(ILogger<MyEntitysController> logger,IRepository repository,IEventing? eventing) 
+public class MyEntitysController(ILogger<MyEntitysController> logger, IRepository repository, IEventing? eventing) 
     : BaseEntityController<MyEntity, MyEntityQueryCriteria>(logger, repository, eventing);
 ```
 

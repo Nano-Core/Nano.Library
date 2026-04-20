@@ -24,8 +24,14 @@ using Vivet.AspNetCore.RequestTimeZone.Providers;
 
 namespace Nano.App.ApiClient;
 
-// BUG: Triple Slash
-
+/// <summary>
+/// Core API client responsible for handling HTTP communication, authentication, and request execution
+/// for Nano-based applications.
+/// </summary>
+/// <param name="options">Configuration options for the API client.</param>
+/// <param name="httpClient">The HTTP client used to send requests.</param>
+/// <param name="accessTokenProvider">Provides access tokens for authenticated requests.</param>
+/// <param name="httpContextAccessor">Optional HTTP context accessor used when available in web environments.</param>
 public sealed class ApiClient(ApiClientOptions options, HttpClient httpClient, IAccessTokenProvider accessTokenProvider, IHttpContextAccessor? httpContextAccessor = null)
 {
     private static readonly string[] headersToForward =
@@ -49,13 +55,6 @@ public sealed class ApiClient(ApiClientOptions options, HttpClient httpClient, I
     private readonly IAccessTokenProvider accessTokenProvider = accessTokenProvider ?? throw new ArgumentNullException(nameof(accessTokenProvider));
     internal readonly IHttpContextAccessor? httpContextAccessor = httpContextAccessor;
 
-    /// <summary>
-    /// Invokes the request.
-    /// </summary>
-    /// <typeparam name="TRequest">The request type.</typeparam>
-    /// <param name="request">The instance of type <typeparamref name="TRequest"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
     internal async Task InvokeAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
         where TRequest : BaseRequest
     {
@@ -69,14 +68,6 @@ public sealed class ApiClient(ApiClientOptions options, HttpClient httpClient, I
         await GetResponseAsync(httpResponse, cancellationToken);
     }
 
-    /// <summary>
-    /// Invokes the request, and returns the response.
-    /// </summary>
-    /// <typeparam name="TRequest">The request type.</typeparam>
-    /// <typeparam name="TResponse">The response type.</typeparam>
-    /// <param name="request">The instance of type <typeparamref name="TRequest"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The instance of <typeparamref name="TResponse"/>.</returns>
     internal async Task<TResponse?> InvokeAsync<TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
         where TRequest : BaseRequest
         where TResponse : class
@@ -93,15 +84,6 @@ public sealed class ApiClient(ApiClientOptions options, HttpClient httpClient, I
         return await GetResponseAsync<TResponse>(httpResponse, cancellationToken);
     }
 
-    /// <summary>
-    /// Invokes the request, and returns the response.
-    /// </summary>
-    /// <typeparam name="TEntity">The entity.</typeparam>
-    /// <typeparam name="TRequest">The request type.</typeparam>
-    /// <typeparam name="TResponse">The response type.</typeparam>
-    /// <param name="request">The instance of type <typeparamref name="TRequest"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The instance of <typeparamref name="TResponse"/>.</returns>
     internal async Task<TResponse?> InvokeAsync<TEntity, TRequest, TResponse>(TRequest request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
         where TRequest : BaseRequest

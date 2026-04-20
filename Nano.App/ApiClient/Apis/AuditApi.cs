@@ -8,9 +8,9 @@ using Nano.Common.Consts;
 using Nano.Data.Abstractions.Models;
 
 namespace Nano.App.ApiClient.Apis;
-
 /// <summary>
-/// 
+/// Client for interacting with audit endpoints (route: <c>audit/*</c>).
+/// Provides querying and retrieval of <see cref="AuditEntry{TIdentity}"/> resources.
 /// </summary>
 public sealed class AuditApi<TIdentity>(ApiClient api)
     where TIdentity : IEquatable<TIdentity>
@@ -18,11 +18,11 @@ public sealed class AuditApi<TIdentity>(ApiClient api)
     private readonly ApiClient api = api ?? throw new ArgumentNullException(nameof(api));
 
     /// <summary>
-    /// Invokes the 'index' endpoint of the <see cref="AuditEntry{TIdentity}"/> in the api.
+    /// Executes <c>audit/index</c> to retrieve a paged or filtered set of audit entries.
     /// </summary>
-    /// <param name="request">The <see cref="IndexRequest"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The entities.</returns>
+    /// <param name="request">The index request configuration.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A collection of matching audit entries.</returns>
     public async Task<IEnumerable<AuditEntry<TIdentity>>> IndexAsync(IndexRequest request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -34,11 +34,11 @@ public sealed class AuditApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'details' endpoint of the <see cref="AuditEntry{TIdentity}"/> in the api.
+    /// Executes <c>audit/details</c> to retrieve a single audit entry.
     /// </summary>
-    /// <param name="request">The <see cref="DetailsRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The matching entity.</returns>
+    /// <param name="request">The details request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The matching audit entry, or <c>null</c> if not found.</returns>
     public Task<AuditEntry<TIdentity>?> DetailsAsync(DetailsRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -50,11 +50,11 @@ public sealed class AuditApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'details' endpoint of the <see cref="AuditEntry{TIdentity}"/> in the api.
+    /// Executes <c>audit/details</c> to retrieve a single audit entry by id.
     /// </summary>
-    /// <param name="id">The id.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The matching entity.</returns>
+    /// <param name="id">The identifier of the audit entry.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The matching audit entry, or <c>null</c> if not found.</returns>
     public Task<AuditEntry<TIdentity>?> GetAsync(TIdentity id, CancellationToken cancellationToken = default)
     {
         return this.DetailsAsync(new DetailsRequest<TIdentity>
@@ -64,12 +64,12 @@ public sealed class AuditApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'details' endpoint of the <see cref="AuditEntry{TIdentity}"/> in the api.
+    /// Executes <c>audit/details</c> to retrieve a single audit entry by id with related data.
     /// </summary>
-    /// <param name="id">The id.</param>
-    /// <param name="includeDepth">The include depth.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The matching entity.</returns>
+    /// <param name="id">The identifier of the audit entry.</param>
+    /// <param name="includeDepth">The depth of related entities to include.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The matching audit entry, or <c>null</c> if not found.</returns>
     public Task<AuditEntry<TIdentity>?> GetAsync(TIdentity id, int includeDepth, CancellationToken cancellationToken = default)
     {
         return this.DetailsAsync(new DetailsRequest<TIdentity>
@@ -80,11 +80,11 @@ public sealed class AuditApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'details/many' endpoint of the <see cref="AuditEntry{TIdentity}"/> in the api.
+    /// Executes <c>audit/details/many</c> to retrieve multiple audit entries.
     /// </summary>
-    /// <param name="request">The <see cref="DetailsManyRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The matching entities.</returns>
+    /// <param name="request">The request containing identifiers and options.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A collection of matching audit entries.</returns>
     public async Task<IEnumerable<AuditEntry<TIdentity>>> DetailsManyAsync(DetailsManyRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -96,11 +96,11 @@ public sealed class AuditApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'details/many' endpoint of the <see cref="AuditEntry{TIdentity}"/> in the api.
+    /// Executes <c>audit/details/many</c> to retrieve multiple audit entries by ids.
     /// </summary>
-    /// <param name="ids">The ids.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The matching entities.</returns>
+    /// <param name="ids">The identifiers to retrieve.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A collection of matching audit entries.</returns>
     public Task<IEnumerable<AuditEntry<TIdentity>>> GetManyAsync(ICollection<TIdentity> ids, CancellationToken cancellationToken = default)
     {
         return this.DetailsManyAsync(new DetailsManyRequest<TIdentity>
@@ -110,12 +110,12 @@ public sealed class AuditApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'details/many' endpoint of the <see cref="AuditEntry{TIdentity}"/> in the api.
+    /// Executes <c>audit/details/many</c> to retrieve multiple audit entries with related data.
     /// </summary>
-    /// <param name="ids">The ids.</param>
-    /// <param name="includeDepth">The include depth.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The matching entities.</returns>
+    /// <param name="ids">The identifiers to retrieve.</param>
+    /// <param name="includeDepth">The depth of related entities to include.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A collection of matching audit entries.</returns>
     public Task<IEnumerable<AuditEntry<TIdentity>>> GetManyAsync(ICollection<TIdentity> ids, int includeDepth, CancellationToken cancellationToken = default)
     {
         return this.DetailsManyAsync(new DetailsManyRequest<TIdentity>
@@ -126,12 +126,12 @@ public sealed class AuditApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'query' endpoint of the <see cref="AuditEntry{TIdentity}"/> in the api.
+    /// Executes <c>audit/query</c> to retrieve audit entries matching criteria.
     /// </summary>
-    /// <typeparam name="TCriteria">The criteria type</typeparam>
-    /// <param name="request">The <see cref="QueryRequest{TCriteria}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The matching entities.</returns>
+    /// <typeparam name="TCriteria">The criteria type.</typeparam>
+    /// <param name="request">The query request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A collection of matching audit entries.</returns>
     public async Task<IEnumerable<AuditEntry<TIdentity>>> QueryAsync<TCriteria>(QueryRequest<TCriteria> request, CancellationToken cancellationToken = default)
         where TCriteria : IQueryCriteria, new()
     {
@@ -144,12 +144,8 @@ public sealed class AuditApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'query' endpoint of the <see cref="AuditEntry{TIdentity}"/> in the api.
+    /// Executes <c>audit/query</c> using a query abstraction.
     /// </summary>
-    /// <typeparam name="TCriteria">The criteria type</typeparam>
-    /// <param name="query">The query with criteria of type <typeparamref name="TCriteria"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The matching entities.</returns>
     public Task<IEnumerable<AuditEntry<TIdentity>>> QueryAsync<TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
         where TCriteria : IQueryCriteria, new()
     {
@@ -162,13 +158,8 @@ public sealed class AuditApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'query' endpoint of the <see cref="AuditEntry{TIdentity}"/> in the api.
+    /// Executes <c>audit/query</c> using a query abstraction with related data.
     /// </summary>
-    /// <typeparam name="TCriteria">The criteria type</typeparam>
-    /// <param name="query">The query with criteria of type <typeparamref name="TCriteria"/>.</param>
-    /// <param name="includeDepth">The include depth.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The matching entities.</returns>
     public Task<IEnumerable<AuditEntry<TIdentity>>> QueryAsync<TCriteria>(IQuery<TCriteria> query, int includeDepth, CancellationToken cancellationToken = default)
         where TCriteria : IQueryCriteria, new()
     {
@@ -182,13 +173,8 @@ public sealed class AuditApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Query.
-    /// Invokes the 'query/first' endpoint of the <see cref="AuditEntry{TIdentity}"/> in the api.
+    /// Executes <c>audit/query/first</c> to retrieve the first matching audit entry.
     /// </summary>
-    /// <typeparam name="TCriteria">The criteria type</typeparam>
-    /// <param name="request">The <see cref="QueryFirstRequest{TCriteria}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The first match entity.</returns>
     public Task<AuditEntry<TIdentity>?> QueryFirstAsync<TCriteria>(QueryFirstRequest<TCriteria> request, CancellationToken cancellationToken = default)
         where TCriteria : IQueryCriteria, new()
     {
@@ -201,13 +187,8 @@ public sealed class AuditApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Query.
-    /// Invokes the 'query/first' endpoint of the <see cref="AuditEntry{TIdentity}"/> in the api.
+    /// Executes <c>audit/query/first</c> using a query abstraction.
     /// </summary>
-    /// <typeparam name="TCriteria">The criteria type</typeparam>
-    /// <param name="query">The query with criteria of type <typeparamref name="TCriteria"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The first match entity.</returns>
     public Task<AuditEntry<TIdentity>?> QueryFirstAsync<TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
         where TCriteria : IQueryCriteria, new()
     {
@@ -220,14 +201,8 @@ public sealed class AuditApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Query.
-    /// Invokes the 'query/first' endpoint of the <see cref="AuditEntry{TIdentity}"/> in the api.
+    /// Executes <c>audit/query/first</c> using a query abstraction with related data.
     /// </summary>
-    /// <typeparam name="TCriteria">The criteria type</typeparam>
-    /// <param name="query">The query with criteria of type <typeparamref name="TCriteria"/>.</param>
-    /// <param name="includeDepth">The include depth.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The first match entity.</returns>
     public Task<AuditEntry<TIdentity>?> QueryFirstAsync<TCriteria>(IQuery<TCriteria> query, int includeDepth, CancellationToken cancellationToken = default)
         where TCriteria : IQueryCriteria, new()
     {
@@ -241,12 +216,8 @@ public sealed class AuditApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'query/count' endpoint of the <see cref="AuditEntry{TIdentity}"/> in the api.
+    /// Executes <c>audit/query/count</c> to count matching audit entries.
     /// </summary>
-    /// <typeparam name="TCriteria">The criteria type</typeparam>
-    /// <param name="request">The <see cref="QueryCountRequest{TCriteria}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The count of matching entities.</returns>
     public async Task<int> QueryCountAsync<TCriteria>(QueryCountRequest<TCriteria> request, CancellationToken cancellationToken = default)
         where TCriteria : IQueryCriteria, new()
     {
@@ -263,12 +234,8 @@ public sealed class AuditApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'query/count' endpoint of the <see cref="AuditEntry{TIdentity}"/> in the api.
+    /// Executes <c>audit/query/count</c> using criteria.
     /// </summary>
-    /// <typeparam name="TCriteria">The criteria type</typeparam>
-    /// <param name="criteria">The criteria of type <typeparamref name="TCriteria"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The count of matching entities.</returns>
     public Task<int> QueryCountAsync<TCriteria>(TCriteria criteria, CancellationToken cancellationToken = default)
         where TCriteria : IQueryCriteria, new()
     {

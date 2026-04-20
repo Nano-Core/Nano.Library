@@ -4,7 +4,6 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
-using Nano.App.ApiClient.Requests;
 using Nano.App.ApiClient.Requests.Identity;
 using Nano.Data.Abstractions.Exceptions;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
@@ -29,13 +28,13 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     private readonly ApiClient api = api ?? throw new ArgumentNullException(nameof(api));
 
     /// <summary>
-    /// Invokes the 'details/deactivated' endpoint of the <typeparamref name="TEntity"/> in the api.
+    /// Executes <c>identity/details/deactivated</c> to retrieve a deactivated entity by identifier.
     /// </summary>
-    /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="request">The <see cref="DetailsRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The matching entity.</returns>
-    public Task<TEntity?> DetailsAsync<TEntity>(DetailsDeactivatedRequest<TIdentity> request, CancellationToken cancellationToken = default)
+    /// <typeparam name="TEntity">The entity type implementing <see cref="IEntityIdentity{TIdentity}"/>.</typeparam>
+    /// <param name="request">The details request for a deactivated entity.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The matching deactivated entity, or <c>null</c> if not found.</returns>
+    public Task<TEntity?> DetailsDeactivatedAsync<TEntity>(DetailsDeactivatedRequest<TIdentity> request, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityIdentity<TIdentity>
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -44,14 +43,13 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
             .InvokeAsync<DetailsDeactivatedRequest<TIdentity>, TEntity>(request, cancellationToken);
     }
 
-
     #region Sign Up
 
     /// <summary>
-    /// Get Password Options Async.
+    /// Executes <c>identity/password/options</c> to retrieve password policy configuration.
     /// </summary>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The password options, or <c>null</c> if not configured.</returns>
     public Task<PasswordOptions?> GetPasswordOptionsAsync(CancellationToken cancellationToken = default)
     {
         var request = new GetPasswordOptionsRequest
@@ -64,11 +62,12 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Is Email Address Taken Async.
+    /// Executes <c>identity/email/taken</c> to determine whether an email address is already registered.
     /// </summary>
-    /// <param name="request">The <see cref="IsEmailAddressTakenRequest"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="IsEmailAddressTaken"/>.</returns>
+    /// <param name="request">The request containing the email address.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The result indicating whether the email address is taken.</returns>
+    /// <exception cref="NullReferenceException">Thrown if the response is unexpectedly null.</exception>
     public async Task<IsEmailAddressTaken> IsEmailAddressTakenAsync(IsEmailAddressTakenRequest request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -82,11 +81,12 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Is Phone Number Taken Async.
+    /// Executes <c>identity/phone/taken</c> to determine whether a phone number is already registered.
     /// </summary>
-    /// <param name="request">The <see cref="IsPhoneNumberTakenRequest"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="IsPhoneNumberTaken"/>.</returns>
+    /// <param name="request">The request containing the phone number.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The result indicating whether the phone number is taken.</returns>
+    /// <exception cref="NullReferenceException">Thrown if the response is unexpectedly null.</exception>
     public async Task<IsPhoneNumberTaken> IsPhoneNumberTakenAsync(IsPhoneNumberTakenRequest request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -100,11 +100,12 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Sign Up Async.
+    /// Executes <c>identity/signup</c> to register a new user.
     /// </summary>
-    /// <param name="request">The <see cref="SignUpRequest{TUser}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The instance of the user.</returns>
+    /// <param name="request">The signup request containing user details.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The created user instance.</returns>
+    /// <exception cref="NullReferenceException">Thrown if the response is unexpectedly null.</exception>
     public async Task<TUser> SignUpAsync(SignUpRequest<TUser, TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -118,13 +119,14 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Sign Up External Async.
+    /// Executes <c>identity/signup/external</c> to register a new user via an external provider.
     /// </summary>
-    /// <typeparam name="TRequest">The signup request type.</typeparam>
-    /// <typeparam name="TFlow">The flow type of the signup request type.</typeparam>
-    /// <param name="request">The <see cref="BaseSignUpExternalRequest"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The instance of the user.</returns>
+    /// <typeparam name="TRequest">The external signup request type.</typeparam>
+    /// <typeparam name="TFlow">The authentication flow type.</typeparam>
+    /// <param name="request">The external signup request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The created user instance.</returns>
+    /// <exception cref="NullReferenceException">Thrown if the response is unexpectedly null.</exception>
     public async Task<TUser> SignUpExternalAsync<TRequest, TFlow>(TRequest request, CancellationToken cancellationToken = default)
         where TRequest : BaseSignUpExternalRequest<TFlow, TUser, TIdentity>
         where TFlow : BaseAuthFlow
@@ -143,11 +145,10 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     #region User
 
     /// <summary>
-    /// Set Username Async.
+    /// Executes <c>identity/username</c> to set or update the username for a user.
     /// </summary>
-    /// <param name="request">The <see cref="SetUsernameRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
+    /// <param name="request">The username update request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     public Task SetUsernameAsync(SetUsernameRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -159,11 +160,10 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Set Password Async.
+    /// Executes <c>identity/password/set</c> to set an initial password for a user.
     /// </summary>
-    /// <param name="request">The <see cref="SetPasswordRequest"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
+    /// <param name="request">The password setup request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     public Task SetPasswordAsync(SetPasswordRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -175,11 +175,10 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Change Password Async.
+    /// Executes <c>identity/password/change</c> to change an existing user password.
     /// </summary>
-    /// <param name="request">The <see cref="ChangePasswordRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
+    /// <param name="request">The password change request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     public Task ChangePasswordAsync(ChangePasswordRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -191,11 +190,11 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Get Reset Password Token Async.
+    /// Executes <c>identity/password/reset/token</c> to generate a password reset token.
     /// </summary>
-    /// <param name="request">The <see cref="GenerateResetPasswordTokenRequest"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
+    /// <param name="request">The reset token generation request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The generated password reset token.</returns>
     public async Task<ResetPasswordToken> GetResetPasswordTokenAsync(GenerateResetPasswordTokenRequest request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -209,11 +208,10 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Reset Password Async.
+    /// Executes <c>identity/password/reset</c> to reset a user password using a valid token.
     /// </summary>
-    /// <param name="request">The <see cref="ResetPasswordRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
+    /// <param name="request">The password reset request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     public Task ResetPasswordAsync(ResetPasswordRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -225,11 +223,11 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Get Change Email Token Async.
+    /// Executes <c>identity/email/change/token</c> to generate a change email token.
     /// </summary>
-    /// <param name="request">The <see cref="GenerateChangeEmailTokenRequest"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="ChangeEmailToken"/>.</returns>
+    /// <param name="request">The change email token request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The generated change email token.</returns>
     public async Task<ChangeEmailToken> GetChangeEmailTokenAsync(GenerateChangeEmailTokenRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -243,11 +241,10 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Change Email Async.
+    /// Executes <c>identity/email/change</c> to update the user's email address.
     /// </summary>
-    /// <param name="request">The <see cref="ChangeEmailRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
+    /// <param name="request">The email change request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     public Task ChangeEmailAsync(ChangeEmailRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -259,11 +256,11 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Get Confirm Email Token Async.
+    /// Executes <c>identity/email/confirm/token</c> to generate an email confirmation token.
     /// </summary>
-    /// <param name="request">The <see cref="GenerateConfirmEmailTokenRequest"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="ConfirmEmailToken"/>.</returns>
+    /// <param name="request">The email confirmation token request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The generated confirmation token.</returns>
     public async Task<ConfirmEmailToken> GetConfirmEmailTokenAsync(GenerateConfirmEmailTokenRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -277,11 +274,10 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Confirm Email Async.
+    /// Executes <c>identity/email/confirm</c> to confirm a user's email address.
     /// </summary>
-    /// <param name="request">The <see cref="ConfirmEmailRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
+    /// <param name="request">The email confirmation request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     public Task ConfirmEmailAsync(ConfirmEmailRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -293,11 +289,11 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Get Change Phone Token Async.
+    /// Executes <c>identity/phone/change/token</c> to generate a phone number change token.
     /// </summary>
-    /// <param name="request">The <see cref="GenerateChangePhoneTokenRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
+    /// <param name="request">The change phone token request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The generated phone change token.</returns>
     public async Task<ChangePhoneNumberToken> GetChangePhoneTokenAsync(GenerateChangePhoneTokenRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -311,11 +307,10 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Change Phone Async.
+    /// Executes <c>identity/phone/change</c> to update the user's phone number.
     /// </summary>
-    /// <param name="request">The <see cref="ChangePhoneRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
+    /// <param name="request">The phone change request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     public Task ChangePhoneAsync(ChangePhoneRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -327,11 +322,11 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Get Confirm Phone Token Async.
+    /// Executes <c>identity/phone/confirm/token</c> to generate a phone confirmation token.
     /// </summary>
-    /// <param name="request">The <see cref="GenerateConfirmPhoneTokenRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="ConfirmPhoneNumberToken"/>.</returns>
+    /// <param name="request">The phone confirmation token request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The generated confirmation token.</returns>
     public async Task<ConfirmPhoneNumberToken> GetConfirmPhoneTokenAsync(GenerateConfirmPhoneTokenRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -345,11 +340,10 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Confirm Phone Async.
+    /// Executes <c>identity/phone/confirm</c> to confirm a user's phone number.
     /// </summary>
-    /// <param name="request">The <see cref="ConfirmPhoneRequest"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
+    /// <param name="request">The phone confirmation request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     public Task ConfirmPhoneAsync(ConfirmPhoneRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -361,11 +355,11 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Get Custom Purpose Token Async.
+    /// Executes <c>identity/custom/token</c> to generate a custom purpose token.
     /// </summary>
-    /// <param name="request">The <see cref="GenerateChangeEmailTokenRequest"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="ConfirmCustomPurposeToken"/>.</returns>
+    /// <param name="request">The custom token generation request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The generated custom purpose token.</returns>
     public async Task<ConfirmCustomPurposeToken> GetCustomPurposeTokenAsync(GenerateCustomPurposeTokenRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -379,11 +373,10 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Verify Custom Token Async.
+    /// Executes <c>identity/custom/confirm</c> to validate a custom purpose token.
     /// </summary>
-    /// <param name="request">The <see cref="ConfirmCustomPurposeRequest"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
+    /// <param name="request">The custom token confirmation request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     public Task ConfirmCustomPurposeTokenAsync(ConfirmCustomPurposeRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -395,11 +388,10 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Activate User Async.
+    /// Executes <c>identity/user/activate</c> to activate a user account.
     /// </summary>
-    /// <param name="request">The <see cref="ActivateUserRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
+    /// <param name="request">The activation request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     public Task ActivateUserAsync(ActivateUserRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -411,11 +403,10 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Deactivate User Async.
+    /// Executes <c>identity/user/deactivate</c> to deactivate a user account.
     /// </summary>
-    /// <param name="request">The <see cref="ActivateUserRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
+    /// <param name="request">The deactivation request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     public Task DeactivateUserAsync(DeactivateUserRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -432,11 +423,11 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     #region User Roles
 
     /// <summary>
-    /// Get User Roles Async.
+    /// Executes <c>identity/user/roles</c> to retrieve all roles assigned to a user.
     /// </summary>
-    /// <param name="request">The <see cref="GetUserRolesRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The roles.</returns>
+    /// <param name="request">The user roles request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A collection of role names assigned to the user.</returns>
     public async Task<IEnumerable<string>> GetUserRolesAsync(GetUserRolesRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -448,11 +439,10 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Assign Role Async.
+    /// Executes <c>identity/user/roles/assign</c> to assign a role to a user.
     /// </summary>
-    /// <param name="request">The <see cref="AssignUserRoleRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
+    /// <param name="request">The role assignment request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     public Task AssignUserRoleAsync(AssignUserRoleRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -464,11 +454,10 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Remove Role Async.
+    /// Executes <c>identity/user/roles/remove</c> to remove a role from a user.
     /// </summary>
-    /// <param name="request">The <see cref="RemoveUserRoleRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
+    /// <param name="request">The role removal request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     public Task RemoveUserRoleAsync(RemoveUserRoleRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -485,11 +474,11 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     #region User Claims
 
     /// <summary>
-    /// Get User Claims Async.
+    /// Executes <c>identity/user/claims</c> to retrieve all claims assigned to a user.
     /// </summary>
-    /// <param name="request">The <see cref="GetUserClaimsRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The collection of <see cref="Claim"/>.</returns>
+    /// <param name="request">The user claims request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A collection of user claims.</returns>
     public async Task<IEnumerable<Claim>> GetUserClaimsAsync(GetUserClaimsRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -501,11 +490,10 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Assign User Claim Async.
+    /// Executes <c>identity/user/claims/assign</c> to assign a claim to a user.
     /// </summary>
-    /// <param name="request">The <see cref="AssignUserClaimRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
+    /// <param name="request">The claim assignment request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     public Task AssignUserClaimAsync(AssignUserClaimRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -517,11 +505,10 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Replace User Claim Async.
+    /// Executes <c>identity/user/claims/replace</c> to replace an existing user claim.
     /// </summary>
-    /// <param name="request">The <see cref="ReplaceUserClaimRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
+    /// <param name="request">The claim replacement request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     public Task ReplaceUserClaimAsync(ReplaceUserClaimRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -533,11 +520,10 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Assign Or Replace User Claim Async.
+    /// Executes <c>identity/user/claims/assign-or-replace</c> to assign or replace a user claim.
     /// </summary>
-    /// <param name="request">The <see cref="AssignOrReplaceUserClaimRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
+    /// <param name="request">The claim upsert request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     public Task AssignOrReplaceUserClaimAsync(AssignOrReplaceUserClaimRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -549,11 +535,10 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Remove User Claim Async.
+    /// Executes <c>identity/user/claims/remove</c> to remove a claim from a user.
     /// </summary>
-    /// <param name="request">The <see cref="RemoveUserClaimRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
+    /// <param name="request">The claim removal request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     public Task RemoveUserClaimAsync(RemoveUserClaimRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -570,11 +555,11 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     #region External Logins
 
     /// <summary>
-    /// Get External Logins Async.
+    /// Executes <c>identity/external-logins</c> to retrieve all linked external login providers for a user.
     /// </summary>
-    /// <param name="request">The <see cref="GetExternalLoginsRequest"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The collection of <see cref="ExternalLogin"/>.</returns>
+    /// <param name="request">The external logins request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A collection of external logins, or <c>null</c> if none exist.</returns>
     public Task<IEnumerable<ExternalLogin>?> GetExternalLoginsAsync(GetExternalLoginsRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -586,14 +571,14 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Add External Login Async.
+    /// Executes <c>identity/external-logins/add</c> to link an external login provider to a user account.
     /// </summary>
-    /// <typeparam name="TRequest">The type of external request.</typeparam>
-    /// <typeparam name="TFlow">The flow type of the add external login request.</typeparam>
-    /// <param name="request">The <see cref="BaseAddExternalLoginRequest"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="ExternalLogin"/>.</returns>
-    /// <exception cref="NotFoundException"></exception>
+    /// <typeparam name="TRequest">The external login request type.</typeparam>
+    /// <typeparam name="TFlow">The authentication flow type.</typeparam>
+    /// <param name="request">The external login add request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The created external login entry, or <c>null</c> if not created.</returns>
+    /// <exception cref="NotFoundException">Thrown if the external login could not be created.</exception>
     public Task<ExternalLogin?> AddExternalLoginAsync<TRequest, TFlow>(TRequest request, CancellationToken cancellationToken = default)
         where TRequest : BaseAddExternalLoginRequest<TFlow, TIdentity>
         where TFlow : BaseAuthFlow
@@ -609,12 +594,11 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Remove External Login Async.
+    /// Executes <c>identity/external-logins/remove</c> to unlink an external login provider from a user account.
     /// </summary>
-    /// <typeparam name="TRequest">The type of external request.</typeparam>
-    /// <param name="request">The <see cref="BaseRemoveExternalLoginRequest"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
+    /// <typeparam name="TRequest">The external login removal request type.</typeparam>
+    /// <param name="request">The external login removal request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     public Task RemoveExternalLoginAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
         where TRequest : BaseRemoveExternalLoginRequest<TIdentity>
     {
@@ -632,11 +616,11 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     #region Refresh Tokens
 
     /// <summary>
-    /// Get User Refresh Tokens Async.
+    /// Executes <c>identity/refresh-tokens</c> to retrieve all refresh tokens for a user.
     /// </summary>
-    /// <param name="request">The <see cref="GetRefreshTokensRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The refresh tokens.</returns>
+    /// <param name="request">The refresh token request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A collection of refresh tokens.</returns>
     public async Task<IEnumerable<RefreshToken>> GetRefreshTokensAsync(GetRefreshTokensRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -648,11 +632,11 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Get User Active Refresh Tokens Async.
+    /// Executes <c>identity/refresh-tokens/active</c> to retrieve active refresh tokens for a user.
     /// </summary>
-    /// <param name="request">The <see cref="GetActiveRefreshTokensRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The refresh tokens.</returns>
+    /// <param name="request">The active refresh token request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A collection of active refresh tokens.</returns>
     public async Task<IEnumerable<RefreshToken>> GetActiveRefreshTokensAsync(GetActiveRefreshTokensRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -664,11 +648,10 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Delete User Refresh Token Async.
+    /// Executes <c>identity/refresh-tokens/delete</c> to revoke a specific refresh token.
     /// </summary>
-    /// <param name="request">The <see cref="DeleteRefreshTokenRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
+    /// <param name="request">The delete refresh token request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     public Task DeleteRefreshTokenAsync(DeleteRefreshTokenRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -685,11 +668,11 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     #region Api Keys
 
     /// <summary>
-    /// Get Api Keys Async.
+    /// Executes <c>identity/api-keys</c> to retrieve all API keys for a user.
     /// </summary>
-    /// <param name="request">The <see cref="GetApiKeysRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The collection of <see cref="IdentityApiKey{TIdentity}"/>.</returns>
+    /// <param name="request">The API keys request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A collection of API keys.</returns>
     public async Task<IEnumerable<IdentityApiKey<TIdentity>>> GetApiKeysAsync(GetApiKeysRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -701,11 +684,12 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Create Api Keys Async.
+    /// Executes <c>identity/api-keys/create</c> to create a new API key.
     /// </summary>
-    /// <param name="request">The <see cref="CreateApiKeyRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="IdentityApiKeyCreated{TIdentity}"/>.</returns>
+    /// <param name="request">The API key creation request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The created API key.</returns>
+    /// <exception cref="NullReferenceException">Thrown if the API key creation response is null.</exception>
     public async Task<IdentityApiKeyCreated<TIdentity>> CreateApiKeysAsync(CreateApiKeyRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -719,11 +703,11 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Edit Api Keys Async.
+    /// Executes <c>identity/api-keys/edit</c> to update an existing API key.
     /// </summary>
-    /// <param name="request">The <see cref="EditApiKeyRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="IdentityApiKey{TIdentity}"/>.</returns>
+    /// <param name="request">The API key edit request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The updated API key, or <c>null</c> if not found.</returns>
     public Task<IdentityApiKey<TIdentity>?> EditApiKeysAsync(EditApiKeyRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -735,11 +719,11 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Revoke Api Keys Async.
+    /// Executes <c>identity/api-keys/revoke</c> to revoke an API key.
     /// </summary>
-    /// <param name="request">The <see cref="RevokeApiKeyRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The <see cref="IdentityApiKey{TIdentity}"/>.</returns>
+    /// <param name="request">The API key revocation request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The revoked API key, or <c>null</c> if not found.</returns>
     public Task<IdentityApiKey<TIdentity>?> RevokeApiKeysAsync(RevokeApiKeyRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -756,11 +740,11 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     #region Api Keys Roles
 
     /// <summary>
-    /// Get Api-Key Roles Async.
+    /// Executes <c>identity/api-keys/roles</c> to retrieve roles assigned to an API key.
     /// </summary>
-    /// <param name="request">The <see cref="GetUserRolesRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The roles.</returns>
+    /// <param name="request">The API key roles request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A collection of role names.</returns>
     public async Task<IEnumerable<string>> GetApiKeyRolesAsync(GetApiKeyRolesRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -772,11 +756,10 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Assign Api-Key Role Async.
+    /// Executes <c>identity/api-keys/roles/assign</c> to assign a role to an API key.
     /// </summary>
-    /// <param name="request">The <see cref="AssignApiKeyRoleRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
+    /// <param name="request">The role assignment request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     public Task AssignApiKeyRoleAsync(AssignApiKeyRoleRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -788,11 +771,10 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Remove Api-Key Role Async.
+    /// Executes <c>identity/api-keys/roles/remove</c> to remove a role from an API key.
     /// </summary>
-    /// <param name="request">The <see cref="RemoveApiKeyRoleRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
+    /// <param name="request">The role removal request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     public Task RemoveApiKeyRoleAsync(RemoveApiKeyRoleRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -809,11 +791,11 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     #region Api Keys Claims
 
     /// <summary>
-    /// Get Api-Key Claims Async.
+    /// Executes <c>identity/api-keys/claims</c> to retrieve claims assigned to an API key.
     /// </summary>
-    /// <param name="request">The <see cref="GetApiKeyClaimsRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The collection of <see cref="Claim"/>.</returns>
+    /// <param name="request">The API key claims request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A collection of claims.</returns>
     public async Task<IEnumerable<Claim>> GetApiKeyClaimsAsync(GetApiKeyClaimsRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -825,11 +807,10 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Assign Api-Key Claim Async.
+    /// Executes <c>identity/api-keys/claims/assign</c> to assign a claim to an API key.
     /// </summary>
-    /// <param name="request">The <see cref="AssignApiKeyClaimRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
+    /// <param name="request">The claim assignment request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     public Task AssignApiKeyClaimAsync(AssignApiKeyClaimRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -841,11 +822,10 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Replace Api-Key Claim Async.
+    /// Executes <c>identity/api-keys/claims/replace</c> to replace an existing claim on an API key.
     /// </summary>
-    /// <param name="request">The <see cref="ReplaceApiKeyClaimRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
+    /// <param name="request">The claim replacement request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     public Task ReplaceApiKeyClaimAsync(ReplaceApiKeyClaimRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -857,11 +837,10 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Assign Or Replace Api-Key Claim Async.
+    /// Executes <c>identity/api-keys/claims/assign-or-replace</c> to upsert a claim on an API key.
     /// </summary>
-    /// <param name="request">The <see cref="AssignOrReplaceApiKeyClaimRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
+    /// <param name="request">The claim upsert request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     public Task AssignOrReplaceApiKeyClaimAsync(AssignOrReplaceApiKeyClaimRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -873,11 +852,10 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Remove Api-Key Claim Async.
+    /// Executes <c>identity/api-keys/claims/remove</c> to remove a claim from an API key.
     /// </summary>
-    /// <param name="request">The <see cref="RemoveApiKeyClaimRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
+    /// <param name="request">The claim removal request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     public Task RemoveApiKeyClaimAsync(RemoveApiKeyClaimRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -894,11 +872,11 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     #region Roles
 
     /// <summary>
-    /// Get Roles Async.
+    /// Executes <c>identity/roles</c> to retrieve all roles.
     /// </summary>
-    /// <param name="request">The <see cref="GetRolesRequest"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The roles.</returns>
+    /// <param name="request">The roles request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A collection of identity roles.</returns>
     public async Task<IEnumerable<IdentityRole<TIdentity>>> GetRolesAsync(GetRolesRequest request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -910,11 +888,12 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Create Role Async.
+    /// Executes <c>identity/roles/create</c> to create a new role.
     /// </summary>
-    /// <param name="request">The <see cref="CreateRoleRequest"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The role.</returns>
+    /// <param name="request">The role creation request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The created role.</returns>
+    /// <exception cref="NullReferenceException">Thrown if the created role response is null.</exception>
     public async Task<IdentityRole<TIdentity>> CreateRoleAsync(CreateRoleRequest request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -928,11 +907,10 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Delete Role Async.
+    /// Executes <c>identity/roles/delete</c> to delete an existing role.
     /// </summary>
-    /// <param name="request">The <see cref="DeleteRoleRequest"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
+    /// <param name="request">The role deletion request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     public Task DeleteRoleAsync(DeleteRoleRequest request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -949,11 +927,11 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     #region Role Claims
 
     /// <summary>
-    /// Get Role Claims Async.
+    /// Executes <c>identity/roles/claims</c> to retrieve claims assigned to a role.
     /// </summary>
-    /// <param name="request">The <see cref="GetRoleClaimsRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>The collection of <see cref="Claim"/>.</returns>
+    /// <param name="request">The role claims request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A collection of claims.</returns>
     public async Task<IEnumerable<Claim>> GetRoleClaimsAsync(GetRoleClaimsRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -965,11 +943,10 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Assign Role Claim Async.
+    /// Executes <c>identity/roles/claims/assign</c> to assign a claim to a role.
     /// </summary>
-    /// <param name="request">The <see cref="AssignRoleClaimRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
+    /// <param name="request">The claim assignment request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     public Task AssignRoleClaimAsync(AssignRoleClaimRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -981,11 +958,10 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Replace Role Claim Async.
+    /// Executes <c>identity/roles/claims/replace</c> to replace an existing claim on a role.
     /// </summary>
-    /// <param name="request">The <see cref="ReplaceRoleClaimRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
+    /// <param name="request">The claim replacement request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     public Task ReplaceRoleClaimAsync(ReplaceRoleClaimRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -997,11 +973,10 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Assign Or Replace Role Claim Async.
+    /// Executes <c>identity/roles/claims/assign-or-replace</c> to upsert a claim on a role.
     /// </summary>
-    /// <param name="request">The <see cref="AssignOrReplaceRoleClaimRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
+    /// <param name="request">The claim upsert request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     public Task AssignOrReplaceRoleClaimAsync(AssignOrReplaceRoleClaimRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -1013,11 +988,10 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Remove Role Claim Async.
+    /// Executes <c>identity/roles/claims/remove</c> to remove a claim from a role.
     /// </summary>
-    /// <param name="request">The <see cref="RemoveRoleClaimRequest{TIdentity}"/>.</param>
-    /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
-    /// <returns>Void.</returns>
+    /// <param name="request">The claim removal request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
     public Task RemoveRoleClaimAsync(RemoveRoleClaimRequest<TIdentity> request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
