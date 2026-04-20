@@ -7,6 +7,7 @@
 		<PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="9.0.0" />
 		<PackageReference Include="AspNetCore.HealthChecks.UI.InMemory.Storage" Version="9.0.0" />
 		<PackageReference Include="Google.Apis.Auth" Version="1.73.0" />
+		<PackageReference Include="KubernetesClient" Version="19.0.2" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.6" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="10.0.6" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="10.1.7" />
