@@ -21,7 +21,7 @@
 ## Table of Contents
 &nbsp;&nbsp;&nbsp;&nbsp;📌 **[Summary](#-summary)**  
 &nbsp;&nbsp;&nbsp;&nbsp;✨ **[Highlighted Features](#-highlighted-features)**  
-&nbsp;&nbsp;&nbsp;&nbsp;🏛️ **[Nano Architectures](#-nano-architectures)**  
+&nbsp;&nbsp;&nbsp;&nbsp;🏛️ **[Nano Architectures](#%EF%B8%8F-nano-architectures)**  
 &nbsp;&nbsp;&nbsp;&nbsp;🧩 **[Solution Composition](#-solution-composition)**  
 &nbsp;&nbsp;&nbsp;&nbsp;<img src="https://api.nuget.org/v3-flatcontainer/nuget.protocol/6.0.0/icon" width="19" /> **[NuGet Packages](#-nuget-packages)**  
 &nbsp;&nbsp;&nbsp;&nbsp;🔏 **[Licenses](#-licenses)**  
