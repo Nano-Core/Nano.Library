@@ -2,6 +2,8 @@
 [![Build and Deploy](https://github.com/Nano-Core/Nano.Library/actions/workflows/build-and-deploy.yml/badge.svg)](https://github.com/Nano-Core/Nano.Library/actions/workflows/build-and-deploy.yml)
 [![NuGet](https://img.shields.io/nuget/dt/NanoCore.svg)](https://www.nuget.org/packages/NanoCore/)
 [![NuGet](https://img.shields.io/nuget/v/NanoCore.svg)](https://www.nuget.org/packages/NanoCore/)
+![GitHub Release](https://img.shields.io/github/v/release/Nano-Core/Nano.Library)
+![GitHub Release Date](https://img.shields.io/github/release-date-pre/Nano-Core/Nano.Library)
 ![GitHub License](https://img.shields.io/github/license/Nano-Core/Nano.Library)
 ![GitHub Top Language](https://img.shields.io/github/languages/top/Nano-Core/Nano.Library)
 ![GitHub Branch Count](https://img.shields.io/github/branches/Nano-Core/Nano.Library)
