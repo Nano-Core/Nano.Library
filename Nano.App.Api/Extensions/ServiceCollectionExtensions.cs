@@ -524,7 +524,7 @@ internal static class ServiceCollectionExtensions
                     x.AddWebhookNotification(webHook.Name, webHook.Uri, webHook.Payload ?? "");
                 }
             })
-            // TODO: AspNetCore.Diagnostics.HealthChecks broken in EF 10: https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks/issues/2465
+            // BUG: AspNetCore.Diagnostics.HealthChecks broken in EF 10: https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks/issues/2465
             .AddInMemoryStorage();
 
         services.AddDbContext<HealthChecksDb>(x => { x.UseInMemoryDatabase("HealthChecksUI"); });
