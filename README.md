@@ -19,22 +19,22 @@
 ***
 
 ## Table of Contents
-* 📌 **[Summary](#summary)**
-* ✨ **[Highlighted Features](#highlighted-features)**
-* 🏛️ **[Nano Architectures](#nano-architectures)**
-* 🧩 **[Solution Composition](#solution-composition)**
-* <img src="https://api.nuget.org/v3-flatcontainer/nuget.protocol/6.0.0/icon" width="19" /> **[NuGet Packages](#nuget-packages)**
-* 🔏 **[Licenses](#licenses)**
+📌 **[Summary](#summary)**  
+✨ **[Highlighted Features](#highlighted-features)**  
+🏛️ **[Nano Architectures](#nano-architectures)**  
+🧩 **[Solution Composition](#solution-composition)**  
+<img src="https://api.nuget.org/v3-flatcontainer/nuget.protocol/6.0.0/icon" width="19" /> **[NuGet Packages](#nuget-packages)**  
+🔏 **[Licenses](#licenses)**  
 
 ### Documentation
-* 🚀 **[Applications](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App)**
-  * 📡 **[Api](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api)**
-  * ⚙️ **[Console](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Console)**
-  * 🌐 **[Web](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Web)**
-* 📜 **[Logging](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging)**
-* 🛢️ **[Data](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data)**
-* ⚡ **[Eventing](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Eventing)**
-* 🗂 **[Storage](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage)**
+🚀 **[Applications](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App)**  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;📡 **[Api](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api)**  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⚙️ **[Console](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Console)**  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;🌐 **[Web](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Web)**  
+📜 **[Logging](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging)**  
+🛢️ **[Data](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data)**  
+⚡ **[Eventing](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Eventing)**  
+🗂 **[Storage](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage)**  
 
 ## 📌 Summary
 Nano is a lightweight library for rapidly building modern .NET applications.
