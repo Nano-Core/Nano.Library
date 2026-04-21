@@ -1347,6 +1347,9 @@ run alongside the built-in health checks provided by Nano.
 
 Try it out yourself using the **[Api.HealthChecks](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.HealthChecks)** example.  
 
+> 💡 Health Checks can also serve as an availability check mechanism.  
+The health check example also demonstrates how to configure availability monitoring using _Azure Application Insights_.  
+
 ## Virus Scan
 Nano provides built-in virus scanning through a connected `ClamAV` service.  
 
