@@ -8,7 +8,7 @@ on:
       - master 
 env:
   APP_NAME: Nano.Library
-  VERSION: 10.0.0-preview
+  VERSION: 10.0.0-preview1
   NUGET_HOST: https://api.nuget.org/v3/index.json
   NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
 jobs:
@@ -36,7 +36,13 @@ jobs:
               throw "Build failed";
           };
 
-          dotnet test .\.tests\Tests.$env:APP_NAME\Tests.$env:APP_NAME.csproj
+          dotnet test -c Release --no-build .\.tests\Tests.$env:APP_NAME\Tests.$env:APP_NAME.csproj;
+          if ($LastExitCode -ne 0)
+          { 
+              throw "Tests failed";
+          };
+
+          dotnet pack -c Release --no-build -o nupkgs /p:Version=$env:VERSION;
           if ($LastExitCode -ne 0)
           { 
               throw "Tests failed";

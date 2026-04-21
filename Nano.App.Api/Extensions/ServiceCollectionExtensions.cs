@@ -29,6 +29,8 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Linq;
 using System.Text.Json.Serialization;
+using HealthChecks.UI.Data;
+using Microsoft.EntityFrameworkCore;
 using Vivet.AspNetCore.RequestTimeZone.Enums;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
 using Vivet.AspNetCore.RequestTimeZone.Providers;
@@ -522,7 +524,10 @@ internal static class ServiceCollectionExtensions
                     x.AddWebhookNotification(webHook.Name, webHook.Uri, webHook.Payload ?? "");
                 }
             })
+            // TODO: AspNetCore.Diagnostics.HealthChecks broken in EF 10: https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks/issues/2465
             .AddInMemoryStorage();
+
+        services.AddDbContext<HealthChecksDb>(x => { x.UseInMemoryDatabase("HealthChecksUI"); });
 
         return services;
     }

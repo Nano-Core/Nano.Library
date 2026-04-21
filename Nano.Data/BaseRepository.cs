@@ -750,14 +750,12 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         ArgumentNullException.ThrowIfNull(criteria);
         ArgumentNullException.ThrowIfNull(propertyUpdates);
 
-        // BUG:
-        return Task.CompletedTask;
-        //var updateExpression = BuildBulkUpdateExpression<TEntity>(propertyUpdates);
+        var updateExpression = BuildUpdateSettersBuilder<TEntity>(propertyUpdates);
 
-        //return this.dbContext
-        //    .Set<TEntity>()
-        //    .Where(criteria)
-        //    .ExecuteUpdateAsync(updateExpression, cancellationToken);
+        return this.dbContext
+            .Set<TEntity>()
+            .Where(criteria)
+            .ExecuteUpdateAsync(updateExpression, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -767,14 +765,12 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         ArgumentNullException.ThrowIfNull(where);
         ArgumentNullException.ThrowIfNull(propertyUpdates);
 
-        // BUG:
-        return Task.CompletedTask;
-        //var updateExpression = BuildBulkUpdateExpression<TEntity>(propertyUpdates);
+        var updateExpression = BuildUpdateSettersBuilder<TEntity>(propertyUpdates);
 
-        //return this.dbContext
-        //    .Set<TEntity>()
-        //    .Where(where)
-        //    .ExecuteUpdateAsync(updateExpression, cancellationToken);
+        return this.dbContext
+            .Set<TEntity>()
+            .Where(where)
+            .ExecuteUpdateAsync(updateExpression, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -1232,40 +1228,34 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
 
         return Expression.Lambda<Action<TEntity>>(body, entityParam);
     }
-    //private static Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> BuildBulkUpdateExpression<TEntity>(IDictionary<string, object> updates)
-    //    where TEntity : class
-    //{
-    //    ArgumentNullException.ThrowIfNull(updates);
+    private static Action<UpdateSettersBuilder<TEntity>> BuildUpdateSettersBuilder<TEntity>(IDictionary<string, object> updates)
+        where TEntity : class
+    {
+        ArgumentNullException.ThrowIfNull(updates);
 
-    //    var parameter = Expression.Parameter(typeof(SetPropertyCalls<TEntity>), "instance");
+        return setters =>
+        {
+            foreach (var (propertyName, value) in updates)
+            {
+                var entityParam = Expression.Parameter(typeof(TEntity), "x");
+                var property = Expression.Property(entityParam, propertyName);
+                var propertyType = property.Type;
+                var funcType = typeof(Func<,>).MakeGenericType(typeof(TEntity), propertyType);
+                var propertyLambda = Expression.Lambda(funcType, property, entityParam);
+                var constantExpression = Expression.Constant(value, propertyType);
+                var valueLambda = Expression.Lambda(funcType, constantExpression, entityParam);
 
-    //    Expression expression = parameter;
-    //    foreach (var (propertyName, value) in updates)
-    //    {
-    //        var entityParameter = Expression.Parameter(typeof(TEntity), "x");
-    //        var property = Expression.Property(entityParameter, propertyName);
+                var method = typeof(UpdateSettersBuilder<TEntity>)
+                    .GetMethods()
+                    .First(x => x is { Name: "SetProperty", IsGenericMethod: true } && x.GetParameters().Length == 2)
+                    .MakeGenericMethod(propertyType);
 
-    //        var propertyType = property.Type;
-    //        var genericType = typeof(Func<,>).MakeGenericType(typeof(TEntity), propertyType);
-    //        var propertyLambda = Expression.Lambda(genericType, property, entityParameter);
-    //        var constantValue = Expression.Constant(value, propertyType);
-    //        var valueLambda = Expression.Lambda(genericType, constantValue, entityParameter);
+                method
+                    .Invoke(setters, [propertyLambda, valueLambda]);
+            }
+        };
+    }
 
-    //        var setPropertyMethod = typeof(SetPropertyCalls<TEntity>)
-    //            .GetMethods()
-    //            .First(x =>
-    //                x is { Name: "SetProperty", IsGenericMethod: true } &&
-    //                x.GetParameters().Length == 2 &&
-    //                x.GetParameters()[0].ParameterType.GetGenericArguments()[0] == typeof(TEntity));
-
-    //        var genericSetPropertyMethod = setPropertyMethod
-    //            .MakeGenericMethod(propertyType);
-
-    //        expression = Expression.Call(expression, genericSetPropertyMethod, propertyLambda, valueLambda);
-    //    }
-
-    //    return Expression.Lambda<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>>(expression, parameter);
-    //}
     private async ValueTask<DbCommand> CreateCommandAsync(string procedureName, IDictionary<string, object?>? parameters = null, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(procedureName);

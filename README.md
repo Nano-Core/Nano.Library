@@ -3,29 +3,30 @@
 [![NuGet](https://img.shields.io/nuget/dt/NanoCore.svg)](https://www.nuget.org/packages/NanoCore/)
 [![NuGet](https://img.shields.io/nuget/v/NanoCore.svg)](https://www.nuget.org/packages/NanoCore/)
 ![GitHub License](https://img.shields.io/github/license/Nano-Core/Nano.Library)
-![GitHub top language](https://img.shields.io/github/languages/top/Nano-Core/Nano.Library)
-![GitHub branch count](https://img.shields.io/github/branches/Nano-Core/Nano.Library)
-![GitHub commit activity](https://img.shields.io/github/commit-activity/y/Nano-Core/Nano.Library)
-![GitHub Bugs](https://img.shields.io/github/issues-search/Nano-Core/Nano.Library?query=is%3Aopen%20label%3Abug&labelColor=grey&color=red)
+![GitHub Top Language](https://img.shields.io/github/languages/top/Nano-Core/Nano.Library)
+![GitHub Branch Count](https://img.shields.io/github/branches/Nano-Core/Nano.Library)
+![GitHub Commit Activity](https://img.shields.io/github/commit-activity/y/Nano-Core/Nano.Library)
+![GitHub Bugs](https://img.shields.io/github/issues-search/Nano-Core/Nano.Library?query=is%3Aopen%20label%3Abug&label=bugs&labelColor=grey&color=red)
 ![GitHub Tasks](https://img.shields.io/github/issues-search/Nano-Core/Nano.Library?query=is%3Aopen%20-label%3Abug&label=tasks)
 ![GitHub Pull Requests](https://img.shields.io/github/issues-pr/Nano-Core/Nano.Library)
-![GitHub contributors](https://img.shields.io/github/contributors/Nano-Core/Nano.Library)
+![GitHub Contributors](https://img.shields.io/github/contributors/Nano-Core/Nano.Library)
 ![GitHub Sponsors](https://img.shields.io/github/sponsors/Nano-Core)
 ![GitHub Discussions](https://img.shields.io/github/discussions/Nano-Core/Nano.Library)
-![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/Nano-Core/Nano.Library)
+![GitHub Size](https://img.shields.io/github/languages/code-size/Nano-Core/Nano.Library)
 
-> _Nano - Your light-weight foundation for building modern .NET applications._  
+> _Nano - Your lightweight foundation for building modern .NET applications._  
 
 ***
 
 ## Table of Contents
-* 💡 **[Summary](#summary)**
+* 📌 **[Summary](#summary)**
 * ✨ **[Highlighted Features](#highlighted-features)**
 * 🏛️ **[Nano Architectures](#nano-architectures)**
 * 🧩 **[Solution Composition](#solution-composition)**
 * <img src="https://api.nuget.org/v3-flatcontainer/nuget.protocol/6.0.0/icon" width="19" /> **[NuGet Packages](#nuget-packages)**
+* 🔏 **[Licenses](#licenses)**
 
-### Documentation Overview
+### Documentation
 * 🚀 **[Applications](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App)**
   * 📡 **[Api](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api)**
   * ⚙️ **[Console](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Console)**
@@ -33,9 +34,9 @@
 * 📜 **[Logging](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging)**
 * 🛢️ **[Data](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data)**
 * ⚡ **[Eventing](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Eventing)**
-* 🗂️ **[Storage](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage)**
+* 🗂 **[Storage](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage)**
 
-## 💡 Summary
+## 📌 Summary
 Nano is a lightweight library for rapidly building modern .NET applications.
 
 These pages provide documentation, guides, samples, and other resources to help you understand and use Nano effectively. To set the stage, here’s why Nano is a strong choice 
@@ -71,6 +72,8 @@ the rest.
 It’s recommended to start with the **[Quick Start Guide](https://github.com/Nano-Core/Nano.Library/tree/master/QUICK_START.md)** to get familiar with Nano, and then continue exploring 
 the documentation for applications and providers to learn how to configure, use, and customize it. You can also dive into **[Nano.Lessons](https://github.com/Nano-Core/Nano.Lessons)**, 
 which contains **100+** focused examples that demonstrate individual features in isolation.
+
+> 💡 Explore API requests for all lessons in our **[Public Nano Workspace on Postman](https://www.postman.com/nanocore/nano-lessons)**.
 
 ## ✨ Highlighted features
 
@@ -217,3 +220,15 @@ Last, provider packages. These enable functionality related to Nano providers.
 | Nano.Storage.Abstractions    | `Storage`, _`Transitive`_    | [![NuGet](https://img.shields.io/nuget/dt/Nano.Storage.Abstractions.svg)](https://www.nuget.org/packages/Nano.Storage.Abstractions/)     | [![NuGet](https://img.shields.io/nuget/v/Nano.Storage.Abstractions.svg)](https://www.nuget.org/packages/Nano.Storage.Abstractions/)     |
 | Nano.Storage.Azure           | `Storage`                    | [![NuGet](https://img.shields.io/nuget/dt/Nano.Storage.Azure.svg)](https://www.nuget.org/packages/Nano.Storage.Azure/)                   | [![NuGet](https://img.shields.io/nuget/v/Nano.Storage.Azure.svg)](https://www.nuget.org/packages/Nano.Storage.Azure/)                   |
 | Nano.Storage.Local           | `Storage`                    | [![NuGet](https://img.shields.io/nuget/dt/Nano.Storage.Local.svg)](https://www.nuget.org/packages/Nano.Storage.Local/)                   | [![NuGet](https://img.shields.io/nuget/v/Nano.Storage.Local.svg)](https://www.nuget.org/packages/Nano.Storage.Local/)                   |
+
+## 🔏 Licenses
+Nano is free to use and released under the MIT License.  
+Dependencies are distributed under a combination of the following licenses.
+
+| License                                                 | Description                                                                     |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| [MIT](https://licenses.nuget.org/MIT)                   | Permissive license with minimal restrictions.                                   |
+| [Apache-2.0](https://licenses.nuget.org/Apache-2.0)     | Permissive with patent protection.                                              |
+| [BSD-2 Clause](https://licenses.nuget.org/BSD-2-Clause) | Simple permissive license with attribution.                                     |
+| [BSD-3 Clause](https://licenses.nuget.org/BSD-3-Clause) | Permissive with non-endorsement clause.                                         |
+| [PostgreSQL](https://licenses.nuget.org/PostgreSQL)     | Permissive, similar to MIT/BSD. _Only when using PostgreSQL as data provider_.  |

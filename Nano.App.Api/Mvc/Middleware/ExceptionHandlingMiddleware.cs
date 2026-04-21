@@ -28,7 +28,7 @@ namespace Nano.App.Api.Mvc.Middleware;
 public sealed class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddleware> logger, IOptionsMonitor<ApiOptions> apiOptions)
     : IMiddleware
 {
-    private const string MESSAGE_TEMPLATE = "{protocol} {method} {pathAndqueryString} {statusCode} in {elapsed:0.0000} ms. (Id={id})";
+    private const string MESSAGE_TEMPLATE = "{protocol} {method} {path}{queryString} {statusCode} in {elapsed:0.0000} ms. (Id={id})";
 
     private ILogger<ExceptionHandlingMiddleware> Logger { get; } = logger ?? throw new ArgumentNullException(nameof(logger));
     private IOptionsMonitor<ApiOptions> ApiOptions { get; } = apiOptions ?? throw new ArgumentNullException(nameof(apiOptions));
@@ -230,7 +230,6 @@ public sealed class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddlew
                 .Replace(accessToken.ToString(), "<<secret>>");
         }
 
-        var pathAndqueryString = $"{path}{queryString}";
         var elapsed = (Stopwatch.GetTimestamp() - timestamp) * 1000D / Stopwatch.Frequency;
 
         var id = httpRequest
@@ -241,7 +240,7 @@ public sealed class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddlew
         if (!isHealthCheck)
         {
             this.Logger
-                .Log(logLevel, exception, MESSAGE_TEMPLATE, protocol, method, pathAndqueryString, statusCode, elapsed, id);
+                .Log(logLevel, exception, MESSAGE_TEMPLATE, protocol, method, path, queryString, statusCode, elapsed, id);
         }
     }
 }
