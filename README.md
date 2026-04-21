@@ -19,12 +19,12 @@
 ***
 
 ## Table of Contents
-&nbsp;&nbsp;&nbsp;&nbsp;📌 **[Summary](#summary)**  
-&nbsp;&nbsp;&nbsp;&nbsp;✨ **[Highlighted Features](#highlighted-features)**  
-&nbsp;&nbsp;&nbsp;&nbsp;🏛️ **[Nano Architectures](#nano-architectures)**  
-&nbsp;&nbsp;&nbsp;&nbsp;🧩 **[Solution Composition](#solution-composition)**  
-&nbsp;&nbsp;&nbsp;&nbsp;<img src="https://api.nuget.org/v3-flatcontainer/nuget.protocol/6.0.0/icon" width="19" /> **[NuGet Packages](#nuget-packages)**  
-&nbsp;&nbsp;&nbsp;&nbsp;🔏 **[Licenses](#licenses)**  
+&nbsp;&nbsp;&nbsp;&nbsp;📌 **[Summary](#-summary)**  
+&nbsp;&nbsp;&nbsp;&nbsp;✨ **[Highlighted Features](#-highlighted-features)**  
+&nbsp;&nbsp;&nbsp;&nbsp;🏛️ **[Nano Architectures](#-nano-architectures)**  
+&nbsp;&nbsp;&nbsp;&nbsp;🧩 **[Solution Composition](#-solution-composition)**  
+&nbsp;&nbsp;&nbsp;&nbsp;<img src="https://api.nuget.org/v3-flatcontainer/nuget.protocol/6.0.0/icon" width="19" /> **[NuGet Packages](#-nuget-packages)**  
+&nbsp;&nbsp;&nbsp;&nbsp;🔏 **[Licenses](#-licenses)**  
 
 ### Documentation
 &nbsp;&nbsp;&nbsp;&nbsp;🚀 **[Applications](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App)**  
