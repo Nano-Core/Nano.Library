@@ -8,6 +8,6 @@ internal static class DateTimeOffsetExtensions
 
     internal static long GetEpochTime(this DateTimeOffset at)
     {
-        return (long)(at - DateTimeOffsetExtensions.epoch).TotalMilliseconds;
+        return (long)(at - epoch).TotalMilliseconds;
     }
 }

@@ -1,10 +1,11 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Nano.Eventing.Abstractions;
 
 internal interface IRegisterEventingHandlersTask
 {
-    Task RegisterEventHandlers(IServiceProvider serviceProvider, CancellationToken cancellationToken = default);
+    Task RegisterEventHandlers(IServiceScope serviceScope, IServiceProvider serviceProvider, CancellationToken cancellationToken = default);
 }

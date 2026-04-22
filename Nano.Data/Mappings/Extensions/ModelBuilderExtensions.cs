@@ -4,7 +4,7 @@ using Nano.Data.Abstractions.Models.Abstractions;
 using System;
 using System.Linq;
 using System.Reflection;
-using Nano.Common.Helpers;
+using Nano.Common;
 using Nano.Data.Abstractions.Models;
 
 namespace Nano.Data.Mappings.Extensions;
@@ -25,7 +25,7 @@ internal static class ModelBuilderExtensions
         var addMappingIdentityMethod = methods
             .Single(x => x is { Name: nameof(AddMapping), IsGenericMethodDefinition: true } && x.GetGenericArguments().Length == 3);
 
-        var mappingTypes = TypesHelper
+        var mappingTypes = TypeCache
             .GetAllTypes().Where(x => x is { IsAbstract: false, IsInterface: false, IsGenericType: false } && x.IsTypeOf(typeof(BaseMapping<>)))
             .ToArray();
 

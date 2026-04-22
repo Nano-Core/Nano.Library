@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Nano.App.Api.Config;
@@ -14,7 +13,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using Nano.App.Api.Mvc.Extensions;
 using Vivet.AspNetCore.RequestVirusScan.Exceptions;
 
 namespace Nano.App.Api.Mvc.Middleware;
@@ -125,22 +123,13 @@ public sealed class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddlew
 
             problemDetails = ex.ProblemDetails;
         }
-        catch (DbUpdateException ex)
+        catch (UniqueConstraintViolationException ex)
         {
             exception = ex;
 
-            if (ex.IsUniqueViolation())
-            {
-                problemDetails.Type = "https://datatracker.ietf.org/doc/html/rfc9110-15.6.1#name-409-conflict";
-                problemDetails.Status = (int)HttpStatusCode.Conflict;
-                problemDetails.Title = "Conflict";
-            }
-            else
-            {
-                problemDetails.Type = "https://datatracker.ietf.org/doc/html/rfc9110-15.6.1#name-500-internal-server-error";
-                problemDetails.Status = (int)HttpStatusCode.InternalServerError;
-                problemDetails.Title = "Internal Server Error";
-            }
+            problemDetails.Type = "https://datatracker.ietf.org/doc/html/rfc9110-15.6.1#name-409-conflict";
+            problemDetails.Status = (int)HttpStatusCode.Conflict;
+            problemDetails.Title = "Conflict";
         }
         catch (AggregateException ex)
         {

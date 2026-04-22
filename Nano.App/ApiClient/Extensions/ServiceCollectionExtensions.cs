@@ -1,17 +1,18 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using Nano.App.ApiClient.Abstractions;
-using Nano.App.ApiClient.Config;
-using Nano.App.Config;
-using Nano.Common.Consts;
-using Nano.Common.Extensions;
-using Nano.Common.Helpers;
-using Nano.Common.Mvc.HealthChecks.Extensions;
-using System;
+﻿using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Reflection;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Nano.App.ApiClient.Abstractions;
+using Nano.App.ApiClient.Config;
+using Nano.App.Config;
+using Nano.Common;
+using Nano.Common.Consts;
+using Nano.Common.Extensions;
+using Nano.Common.Mvc.HealthChecks.Extensions;
 
 namespace Nano.App.ApiClient.Extensions;
 
@@ -24,11 +25,9 @@ internal static class ServiceCollectionExtensions
 
         foreach (var (name, options) in appOptions.Apis)
         {
-            var type = TypesHelper
+            var type = TypeCache
                 .GetAllTypes()
-                .Where(x => x.Name == name && x is { IsAbstract: false, IsGenericType: false } && x.IsTypeOf(typeof(BaseApiClient<>)))
-                .Distinct()
-                .FirstOrDefault();
+                .FirstOrDefault(x => x.Name == name && x is { IsAbstract: false, IsGenericType: false } && x.IsTypeOf(typeof(BaseApiClient<>)));
 
             if (type == null)
             {
@@ -48,7 +47,7 @@ internal static class ServiceCollectionExtensions
     }
 
 
-    private static IServiceCollection AddHttpClient(this IServiceCollection services, Type type)
+    private static IServiceCollection AddHttpClient(this IServiceCollection services, MemberInfo type)
     {
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(type);

@@ -5,7 +5,6 @@
 		<PackageReference Include="EasyNetQ" Version="8.1.2" />
 		<PackageReference Include="EasyNetQ.DI.Microsoft" Version="8.0.0-beta96" />
 		<PackageReference Include="EasyNetQ.Serialization.NewtonsoftJson" Version="8.1.2" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.6" />
 	</ItemGroup>
 
 	<ItemGroup>

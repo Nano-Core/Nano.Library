@@ -22,6 +22,7 @@ internal static class DbContextOptionsBuilderExtensions
         builder
             .ConfigureLoggingAndWarnings(options)
             .ConfigureLazyLoading(options)
+            .ConfigureEceptionTranslator(serviceProvider)
             .ConfigureEntityEventing(serviceProvider)
             .ConfigureSoftDelete();
 
@@ -59,6 +60,19 @@ internal static class DbContextOptionsBuilderExtensions
 
         builder
             .UseLazyLoadingProxies(options.UseLazyLoading);
+
+        return builder;
+    }
+    private static DbContextOptionsBuilder ConfigureEceptionTranslator(this DbContextOptionsBuilder builder, IServiceProvider serviceProvider)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        ArgumentNullException.ThrowIfNull(serviceProvider);
+
+        var exceptionTranslator = serviceProvider
+            .GetRequiredService<IDatabaseExceptionTranslator>();
+
+        builder
+            .AddInterceptors(new DatabaseExceptionInterceptor(exceptionTranslator));
 
         return builder;
     }

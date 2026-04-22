@@ -19,6 +19,26 @@ namespace Nano.Data.MySql;
 public sealed class MySqlProvider : IDataProvider
 {
     /// <inheritdoc />
+    public static void Configure(IServiceCollection services, DataOptions options)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(options);
+
+        services
+            .AddSingleton<IDatabaseExceptionTranslator, MySqlExceptionTranslator>();
+
+        if (options.HealthCheck != null)
+        {
+            var failureStatus = options.HealthCheck.UnhealthyStatus
+                .GetHealthStatus();
+
+            services
+                .AddHealthChecks()
+                .AddMySql(options.ConnectionString, name: "mysql", failureStatus: failureStatus);
+        }
+    }
+
+    /// <inheritdoc />
     public static void Configure(DbContextOptionsBuilder builder, DataOptions options)
     {
         ArgumentNullException.ThrowIfNull(builder);
@@ -42,24 +62,5 @@ public sealed class MySqlProvider : IDataProvider
                 x.UseNetTopologySuite();
                 x.UseQuerySplittingBehavior(querySplittingBehavior);
             });
-    }
-
-    /// <inheritdoc />
-    public static void Configure(IServiceCollection services, DataOptions options)
-    {
-        ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(options);
-
-        if (options.HealthCheck == null)
-        {
-            return;
-        }
-
-        var failureStatus = options.HealthCheck.UnhealthyStatus
-            .GetHealthStatus();
-
-        services
-            .AddHealthChecks()
-            .AddMySql(options.ConnectionString, name: "mysql", failureStatus: failureStatus);
     }
 }

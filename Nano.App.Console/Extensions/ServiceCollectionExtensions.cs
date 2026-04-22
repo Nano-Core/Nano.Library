@@ -3,10 +3,10 @@ using Nano.App.Console.Config;
 using Nano.App.Console.Workers;
 using Nano.App.Console.Workers.Abstractions;
 using Nano.Common.Extensions;
-using Nano.Common.Helpers;
 using System;
 using System.Globalization;
 using System.Linq;
+using Nano.Common;
 
 namespace Nano.App.Console.Extensions;
 
@@ -28,7 +28,7 @@ internal static class ServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        var types = TypesHelper
+        var types = TypeCache
             .GetAllTypes()
             .Where(x =>
                 !x.IsAbstract &&

@@ -1,11 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using Nano.Common.Config.Extensions;
 using Nano.Common.Extensions;
-using Nano.Common.Helpers;
 using Nano.Eventing.Abstractions;
 using Nano.Eventing.Abstractions.Config;
 using System;
 using System.Linq;
+using Nano.Common;
 
 namespace Nano.Eventing.Extensions;
 
@@ -58,7 +58,7 @@ public static class ServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        var eventHandlerTypes = TypesHelper
+        var eventHandlerTypes = TypeCache
             .GetAllTypes()
             .SelectMany(x => x.GetInterfaces(), (x, y) => new
             {

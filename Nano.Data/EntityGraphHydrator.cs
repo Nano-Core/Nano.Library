@@ -125,6 +125,7 @@ internal class EntityGraphHydrator(DbContext dbContext)
 
                 break;
             }
+
             default:
                 throw new ArgumentOutOfRangeException(nameof(entityEntry.State), entityEntry.State, "Argument out of range.");
         }
@@ -334,7 +335,7 @@ internal class EntityGraphHydrator(DbContext dbContext)
         ArgumentNullException.ThrowIfNull(entityType);
         ArgumentNullException.ThrowIfNull(keyValues);
 
-        var cache = EntityGraphHydrator.loaderCache.GetOrAdd(clrType, x =>
+        var cache = loaderCache.GetOrAdd(clrType, x =>
         {
             var method = typeof(EntityGraphHydrator)
                 .GetMethod(nameof(LoadEntityNoTrackingGeneric), BindingFlags.NonPublic | BindingFlags.Static)!.MakeGenericMethod(x);

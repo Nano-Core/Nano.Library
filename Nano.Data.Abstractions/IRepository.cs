@@ -647,7 +647,7 @@ public interface IRepository : IDisposable
         where TEntity : class, IEntityUpdatable;
 
     /// <summary>
-    /// Bulk updates multiple instances in bulk of <see cref="IEntityUpdatable"/> based on the given criteria.
+    /// Bulk (batch) updates multiple instances of <see cref="IEntityUpdatable"/> based on the given criteria.
     /// </summary>
     /// <typeparam name="TEntity">The type of entities to update.</typeparam>
     /// <typeparam name="TCriteria">The type of criteria used to filter entities.</typeparam>
@@ -660,7 +660,7 @@ public interface IRepository : IDisposable
         where TCriteria : class, IQueryCriteria, new();
 
     /// <summary>
-    /// Bulk updates multiple instances of <see cref="IEntityUpdatable"/> matching the given where clause.
+    /// Bulk (batch) updates multiple instances of <see cref="IEntityUpdatable"/> matching the given where clause.
     /// </summary>
     /// <typeparam name="TEntity">The type of entities to update.</typeparam>
     /// <param name="where">The predicate to select entities to update.</param>
@@ -900,7 +900,7 @@ public interface IRepository : IDisposable
         where TEntity : class, IEntityDeletable;
 
     /// <summary>
-    /// Bulk deletes all instances of <typeparamref name="TEntity"/> matching the specified query criteria.
+    /// Bulk (batch) deletes all instances of <typeparamref name="TEntity"/> matching the specified query criteria.
     /// This operation requires Entity Framework Plus Enterprise.
     /// </summary>
     /// <typeparam name="TEntity">The entity type to delete. Must implement <see cref="IEntityDeletable"/>.</typeparam>

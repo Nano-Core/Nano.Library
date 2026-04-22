@@ -74,6 +74,9 @@ public static class ServiceCollectionExtensions
         TProvider.Configure(services, options);
 
         services
+            .AddSingleton<IDatabaseExceptionTranslator, DefaultDatabaseExceptionTranslator>();
+
+        services
             .AddContext<TProvider, TContext>(options)
             .AddAudit<TIdentity>(options)
             .AddIdentity<TContext, TIdentity>(options.Identity);

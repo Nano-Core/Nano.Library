@@ -679,7 +679,7 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Bulk updates entities matching a query via the 'edit/query/bulk' endpoint.
+    /// Bulk (batch) updates entities matching a query via the 'edit/query/bulk' endpoint.
     /// Route: edit/query/bulk
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
@@ -698,7 +698,7 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Bulk updates entities matching a query via the 'edit/query/bulk' endpoint using criteria and property updates.
+    /// Bulk (batch) updates entities matching a query via the 'edit/query/bulk' endpoint using criteria and property updates.
     /// Route: edit/query/bulk
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
@@ -868,7 +868,7 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Deletes entities in bulk using a query via the 'delete/query/bulk' endpoint.
+    /// Deletes (batch) entities in bulk using a query via the 'delete/query/bulk' endpoint.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
     /// <typeparam name="TCriteria">The criteria type.</typeparam>
@@ -886,7 +886,7 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Deletes entities in bulk matching criteria using the 'delete/query/bulk' endpoint.
+    /// Deletes (batch) entities in bulk matching criteria using the 'delete/query/bulk' endpoint.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
     /// <typeparam name="TCriteria">The criteria type.</typeparam>

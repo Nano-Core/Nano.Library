@@ -193,7 +193,7 @@ public abstract class BaseEntityController<TEntity, TIdentity, TCriteria> : Base
     }
 
     /// <summary>
-    /// Bulk deletes entities matching the specified criteria.
+    /// Bulk (batch) deletes entities matching the specified criteria.
     /// </summary>
     /// <param name="select">The criteria for selecting entities to delete.</param>
     /// <param name="cancellationToken">Cancellation token.</param>

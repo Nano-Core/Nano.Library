@@ -1,10 +1,10 @@
-using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.Common.Mvc.HealthChecks.Extensions;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Config;
 using Nano.Data.Extensions;
+using System;
 
 namespace Nano.Data.PostgreSQL;
 
@@ -17,6 +17,26 @@ namespace Nano.Data.PostgreSQL;
 /// </remarks>
 public sealed class PostgresSqlProvider : IDataProvider
 {
+    /// <inheritdoc />
+    public static void Configure(IServiceCollection services, DataOptions options)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(options);
+
+        services
+            .AddSingleton<IDatabaseExceptionTranslator, PostgreSqlExceptionTranslator>();
+
+        if (options.HealthCheck != null)
+        {
+            var failureStatus = options.HealthCheck.UnhealthyStatus
+                .GetHealthStatus();
+
+            services
+                .AddHealthChecks()
+                .AddNpgSql(options.ConnectionString, name: "postgres", failureStatus: failureStatus);
+        }
+    }
+
     /// <inheritdoc />
     public static void Configure(DbContextOptionsBuilder builder, DataOptions options)
     {
@@ -38,24 +58,5 @@ public sealed class PostgresSqlProvider : IDataProvider
                 x.UseNetTopologySuite();
                 x.UseQuerySplittingBehavior(querySplittingBehavior);
             });
-    }
-
-    /// <inheritdoc />
-    public static void Configure(IServiceCollection services, DataOptions options)
-    {
-        ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(options);
-
-        if (options.HealthCheck == null)
-        {
-            return;
-        }
-
-        var failureStatus = options.HealthCheck.UnhealthyStatus
-            .GetHealthStatus();
-
-        services
-            .AddHealthChecks()
-            .AddNpgSql(options.ConnectionString, name: "postgres", failureStatus: failureStatus);
     }
 }

@@ -1,11 +1,11 @@
 using Microsoft.Extensions.DependencyInjection;
 using Nano.Common.Extensions;
-using Nano.Common.Helpers;
 using Nano.Eventing.Abstractions;
 using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Nano.Common;
 
 namespace Nano.Eventing;
 
@@ -13,13 +13,14 @@ internal sealed class RegisterEventingHandlersTask(IEventing eventing) : IRegist
 {
     private readonly IEventing eventing = eventing ?? throw new ArgumentNullException(nameof(eventing));
 
-    public async Task RegisterEventHandlers(IServiceProvider serviceProvider, CancellationToken cancellationToken = default)
+    public async Task RegisterEventHandlers(IServiceScope serviceScope, IServiceProvider serviceProvider, CancellationToken cancellationToken = default)
     {
+        ArgumentNullException.ThrowIfNull(serviceScope);
         ArgumentNullException.ThrowIfNull(serviceProvider);
 
         await Task.CompletedTask;
 
-        var eventHandlerTypes = TypesHelper
+        var eventHandlerTypes = TypeCache
             .GetAllTypes()
             .SelectMany(x => x.GetInterfaces(), (x, y) => new
             {
@@ -47,10 +48,12 @@ internal sealed class RegisterEventingHandlersTask(IEventing eventing) : IRegist
                 continue;
             }
 
+            // BUG: CHAT-GPT Can RoutingKey and OverridePrefetchCount be done in a smarter way? I think we already tried static
+
             var genericType = typeof(IEventingHandler<>)
                 .MakeGenericType(eventType);
 
-            var tempEventHandler = serviceProvider
+            var tempEventHandler = serviceScope.ServiceProvider
                 .GetRequiredService(genericType);
 
             var routingKey = (string?)genericType

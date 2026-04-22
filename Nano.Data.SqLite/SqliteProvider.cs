@@ -18,6 +18,26 @@ namespace Nano.Data.SqLite;
 public sealed class SqLiteProvider : IDataProvider
 {
     /// <inheritdoc />
+    public static void Configure(IServiceCollection services, DataOptions options)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(options);
+
+        services
+            .AddSingleton<IDatabaseExceptionTranslator, SqLiteExceptionTranslator>();
+
+        if (options.HealthCheck != null)
+        {
+            var failureStatus = options.HealthCheck.UnhealthyStatus
+                .GetHealthStatus();
+
+            services
+                .AddHealthChecks()
+                .AddSqlite(options.ConnectionString, name: "sqlite", failureStatus: failureStatus);
+        }
+    }
+
+    /// <inheritdoc />
     public static void Configure(DbContextOptionsBuilder builder, DataOptions options)
     {
         ArgumentNullException.ThrowIfNull(builder);
@@ -38,24 +58,5 @@ public sealed class SqLiteProvider : IDataProvider
             });
 
         SQLitePCL.Batteries.Init();
-    }
-
-    /// <inheritdoc />
-    public static void Configure(IServiceCollection services, DataOptions options)
-    {
-        ArgumentNullException.ThrowIfNull(services);
-        ArgumentNullException.ThrowIfNull(options);
-
-        if (options.HealthCheck == null)
-        {
-            return;
-        }
-
-        var failureStatus = options.HealthCheck.UnhealthyStatus
-            .GetHealthStatus();
-
-        services
-            .AddHealthChecks()
-            .AddSqlite(options.ConnectionString, name: "sqlite", failureStatus: failureStatus);
     }
 }

@@ -1,6 +1,5 @@
 using Asp.Versioning;
 using Asp.Versioning.ApiExplorer;
-using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -658,20 +657,25 @@ internal static class ApplicationBuilderExtensions
             {
                 Predicate = _ => true,
                 AllowCachingResponses = true,
-                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponseNoExceptionDetails
-            });
+                ResponseWriter = (context, report) =>
+                {
+                    context.Response.ContentType = HttpContentType.JSON;
 
-        applicationBuilder
-            .UseHealthChecksUI(x =>
-            {
-                x.PageTitle = $"Healthz ({webHostEnvironment.EnvironmentName})";
-                x.UIPath = HealthzCheckUris.UiPath;
-                x.ApiPath = HealthzCheckUris.ApiPath;
-                x.ResourcesPath = HealthzCheckUris.RexPath;
-                x.WebhookPath = HealthzCheckUris.WebHooksPath;
-                x.UseRelativeApiPath = true;
-                x.UseRelativeResourcesPath = true;
-                x.UseRelativeWebhookPath = true;
+                    var result = new
+                    {
+                        status = report.Status.ToString(),
+                        checks = report.Entries
+                            .Select(x => new
+                            {
+                                name = x.Key,
+                                status = x.Value.Status.ToString(),
+                                duration = x.Value.Duration.TotalMilliseconds
+                            })
+                    };
+
+                    return context.Response
+                        .WriteAsJsonAsync(result);
+                }
             });
 
         return applicationBuilder;

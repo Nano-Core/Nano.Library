@@ -29,8 +29,6 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Linq;
 using System.Text.Json.Serialization;
-using HealthChecks.UI.Data;
-using Microsoft.EntityFrameworkCore;
 using Vivet.AspNetCore.RequestTimeZone.Enums;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
 using Vivet.AspNetCore.RequestTimeZone.Providers;
@@ -68,7 +66,7 @@ internal static class ServiceCollectionExtensions
             .AddNanoHttpsRedirection(options.Hosting.Http, options.Hosting.Https)
             .AddNanoMvc()
             .AddNanoDocumentation(options.Documentation)
-            .AddNanoHealthChecking(options.HealthCheck, options.Hosting.Http.Ports.FirstOrDefault())
+            .AddNanoSelfHealthChecking()
             .AddHttpContextAccessor();
 
         return services;
@@ -496,38 +494,13 @@ internal static class ServiceCollectionExtensions
         return services;
     }
 
-    internal static IServiceCollection AddNanoHealthChecking(this IServiceCollection services, HealthCheckOptions? options = null, int? port = null)
+    internal static IServiceCollection AddNanoSelfHealthChecking(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
 
-        if (options == null)
-        {
-            return services;
-        }
-
         services
             .AddHealthChecks()
-            .AddCheck<StartupHealthCheck>("startup");
-
-        services
-            .AddHealthChecksUI(x =>
-            {
-                x.AddHealthCheckEndpoint("app", $"http://localhost:{port ?? 80}/healthz");
-
-                x.SetApiMaxActiveRequests(1);
-                x.SetEvaluationTimeInSeconds(options.EvaluationInterval);
-                x.SetMinimumSecondsBetweenFailureNotifications(options.FailureNotificationInterval);
-                x.MaximumHistoryEntriesPerEndpoint(options.MaximumHistoryEntriesPerEndpoint);
-
-                foreach (var webHook in options.WebHooks)
-                {
-                    x.AddWebhookNotification(webHook.Name, webHook.Uri, webHook.Payload ?? "");
-                }
-            })
-            // BUG: AspNetCore.Diagnostics.HealthChecks broken in EF 10: https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks/issues/2465
-            .AddInMemoryStorage();
-
-        services.AddDbContext<HealthChecksDb>(x => { x.UseInMemoryDatabase("HealthChecksUI"); });
+            .AddCheck<StartupHealthCheck>("self");
 
         return services;
     }

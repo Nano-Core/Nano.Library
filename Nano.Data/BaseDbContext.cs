@@ -209,6 +209,34 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
     }
 
     /// <summary>
+    /// Saves all changes made in the context to the database with auditing and entity event support.
+    /// </summary>
+    /// <param name="acceptAllChangesOnSuccess">Indicates whether <see cref="Microsoft.EntityFrameworkCore.ChangeTracking.ChangeTracker.AcceptAllChanges" /> is called after the changes have been sent successfully to the database.</param>
+    /// <returns>The number of state entries written to the database.</returns>
+    public override int SaveChanges(bool acceptAllChangesOnSuccess)
+    {
+        var audit = new Audit();
+
+        audit
+            .PreSaveChanges(this);
+
+        var rowAffecteds = this.SaveChangesWithTriggers(x => base.SaveChanges(x), acceptAllChangesOnSuccess);
+
+        audit
+            .PostSaveChanges();
+
+        if (audit.Entries.Count > 0)
+        {
+            AuditManager.DefaultConfiguration.AutoSavePreAction
+                .Invoke(this, audit);
+
+            base.SaveChanges(acceptAllChangesOnSuccess);
+        }
+
+        return rowAffecteds;
+    }
+
+    /// <summary>
     /// Asynchronously saves all changes made in the context to the database with auditing and entity event support.
     /// </summary>
     /// <param name="cancellationToken">A <see cref="CancellationToken"/> for cancelling the operation.</param>
@@ -231,6 +259,36 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
                 .Invoke(this, audit);
 
             await base.SaveChangesAsync(cancellationToken)
+                .ConfigureAwait(false);
+        }
+
+        return rowAffecteds;
+    }
+
+    /// <summary>
+    /// Asynchronously saves all changes made in the context to the database with auditing and entity event support.
+    /// </summary>
+    /// <param name="acceptAllChangesOnSuccess">Indicates whether <see cref="Microsoft.EntityFrameworkCore.ChangeTracking.ChangeTracker.AcceptAllChanges" /> is called after the changes have been sent successfully to the database.</param>
+    /// <param name="cancellationToken">A <see cref="CancellationToken"/> for cancelling the operation.</param>
+    /// <returns>The number of state entries written to the database.</returns>
+    public override async Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+    {
+        var audit = new Audit();
+
+        audit
+            .PreSaveChanges(this);
+
+        var rowAffecteds = await this.SaveChangesWithTriggersAsync((x, innerCancellationToken) => base.SaveChangesAsync(x, innerCancellationToken), acceptAllChangesOnSuccess, cancellationToken);
+
+        audit
+            .PostSaveChanges();
+
+        if (audit.Entries.Count > 0)
+        {
+            AuditManager.DefaultConfiguration.AutoSavePreAction
+                .Invoke(this, audit);
+
+            await base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken)
                 .ConfigureAwait(false);
         }
 

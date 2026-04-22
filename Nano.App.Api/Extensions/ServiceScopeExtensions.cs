@@ -5,8 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Nano.App.Api.Config;
 using Nano.App.Api.Controllers;
 using Nano.App.Api.Mvc.Authentication.Abstractions;
+using Nano.Common;
 using Nano.Common.Extensions;
-using Nano.Common.Helpers;
 using Nano.Data.Abstractions.Identity;
 
 namespace Nano.App.Api.Extensions;
@@ -19,7 +19,7 @@ internal static class ServiceScopeExtensions
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(options);
 
-        var hasAuthController = TypesHelper
+        var hasAuthController = TypeCache
             .GetAllTypes()
             .Any(x => x.IsTypeOf(typeof(BaseAuthController)));
 
@@ -61,7 +61,7 @@ internal static class ServiceScopeExtensions
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(options);
 
-        var userTypes = TypesHelper
+        var userTypes = TypeCache
             .GetAllTypes()
             .Where(x => !x.IsAbstract)
             .Select(x => x.GetGenericBaseType(typeof(BaseEntityUserController<,,>)))

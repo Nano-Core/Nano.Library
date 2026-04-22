@@ -226,7 +226,7 @@ public abstract class BaseEntityCreatableAndEditableController<TEntity, TIdentit
     }
 
     /// <summary>
-    /// Edits entities that match the specified criteria in bulk.
+    /// Edits entities that match the specified criteria in bulk (batch).
     /// </summary>
     /// <param name="query">The update query containing criteria and property updates.</param>
     /// <param name="cancellationToken">Cancellation token.</param>

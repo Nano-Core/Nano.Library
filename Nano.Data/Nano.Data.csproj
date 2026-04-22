@@ -2,14 +2,13 @@
 
 	<ItemGroup>
 		<PackageReference Include="EntityFrameworkCore.Triggers" Version="1.2.3" />
-		<PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="10.0.5" />
-		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.6" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.6">
-		  <PrivateAssets>all</PrivateAssets>
+		<PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="10.0.7" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.7" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.7" >
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="10.0.6" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.6" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="10.0.7" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.7" />
 		<PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="10.105.4" />
 	</ItemGroup>
 

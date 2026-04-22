@@ -9,9 +9,9 @@ using Nano.App.Config.Extensions;
 using Nano.App.Startup;
 using Nano.App.Startup.Abstractions;
 using Nano.Common.Extensions;
-using Nano.Common.Helpers;
 using System;
 using System.Linq;
+using Nano.Common;
 
 namespace Nano.App.Extensions;
 
@@ -52,7 +52,7 @@ internal static class ServiceCollectionExtensions
         services
             .AddSingleton<StartupTaskContext>();
 
-        var types = TypesHelper
+        var types = TypeCache
             .GetAllTypes()
             .Where(x =>
                 !x.IsAbstract &&

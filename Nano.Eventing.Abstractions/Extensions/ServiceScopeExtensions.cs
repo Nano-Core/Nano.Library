@@ -26,7 +26,7 @@ public static class ServiceScopeExtensions
             .GetService<IRegisterEventingHandlersTask>();
 
         registerEventHandlersTask?
-            .RegisterEventHandlers(rootServiceProvider)
+            .RegisterEventHandlers(serviceScope, rootServiceProvider)
             .GetAwaiter()
             .GetResult();
 

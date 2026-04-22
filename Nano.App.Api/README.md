@@ -1303,39 +1303,36 @@ metadata:
 Try it out yourself using the **[Api.Documentation](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Documentation)** example.  
 
 ## Health Checks
-When health checks are enabled in the configuration, a `/healthz` endpoint is exposed, along with a web-based health monitor interface at `/healthz-ui`.  
+When health checks are enabled in the configuration, a `/healthz` endpoint is exposed.  
 
-A startup health check is performed to await the completion of all pending startup tasks before the application is reported as ready. 
+A _self_ startup health check is performed to await the completion of all pending startup tasks before the application is reported as ready. 
 As additional Nano providers and services are added to the application, they will automatically appear in the health checks and report their status, 
 if configured with health-check enabled.  
+
+The response returns the health status for all registered health checks in the format shown below.  
+
+```json
+{
+  "status": "Healthy",
+  "checks": [
+    {
+      "name": "{name}",
+      "status": "Healthy",
+      "duration": 1.000
+    }
+  ]
+}
+```
 
 Dependencies between services are represented as a tree of health checks. If any service in the chain fails, its failure status propagates according 
 to the configured rules, affecting the overall health status of the application. This makes it easy to monitor the health of all components and dependencies 
 in a consistent and centralized way.  
 
-| Setting                             | Type   | Default | Description                                                                                                                                                               |
-| ----------------------------------- | ------ | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `EvaluationInterval`                | int    | 10      | Interval between health-check evaluations, in seconds.                                                                                                                    |
-| `FailureNotificationInterval`       | int    | 60      | Minimum interval between failure notifications, in seconds.                                                                                                               |
-| `MaximumHistoryEntriesPerEndpoint`  | int    | 50      | Maximum number of historical entries per endpoint stored in the UI database.                                                                                              |
-| `WebHooks`                          | array  | []      | Configured web-hooks triggered on health-check events. ⚠️ Normally, webhooks aren’t needed; in the cloud, `/healthz` is polled and monitoring uses more robust alerting.  |
-| `WebHooks.Name`                     | string | null    | Required. Name of the web-hook.                                                                                                                                           |
-| `WebHooks.Url`                      | string | null    | Required. URL to which the web-hook will send requests.                                                                                                                   |
-| `WebHooks.Payload`                  | string | null    | Optional. Payload to include in the web-hook request.                                                                                                                     |
+There are no configuration options required for health checks. You can simply enable health-checks by adding an empty configuration object as shown below.  
 
 ```json
 "App": {
   "HealthCheck": {
-    "EvaluationInterval": 10,
-    "FailureNotificationInterval": 60,
-    "MaximumHistoryEntriesPerEndpoint": 50,
-    "WebHooks": [
-      {
-        "Name": null,
-        "Url": null,
-        "Payload": null
-      }
-    ]
   }
 }
 ```
@@ -1936,12 +1933,12 @@ When everything is configured and registered, the following endpoints becomes av
 | `/{entity}s/edit/many`         | PUT, POST     | entities                         | editor  | Edits multiple model instances.                                              |
 | `/{entity}s/edit/many/bulk`    | PUT, POST     | entities                         | editor  | Edits multiple model instances in bulk.                                      |
 | `/{entity}s/edit/query`        | PUT, POST     | update-query, criteria           | editor  | Edits entities that match the specified criteria.                            |
-| `/{entity}s/edit/query/bulk`   | PUT, POST     | update-query, criteria           | editor  | Edits entities that match the specified criteria in bulk.                    |
+| `/{entity}s/edit/query/bulk`   | PUT, POST     | update-query, criteria           | editor  | Edits entities that match the specified criteria in bulk (batch).            |
 | `/{entity}s/{id}/delete`       | POST, DELETE  | id                               | deleter | Deletes a single entity by its identifier.                                   |
 | `/{entity}s/delete/many`       | POST, DELETE  | ids                              | deleter | Deletes multiple entities by their identifiers.                              |
 | `/{entity}s/delete/many/bulk`  | POST, DELETE  | ids                              | deleter | Deletes multiple entities by their identifiers in bulk.                      |
 | `/{entity}s/delete/query`      | POST, DELETE  | criteria                         | deleter | Deletes entities matching the specified criteria.                            |
-| `/{entity}s/delete/query/bulk` | POST, DELETE  | criteria                         | deleter | Deletes entities matching the specified criteria in bulk.                    |
+| `/{entity}s/delete/query/bulk` | POST, DELETE  | criteria                         | deleter | Deletes entities matching the specified criteria in bulk (batch).            |
 
 > ⚠️ Do not set `includeDepth` higher than the configured include depth. **[Response Serialization](#response-serialization)** will only consider the configured value.
 
