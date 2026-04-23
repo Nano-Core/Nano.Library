@@ -50,6 +50,8 @@ internal sealed class RegisterEventingHandlersTask(IEventing eventing) : IRegist
 
             // BUG: CHAT-GPT Can RoutingKey and OverridePrefetchCount be done in a smarter way? I think we already tried static
 
+            // Virus scan example write about health-check in readme
+
             var genericType = typeof(IEventingHandler<>)
                 .MakeGenericType(eventType);
 
