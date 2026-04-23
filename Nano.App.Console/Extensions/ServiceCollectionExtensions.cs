@@ -39,8 +39,13 @@ internal static class ServiceCollectionExtensions
 
         foreach (var type in types)
         {
+            if (type == null)
+            {
+                throw new NullReferenceException(nameof(type));
+            }
+
             services
-                .AddScoped(typeof(IWorker), type!);
+                .AddScoped(typeof(IWorker), type);
         }
 
         services

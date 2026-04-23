@@ -119,7 +119,12 @@ internal static class ServiceCollectionExtensions
                 var apiOptions = x
                     .GetRequiredService<IOptionsMonitor<ApiOptions>>();
 
-                return new AuthJwtRepository(apiOptions.CurrentValue.Authentication.Jwt!);
+                if (apiOptions.CurrentValue.Authentication.Jwt == null)
+                {
+                    throw new NullReferenceException(nameof(apiOptions.CurrentValue.Authentication.Jwt));
+                }
+
+                return new AuthJwtRepository(apiOptions.CurrentValue.Authentication.Jwt);
             });
 
         return services;
@@ -187,7 +192,14 @@ internal static class ServiceCollectionExtensions
                 var httpClient = httpClientFactory
                     .CreateClient(nameof(AuthExternalFacebookRepository));
 
-                return new AuthExternalFacebookRepository(apiOptions.CurrentValue.Authentication.Jwt?.ExternalLogins.Facebook!, httpClient);
+                var facebookOptions = apiOptions.CurrentValue.Authentication.Jwt?.ExternalLogins.Facebook;
+
+                if (facebookOptions == null)
+                {
+                    throw new NullReferenceException(nameof(apiOptions.CurrentValue.Authentication.Jwt.ExternalLogins.Facebook));
+                }
+
+                return new AuthExternalFacebookRepository(facebookOptions, httpClient);
             });
 
         return services;
@@ -207,7 +219,14 @@ internal static class ServiceCollectionExtensions
                 var apiOptions = x
                     .GetRequiredService<IOptionsMonitor<ApiOptions>>();
 
-                return new AuthExternalGoogleRepository(apiOptions.CurrentValue.Authentication.Jwt?.ExternalLogins.Google!);
+                var googleOptions = apiOptions.CurrentValue.Authentication.Jwt?.ExternalLogins.Google;
+
+                if (googleOptions == null)
+                {
+                    throw new NullReferenceException(nameof(apiOptions.CurrentValue.Authentication.Jwt.ExternalLogins.Google));
+                }
+
+                return new AuthExternalGoogleRepository(googleOptions);
             });
 
         return services;
@@ -236,7 +255,14 @@ internal static class ServiceCollectionExtensions
                 var httpClient = httpClientFactory
                     .CreateClient(nameof(AuthExternalMicrosoftRepository));
 
-                return new AuthExternalMicrosoftRepository(apiOptions.CurrentValue.Authentication.Jwt?.ExternalLogins.Microsoft!, httpClient);
+                var microsoftOptions = apiOptions.CurrentValue.Authentication.Jwt?.ExternalLogins.Microsoft;
+
+                if (microsoftOptions == null)
+                {
+                    throw new NullReferenceException(nameof(apiOptions.CurrentValue.Authentication.Jwt.ExternalLogins.Microsoft));
+                }
+
+                return new AuthExternalMicrosoftRepository(microsoftOptions, httpClient);
             });
 
         return services;

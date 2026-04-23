@@ -179,17 +179,15 @@ public class MyEventingHandler : BaseEventHandler<MyEvent>
 
 > ⚠️ Be aware that all `BaseEventHandler<TEvent>` implementations must be non-generic, or they will be ignored during startup registration.  
 
-While it is possible to implement `IEventingHandler<MyEvent>` directly, it is generally not recommended. Doing so requires manually implementing two properties that 
-are handled automatically in the base class. By deriving from `BaseEventHandler<TEvent>` instead, these properties are managed for you and can optionally 
-be set via the constructor.  
+Each event handler can optionally define a routing key to control how events are filtered for the subscriber. In addition, the prefetch count can be overridden from the 
+global eventing configuration. To specify either value, implement the corresponding static members as shown below.  
 
 ```csharp
-public class MyEventingHandler() : BaseEventHandler<MyEvent>(routingKey: null, overridePrefetchCount: null)
+public class MyEventingHandler : BaseEventHandler<MyEvent>
 {
-    public override Task CallbackAsync(MyEvent @event, bool isRedelivered, CancellationToken cancellationToken = default)
-    {
-        ...
-    }
+    public static string RoutingKey => "my-routing-key";
+
+    public static string OverridePrefetchCount => 10;
 }
 ```
 

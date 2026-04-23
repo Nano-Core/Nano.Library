@@ -28,7 +28,12 @@ internal sealed class NanoMvcContractResolver(IOptions<DataOptions>? dataOptions
 
         var propertyType = property.PropertyType;
 
-        if (!IsEntityNavigation(propertyType!))
+        if (propertyType == null)
+        {
+            throw new NullReferenceException(nameof(propertyType));
+        }
+
+        if (!IsEntityNavigation(propertyType))
         {
             return property;
         }

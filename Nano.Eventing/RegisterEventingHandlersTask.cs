@@ -1,8 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
-using Nano.Common.Extensions;
 using Nano.Eventing.Abstractions;
 using System;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Nano.Common;
@@ -11,6 +11,8 @@ namespace Nano.Eventing;
 
 internal sealed class RegisterEventingHandlersTask(IEventing eventing) : IRegisterEventingHandlersTask
 {
+    private static readonly MethodInfo subscribeMethod = typeof(IEventing).GetMethod(nameof(IEventing.SubscribeAsync))!;
+
     private readonly IEventing eventing = eventing ?? throw new ArgumentNullException(nameof(eventing));
 
     public async Task RegisterEventHandlers(IServiceScope serviceScope, IServiceProvider serviceProvider, CancellationToken cancellationToken = default)
@@ -22,57 +24,33 @@ internal sealed class RegisterEventingHandlersTask(IEventing eventing) : IRegist
 
         var eventHandlerTypes = TypeCache
             .GetAllTypes()
-            .SelectMany(x => x.GetInterfaces(), (x, y) => new
-            {
-                Type = x,
-                InterfaceType = y
-            })
             .Where(x =>
-                x.Type is { IsAbstract: false, IsGenericType: false } &&
-                x.Type.IsTypeOf(typeof(IEventingHandler<>)))
-            .GroupBy(x => new
-            {
-                TypeName = x.Type.FullName,
-                InterfaceTypeName = x.InterfaceType.FullName
-            })
-            .Select(x => x.FirstOrDefault()?.InterfaceType)
-            .Where(x => x != null);
+                x is { IsAbstract: false, IsGenericType: false } &&
+                x.GetInterfaces().Any(y =>
+                    y.IsGenericType &&
+                    y.GetGenericTypeDefinition() == typeof(IEventingHandler<>)))
+            .SelectMany(t => t.GetInterfaces()
+                .Where(x =>
+                    x.IsGenericType &&
+                    x.GetGenericTypeDefinition() == typeof(IEventingHandler<>)))
+            .Distinct();
 
         foreach (var eventHandlerType in eventHandlerTypes)
         {
-            var eventType = eventHandlerType?
+            var eventType = eventHandlerType
                 .GetGenericArguments()[0];
 
-            if (eventType == null)
-            {
-                continue;
-            }
+            var routingKey = (string?)eventHandlerType
+                .GetProperty(nameof(IEventingHandler.RoutingKey), BindingFlags.Public | BindingFlags.Static)?
+                .GetValue(null);
 
-            // BUG: CHAT-GPT Can RoutingKey and OverridePrefetchCount be done in a smarter way? I think we already tried static
+            var overridePrefetchCount = (string?)eventHandlerType
+                .GetProperty(nameof(IEventingHandler.OverridePrefetchCount), BindingFlags.Public | BindingFlags.Static)?
+                .GetValue(null);
 
-            // Virus scan example write about health-check in readme
-
-            var genericType = typeof(IEventingHandler<>)
-                .MakeGenericType(eventType);
-
-            var tempEventHandler = serviceScope.ServiceProvider
-                .GetRequiredService(genericType);
-
-            var routingKey = (string?)genericType
-                .GetProperty(nameof(IEventingHandler<>.RoutingKey))?
-                .GetValue(tempEventHandler);
-
-            var prefetchCount = (ushort?)genericType
-                .GetProperty(nameof(IEventingHandler<>.OverridePrefetchCount))?
-                .GetValue(tempEventHandler);
-
-            var subscribeMethod = this.eventing
-                .GetType()
-                .GetMethod(nameof(IEventing.SubscribeAsync));
-
-            subscribeMethod?
+            subscribeMethod
                 .MakeGenericMethod(eventType)
-                .Invoke(this.eventing, [serviceProvider, routingKey, prefetchCount, cancellationToken]);
+                .Invoke(this.eventing, [serviceProvider, routingKey, overridePrefetchCount, cancellationToken]);
         }
     }
 }

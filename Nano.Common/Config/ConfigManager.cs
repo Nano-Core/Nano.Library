@@ -31,7 +31,7 @@ public static class ConfigManager
 
         var path = Directory.GetCurrentDirectory();
 
-        using var stream = ConfigManager.LoadConfigurationStream(path, environment);
+        using var stream = LoadConfigurationStream(path, environment);
 
         var configurationBuilder = new ConfigurationBuilder()
             .SetBasePath(path)
@@ -45,7 +45,7 @@ public static class ConfigManager
                 .AddUserSecrets(entryAssembly, true, true);
         }
 
-        return ConfigManager.Configuration = configurationBuilder
+        return Configuration = configurationBuilder
             .Build();
     }
 

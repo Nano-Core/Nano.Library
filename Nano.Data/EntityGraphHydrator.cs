@@ -338,7 +338,13 @@ internal class EntityGraphHydrator(DbContext dbContext)
         var cache = loaderCache.GetOrAdd(clrType, x =>
         {
             var method = typeof(EntityGraphHydrator)
-                .GetMethod(nameof(LoadEntityNoTrackingGeneric), BindingFlags.NonPublic | BindingFlags.Static)!.MakeGenericMethod(x);
+                .GetMethod(nameof(LoadEntityNoTrackingGeneric), BindingFlags.NonPublic | BindingFlags.Static)?
+                .MakeGenericMethod(x);
+
+            if (method == null)
+            {
+                throw new NullReferenceException(nameof(method));
+            }
 
             return (Func<DbContext, IEntityType, object[], object?>)method
                 .CreateDelegate(typeof(Func<DbContext, IEntityType, object[], object?>));

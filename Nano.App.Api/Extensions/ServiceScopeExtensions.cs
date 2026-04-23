@@ -66,7 +66,9 @@ internal static class ServiceScopeExtensions
             .Where(x => !x.IsAbstract)
             .Select(x => x.GetGenericBaseType(typeof(BaseEntityUserController<,,>)))
             .Where(x => x != null)
-            .Select(x => x!.GetGenericArguments()[0])
+            .Select(x => x == null
+                ? throw new NullReferenceException(nameof(x))
+                : x.GetGenericArguments()[0])
             .ToArray();
 
         var identityEndpointsTask = serviceScope.ServiceProvider

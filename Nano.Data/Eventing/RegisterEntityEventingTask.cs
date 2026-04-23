@@ -42,8 +42,13 @@ internal sealed class RegisterEntityEventingTask(DbContext dbContext, IEventing?
 
         var subscribeMethod = this.eventing
             .GetType()
-            .GetMethod(nameof(IEventing.SubscribeAsync))!
+            .GetMethod(nameof(IEventing.SubscribeAsync))?
             .MakeGenericMethod(eventType);
+
+        if (subscribeMethod == null)
+        {
+            throw new NullReferenceException(nameof(subscribeMethod));
+        }
 
         var entityTypeNames = this.dbContext.Model
             .GetEntityTypes()

@@ -58,7 +58,7 @@ public sealed class RabbitMqEventing : IEventing
         var name = typeof(TMessage)
             .GetFriendlyName();
 
-        var queueName = RabbitMqEventing.GetQueueName(name, routing);
+        var queueName = GetQueueName(name, routing);
 
         var queue = await this.bus.Advanced
             .QueueDeclareAsync(queueName, x =>
@@ -66,7 +66,7 @@ public sealed class RabbitMqEventing : IEventing
                 x.AsDurable(true);
                 x.AsAutoDelete(false);
                 x.AsExclusive(false);
-                x.WithQueueType(RabbitMqEventing.QUEUE_TYPE);
+                x.WithQueueType(QUEUE_TYPE);
             }, cancellationToken);
 
         var exchange = await this.bus.Advanced

@@ -39,12 +39,22 @@ internal class ReplaceEntityResponseTypeFilter : IOperationFilter
 
         foreach (var attr in producesAttributes)
         {
-            if (!operation.Responses!.TryGetValue(attr.StatusCode.ToString(), out var response))
+            if (operation.Responses == null)
+            {
+                throw new NullReferenceException(nameof(operation.Responses));
+            }
+
+            if (!operation.Responses.TryGetValue(attr.StatusCode.ToString(), out var response))
             {
                 continue;
             }
 
-            foreach (var content in response.Content!.Values)
+            if (response.Content == null)
+            {
+                throw new NullReferenceException(nameof(response.Content));
+            }
+
+            foreach (var content in response.Content.Values)
             {
                 if (content.Schema == null)
                 {
@@ -93,7 +103,7 @@ internal class ReplaceEntityResponseTypeFilter : IOperationFilter
                 return type;
             }
 
-            type = type.BaseType!;
+            type = type.BaseType ?? throw new NullReferenceException(nameof(type.BaseType));
         }
 
         return null;

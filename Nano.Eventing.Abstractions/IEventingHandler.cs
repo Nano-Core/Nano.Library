@@ -5,14 +5,9 @@ using Nano.Eventing.Abstractions.Config;
 namespace Nano.Eventing.Abstractions;
 
 /// <summary>
-/// Represents a handler for a specific type of event in the Nano eventing system.
-/// <para>
-///     Implement this interface to process messages of type <typeparamref name="TEvent"/>.
-/// </para>
+/// Represents a base handler in the Nano eventing system.
 /// </summary>
-/// <typeparam name="TEvent">The type of event to handle.</typeparam>
-public interface IEventingHandler<in TEvent>
-    where TEvent : class
+public interface IEventingHandler
 {
     /// <summary>
     /// Gets the routing key used to determine how the message is routed within the message broker.
@@ -20,7 +15,7 @@ public interface IEventingHandler<in TEvent>
     /// <remarks>
     ///     The routing key is evaluated by the message exchange to decide which queue(s) should receive the message.
     /// </remarks>
-    string? RoutingKey { get; }
+    static string? RoutingKey => null;
 
     /// <summary>
     /// Optional override for the prefetch count when subscribing to this event.
@@ -28,8 +23,19 @@ public interface IEventingHandler<in TEvent>
     ///     If null, the default prefetch count from <see cref="EventingOptions.PrefetchCount"/> is used.
     /// </remarks>
     /// </summary>
-    ushort? OverridePrefetchCount { get; }
+    static ushort? OverridePrefetchCount => null;
+}
 
+/// <summary>
+/// Represents a handler for a specific type of event in the Nano eventing system.
+/// <para>
+///     Implement this interface to process messages of type <typeparamref name="TEvent"/>.
+/// </para>
+/// </summary>
+/// <typeparam name="TEvent">The type of event to handle.</typeparam>
+public interface IEventingHandler<in TEvent> : IEventingHandler
+    where TEvent : class
+{
     /// <summary>
     /// Callback method invoked when a message of type <typeparamref name="TEvent"/> is received.
     /// </summary>

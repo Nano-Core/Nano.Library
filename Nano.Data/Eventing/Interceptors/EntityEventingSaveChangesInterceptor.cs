@@ -26,7 +26,12 @@ internal sealed class EntityEventingSaveChangesInterceptor(IEventing eventing)
     {
         ArgumentNullException.ThrowIfNull(eventData);
 
-        this.PreSaveEntityEvents(eventData.Context!);
+        if (eventData.Context == null)
+        {
+            throw new NullReferenceException(nameof(eventData.Context));
+        }
+
+        this.PreSaveEntityEvents(eventData.Context);
 
         return base.SavingChanges(eventData, result);
     }
@@ -35,7 +40,12 @@ internal sealed class EntityEventingSaveChangesInterceptor(IEventing eventing)
     {
         ArgumentNullException.ThrowIfNull(eventData);
 
-        this.PreSaveEntityEvents(eventData.Context!);
+        if (eventData.Context == null)
+        {
+            throw new NullReferenceException(nameof(eventData.Context));
+        }
+
+        this.PreSaveEntityEvents(eventData.Context);
 
         return base.SavingChangesAsync(eventData, result, cancellationToken);
     }
@@ -44,7 +54,14 @@ internal sealed class EntityEventingSaveChangesInterceptor(IEventing eventing)
     {
         ArgumentNullException.ThrowIfNull(eventData);
 
-        this.PublishEntityEvents(eventData.Context!).GetAwaiter().GetResult();
+        if (eventData.Context == null)
+        {
+            throw new NullReferenceException(nameof(eventData.Context));
+        }
+
+        this.PublishEntityEvents(eventData.Context)
+            .GetAwaiter()
+            .GetResult();
 
         return base.SavedChanges(eventData, result);
     }
@@ -53,7 +70,12 @@ internal sealed class EntityEventingSaveChangesInterceptor(IEventing eventing)
     {
         ArgumentNullException.ThrowIfNull(eventData);
 
-        await this.PublishEntityEvents(eventData.Context!, cancellationToken);
+        if (eventData.Context == null)
+        {
+            throw new NullReferenceException(nameof(eventData.Context));
+        }
+
+        await this.PublishEntityEvents(eventData.Context, cancellationToken);
 
         return await base.SavedChangesAsync(eventData, result, cancellationToken);
     }

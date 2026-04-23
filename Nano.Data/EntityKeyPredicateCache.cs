@@ -31,10 +31,15 @@ internal static class EntityKeyPredicateCache
 
         return (entityType, keyValues) =>
         {
-            var key = entityType
-                .FindPrimaryKey()!;
+            var primaryKey = entityType
+                .FindPrimaryKey();
 
-            var keyProperties = key.Properties;
+            if (primaryKey == null)
+            {
+                throw new NullReferenceException(nameof(primaryKey));
+            }
+
+            var keyProperties = primaryKey.Properties;
 
             Expression? predicate = null;
 
@@ -44,8 +49,13 @@ internal static class EntityKeyPredicateCache
                 var propertyType = property.ClrType;
 
                 var efPropertyMethod = typeof(EF)
-                    .GetMethod(nameof(EF.Property))!
+                    .GetMethod(nameof(EF.Property))?
                     .MakeGenericMethod(propertyType);
+
+                if (efPropertyMethod == null)
+                {
+                    throw new NullReferenceException(nameof(efPropertyMethod));
+                }
 
                 var left = Expression.Call(efPropertyMethod, parameter, Expression.Constant(property.Name));
                 var right = Expression.Constant(keyValues[i], propertyType);
@@ -56,7 +66,9 @@ internal static class EntityKeyPredicateCache
                     : Expression.AndAlso(predicate, equal);
             }
 
-            return Expression.Lambda<Func<TEntity, bool>>(predicate!, parameter);
+            return predicate == null
+                ? throw new NullReferenceException(nameof(predicate))
+                : Expression.Lambda<Func<TEntity, bool>>(predicate, parameter);
         };
     }
 }

@@ -143,15 +143,22 @@ public sealed class EntityEventingHandler<TIdentity>(BaseDbContext<TIdentity> db
 
             var targetType = Nullable.GetUnderlyingType(property.PropertyType) ?? property.PropertyType;
 
+            var valueString = value.ToString();
+
+            if (valueString == null)
+            {
+                throw new NullReferenceException(nameof(valueString));
+            }
+
             var convertedValue = targetType switch
             {
-                { IsEnum: true } => Enum.Parse(targetType, value.ToString()!, true),
-                not null when targetType == typeof(Guid) => Guid.Parse(value.ToString()!),
-                not null when targetType == typeof(DateTime) => DateTime.Parse(value.ToString()!),
-                not null when targetType == typeof(DateTimeOffset) => DateTimeOffset.Parse(value.ToString()!),
-                not null when targetType == typeof(TimeSpan) => TimeSpan.Parse(value.ToString()!),
-                not null when targetType == typeof(DateOnly) => DateOnly.Parse(value.ToString()!),
-                not null when targetType == typeof(TimeOnly) => TimeOnly.Parse(value.ToString()!),
+                { IsEnum: true } => Enum.Parse(targetType, valueString, true),
+                not null when targetType == typeof(Guid) => Guid.Parse(valueString),
+                not null when targetType == typeof(DateTime) => DateTime.Parse(valueString),
+                not null when targetType == typeof(DateTimeOffset) => DateTimeOffset.Parse(valueString),
+                not null when targetType == typeof(TimeSpan) => TimeSpan.Parse(valueString),
+                not null when targetType == typeof(DateOnly) => DateOnly.Parse(valueString),
+                not null when targetType == typeof(TimeOnly) => TimeOnly.Parse(valueString),
                 _ => Convert.ChangeType(value, targetType!)
             };
 

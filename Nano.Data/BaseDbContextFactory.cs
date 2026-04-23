@@ -46,8 +46,13 @@ public abstract class BaseDbContextFactory<TProvider, TContext> : IDesignTimeDbC
 
         TProvider.Configure(builder, dataOptions);
 
-        var dbContext = (TContext)Activator.CreateInstance(typeof(TContext), builder.Options, dataOptionsMonitor)!;
+        var dbContext = Activator.CreateInstance(typeof(TContext), builder.Options, dataOptionsMonitor);
 
-        return dbContext;
+        if (dbContext == null)
+        {
+            throw new NullReferenceException(nameof(dbContext));
+        }
+
+        return (TContext)dbContext;
     }
 }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Reflection;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.App.ApiClient.Abstractions;
 using Nano.App.ApiClient.Config;
@@ -13,6 +7,12 @@ using Nano.Common;
 using Nano.Common.Consts;
 using Nano.Common.Extensions;
 using Nano.Common.Mvc.HealthChecks.Extensions;
+using System;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Reflection;
 
 namespace Nano.App.ApiClient.Extensions;
 

@@ -7,98 +7,119 @@ using System.Threading;
 namespace Nano.Common;
 
 /// <summary>
-/// Incremental runtime type cache that tracks all loaded assemblies and exposes discovered types for reflection-based discovery.
+/// Provides a cached, lazy-loaded snapshot of all <see cref="Type"/> instances discovered across the application's loaded and referenced assemblies.
 /// </summary>
 public static class TypeCache
 {
     private static readonly Lock locker = new();
 
-    private static readonly List<Type> types = [];
-    private static readonly HashSet<Assembly> assemblies = [];
+    private static Type[]? types;
+    private static bool initialized;
 
-    static TypeCache()
+    /// <summary>
+    /// Gets all discovered <see cref="Type"/> instances from the application's entry assembly and all recursively resolved referenced assemblies.
+    /// </summary>
+    /// <returns>A read-only collection of all discovered types available at initialization time.</returns>
+    public static IReadOnlyCollection<Type> GetAllTypes()
     {
-        foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+        if (initialized)
         {
-            TryAddAssembly(assembly);
+            return types!;
         }
 
-        AppDomain.CurrentDomain.AssemblyLoad += (_, args) =>
+        lock (locker)
         {
-            TryAddAssembly(args.LoadedAssembly);
-        };
+            if (initialized)
+            {
+                return types!;
+            }
+
+            var assemblies = LoadAllReferencedAssemblies();
+
+            var result = new List<Type>();
+
+            foreach (var assembly in assemblies)
+            {
+                TryAddTypes(assembly, result);
+            }
+
+            types = result
+                .ToArray();
+
+            initialized = true;
+
+            return types;
+        }
+    }
+
+
+    private static HashSet<Assembly> LoadAllReferencedAssemblies()
+    {
+        var assemblies = new HashSet<Assembly>();
 
         var entry = Assembly.GetEntryAssembly();
 
         if (entry != null)
         {
-            LoadReferencedAssemblies(entry);
+            LoadRecursive(entry, assemblies);
         }
-    }
 
-    /// <summary>
-    /// Gets all discovered types across all tracked assemblies.
-    /// </summary>
-    public static IReadOnlyCollection<Type> GetAllTypes()
-    {
-        lock (locker)
+        foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
         {
-            return types
-                .ToArray();
+            LoadRecursive(asm, assemblies);
         }
+
+        return assemblies;
     }
-
-
-    private static void TryAddAssembly(Assembly assembly)
+    private static void LoadRecursive(Assembly assembly, HashSet<Assembly> hashSet)
     {
         ArgumentNullException.ThrowIfNull(assembly);
+        ArgumentNullException.ThrowIfNull(hashSet);
 
-        if (!assemblies.Add(assembly))
+        if (!hashSet.Add(assembly))
         {
             return;
         }
 
-        var name = assembly.GetName().Name;
+        AssemblyName[] references;
 
-        if (name is null || name.StartsWith(nameof(Microsoft), StringComparison.Ordinal) || name.StartsWith(nameof(System), StringComparison.Ordinal))
+        try
+        {
+            references = assembly.GetReferencedAssemblies();
+        }
+        catch
         {
             return;
         }
 
-        lock (locker)
-        {
-            try
-            {
-                types
-                    .AddRange(assembly.GetTypes());
-            }
-            catch (ReflectionTypeLoadException ex)
-            {
-                types
-                    .AddRange(ex.Types.Where(t => t != null)!);
-            }
-        }
-    }
-    private static void LoadReferencedAssemblies(Assembly assembly)
-    {
-        ArgumentNullException.ThrowIfNull(assembly);
-
-        foreach (var reference in assembly.GetReferencedAssemblies())
+        foreach (var reference in references)
         {
             try
             {
                 var loaded = Assembly.Load(reference);
 
-                if (assemblies.Add(loaded))
-                {
-                    TryAddAssembly(loaded);
-                    LoadReferencedAssemblies(loaded);
-                }
+                LoadRecursive(loaded, hashSet);
             }
             catch
             {
-                // ignore load failures
+                // ignore load failures (optional logging could go here)
             }
+        }
+    }
+    private static void TryAddTypes(Assembly assembly, List<Type> results)
+    {
+        ArgumentNullException.ThrowIfNull(assembly);
+        ArgumentNullException.ThrowIfNull(results);
+
+        try
+        {
+            results
+                .AddRange(assembly.GetTypes());
+        }
+        catch (ReflectionTypeLoadException ex)
+        {
+            results
+                .AddRange(ex.Types.Where(t => t != null)!);
         }
     }
 }

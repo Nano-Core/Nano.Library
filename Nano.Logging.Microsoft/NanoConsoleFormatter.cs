@@ -9,7 +9,7 @@ namespace Nano.Logging.Microsoft;
 /// <summary>
 /// A custom console formatter that outputs log entries in a concise, Serilog-inspired format for consistent cross-provider logging.
 /// </summary>
-public sealed class NanoConsoleFormatter() : ConsoleFormatter(NanoConsoleFormatter.FORMATTER_NAME)
+public sealed class NanoConsoleFormatter() : ConsoleFormatter(FORMATTER_NAME)
 {
     internal const string FORMATTER_NAME = "Nano";
 
