@@ -209,9 +209,11 @@ public sealed class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddlew
     {
         ArgumentNullException.ThrowIfNull(httpRequest);
 
-        var protocol = httpRequest.IsHttps
+        var protocol = (httpRequest.IsHttps
             ? httpRequest.Protocol.Replace("HTTP", "HTTPS")
-            : httpRequest.Protocol;
+            : httpRequest.Protocol)
+            .Replace("\r", string.Empty)
+            .Replace("\n", string.Empty);
 
         var method = httpRequest.Method;
         var path = httpRequest.Path.Value;
