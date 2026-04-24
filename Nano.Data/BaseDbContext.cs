@@ -82,15 +82,9 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
     {
         ArgumentNullException.ThrowIfNull(entities);
 
-        var entries = entities
-            .Select(this.Entry)
-            .ToArray();
-
-        base.UpdateRange(entities);
-
-        foreach (var entry in entries)
+        foreach (var entity in entities)
         {
-            this.ProcessUpdatedEntry(entry);
+            this.Update(entity);
         }
     }
 
@@ -99,17 +93,9 @@ public abstract class BaseDbContext<TIdentity> : IdentityDbContext<IdentityUserE
     {
         ArgumentNullException.ThrowIfNull(entities);
 
-        var entitiesArray = entities
-            .ToArray();
-
-        var entries = entitiesArray
-            .Select(this.Entry);
-
-        base.UpdateRange(entitiesArray);
-
-        foreach (var entry in entries)
+        foreach (var entity in entities)
         {
-            this.ProcessUpdatedEntry(entry);
+            this.Update(entity);
         }
     }
 
