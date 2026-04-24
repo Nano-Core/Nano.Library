@@ -205,31 +205,16 @@ public sealed class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddlew
     }
 
 
-    private static string? SanitizeForLog(string? value)
-    {
-        if (string.IsNullOrEmpty(value))
-        {
-            return value;
-        }
-
-        return value
-            .Replace("\r", string.Empty)
-            .Replace("\n", string.Empty);
-    }
-
     private void LogRequest(HttpRequest httpRequest, LogLevel logLevel, int statusCode, long timestamp, Exception? exception = null)
     {
         ArgumentNullException.ThrowIfNull(httpRequest);
 
-        var protocol = (httpRequest.IsHttps
+        var protocol = SanitizeForLog(httpRequest.IsHttps
             ? httpRequest.Protocol.Replace("HTTP", "HTTPS")
-            : httpRequest.Protocol)
-            .Replace("\r", string.Empty)
-            .Replace("\n", string.Empty);
+            : httpRequest.Protocol);
 
-        var method = httpRequest.Method
-            .Replace("\r", string.Empty)
-            .Replace("\n", string.Empty);
+        var method = SanitizeForLog(httpRequest.Method);
+
         var path = httpRequest.Path.Value;
         var queryString = httpRequest.QueryString.HasValue
             ? SanitizeForLog($"{httpRequest.QueryString.Value}")
@@ -256,5 +241,17 @@ public sealed class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddlew
             this.Logger
                 .Log(logLevel, exception, MESSAGE_TEMPLATE, protocol, method, path, queryString, statusCode, elapsed, id);
         }
+    }
+
+    private static string? SanitizeForLog(string? value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return value;
+        }
+
+        return value
+            .Replace("\r", string.Empty)
+            .Replace("\n", string.Empty);
     }
 }
