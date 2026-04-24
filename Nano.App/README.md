@@ -30,7 +30,7 @@ and providing a concrete implementation for building applications with Nano. It 
 sensible defaults, while allowing full customization of services through the `ConfigureServices` method. This design ensures that all core applications behaviors 
 are initialized consistently using you configuration, reducing boilerplate code and simplifying the setup of new applications.  
 
-Three concrete types application are avaialble in Nano:
+Three concrete types application are avaialble in Nano.  
 
 | Application   | Documentation                                                                           | Minimal Example                                                                                  |
 | ------------- | --------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
