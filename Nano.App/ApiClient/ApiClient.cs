@@ -152,7 +152,7 @@ public sealed class ApiClient(ApiClientOptions options, HttpClient httpClient, I
 
         if (accessToken == null && request is not LogInRootRequest && this.options.LogInRoot is not null)
         {
-            accessToken ??= await this.accessTokenProvider
+            accessToken = await this.accessTokenProvider
                 .GetRootAccessTokenAsync(x => this.InvokeAsync<LogInRootRequest, AccessToken>(new LogInRootRequest
                 {
                     LogInRoot = new LogInRoot
