@@ -11,6 +11,8 @@ env:
   VERSION: 10.0.0-preview1
   NUGET_HOST: https://api.nuget.org/v3/index.json
   NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
+  NUGET_HOST_PREVIEW: https://nuget.pkg.github.com/Nano-Core/index.json
+  NUGET_APIKEY_PREVIEW: ${{ secrets.GITHUB_TOKEN }}
 jobs:
   build-and-deploy:
     runs-on: windows-latest
@@ -68,28 +70,13 @@ jobs:
         if: github.ref != 'refs/heads/master'
         run: |
           dotnet nuget push "**/nupkgs/*.nupkg" `
-              --source https://nuget.pkg.github.com/Nano-Core/index.json `
-              --api-key ${{ secrets.GITHUB_TOKEN }} `
+              --source ${{ secrets.NUGET_HOST_PREVIEW }} `
+              --api-key ${{ secrets.NUGET_APIKEY_PREVIEW }} `
               --skip-duplicate;
-
-          # dotnet nuget add source https://nuget.pkg.github.com/Nano-Core/index.json `
-          #   --name github `
-          #   --username Nano-Core `
-          #   --password ${{ secrets.GITHUB_TOKEN }} `
-          #   --store-password-in-clear-text;
-
-          # if ($LastExitCode -ne 0)
-          # { 
-          #     throw "Publish Failed";
-          # };
-
-          # dotnet nuget push "**/bin/Release/*.nupkg" `
-          #   --source github `
-          #   --skip-duplicate;
 
           if ($LastExitCode -ne 0)
           { 
-              throw "Publish failed";
+              throw "Publish Failed";
           };
 
       - name: GitHub Release

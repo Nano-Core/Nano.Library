@@ -31,6 +31,7 @@
 	    <PackageReleaseNotes>
 			- .NET 10 support.
 			- Comprehensive rewrite with performance optimizations, improvements, and bug fixes.
+			- Not compatible with previous versions of Nano.
 		</PackageReleaseNotes>
 		<RepositoryType>git</RepositoryType>
 	    <RepositoryBranch>master</RepositoryBranch>
