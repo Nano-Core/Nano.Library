@@ -205,6 +205,18 @@ public sealed class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddlew
     }
 
 
+    private static string? SanitizeForLog(string? value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return value;
+        }
+
+        return value
+            .Replace("\r", string.Empty)
+            .Replace("\n", string.Empty);
+    }
+
     private void LogRequest(HttpRequest httpRequest, LogLevel logLevel, int statusCode, long timestamp, Exception? exception = null)
     {
         ArgumentNullException.ThrowIfNull(httpRequest);
@@ -219,7 +231,9 @@ public sealed class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddlew
             .Replace("\r", string.Empty)
             .Replace("\n", string.Empty);
         var path = httpRequest.Path.Value;
-        var queryString = httpRequest.QueryString.HasValue ? $"{httpRequest.QueryString.Value}" : null;
+        var queryString = httpRequest.QueryString.HasValue
+            ? SanitizeForLog($"{httpRequest.QueryString.Value}")
+            : null;
 
         var success = httpRequest.Query
             .TryGetValue("access_token", out var accessToken);
