@@ -56,22 +56,27 @@ public class AuthExternalMicrosoftRepository(MicrosoftOptions options, HttpClien
 
         var content = JsonConvert.DeserializeObject<JObject>(stringContent);
 
-        var error = content?["error"]?.ToString();
-        var errorDescription = content?["error"]?.ToString() ?? "Unknown";
+        if (content == null)
+        {
+            throw new InvalidOperationException("Token endpoint returned invalid JSON.");
+        }
+
+        var error = content["error"]?.ToString();
+        var errorDescription = content["error_description"]?.ToString() ?? "Unknown";
 
         if (error != null)
         {
             throw new InvalidOperationException($"{error}: {errorDescription}");
         }
 
-        var accessToken = content?["access_token"]?.ToString();
+        var accessToken = content["access_token"]?.ToString();
 
         if (accessToken == null)
         {
             throw new NullReferenceException(nameof(accessToken));
         }
 
-        var refreshToken = content?["refresh_token"]?.ToString();
+        var refreshToken = content["refresh_token"]?.ToString();
 
         var jwtToken = tokenHandler
             .ReadJwtToken(accessToken);
