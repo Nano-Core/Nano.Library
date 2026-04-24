@@ -8,10 +8,11 @@ on:
       - master 
 env:
   APP_NAME: Nano.Library
-  NUGET_NAME: NanoCore
-  VERSION: 9.3.1
+  VERSION: 10.0.0-preview1
   NUGET_HOST: https://api.nuget.org/v3/index.json
   NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
+  NUGET_HOST_PREVIEW: https://nuget.pkg.github.com/Nano-Core/index.json
+  NUGET_APIKEY_PREVIEW: ${{ secrets.GITHUB_TOKEN }}
 jobs:
   build-and-deploy:
     runs-on: windows-latest
@@ -23,46 +24,59 @@ jobs:
       group: ${{ github.repository }}
       cancel-in-progress: false
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v3
+      - uses: actions/checkout@v6
+      - uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 9.0.x
+          dotnet-version: 10.0.x
 
-      - name: Download NuGet CLI
-        shell: pwsh
-        run: |
-          curl -L https://dist.nuget.org/win-x86-commandline/latest/nuget.exe -o nuget.exe
-
-      - name: Build and Test
+      - name: Build, Test and Pack
         shell: pwsh
         run: |
           dotnet build -c Release .\$env:APP_NAME.sln;
+
           if ($LastExitCode -ne 0)
           { 
-              throw "Build failed";
+              throw "Build Failed";
           };
 
-          dotnet test .\.tests\Tests.$env:APP_NAME\Tests.$env:APP_NAME.csproj
+          dotnet test -c Release --no-build .\.tests\Tests.$env:APP_NAME\Tests.$env:APP_NAME.csproj;
+
           if ($LastExitCode -ne 0)
           { 
-              throw "Tests failed";
+              throw "Tests Failed";
           };
 
-          nuget.exe pack $env:NUGET_NAME.nuspec -Symbols -SymbolPackageFormat snupkg -Version $env:VERSION -OutputDirectory nupkgs
+          dotnet pack -c Release --no-build -o nupkgs /p:Version=$env:VERSION;
+
           if ($LastExitCode -ne 0)
           { 
-              throw "Pack failed";
+              throw "NuGet Pack Failed";
           };
 
-      - name: Push NuGet
+      - name: Push to NuGet.org
         if: github.ref == 'refs/heads/master'
-        shell: pwsh
         run: |
-          nuget.exe push "nupkgs\*.nupkg" -Source $env:NUGET_HOST -ApiKey $env:NUGET_APIKEY -SkipDuplicate
+          dotnet nuget push "**/nupkgs/*.nupkg" `
+              --source ${{ env.NUGET_HOST }} `
+              --api-key ${{ env.NUGET_APIKEY }} `
+              --skip-duplicate;
 
           if ($LastExitCode -ne 0)
           { 
-              throw "Publish failed";
+              throw "Publish Failed";
+          };
+
+      - name: Push to GitHub Packages
+        if: github.ref != 'refs/heads/master'
+        run: |
+          dotnet nuget push "**/nupkgs/*.nupkg" `
+              --source ${{ env.NUGET_HOST_PREVIEW }} `
+              --api-key ${{ env.NUGET_APIKEY_PREVIEW }} `
+              --skip-duplicate;
+
+          if ($LastExitCode -ne 0)
+          { 
+              throw "Publish Failed";
           };
 
       - name: GitHub Release

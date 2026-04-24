@@ -1,65 +1,51 @@
-using System;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Nano.Config.Extensions;
-using Nano.Logging.Interfaces;
+using Nano.Logging.Abstractions;
+using Nano.Logging.Abstractions.Config;
+using System;
+using Nano.Common.Config.Extensions;
 
 namespace Nano.Logging.Extensions;
 
 /// <summary>
-/// Service Collection Extensions.
+/// Provides extension methods for <see cref="IServiceCollection"/> to register Nano services.
 /// </summary>
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds logging provider of type <typeparamref name="TProvider"/> to the <see cref="IServiceCollection"/>.
+    /// Registers a Nano logging provider of type <typeparamref name="TProvider"/> with the <see cref="IServiceCollection"/>.
+    /// Configures the provider using the <see cref="LoggingOptions"/> section from the application's configuration.
     /// </summary>
-    /// <typeparam name="TProvider">The <typeparamref name="TProvider"/> type.</typeparam>
-    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-    /// <returns>The <see cref="IServiceCollection"/>.</returns>
-    public static IServiceCollection AddLogging<TProvider>(this IServiceCollection services)
-        where TProvider : class, ILoggingProvider
+    /// <typeparam name="TProvider">The type of the logging provider to register. Must implement <see cref="ILoggingProvider"/> and have a parameterless constructor.</typeparam>
+    /// <param name="services">The <see cref="IServiceCollection"/> to add the logging provider to.</param>
+    /// <returns>The same <see cref="IServiceCollection"/> instance for chaining.</returns>
+    /// <remarks>Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging</remarks>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="services"/> is <c>null</c>.</exception>
+    public static IServiceCollection AddNanoLogging<TProvider>(this IServiceCollection services)
+        where TProvider : ILoggingProvider
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
+        ArgumentNullException.ThrowIfNull(services);
 
         services
-            .AddSingleton<ILoggingProvider, TProvider>()
-            .AddSingleton(x => x
-                .GetRequiredService<ILoggingProvider>()
-                .Configure())
-            .AddSingleton<ILoggerFactory>(x =>
-            {
-                var loggerProvider = x.GetRequiredService<ILoggerProvider>();
+            .AddNanoConfigSection<LoggingOptions>(LoggingOptions.SectionName, out var options);
 
-                return new LoggerFactory([loggerProvider]);
-            })
+        if (options is null)
+        {
+            throw new InvalidOperationException($"Configuration section '{LoggingOptions.SectionName}' could not be loaded.");
+        }
+
+        TProvider.Configure(services, options);
+
+        services
             .AddSingleton(x =>
             {
-                var loggerProvider = x.GetRequiredService<ILoggerFactory>();
+                var loggerFactory = x
+                    .GetRequiredService<ILoggerFactory>();
 
-                return loggerProvider.CreateLogger(string.Empty);
+                return loggerFactory
+                    .CreateLogger(string.Empty);
             });
 
         return services;
-    }
-
-    /// <summary>
-    /// Adds <see cref="LoggingOptions"/> to the <see cref="IServiceCollection"/>.
-    /// </summary>
-    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-    /// <param name="configuration">The <see cref="IConfiguration"/>.</param>
-    /// <returns>The <see cref="IServiceCollection"/>.</returns>
-    internal static IServiceCollection AddLogging(this IServiceCollection services, IConfiguration configuration)
-    {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        if (configuration == null)
-            throw new ArgumentNullException(nameof(configuration));
-
-        return services
-            .AddConfigOptions<LoggingOptions>(configuration, LoggingOptions.SectionName, out _);
     }
 }

@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<ItemGroup>
+		<PackageReference Include="AspNetCore.HealthChecks.Rabbitmq" Version="9.0.0" />
+		<PackageReference Include="EasyNetQ" Version="8.1.2" />
+		<PackageReference Include="EasyNetQ.DI.Microsoft" Version="8.0.0-beta96" />
+		<PackageReference Include="EasyNetQ.Serialization.NewtonsoftJson" Version="8.1.2" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Nano.Eventing\Nano.Eventing.csproj" />
+	  <ProjectReference Include="..\Nano.Logging.Abstractions\Nano.Logging.Abstractions.csproj" />
+	</ItemGroup>
+</Project>

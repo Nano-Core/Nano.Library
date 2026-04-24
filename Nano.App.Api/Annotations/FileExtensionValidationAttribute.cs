@@ -1,0 +1,89 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.IO;
+using System.Linq;
+using Microsoft.AspNetCore.Http;
+
+namespace Nano.App.Api.Annotations;
+
+/// <summary>
+/// Validates the file extension(s) of uploaded files.
+/// </summary>
+public class FileExtensionValidationAttribute : ValidationAttribute
+{
+    private readonly IEnumerable<string> allowedExtensions;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="FileExtensionValidationAttribute"/> class.
+    /// </summary>
+    /// <param name="allowedExtensions">The list of allowed file extensions (including the dot, e.g., ".jpg").</param>
+    public FileExtensionValidationAttribute(params string[] allowedExtensions)
+    {
+        this.allowedExtensions = allowedExtensions ?? throw new ArgumentNullException(nameof(allowedExtensions));
+    }
+
+    /// <inheritdoc />
+    protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
+    {
+        if (value == null)
+        {
+            return ValidationResult.Success;
+        }
+
+        ArgumentNullException.ThrowIfNull(validationContext);
+
+        switch (value)
+        {
+            case IFormFile file:
+            {
+                var extension = Path.GetExtension(file.FileName);
+
+                if (extension == null)
+                {
+                    throw new NullReferenceException(nameof(extension));
+                }
+
+                var isValid = this.allowedExtensions
+                    .Select(x => x.ToLower())
+                    .Contains(extension);
+
+                if (isValid)
+                {
+                    return ValidationResult.Success;
+                }
+
+                break;
+            }
+            case IEnumerable<IFormFile> files:
+            {
+                var isValid = true;
+                foreach (var extension in files.Select(file => Path.GetExtension(file.FileName)))
+                {
+                    if (extension == null)
+                    {
+                        throw new NullReferenceException(nameof(extension));
+                    }
+
+                    isValid = this.allowedExtensions
+                        .Select(x => x.ToLower())
+                        .Contains(extension);
+
+                    if (!isValid)
+                    {
+                        break;
+                    }
+                }
+
+                if (isValid)
+                {
+                    return ValidationResult.Success;
+                }
+
+                break;
+            }
+        }
+
+        return new ValidationResult("The uploaded file has an invalid file extension.");
+    }
+}

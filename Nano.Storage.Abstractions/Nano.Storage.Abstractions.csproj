@@ -1,0 +1,6 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Nano.Common\Nano.Common.csproj" />
+	</ItemGroup>
+</Project>

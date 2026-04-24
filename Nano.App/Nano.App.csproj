@@ -1,43 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<TargetFramework>net9.0</TargetFramework>
-		<ApplicationIcon>..\icon.ico</ApplicationIcon>
-		<Configurations>Debug;Release</Configurations>
-		<Version>9.1.0.0</Version>
-		<LangVersion>latest</LangVersion>
-		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-		<WarningsAsErrors></WarningsAsErrors>
-		<NoWarn />
-		<DocumentationFile>$(MSBuildThisFileDirectory)\bin\$(Configuration)\Nano.App.xml</DocumentationFile>
-		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-		<PublishRepositoryUrl>true</PublishRepositoryUrl>
-		<EmbedAllSources>true</EmbedAllSources>
-	    <IncludeSymbols>true</IncludeSymbols>
-	    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-	</PropertyGroup>
-
-	<ItemGroup>
-		<FrameworkReference Include="Microsoft.AspNetCore.App" />
-	</ItemGroup>
-
 	<ItemGroup>
 		<PackageReference Include="AspNetCore.HealthChecks.Network" Version="9.0.0" />
-		<PackageReference Include="Vivet.AspNetCore.RequestTimeZone" Version="9.0.10" />
+		<PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.7" />
+		<PackageReference Include="Vivet.AspNetCore.RequestTimeZone" Version="10.0.3" />
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Nano.Config\Nano.Config.csproj" />
-		<ProjectReference Include="..\Nano.Data\Nano.Data.csproj" />
-		<ProjectReference Include="..\Nano.Eventing\Nano.Eventing.csproj" />
-		<ProjectReference Include="..\Nano.Logging\Nano.Logging.csproj" />
-		<ProjectReference Include="..\Nano.Models\Nano.Models.csproj" />
-		<ProjectReference Include="..\Nano.Repository\Nano.Repository.csproj" />
-		<ProjectReference Include="..\Nano.Security\Nano.Security.csproj" />
-		<ProjectReference Include="..\Nano.Storage\Nano.Storage.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+	  <ProjectReference Include="..\Nano.Common\Nano.Common.csproj" />
+	  <ProjectReference Include="..\Nano.Data.Abstractions\Nano.Data.Abstractions.csproj" />
+	  <ProjectReference Include="..\Nano.Eventing.Abstractions\Nano.Eventing.Abstractions.csproj" />
+	  <ProjectReference Include="..\Nano.Logging.Abstractions\Nano.Logging.Abstractions.csproj" />
+	  <ProjectReference Include="..\Nano.Storage.Abstractions\Nano.Storage.Abstractions.csproj" />
 	</ItemGroup>
 </Project>

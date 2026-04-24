@@ -1,31 +1,35 @@
 ﻿using System;
 using System.IO;
-using Nano.Storage.Interfaces;
+using Microsoft.Extensions.Options;
+using Nano.Storage.Abstractions;
+using Nano.Storage.Abstractions.Config;
 
 namespace Nano.Storage;
 
 /// <summary>
-/// Path Provider.
+/// Default implementation of <see cref="IPathProvider"/> that provides filesystem paths based on the configured <see cref="StorageOptions"/>.
 /// </summary>
+/// <remarks>
+///     The <see cref="Root"/> represents the absolute base directory for storage operations and is derived from the configured logical container or share name in <see cref="StorageOptions"/>.
+///     The <see cref="Tmp"/> provides a system-specific temporary directory for transient files such as uploads or processing artifacts.
+/// </remarks>
 public class PathProvider : IPathProvider
 {
-    /// <summary>
-    /// Storage Options.
-    /// </summary>
-    protected internal StorageOptions StorageOptions { get; }
+    private readonly IOptionsMonitor<StorageOptions> options;
 
     /// <inheritdoc />
-    public virtual string RootDir => Path.Combine("/mnt/", this.StorageOptions.ShareName);
+    public virtual string Root => Path.Combine("/mnt", this.options.CurrentValue.ShareName);
 
     /// <inheritdoc />
-    public virtual string TempDir => Path.GetTempPath();
+    public virtual string Tmp => Path.GetTempPath();
 
     /// <summary>
-    /// Constructor.
+    /// Initializes a new instance of <see cref="PathProvider"/>.
     /// </summary>
-    /// <param name="storageOptions">The <see cref="Storage.StorageOptions"/>.</param>
-    public PathProvider(StorageOptions storageOptions)
+    /// <param name="options">A non-null <see cref="IOptionsMonitor{StorageOptions}"/> providing access to the configured storage share name.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="options"/> is <c>null</c>.</exception>
+    public PathProvider(IOptionsMonitor<StorageOptions> options)
     {
-        this.StorageOptions = storageOptions ?? throw new ArgumentNullException(nameof(storageOptions));
+        this.options = options ?? throw new ArgumentNullException(nameof(options));
     }
 }

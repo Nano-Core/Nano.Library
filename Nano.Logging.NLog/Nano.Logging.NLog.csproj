@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="10.0.7" />
+		<PackageReference Include="NLog" Version="6.1.2" />
+		<PackageReference Include="NLog.Extensions.Logging" Version="6.1.2" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Nano.Logging\Nano.Logging.csproj" />
+	</ItemGroup>
+
+</Project>

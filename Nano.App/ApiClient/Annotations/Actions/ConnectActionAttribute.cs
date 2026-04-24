@@ -1,0 +1,19 @@
+﻿using System.Net.Http;
+
+namespace Nano.App.ApiClient.Annotations.Actions;
+
+/// <summary>
+/// Defines an CONNECT action of a Nano api-client Request.
+/// </summary>
+public sealed class ConnectActionAttribute : ActionAttribute
+{
+    /// <summary>
+    /// Initializes a new instance of <see cref="ConnectActionAttribute"/> with action set
+    /// and http method CONNECT.
+    /// </summary>
+    /// <param name="action">The action of the request.</param>
+    public ConnectActionAttribute(string action)
+        : base(action, HttpMethod.Connect)
+    {
+    }
+}

@@ -1,137 +1,71 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Net.Http;
-using System.Net;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Nano.App.Api;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using Nano.App.ApiClient.Extensions;
+using Nano.App.Config;
+using Nano.App.Config.Extensions;
 using Nano.App.Startup;
-using Nano.App.Startup.Tasks;
-using Nano.Config.Extensions;
-using Nano.Models.Const;
-using Nano.Models.Extensions;
-using Nano.Models.Helpers;
+using Nano.App.Startup.Abstractions;
+using Nano.Common.Extensions;
+using System;
+using System.Linq;
+using Nano.Common;
 
 namespace Nano.App.Extensions;
 
-/// <summary>
-/// Service Collection Extensions.
-/// </summary>
-public static class ServiceCollectionExtensions
+internal static class ServiceCollectionExtensions
 {
-    /// <summary>
-    /// Adds <see cref="AppOptions"/> to the <see cref="IServiceCollection"/>.
-    /// </summary>
-    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-    /// <param name="configuration">The <see cref="IConfiguration"/>.</param>
-    /// <returns>The <see cref="IServiceCollection"/>.</returns>
-    internal static IServiceCollection AddApp(this IServiceCollection services, IConfiguration configuration)
+    internal static IServiceCollection AddNanoApp<TOptions>(this IServiceCollection services, IConfiguration configuration, out TOptions options)
+        where TOptions : BaseAppOptions, new()
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        if (configuration == null)
-            throw new ArgumentNullException(nameof(configuration));
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(configuration);
 
         services
-            .AddConfigOptions<AppOptions>(configuration, AppOptions.SectionName, out _);
-
-        TypesHelper.GetAllTypes()
-            .Where(x =>
-                !x.IsAbstract &&
-                x.IsTypeOf(typeof(BaseStartupTask)))
-            .ToList()
-            .ForEach(x =>
-            {
-                services
-                    .AddSingleton(typeof(IHostedService), x);
-            });
+            .AddNanoConfig(configuration)
+            .AddNanoConfigSection(configuration, BaseAppOptions.SectionName, out options);
 
         services
-            .AddSingleton<IHttpContextAccessor, Microsoft.AspNetCore.Http.HttpContextAccessor>()
-            .AddSingleton<StartupTaskContext>()
-            .AddHostedService<InitializeApplicationStartupTask>();
+            .AddNulLogger()
+            .AddStartupTasks()
+            .AddNanoApis(options);
 
         return services;
     }
 
-    /// <summary>
-    /// Add Apis to the <see cref="IServiceCollection"/>..
-    /// </summary>
-    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-    /// <param name="configuration">The <see cref="IConfiguration"/>.</param>
-    /// <returns>The <see cref="IServiceCollection"/>.</returns>
-    public static IServiceCollection AddApis(this IServiceCollection services, IConfiguration configuration)
-    {
-        var hosts = new List<string>();
 
-        var types = TypesHelper.GetAllTypes()
-            .Where(x => !x.IsAbstract && x.IsTypeOf(typeof(BaseApi)))
-            .Distinct();
+    private static IServiceCollection AddNulLogger(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        services
+            .TryAddSingleton<ILoggerFactory>(NullLoggerFactory.Instance);
+
+        return services;
+    }
+    private static IServiceCollection AddStartupTasks(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        services
+            .AddSingleton<StartupTaskContext>();
+
+        var types = TypeCache
+            .GetAllTypes()
+            .Where(x =>
+                !x.IsAbstract &&
+                x.IsTypeOf(typeof(IStartupTask)));
 
         foreach (var type in types)
         {
-            var section = configuration.GetSection(type.Name);
-            var options = section.Get<ApiOptions>();
-
-            if (options == null)
-            {
-                continue;
-            }
-
-            var optionsServiceId = $"{type.Name}_Options";
-
             services
-                .AddKeyedSingleton(optionsServiceId, options);
-
-            services
-                .AddHttpClient(type.Name, (serviceProvider, client) =>
-                {
-                    var apiOptions = serviceProvider
-                        .GetRequiredKeyedService<ApiOptions>(optionsServiceId);
-
-                    client.Timeout = TimeSpan.FromSeconds(apiOptions.TimeoutInSeconds);
-                    client.BaseAddress = new Uri(apiOptions.Host);
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(HttpContentType.JSON));
-                    client.DefaultRequestVersion = new Version(2, 0);
-                })
-                .SetHandlerLifetime(TimeSpan.FromMinutes(5))
-                .ConfigurePrimaryHttpMessageHandler(() =>
-                    new HttpClientHandler
-                    {
-                        AllowAutoRedirect = true,
-                        AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate
-                    });
-
-            services
-                .AddScoped(type, serviceProvider =>
-                {
-                    var httpClientFactory = serviceProvider
-                        .GetRequiredService<IHttpClientFactory>();
-                    
-                    var httpClient = httpClientFactory
-                        .CreateClient(type.Name);
-
-                    var apiOptions = serviceProvider
-                        .GetRequiredKeyedService<ApiOptions>(optionsServiceId);
-
-                    return Activator.CreateInstance(type, apiOptions, httpClient);
-                });
-
-            if (!hosts.Contains(options.Host) && options.UseHealthCheck)
-            {
-                services.AddHealthChecks()
-                    .AddTcpHealthCheck(y => y
-                        .AddHost(options.Host, options.Port), options.Host, options.UnhealthyStatus);
-
-                hosts
-                    .Add(options.Host);
-            }
+                .AddScoped(typeof(IStartupTask), type);
         }
+
+        services
+            .AddHostedService<StartupHostedService>();
 
         return services;
     }

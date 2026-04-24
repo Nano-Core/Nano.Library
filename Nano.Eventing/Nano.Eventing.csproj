@@ -1,41 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<TargetFramework>net9.0</TargetFramework>
-		<ApplicationIcon>..\icon.ico</ApplicationIcon>
-		<Configurations>Debug;Release</Configurations>
-		<Version>9.1.0.0</Version>
-		<LangVersion>latest</LangVersion>
-		<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-		<WarningsAsErrors></WarningsAsErrors>
-		<NoWarn />
-		<DocumentationFile>$(MSBuildThisFileDirectory)\bin\$(Configuration)\Nano.Eventing.xml</DocumentationFile>
-		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-		<PublishRepositoryUrl>true</PublishRepositoryUrl>
-		<EmbedAllSources>true</EmbedAllSources>
-	    <IncludeSymbols>true</IncludeSymbols>
-	    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-	</PropertyGroup>
-
 	<ItemGroup>
-		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	  <ProjectReference Include="..\Nano.Eventing.Abstractions\Nano.Eventing.Abstractions.csproj" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="AspNetCore.HealthChecks.Rabbitmq" Version="8.0.2" />
-		<PackageReference Include="EasyNetQ" Version="7.8.0" />
-		<PackageReference Include="EasyNetQ.DI.Microsoft" Version="7.8.0" />
-		<PackageReference Include="EasyNetQ.Serialization.NewtonsoftJson" Version="7.8.0" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<ProjectReference Include="..\Nano.Config\Nano.Config.csproj" />
-		<ProjectReference Include="..\Nano.Data\Nano.Data.csproj" />
-		<ProjectReference Include="..\Nano.Logging\Nano.Logging.csproj" />
-		<ProjectReference Include="..\Nano.Models\Nano.Models.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
-	</ItemGroup>
 </Project>

@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<ItemGroup>
+		<PackageReference Include="AspNetCore.HealthChecks.MySql" Version="9.0.0" />
+		<PackageReference Include="Microting.EntityFrameworkCore.MySql" Version="10.0.7" />
+		<PackageReference Include="Microting.EntityFrameworkCore.MySql.NetTopologySuite" Version="10.0.7" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Nano.Data\Nano.Data.csproj" />
+	</ItemGroup>
+
+</Project>

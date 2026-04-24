@@ -1,0 +1,68 @@
+<Project>
+
+	<PropertyGroup>
+	    <TargetFramework>net10.0</TargetFramework>
+		<NoWarn>NU5104</NoWarn>
+		<Version>10.0.0.0</Version>
+	    <AssemblyVersion>10.0.0.0</AssemblyVersion>
+		<FileVersion>10.0.0.0</FileVersion>
+		<PlatformTarget>AnyCPU</PlatformTarget>
+	    <Configurations>Debug;Release</Configurations>
+	    <LangVersion>latest</LangVersion>
+	    <NeutralLanguage>en-US</NeutralLanguage>
+	    <nullable>enable</nullable>
+	    <License>LICENSE</License>
+	    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+	    <WarningsAsErrors />
+		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+	    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+	    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+	    <IsPackable>true</IsPackable>
+		<Authors>Michael Vivet</Authors>
+	    <Owners>Michael Vivet</Owners>
+	    <Product>$(ProjectName)</Product>
+	    <Summary>Reusable libraries for building .NET microservice applications</Summary>
+	    <Description>
+		    This package is part of the Nano Library, a set of reusable .NET libraries for building microservice applications.
+		    Nano addresses common non-business concerns such as logging, persistence, messaging, validation, and documentation,
+		    while remaining fully configurable and extensible, so applications can stay focused on business logic.
+		    See https://github.com/Nano-Core/Nano.Library for details.
+	    </Description>
+	    <PackageReleaseNotes>
+			- .NET 10 support.
+			- Comprehensive rewrite with performance optimizations, improvements, and bug fixes.
+			- Not compatible with previous versions of Nano.
+		</PackageReleaseNotes>
+		<RepositoryType>git</RepositoryType>
+	    <RepositoryBranch>master</RepositoryBranch>
+	    <RepositoryUrl>https://github.com/Nano-Core/Nano.Library.git</RepositoryUrl>
+	    <RepositoryCommit>$(GitCommitHash)</RepositoryCommit>
+	    <EmbedAllSources>true</EmbedAllSources>
+	    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+	    <IncludeSymbols>true</IncludeSymbols>
+	    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+	    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+	    <PackageVersion>$(Version)</PackageVersion>
+		<PackageTags>configuration logging data eventing storage mvc cache audit api console identity authentication authorization health-checks sql repositories middleware error-handling documentation security http-policy-headers validation event-handlers http https virus-scan versioning  localization timezone session response-compression response-cache migrations serialization startup-tasks entity-events </PackageTags>
+		<PackageProjectUrl>https://github.com/Nano-Core/Nano.Library/$(ProjectName)</PackageProjectUrl>
+	    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+	    <PackageIcon>icon.png</PackageIcon>
+	    <PackageReadmeFile>README.md</PackageReadmeFile>
+		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)'=='RELEASE'">
+		<Optimize>True</Optimize>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\LICENSE" Pack="true" Visible="false" PackagePath="" />
+		<None Include="..\icon.png" Pack="true" Visible="false" PackagePath="" />
+		<None Include="README.md" Pack="true" Visible="false" PackagePath="" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Update="Microsoft.SourceLink.GitHub" Version="10.0.103" />
+	</ItemGroup>
+
+</Project>

@@ -1,308 +1,196 @@
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
-using Nano.Config.Extensions;
-using Nano.Data.Interfaces;
-using Nano.Data.Providers.MySql;
-using Nano.Data.Providers.SqlServer;
-using Nano.Models.Interfaces;
-using Nano.Security.Extensions;
+using Nano.Common.Config.Extensions;
+using Nano.Data.Abstractions;
+using Nano.Data.Abstractions.Config;
+using Nano.Data.Abstractions.Identity.Extensions;
+using Nano.Data.Abstractions.Models;
+using Nano.Data.Abstractions.Models.Abstractions;
+using Nano.Data.Eventing.Extensions;
+using Nano.Data.Identity.Authentication.Extensions;
+using Nano.Data.Identity.Extensions;
 using System;
 using System.Linq;
-using EFCoreSecondLevelCacheInterceptor;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.DataProtection;
-using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Nano.Config;
-using Nano.Data.Identity.Extensions;
-using Nano.Data.Models;
-using Nano.Data.Providers.Sqlite;
-using Z.EntityFramework.Plus;
 using Z.EntityFramework.Extensions;
+using Z.EntityFramework.Plus;
 
 namespace Nano.Data.Extensions;
 
 /// <summary>
-/// Service Collection Extensions.
+/// Provides extension methods for registering Nano Library data providers and related services in an <see cref="IServiceCollection"/>.
 /// </summary>
 public static class ServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds data provider for <see cref="DbContext"/> to the <see cref="IServiceCollection"/>.
+    /// Adds a data provider and <see cref="DbContext"/> to the service collection, using <see cref="Guid"/> as the default identity type.
     /// </summary>
-    /// <typeparam name="TProvider">The <see cref="IDataProvider"/> implementation.</typeparam>
-    /// <typeparam name="TContext">The <see cref="DbContext"/> implementation.</typeparam>
-    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-    /// <returns>The <see cref="IServiceCollection"/>.</returns>
-    public static IServiceCollection AddDataContext<TProvider, TContext>(this IServiceCollection services)
-        where TProvider : class, IDataProvider
-        where TContext : DefaultDbContext
+    /// <typeparam name="TProvider">The <see cref="IDataProvider"/> implementation to use.</typeparam>
+    /// <typeparam name="TContext">The <see cref="DbContext"/> implementation to register.</typeparam>
+    /// <param name="services">The <see cref="IServiceCollection"/> to configure.</param>
+    /// <returns>The <see cref="IServiceCollection"/> for chaining.</returns>
+    public static IServiceCollection AddNanoData<TProvider, TContext>(this IServiceCollection services)
+        where TProvider : IDataProvider
+        where TContext : BaseDbContext
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
+        ArgumentNullException.ThrowIfNull(services);
 
         services
-            .AddScoped<DefaultDbContext, TContext>();
+            .AddNanoData<TProvider, TContext, Guid>();
 
         services
-            .AddDataContext<TProvider, TContext, Guid>();
+            .AddScoped<BaseDbContext, TContext>();
 
         return services;
     }
 
     /// <summary>
-    /// Adds data provider for <see cref="DbContext"/> to the <see cref="IServiceCollection"/>.
+    /// Adds a data provider and <see cref="DbContext"/> to the service collection, using a custom identity type.
     /// </summary>
-    /// <typeparam name="TProvider">The <see cref="IDataProvider"/> implementation.</typeparam>
-    /// <typeparam name="TContext">The <see cref="DbContext"/> implementation.</typeparam>
-    /// <typeparam name="TIdentity">The identity type.</typeparam>
-    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-    /// <returns>The <see cref="IServiceCollection"/>.</returns>
-    public static IServiceCollection AddDataContext<TProvider, TContext, TIdentity>(this IServiceCollection services)
-        where TProvider : class, IDataProvider
+    /// <typeparam name="TProvider">The <see cref="IDataProvider"/> implementation to use.</typeparam>
+    /// <typeparam name="TContext">The <see cref="DbContext"/> implementation to register.</typeparam>
+    /// <typeparam name="TIdentity">The type of the identity key for entities.</typeparam>
+    /// <param name="services">The <see cref="IServiceCollection"/> to configure.</param>
+    /// <returns>The <see cref="IServiceCollection"/> for chaining.</returns>
+    /// <exception cref="InvalidOperationException">Thrown if the <see cref="DataOptions"/> configuration section cannot be loaded.</exception>
+    public static IServiceCollection AddNanoData<TProvider, TContext, TIdentity>(this IServiceCollection services)
+        where TProvider : IDataProvider
         where TContext : BaseDbContext<TIdentity>
         where TIdentity : IEquatable<TIdentity>
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        var options = services
-            .BuildServiceProvider()
-            .GetRequiredService<DataOptions>();
+        ArgumentNullException.ThrowIfNull(services);
 
         services
-            .AddScoped<DbContextOptions, DbContextOptions<TContext>>()
-            .AddScoped<DbContext, TContext>()
-            .AddScoped<BaseDbContext<TIdentity>, TContext>()
-            .AddSingleton<IDataProvider, TProvider>();
+            .AddNanoConfigSection<DataOptions>(DataOptions.SectionName, out var options);
 
-        if (options.UseConnectionPooling)
+        if (options is null)
         {
-            services
-                .AddDbContextPool<TContext>((provider, builder) =>
-                {
-                    ServiceCollectionExtensions.AddDataContext(provider, builder, options);
-                });
+            throw new InvalidOperationException($"Configuration section '{DataOptions.SectionName}' could not be loaded.");
         }
-        else
-        {
-            services
-                .AddDbContext<TContext>((provider, builder) =>
-                {
-                    ServiceCollectionExtensions.AddDataContext(provider, builder, options);
-                })
-                .AddDataHealthChecks<TProvider>(options);
-        }
-
-        services
-            .AddIdentity<IdentityUser<TIdentity>, IdentityRole<TIdentity>>()
-            .AddEntityFrameworkStores<BaseDbContext<TIdentity>>()
-            .AddTokenProvider<DataProtectorTokenProvider<IdentityUser<TIdentity>>>(JwtBearerDefaults.AuthenticationScheme)
-            .AddDefaultTokenProviders()
-            .AddCustomTokenProvider();
-
-        services
-            .AddDataProtection()
-            .PersistKeysToDbContext<TContext>();
-
-        services
-            .AddIdentityManager<TIdentity>();
-
-        ConfigManager.HasDbContext = true;
-
-        return services;
-    }
-
-    /// <summary>
-    /// Adds <see cref="DataOptions"/> appOptions to the <see cref="IServiceCollection"/>.
-    /// </summary>
-    /// <param name="services">The <see cref="IServiceCollection"/>.</param>
-    /// <param name="configuration">The <see cref="IConfiguration"/>.</param>
-    /// <returns>The <see cref="IServiceCollection"/>.</returns>
-    internal static IServiceCollection AddData(this IServiceCollection services, IConfiguration configuration)
-    {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        if (configuration == null)
-            throw new ArgumentNullException(nameof(configuration));
 
         EntityFrameworkManager.IsCommunity = true;
 
-        services
-            .AddConfigOptions<DataOptions>(configuration, DataOptions.SectionName, out var options);
+        TProvider.Configure(services, options);
 
         services
-            .AddScoped<DbContext, NullDbContext>()
-            .AddScoped<BaseDbContext<Guid>, NullDbContext>()
-            .AddScoped<DefaultDbContext, NullDbContext>()
-            .AddScoped<DbContextOptions<NullDbContext>>()
-            .AddScoped<DbContextOptions, DbContextOptions<NullDbContext>>();
+            .AddSingleton<IDatabaseExceptionTranslator, DefaultDatabaseExceptionTranslator>();
 
         services
-            .AddIdentityManager<Guid>();
+            .AddContext<TProvider, TContext>(options)
+            .AddAudit<TIdentity>(options)
+            .AddIdentity<TContext, TIdentity>(options.Identity);
 
         services
-            .AddAudit(options)
-            .AddDataCache(options);
+            .AddScoped<TContext>()
+            .AddScoped<DbContext, TContext>()
+            .AddScoped<BaseDbContext<TIdentity>, TContext>()
+            .AddScoped<IRepository, Repository<TContext, TIdentity>>();
+
+        services
+            .AddScoped<IDbMigrationTask, DbMigrationTask<TIdentity>>();
+
+        services
+            .AddEntityEventing<TIdentity>();
+
+        services
+            .AddAuthentication()
+            .AddApiKeyAuthentication<TIdentity>(options.Identity?.ApiKey);
 
         return services;
     }
 
-    private static IServiceCollection AddAudit(this IServiceCollection services, DataOptions options)
+
+    private static IServiceCollection AddContext<TProvider, TContext>(this IServiceCollection services, DataOptions options)
+        where TProvider : IDataProvider
+        where TContext : DbContext
     {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(options);
 
-        if (options == null)
-            throw new ArgumentNullException(nameof(options));
-
-        if (options.UseAudit)
+        if (options.ConnectionPool == null)
         {
-            AuditManager.DefaultConfiguration.UseUtcDateTime = true;
-            AuditManager.DefaultConfiguration.Include<IEntityAuditable>();
-            AuditManager.DefaultConfiguration.IncludeProperty<IEntityAuditable>();
-            AuditManager.DefaultConfiguration.IncludeDataAnnotation();
-            AuditManager.DefaultConfiguration.Exclude<IEntityAuditableNegated>();
-            AuditManager.DefaultConfiguration.ExcludeDataAnnotation();
-            AuditManager.DefaultConfiguration.AutoSavePreAction = (dbContext, audit) =>
-            {
-                var httpContextAccessor = dbContext
-                    .GetService<IHttpContextAccessor>();
-
-                var requestId = httpContextAccessor?.HttpContext?.TraceIdentifier;
-                var createdBy = httpContextAccessor?.HttpContext?.GetJwtUserId()?.ToString();
-
-                var customAuditEntries = audit.Entries
-                    .Where(x => x.AuditEntryID == 0)
-                    .Select(x =>
-                    {
-                        return new DefaultAuditEntry
-                        {
-                            CreatedBy = createdBy ?? x.CreatedBy,
-                            EntitySetName = x.EntitySetName,
-                            EntityTypeName = x.EntityTypeName,
-                            State = (int)x.State,
-                            StateName = x.StateName,
-                            RequestId = requestId,
-                            Properties = x.Properties
-                                .Select(y => new DefaultAuditEntryProperty
-                                {
-                                    PropertyName = y.PropertyName,
-                                    RelationName = y.RelationName,
-                                    NewValue = y.NewValueFormatted,
-                                    OldValue = y.OldValueFormatted
-                                })
-                                .ToArray()
-                        };
-                    });
-
-                dbContext
-                    .Set<DefaultAuditEntry>()
-                    .AddRange(customAuditEntries);
-            };
-            AuditManager.DefaultConfiguration.SoftDeleted<IEntityDeletableSoft>(x => x.IsDeleted > 0L);
+            services
+                .AddDbContext<TContext>(Configure);
         }
         else
         {
-            AuditManager.DefaultConfiguration.Exclude(_ => true);
-            AuditManager.DefaultConfiguration.AutoSavePreAction = null;
+            services
+                .AddDbContextPool<TContext>(Configure, options.ConnectionPool.PoolSize);
         }
 
         return services;
-    }
-    private static IServiceCollection AddDataCache(this IServiceCollection services, DataOptions options)
-    {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
 
-        if (options == null)
-            throw new ArgumentNullException(nameof(options));
-
-        if (!options.UseMemoryCache)
+        void Configure(IServiceProvider serviceProvider, DbContextOptionsBuilder builder)
         {
-            return services;
+            builder
+                .AddDataContext<TProvider>(serviceProvider, options);
         }
+    }
+    private static IServiceCollection AddAudit<TIdentity>(this IServiceCollection services, DataOptions options)
+        where TIdentity : IEquatable<TIdentity>
+    {
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(options);
 
-        const string CACHE_KEY_PREFIX = "EF_";
+        AuditManager.DefaultConfiguration.Exclude(_ => true);
+        AuditManager.DefaultConfiguration.Include<IEntityAuditable>();
+        AuditManager.DefaultConfiguration.IncludeDataAnnotation();
+        AuditManager.DefaultConfiguration.IncludeIdentity<TIdentity>(options.Identity);
 
-        services
-            .AddEFSecondLevelCache(x => x
-                .SkipCachingCommands(y => y.ToLower().Contains("__ef"))
-                .CacheAllQueriesExceptContainingTypes(options.MemoryCache.ExpirationMode, TimeSpan.FromMinutes(options.MemoryCache.ExpirationTimeoutInSeconds))
-                .CacheAllQueriesExceptContainingTableNames(options.MemoryCache.ExpirationMode, TimeSpan.FromMinutes(options.MemoryCache.ExpirationTimeoutInSeconds), options.MemoryCache.IgnoredTableNames)
-                .UseMemoryCacheProvider()
-                .UseCacheKeyPrefix(CACHE_KEY_PREFIX));
+        AuditManager.DefaultConfiguration.UseUtcDateTime = true;
+        AuditManager.DefaultConfiguration.AutoSavePreAction = AutoSavePreAction<TIdentity>;
 
-        services
-            .AddMemoryCache(x =>
+        return services;
+    }
+
+    private static void AutoSavePreAction<TIdentity>(DbContext dbContext, Audit audit)
+        where TIdentity : IEquatable<TIdentity>
+    {
+        ArgumentNullException.ThrowIfNull(dbContext);
+        ArgumentNullException.ThrowIfNull(audit);
+
+        var httpContextAccessor = dbContext
+            .GetService<IHttpContextAccessor>();
+
+        var requestId = httpContextAccessor.HttpContext?.TraceIdentifier;
+        var createdBy = httpContextAccessor.HttpContext == null
+            ? null
+            : httpContextAccessor.HttpContext.GetJwtUserId() ?? "Anonymous";
+
+        var auditEntries = audit.Entries
+            .Where(x => x.AuditEntryID == 0)
+            .Select(x =>
             {
-                x.SizeLimit = options.MemoryCache.MaxEntries;
-                x.ExpirationScanFrequency = TimeSpan.FromMinutes(options.MemoryCache.ExpirationScanFrequencyInSeconds);
+                var entityKey = x.GetEntityKey<TIdentity>();
+                var entityState = x.GetEntityState();
+                var entityTypeName = x.GetEntityTypeName();
+
+                return new AuditEntry<TIdentity>
+                {
+                    CreatedBy = createdBy ?? x.CreatedBy,
+                    EntityKey = entityKey,
+                    EntityState = entityState,
+                    EntitySetName = x.EntitySetName,
+                    EntityTypeName = entityTypeName,
+                    RequestId = requestId,
+                    Properties = x.Properties
+                        .Select(y => new AuditEntryProperty<TIdentity>
+                        {
+                            PropertyName = y.PropertyName,
+                            RelationName = y.RelationName,
+                            NewValue = y.NewValueFormatted,
+                            OldValue = y.OldValueFormatted
+                        })
+                        .Where(y =>
+                            y.NewValue != y.OldValue &&
+                            y.PropertyName != x.Entry.GetAuditKeyName())
+                        .ToArray()
+                };
             });
 
-        return services;
-    }
-    private static IServiceCollection AddDataHealthChecks<TProvider>(this IServiceCollection services, DataOptions options)
-        where TProvider : class, IDataProvider
-    {
-        if (services == null)
-            throw new ArgumentNullException(nameof(services));
-
-        if (options == null)
-            throw new ArgumentNullException(nameof(options));
-
-        if (!options.UseHealthCheck)
-            return services;
-
-        if (typeof(TProvider) == typeof(MySqlProvider))
-        {
-            services
-                .AddHealthChecks()
-                .AddMySql(options.ConnectionString, failureStatus: options.UnhealthyStatus);
-        }
-        else if (typeof(TProvider) == typeof(SqlServerProvider))
-        {
-            services
-                .AddHealthChecks()
-                .AddSqlServer(options.ConnectionString, failureStatus: options.UnhealthyStatus);
-        }
-        else if (typeof(TProvider) == typeof(SqliteProvider))
-        {
-            services
-                .AddHealthChecks()
-                .AddSqlite(options.ConnectionString, failureStatus: options.UnhealthyStatus);
-        }
-
-        return services;
-    }
-
-    private static void AddDataContext(IServiceProvider provider, DbContextOptionsBuilder builder, DataOptions options)
-    {
-        builder
-            .EnableSensitiveDataLogging(options.UseSensitiveDataLogging)
-            .ConfigureWarnings(x =>
-            {
-                x.Ignore(RelationalEventId.BoolWithDefaultWarning);
-                x.Log(RelationalEventId.MultipleCollectionIncludeWarning);
-                x.Log(RelationalEventId.QueryPossibleUnintendedUseOfEqualsWarning);
-            })
-            .UseLazyLoadingProxies(options.UseLazyLoading);
-
-        if (options.UseMemoryCache)
-        {
-            var secondLevelCacheInterceptor = provider
-                .GetRequiredService<SecondLevelCacheInterceptor>();
-
-            builder
-                .AddInterceptors(secondLevelCacheInterceptor);
-        }
-
-        provider
-            .GetRequiredService<IDataProvider>()
-            .Configure(builder);
+        dbContext
+            .Set<AuditEntry<TIdentity>>()
+            .AddRange(auditEntries);
     }
 }

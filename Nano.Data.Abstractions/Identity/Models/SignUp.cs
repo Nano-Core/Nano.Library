@@ -1,0 +1,55 @@
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using Nano.Common.Annotations;
+using Nano.Data.Abstractions.Models.Abstractions;
+
+namespace Nano.Data.Abstractions.Identity.Models;
+
+/// <inheritdoc />
+public class SignUp<TUser> : SignUp<TUser, Guid>
+    where TUser : IEntityUser<Guid>;
+
+/// <summary>
+/// Represents a request to sign up a new user.
+/// </summary>
+/// <typeparam name="TUser">The user type.</typeparam>
+/// <typeparam name="TIdentity">The identity key type.</typeparam>
+public class SignUp<TUser, TIdentity> : BaseSignUp<TUser, TIdentity>
+    where TUser : IEntityUser<TIdentity>
+    where TIdentity : IEquatable<TIdentity>
+{
+    /// <summary>
+    /// The user's username.
+    /// </summary>
+    [Required]
+    [MaxLength(256)]
+    public virtual required string Username { get; set; }
+
+    /// <summary>
+    /// The user's password.
+    /// </summary>
+    [Required]
+    [MaxLength(256)]
+    public virtual required string Password { get; set; }
+
+    /// <summary>
+    /// Confirmation of the user's password. Must match <see cref="Password"/>.
+    /// </summary>
+    [Required]
+    [MaxLength(256)]
+    [Compare(nameof(Password))]
+    public virtual required string ConfirmPassword { get; set; }
+
+    /// <summary>
+    /// The user's email address.
+    /// </summary>
+    [Required]
+    [EmailAddress]
+    public virtual required string EmailAddress { get; set; }
+
+    /// <summary>
+    /// The user's phone number (optional, international format supported).
+    /// </summary>
+    [InternationalPhone]
+    public virtual string? PhoneNumber { get; set; }
+}

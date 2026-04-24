@@ -1,41 +1,58 @@
-using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
-using Nano.Config;
-using Nano.Data.Interfaces;
-using Nano.Security;
+using Microsoft.Extensions.Hosting;
+using Nano.Common.Config;
+using Nano.Data.Abstractions;
+using Nano.Data.Abstractions.Config;
+using Nano.Data.Config;
+using System;
 
 namespace Nano.Data;
 
-/// <inheritdoc />
+/// <summary>
+/// Base factory for creating <see cref="DbContext"/> instances at design-time for migrations.
+/// </summary>
+/// <typeparam name="TProvider">The type of <see cref="IDataProvider"/> used to configure the context.</typeparam>
+/// <typeparam name="TContext">The type of <see cref="DbContext"/> to create.</typeparam>
 public abstract class BaseDbContextFactory<TProvider, TContext> : IDesignTimeDbContextFactory<TContext>
     where TProvider : class, IDataProvider
     where TContext : DbContext
 {
-    /// <inheritdoc />
+    /// <summary>
+    /// Creates a new instance of the <typeparamref name="TContext"/> <see cref="DbContext"/> with configured options.
+    /// </summary>
+    /// <param name="args">Optional arguments passed by the design-time tools.</param>
+    /// <returns>An instance of <typeparamref name="TContext"/>.</returns>
+    /// <exception cref="NullReferenceException">Thrown if the <see cref="DataOptions"/> or the created <typeparamref name="TContext"/> instance is null.</exception>
     public virtual TContext CreateDbContext(string[] args)
     {
-        var configuration = ConfigManager.BuildConfiguration();
-
         var builder = new DbContextOptionsBuilder<TContext>();
+        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? Environments.Development;
+        var configuration = ConfigManager.BuildConfiguration(environment);
 
-        var dataOptions = configuration
+        var dataOptions = new DataOptions();
+        var dataOptionsMonitor = new StaticOptionsMonitor<DataOptions>(dataOptions);
+
+        configuration
             .GetSection(DataOptions.SectionName)
-            .Get<DataOptions>() ?? new DataOptions();
+            .Bind(dataOptions);
 
-        var securityOptions = configuration
-            .GetSection(SecurityOptions.SectionName)
-            .Get<SecurityOptions>() ?? new SecurityOptions();
+        if (environment == Environments.Development)
+        {
+            dataOptions.ConnectionString = dataOptions.ConnectionString
+                .Replace("host.docker.internal", "localhost");
+        }
 
-        var provider = Activator.CreateInstance(typeof(TProvider), dataOptions) as TProvider;
-        provider?.Configure(builder);
+        TProvider.Configure(builder, dataOptions);
 
-        if (Activator.CreateInstance(typeof(TContext), builder.Options, dataOptions, securityOptions) is not TContext dbContext)
+        var dbContext = Activator.CreateInstance(typeof(TContext), builder.Options, dataOptionsMonitor);
+
+        if (dbContext == null)
         {
             throw new NullReferenceException(nameof(dbContext));
         }
 
-        return dbContext;
+        return (TContext)dbContext;
     }
 }

@@ -1,0 +1,7 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<ItemGroup>
+		<ProjectReference Include="..\Nano.App.Api\Nano.App.Api.csproj" />
+	</ItemGroup>
+
+</Project>
