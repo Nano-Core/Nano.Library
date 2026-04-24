@@ -12,7 +12,7 @@ internal static class StringExtensions
 
         var base64 = Convert.FromBase64String(key);
 
-        var rsaAlgorithm = RSA.Create();
+        using var rsaAlgorithm = RSA.Create();
 
         rsaAlgorithm
             .ImportRSAPublicKey(base64, out _);
@@ -26,7 +26,7 @@ internal static class StringExtensions
 
         var base64 = Convert.FromBase64String(key);
 
-        var rsaAlgorithm = RSA.Create();
+        using var rsaAlgorithm = RSA.Create();
 
         rsaAlgorithm
             .ImportRSAPrivateKey(base64, out _);

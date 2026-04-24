@@ -82,7 +82,8 @@ public class AuthExternalMicrosoftRepository(MicrosoftOptions options, HttpClien
             .ReadJwtToken(accessToken);
 
         var id = jwtToken?.Payload
-            .Where(x => x.Key == "oid").Select(x => x.Value?.ToString())
+            .Where(x => x.Key == "oid")
+            .Select(x => x.Value?.ToString())
             .FirstOrDefault();
 
         if (id == null)
@@ -91,7 +92,8 @@ public class AuthExternalMicrosoftRepository(MicrosoftOptions options, HttpClien
         }
 
         var name = jwtToken?.Payload
-            .Where(x => x.Key == "name").Select(x => x.Value?.ToString())
+            .Where(x => x.Key == "name")
+            .Select(x => x.Value?.ToString())
             .FirstOrDefault();
 
         if (name == null)
@@ -100,7 +102,8 @@ public class AuthExternalMicrosoftRepository(MicrosoftOptions options, HttpClien
         }
 
         var email = jwtToken?.Payload
-            .Where(x => x.Key == "upn").Select(x => x.Value?.ToString())
+            .Where(x => x.Key == "upn")
+            .Select(x => x.Value?.ToString())
             .FirstOrDefault();
 
         if (email == null)

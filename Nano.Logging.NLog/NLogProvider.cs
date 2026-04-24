@@ -32,10 +32,9 @@ public sealed class NLogProvider : ILoggingProvider
         ArgumentNullException.ThrowIfNull(options);
 
         var configuration = new LoggingConfiguration();
-        var target = new ConsoleTarget("console")
-        {
-            Layout = @"${date:format=dd-MM-yyyy HH\:mm\:ss.ffffff} [${level:uppercase=true:truncate=3}] ${message}${onexception:${newline}${exception:format=toString}}"
-        };
+
+        using var target = new ConsoleTarget("console");
+        target.Layout = @"${date:format=dd-MM-yyyy HH\:mm\:ss.ffffff} [${level:uppercase=true:truncate=3}] ${message}${onexception:${newline}${exception:format=toString}}";
 
         configuration
             .AddTarget(target);
