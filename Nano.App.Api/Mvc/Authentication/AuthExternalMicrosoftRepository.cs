@@ -123,7 +123,7 @@ public class AuthExternalMicrosoftRepository(MicrosoftOptions options, HttpClien
     {
         ArgumentNullException.ThrowIfNull(refreshToken);
 
-        var httpRequestMessage = new HttpRequestMessage();
+        using var httpRequestMessage = new HttpRequestMessage();
 
         httpRequestMessage.Method = HttpMethod.Post;
         httpRequestMessage.RequestUri = new Uri($"https://login.microsoftonline.com/{this.options.TenantId}/oauth2/v2.0/token");
