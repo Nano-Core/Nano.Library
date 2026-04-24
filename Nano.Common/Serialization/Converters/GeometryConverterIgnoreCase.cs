@@ -43,7 +43,7 @@ public class GeometryConverterIgnoreCase : GeometryConverter
             RenameProperty(obj, "Geometries", "geometries");
         }
 
-        var jsonReader = new JTokenReader(obj);
+        using var jsonReader = new JTokenReader(obj);
 
         jsonReader
             .Read();
