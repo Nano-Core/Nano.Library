@@ -25,7 +25,12 @@ public sealed class AccessTokenProvider : IAccessTokenProvider
 
         try
         {
-            return this.accessToken ??= await factory(cancellationToken);
+            if (this.accessToken == null)
+            {
+                this.accessToken = await factory(cancellationToken);
+            }
+
+            return this.accessToken;
         }
         finally
         {
