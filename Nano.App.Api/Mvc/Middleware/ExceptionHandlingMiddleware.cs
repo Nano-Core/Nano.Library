@@ -215,7 +215,9 @@ public sealed class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddlew
             .Replace("\r", string.Empty)
             .Replace("\n", string.Empty);
 
-        var method = httpRequest.Method;
+        var method = httpRequest.Method
+            .Replace("\r", string.Empty)
+            .Replace("\n", string.Empty);
         var path = httpRequest.Path.Value;
         var queryString = httpRequest.QueryString.HasValue ? $"{httpRequest.QueryString.Value}" : null;
 
