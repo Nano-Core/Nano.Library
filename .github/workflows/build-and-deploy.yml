@@ -57,8 +57,8 @@ jobs:
         if: github.ref == 'refs/heads/master'
         run: |
           dotnet nuget push "**/nupkgs/*.nupkg" `
-              --source ${{ secrets.NUGET_HOST }} `
-              --api-key ${{ secrets.NUGET_APIKEY }} `
+              --source ${{ env.NUGET_HOST }} `
+              --api-key ${{ env.NUGET_APIKEY }} `
               --skip-duplicate;
 
           if ($LastExitCode -ne 0)
@@ -70,8 +70,8 @@ jobs:
         if: github.ref != 'refs/heads/master'
         run: |
           dotnet nuget push "**/nupkgs/*.nupkg" `
-              --source ${{ secrets.NUGET_HOST_PREVIEW }} `
-              --api-key ${{ secrets.NUGET_APIKEY_PREVIEW }} `
+              --source ${{ env.NUGET_HOST_PREVIEW }} `
+              --api-key ${{ env.NUGET_APIKEY_PREVIEW }} `
               --skip-duplicate;
 
           if ($LastExitCode -ne 0)
