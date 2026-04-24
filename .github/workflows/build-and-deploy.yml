@@ -54,10 +54,10 @@ jobs:
       - name: Push to NuGet.org
         if: github.ref == 'refs/heads/master'
         run: |
-          dotnet nuget push "**/bin/Release/*.nupkg" `
+          dotnet nuget push "**/nupkgs/*.nupkg" `
               --source ${{ secrets.NUGET_HOST }} `
               --api-key ${{ secrets.NUGET_APIKEY }} `
-              --skip-duplicate
+              --skip-duplicate;
 
           if ($LastExitCode -ne 0)
           { 
@@ -67,20 +67,25 @@ jobs:
       - name: Push to GitHub Packages
         if: github.ref != 'refs/heads/master'
         run: |
-          dotnet nuget add source https://nuget.pkg.github.com/Nano-Core/index.json `
-            --name github `
-            --username Nano-Core `
-            --password ${{ secrets.GITHUB_TOKEN }} `
-            --store-password-in-clear-text;
+          dotnet nuget push "**/nupkgs/*.nupkg" `
+              --source https://nuget.pkg.github.com/Nano-Core/index.json `
+              --api-key ${{ secrets.GITHUB_TOKEN }} `
+              --skip-duplicate;
 
-          if ($LastExitCode -ne 0)
-          { 
-              throw "Publish Failed";
-          };
+          # dotnet nuget add source https://nuget.pkg.github.com/Nano-Core/index.json `
+          #   --name github `
+          #   --username Nano-Core `
+          #   --password ${{ secrets.GITHUB_TOKEN }} `
+          #   --store-password-in-clear-text;
 
-          dotnet nuget push "**/bin/Release/*.nupkg" `
-            --source github `
-            --skip-duplicate;
+          # if ($LastExitCode -ne 0)
+          # { 
+          #     throw "Publish Failed";
+          # };
+
+          # dotnet nuget push "**/bin/Release/*.nupkg" `
+          #   --source github `
+          #   --skip-duplicate;
 
           if ($LastExitCode -ne 0)
           { 
