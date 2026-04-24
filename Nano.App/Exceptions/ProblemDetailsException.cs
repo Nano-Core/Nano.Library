@@ -23,12 +23,9 @@ public class ProblemDetailsException : Exception
         this.ProblemDetails = problemDetails;
     }
 
-    private static string GetDetailOrThrow(ProblemDetails problemDetails)
+    private static string? GetDetailOrThrow(ProblemDetails problemDetails)
     {
-        if (problemDetails is null)
-        {
-            throw new ArgumentNullException(nameof(problemDetails));
-        }
+        ArgumentNullException.ThrowIfNull(problemDetails);
 
         return problemDetails.Detail;
     }
