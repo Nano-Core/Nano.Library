@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using MySqlConnector;
 using Nano.Common.Mvc.HealthChecks.Extensions;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Config;
@@ -47,12 +46,10 @@ public sealed class MySqlProvider : IDataProvider
         var batchSize = options.BatchSize;
         var retryCount = options.QueryRetryCount;
         var connectionString = options.ConnectionString;
-
-        var connection = new MySqlConnection(connectionString);
-        var serverVersion = ServerVersion.AutoDetect(connection);
+        var serverVersion = ServerVersion.AutoDetect(connectionString);
 
         builder
-            .UseMySql(connection, serverVersion, x =>
+            .UseMySql(connectionString, serverVersion, x =>
             {
                 var querySplittingBehavior = options.QuerySplittingBehavior
                     .GetQuerySplittingBehavior();
