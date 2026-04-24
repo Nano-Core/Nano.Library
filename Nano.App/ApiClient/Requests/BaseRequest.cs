@@ -76,7 +76,7 @@ public abstract class BaseRequest
         return action ?? throw new NullReferenceException(nameof(action));
     }
 
-    internal virtual IEnumerable<object> GetRouteParameters()
+    internal virtual object[] GetRouteParameters()
     {
         return this
             .GetType()
@@ -96,7 +96,8 @@ public abstract class BaseRequest
                     .GetValue(this);
 
                 return value ?? string.Empty;
-            });
+            })
+            .ToArray();
     }
 
     internal virtual string GetQuerystring()

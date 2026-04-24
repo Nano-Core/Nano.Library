@@ -340,6 +340,42 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
+    /// Invokes the 'create/edit' endpoint of the entity in the api.
+    /// </summary>
+    /// <typeparam name="TEntity">The entity type.</typeparam>
+    /// <param name="request">The create or edit request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The created or edited entity.</returns>
+    public async Task<TEntity> CreateOrEditAsync<TEntity>(CreateOrEditRequest request, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityCreatableAndUpdatable
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        var entityCreated = await this.api
+            .InvokeAsync<CreateOrEditRequest, TEntity>(request, cancellationToken);
+
+        return entityCreated ?? throw new NotFoundException(nameof(entityCreated));
+    }
+
+    /// <summary>
+    /// Invokes the 'create/edit' endpoint of the entity in the api.
+    /// </summary>
+    /// <typeparam name="TEntity">The entity type.</typeparam>
+    /// <param name="entity">The entity to create.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The created or edited entity.</returns>
+    public Task<TEntity> CreateOrEditAsync<TEntity>(IEntityCreatableAndUpdatable entity, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityCreatableAndUpdatable
+    {
+        ArgumentNullException.ThrowIfNull(entity);
+
+        return this.CreateOrEditAsync<TEntity>(new CreateOrEditRequest
+        {
+            Entity = entity
+        }, cancellationToken);
+    }
+
+    /// <summary>
     /// Invokes the 'create/get' endpoint of the entity in the api.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>

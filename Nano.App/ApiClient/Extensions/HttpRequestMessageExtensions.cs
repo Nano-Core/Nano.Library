@@ -66,7 +66,7 @@ internal static class HttpRequestMessageExtensions
 
         if (form.Any())
         {
-            using var formContent = new MultipartFormDataContent();
+            var formContent = new MultipartFormDataContent();
 
             foreach (var formItem in request.GetForm())
             {

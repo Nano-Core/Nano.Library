@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Nano.App.Api.Config;
@@ -13,6 +14,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Nano.App.ApiClient.Exceptions;
 using Vivet.AspNetCore.RequestVirusScan.Exceptions;
 
 namespace Nano.App.Api.Mvc.Middleware;
@@ -23,13 +25,15 @@ namespace Nano.App.Api.Mvc.Middleware;
 /// </summary>
 /// <param name="logger">The <see cref="ILogger{T}"/> used for logging.</param>
 /// <param name="apiOptions">The <see cref="IOptionsMonitor{ApiOptions}"/> containing API configuration.</param>
-public sealed class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddleware> logger, IOptionsMonitor<ApiOptions> apiOptions)
+/// <param name="problemDetailsFactory">The <see cref="ProblemDetailsFactory"/>.</param>
+public sealed class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddleware> logger, IOptionsMonitor<ApiOptions> apiOptions, ProblemDetailsFactory problemDetailsFactory)
     : IMiddleware
 {
     private const string MESSAGE_TEMPLATE = "{protocol} {method} {path}{queryString} {statusCode} in {elapsed:0.0000} ms. (Id={id})";
 
     private ILogger<ExceptionHandlingMiddleware> Logger { get; } = logger ?? throw new ArgumentNullException(nameof(logger));
     private IOptionsMonitor<ApiOptions> ApiOptions { get; } = apiOptions ?? throw new ArgumentNullException(nameof(apiOptions));
+    private readonly ProblemDetailsFactory problemDetailsFactory = problemDetailsFactory ?? throw new ArgumentNullException(nameof(problemDetailsFactory));
 
     /// <summary>
     /// Invokes the middleware to handle exceptions, log request information, and write structured problem details responses.
@@ -47,7 +51,7 @@ public sealed class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddlew
         Exception? exception = null;
         Exception[] exceptions = [];
 
-        var problemDetails = new ProblemDetails();
+        ProblemDetails? problemDetails = null;
 
         try
         {
@@ -55,47 +59,43 @@ public sealed class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddlew
         }
         catch (NotFoundException)
         {
-            httpContext.Response.StatusCode = (int)HttpStatusCode.NotFound;
+            problemDetails = this.problemDetailsFactory
+                .CreateProblemDetails(httpContext, (int)HttpStatusCode.NotFound);
         }
         catch (VirusScanException ex)
         {
             exception = ex;
 
-            problemDetails.Type = "https://datatracker.ietf.org/doc/html/rfc9110-15.6.1#name-422-unprocessable-content";
-            problemDetails.Status = (int)HttpStatusCode.UnprocessableEntity;
-            problemDetails.Title = "Unprocessable Entity";
+            problemDetails = this.problemDetailsFactory
+                .CreateProblemDetails(httpContext, (int)HttpStatusCode.UnprocessableEntity, detail: ex.Message);
         }
         catch (UnauthorizedException ex)
         {
             exception = ex;
 
-            problemDetails.Type = "https://datatracker.ietf.org/doc/html/rfc9110-15.6.1#name-401-unauthorized";
-            problemDetails.Status = (int)HttpStatusCode.Unauthorized;
-            problemDetails.Title = "Unauthorized";
+            problemDetails = this.problemDetailsFactory
+                .CreateProblemDetails(httpContext, (int)HttpStatusCode.Unauthorized, detail: ex.Message);
         }
         catch (PermissionDeniedException ex)
         {
             exception = ex;
 
-            problemDetails.Type = "https://datatracker.ietf.org/doc/html/rfc9110-15.6.1#name-403-forbidden";
-            problemDetails.Status = (int)HttpStatusCode.Forbidden;
-            problemDetails.Title = "Forbidden";
+            problemDetails = this.problemDetailsFactory
+                .CreateProblemDetails(httpContext, (int)HttpStatusCode.Forbidden, detail: ex.Message);
         }
         catch (IdentityException ex)
         {
             exception = ex;
 
-            problemDetails.Type = "https://datatracker.ietf.org/doc/html/rfc9110-15.6.1#name-400-bad-request";
-            problemDetails.Status = (int)HttpStatusCode.BadRequest;
-            problemDetails.Title = "Bad Request";
+            problemDetails = this.problemDetailsFactory
+                .CreateProblemDetails(httpContext, (int)HttpStatusCode.BadRequest, detail: ex.Message);
         }
         catch (BadRequestException ex)
         {
             exception = ex;
 
-            problemDetails.Type = "https://datatracker.ietf.org/doc/html/rfc9110-15.6.1#name-400-bad-request";
-            problemDetails.Status = (int)HttpStatusCode.BadRequest;
-            problemDetails.Title = "Bad Request";
+            problemDetails = this.problemDetailsFactory
+                .CreateProblemDetails(httpContext, (int)HttpStatusCode.BadRequest, detail: ex.Message);
 
             if (ex.IsCoded)
             {
@@ -113,9 +113,15 @@ public sealed class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddlew
         {
             exception = ex;
 
-            problemDetails.Type = "https://datatracker.ietf.org/doc/html/rfc9110-15.6.1#section-15.5.9";
-            problemDetails.Status = (int)HttpStatusCode.RequestTimeout;
-            problemDetails.Title = "Request Timeout";
+            problemDetails = this.problemDetailsFactory
+                .CreateProblemDetails(httpContext, (int)HttpStatusCode.RequestTimeout, detail: ex.Message);
+        }
+        catch (ApiClientException ex)
+        {
+            exception = ex;
+
+            problemDetails = this.problemDetailsFactory
+                .CreateProblemDetails(httpContext, (int)ex.StatusCode, detail: ex.Message);
         }
         catch (ProblemDetailsException ex)
         {
@@ -127,37 +133,35 @@ public sealed class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddlew
         {
             exception = ex;
 
-            problemDetails.Type = "https://datatracker.ietf.org/doc/html/rfc9110-15.6.1#name-409-conflict";
-            problemDetails.Status = (int)HttpStatusCode.Conflict;
-            problemDetails.Title = "Conflict";
+            problemDetails = this.problemDetailsFactory
+                .CreateProblemDetails(httpContext, (int)HttpStatusCode.Conflict, detail: ex.Message);
         }
         catch (AggregateException ex)
         {
             exception = ex;
             exceptions = ex.InnerExceptions.ToArray();
 
-            problemDetails.Type = "https://datatracker.ietf.org/doc/html/rfc9110-15.6.1#name-500-internal-server-error";
-            problemDetails.Status = (int)HttpStatusCode.InternalServerError;
-            problemDetails.Title = "Internal Server Error";
-
             if (ex.InnerException is BadRequestException or IdentityException)
             {
-                problemDetails.Type = "https://datatracker.ietf.org/doc/html/rfc9110-15.6.1#name-400-bad-request";
-                problemDetails.Status = (int)HttpStatusCode.BadRequest;
-                problemDetails.Title = "Bad Request";
+                problemDetails = this.problemDetailsFactory
+                    .CreateProblemDetails(httpContext, (int)HttpStatusCode.BadRequest, detail: ex.Message);
+            }
+            else
+            {
+                problemDetails = this.problemDetailsFactory
+                    .CreateProblemDetails(httpContext, (int)HttpStatusCode.InternalServerError, detail: ex.Message);
             }
         }
         catch (Exception ex)
         {
             exception = ex;
 
-            problemDetails.Type = "https://datatracker.ietf.org/doc/html/rfc9110-15.6.1#name-500-internal-server-error";
-            problemDetails.Status = (int)HttpStatusCode.InternalServerError;
-            problemDetails.Title = "Internal Server Error";
+            problemDetails = this.problemDetailsFactory
+                .CreateProblemDetails(httpContext, (int)HttpStatusCode.InternalServerError, detail: ex.Message);
         }
         finally
         {
-            if (exception != null)
+            if (problemDetails != null)
             {
                 if (!httpContext.Response.HasStarted)
                 {
@@ -168,9 +172,12 @@ public sealed class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddlew
 
                     if (httpContext.Response.StatusCode != (int)HttpStatusCode.InternalServerError || this.ApiOptions.CurrentValue.ErrorHandling.ExposeErrors)
                     {
-                        problemDetails.Detail = exception.Message;
+                        var errors = exceptions
+                            .Select(x => x.Message)
+                            .ToArray();
+
                         problemDetails.Extensions
-                            .Add(ProblemDetailsExtensionKeys.ERRORS, exceptions.Select(x => x.Message).ToArray());
+                            .Add(ProblemDetailsExtensionKeys.ERRORS, errors);
                     }
                     else
                     {

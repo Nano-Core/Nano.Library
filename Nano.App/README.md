@@ -173,6 +173,7 @@ The following entity methods are available. Additional overloads are also provid
 | `QueryFirstAsync`       | QueryFirstRequest        | Executes `query/first` to retrieve the first matching entity by request.           |
 | `QueryCountAsync`       | QueryCountRequest        | Executes `query/count` to count matching entities by request.                      |
 | `CreateAsync`           | CreateRequest            | Invokes the `create` endpoint and returns the created entity.                      |
+| `CreateOrEditAsync`     | CreateRequest            | Invokes the `create/edit` endpoint and returns the created or edited entity.       |
 | `CreateOrGetAsync`      | CreateOrGetRequest       | Invokes the `create/get` endpoint and returns the created or existing entity.      |
 | `CreateAndGetAsync`     | CreateAndGetRequest      | Invokes the `create/reload` endpoint and returns the created entity.               |
 | `CreateManyAsync`       | CreateManyRequest        | Invokes the `create/many` endpoint for multiple entities.                          |

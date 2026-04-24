@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 using Nano.App.ApiClient.Abstractions;
 using Nano.App.ApiClient.Config;
+using Nano.App.ApiClient.Exceptions;
 using Nano.App.ApiClient.Extensions;
 using Nano.App.ApiClient.Models;
 using Nano.App.ApiClient.Requests;
@@ -54,7 +55,7 @@ public sealed class ApiClient(ApiClientOptions options, HttpClient httpClient, I
     private readonly HttpClient httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
     private readonly IAccessTokenProvider accessTokenProvider = accessTokenProvider ?? throw new ArgumentNullException(nameof(accessTokenProvider));
     internal readonly IHttpContextAccessor? httpContextAccessor = httpContextAccessor;
-
+    
     internal async Task InvokeAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
         where TRequest : BaseRequest
     {
@@ -143,8 +144,10 @@ public sealed class ApiClient(ApiClientOptions options, HttpClient httpClient, I
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        var accessToken2 = request.JwtTokenOverride ?? this.httpContextAccessor?.HttpContext?.GetJwtToken();
-        var accessToken = accessToken2 == null ? null : new AccessToken { Token = accessToken2 };
+        var jwtToken = request.JwtTokenOverride ?? this.httpContextAccessor?.HttpContext?.GetJwtToken();
+        var accessToken = jwtToken == null 
+            ? null 
+            : new AccessToken { Token = jwtToken };
 
         if (accessToken == null && request is not LogInRootRequest && this.options.LogInRoot is not null)
         {
@@ -161,7 +164,6 @@ public sealed class ApiClient(ApiClientOptions options, HttpClient httpClient, I
 
         return accessToken;
     }
-
     private async Task<HttpRequestMessage> GetHttpRequestMessage<TRequest>(TRequest request, CancellationToken cancellationToken = default)
         where TRequest : BaseRequest
     {
@@ -221,32 +223,31 @@ public sealed class ApiClient(ApiClientOptions options, HttpClient httpClient, I
     {
         ArgumentNullException.ThrowIfNull(httpResponse);
 
+        var content = await httpResponse.Content
+            .ReadAsStringAsync(cancellationToken);
+
         switch ((int)httpResponse.StatusCode)
         {
             case >= 400 and < 600:
             {
-                var content = await httpResponse.Content
-                    .ReadAsStringAsync(cancellationToken);
-
-                try
+                if (!string.IsNullOrEmpty(content))
                 {
-                    var serializerSettings = SerializerSettings.GetDefault();
-                    var problemDetails = JsonConvert.DeserializeObject<ProblemDetails>(content, serializerSettings);
-
-                    if (problemDetails == null)
+                    try
                     {
-                        throw new NullReferenceException(nameof(problemDetails));
+                        var serializerSettings = SerializerSettings.GetDefault();
+                        var problemDetails = JsonConvert.DeserializeObject<ProblemDetails>(content, serializerSettings);
+
+                        if (problemDetails != null)
+                        {
+                            throw new ProblemDetailsException(problemDetails);
+                        }
                     }
-
-                    throw new ProblemDetailsException(problemDetails);
+                    catch (JsonException)
+                    {
+                    }
                 }
-                catch (JsonException)
-                {
-                    var exceptionMessage = content
-                        .RemoveQuotes();
 
-                    throw new Exception(exceptionMessage);
-                }
+                throw new ApiClientException(content, httpResponse.StatusCode);
             }
 
             default:
