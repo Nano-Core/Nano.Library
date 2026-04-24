@@ -63,7 +63,7 @@ for Kubernetes and GitHub Actions, enabling consistent CI/CD pipelines and infra
 
 Together, these capabilities make Nano a strong choice for designing, building, and maintaining microservice architectures, even for small teams.
 
-### 🚀 Launch Your App in Under 60 Minutes
+### 🚀 Launch Your App in Under 60 Minutes 
 Get started quickly by building your own Nano **[Api](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api)**, **[Web](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Web)**, 
 or **[Console](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Console)** application, and have it configured and running in less than an hour. Nano follows a flexible, 
 opt-in approach, allowing you to configure and enable only the features you need. For the four core pillars of distributed systems, **[Logging](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging)**, **[Data](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data)**, 
