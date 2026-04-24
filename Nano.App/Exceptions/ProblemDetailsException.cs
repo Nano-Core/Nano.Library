@@ -18,8 +18,18 @@ public class ProblemDetailsException : Exception
     /// </summary>
     /// <param name="problemDetails">The <see cref="Microsoft.AspNetCore.Mvc.ProblemDetails"/> that describes the error.</param>
     public ProblemDetailsException(ProblemDetails problemDetails)
-        : base(problemDetails.Detail)
+        : base(GetDetailOrThrow(problemDetails))
     {
-        this.ProblemDetails = problemDetails ?? throw new ArgumentNullException(nameof(problemDetails));
+        this.ProblemDetails = problemDetails;
+    }
+
+    private static string GetDetailOrThrow(ProblemDetails problemDetails)
+    {
+        if (problemDetails is null)
+        {
+            throw new ArgumentNullException(nameof(problemDetails));
+        }
+
+        return problemDetails.Detail;
     }
 }
