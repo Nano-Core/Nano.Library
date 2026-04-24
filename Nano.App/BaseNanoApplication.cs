@@ -6,6 +6,7 @@ using Nano.Common.Config;
 using System;
 using System.IO;
 using System.Reflection;
+using Microsoft.Extensions.Logging;
 
 namespace Nano.App;
 
@@ -82,9 +83,9 @@ public abstract class BaseNanoApplication<TApp, THost, THostBuilder> : IApplicat
 
         builder.Configuration
             .AddConfiguration(config);
-        // BUG: LOGGING
-        //builder.Logging
-        //    .ClearProviders();
+
+        builder.Logging
+            .ClearProviders();
 
         return builder;
     }
@@ -115,9 +116,8 @@ public abstract class BaseNanoApplication<TApp, THost, THostBuilder> : IApplicat
         builder.Configuration
             .AddConfiguration(config);
 
-        // BUG: LOGGING
-        //builder.Logging
-        //    .ClearProviders();
+        builder.Logging
+            .ClearProviders();
 
         return builder;
     }

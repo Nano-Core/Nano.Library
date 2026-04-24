@@ -71,7 +71,7 @@ public static class TypeCache
 
         return assemblies;
     }
-    private static void LoadRecursive(Assembly assembly, HashSet<Assembly> hashSet)
+    private static void LoadRecursive(Assembly assembly, ISet<Assembly> hashSet)
     {
         ArgumentNullException.ThrowIfNull(assembly);
         ArgumentNullException.ThrowIfNull(hashSet);
@@ -119,7 +119,7 @@ public static class TypeCache
         catch (ReflectionTypeLoadException ex)
         {
             results
-                .AddRange(ex.Types.Where(t => t != null)!);
+                .AddRange(ex.Types.Where(x => x != null)!);
         }
     }
 }

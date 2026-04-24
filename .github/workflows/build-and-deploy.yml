@@ -27,41 +27,60 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
-      - name: Build and Test
+      - name: Build, Test and Pack
         shell: pwsh
         run: |
           dotnet build -c Release .\$env:APP_NAME.sln;
+
           if ($LastExitCode -ne 0)
           { 
-              throw "Build failed";
+              throw "Build Failed";
           };
 
           dotnet test -c Release --no-build .\.tests\Tests.$env:APP_NAME\Tests.$env:APP_NAME.csproj;
+
           if ($LastExitCode -ne 0)
           { 
-              throw "Tests failed";
+              throw "Tests Failed";
           };
 
           dotnet pack -c Release --no-build -o nupkgs /p:Version=$env:VERSION;
+
           if ($LastExitCode -ne 0)
           { 
-              throw "Tests failed";
+              throw "NuGet Pack Failed";
           };
 
-          dotnet nuget push "**/bin/Release/*.*nupkg" `
-              --source $env:NUGET_HOST ` 
-              --api-key $env:NUGET_API_KEY `
-              --skip-duplicate
-          if ($LastExitCode -ne 0)
-          { 
-              throw "Tests failed";
-          };
-
-      - name: Push NuGet
+      - name: Push to NuGet.org
         if: github.ref == 'refs/heads/master'
-        shell: pwsh
         run: |
-          nuget.exe push "nupkgs\*.nupkg" -Source $env:NUGET_HOST -ApiKey $env:NUGET_APIKEY -SkipDuplicate
+          dotnet nuget push "**/bin/Release/*.nupkg" `
+              --source ${{ secrets.NUGET_HOST }} `
+              --api-key ${{ secrets.NUGET_APIKEY }} `
+              --skip-duplicate
+
+          if ($LastExitCode -ne 0)
+          { 
+              throw "Publish Failed";
+          };
+
+      - name: Push to GitHub Packages
+        if: github.ref != 'refs/heads/master'
+        run: |
+          dotnet nuget add source https://nuget.pkg.github.com/Nano-Core/index.json `
+            --name github `
+            --username Nano-Core `
+            --password ${{ secrets.GITHUB_TOKEN }} `
+            --store-password-in-clear-text;
+
+          if ($LastExitCode -ne 0)
+          { 
+              throw "Publish Failed";
+          };
+
+          dotnet nuget push "**/bin/Release/*.nupkg" `
+            --source github `
+            --skip-duplicate;
 
           if ($LastExitCode -ne 0)
           { 

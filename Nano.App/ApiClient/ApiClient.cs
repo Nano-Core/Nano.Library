@@ -54,8 +54,9 @@ public sealed class ApiClient(ApiClientOptions options, HttpClient httpClient, I
     private readonly ApiClientOptions options = options ?? throw new ArgumentNullException(nameof(options));
     private readonly HttpClient httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
     private readonly IAccessTokenProvider accessTokenProvider = accessTokenProvider ?? throw new ArgumentNullException(nameof(accessTokenProvider));
+
     internal readonly IHttpContextAccessor? httpContextAccessor = httpContextAccessor;
-    
+
     internal async Task InvokeAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
         where TRequest : BaseRequest
     {
@@ -145,8 +146,8 @@ public sealed class ApiClient(ApiClientOptions options, HttpClient httpClient, I
         ArgumentNullException.ThrowIfNull(request);
 
         var jwtToken = request.JwtTokenOverride ?? this.httpContextAccessor?.HttpContext?.GetJwtToken();
-        var accessToken = jwtToken == null 
-            ? null 
+        var accessToken = jwtToken == null
+            ? null
             : new AccessToken { Token = jwtToken };
 
         if (accessToken == null && request is not LogInRootRequest && this.options.LogInRoot is not null)
