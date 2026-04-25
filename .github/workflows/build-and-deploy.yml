@@ -84,7 +84,7 @@ jobs:
           body: |
             Version: ${{ env.VERSION }}
             Commit: ${{ github.sha }}
-          artifacts: "nupkgs/*"
+          artifacts: "**/nupkgs/*"
           token: ${{ secrets.GITHUB_TOKEN }}
           draft: false
           prerelease: false
