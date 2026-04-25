@@ -76,7 +76,7 @@ jobs:
           };
 
       - name: GitHub Release
-        #if: github.ref == 'refs/heads/master' 
+        if: github.ref == 'refs/heads/master' 
         uses: ncipollo/release-action@v1
         with:
           tag: v${{ env.VERSION }}.${{ github.run_number }}
