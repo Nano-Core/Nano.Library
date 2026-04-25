@@ -2,7 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Nano.App.Startup;
+using Nano.App.StartUp;
 
 namespace Nano.App.Api.Mvc.HealthChecks;
 

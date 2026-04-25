@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Nano.App.Startup;
+namespace Nano.App.StartUp;
 
 /// <summary>
 /// Tracks the progress and completion status of startup tasks.

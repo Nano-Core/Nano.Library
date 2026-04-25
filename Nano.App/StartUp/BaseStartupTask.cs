@@ -1,10 +1,10 @@
-using Microsoft.Extensions.Logging;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Nano.App.Startup.Abstractions;
+using Microsoft.Extensions.Logging;
+using Nano.App.StartUp.Abstractions;
 
-namespace Nano.App.Startup;
+namespace Nano.App.StartUp;
 
 /// <summary>
 /// Provides a base implementation for a startup task in the Nano application.

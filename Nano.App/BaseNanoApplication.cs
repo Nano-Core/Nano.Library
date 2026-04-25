@@ -84,8 +84,9 @@ public abstract class BaseNanoApplication<TApp, THost, THostBuilder> : IApplicat
         builder.Configuration
             .AddConfiguration(config);
 
-        builder.Logging
-            .ClearProviders();
+        // BUG
+        //builder.Logging
+        //    .ClearProviders();
 
         return builder;
     }
