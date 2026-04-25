@@ -17,6 +17,7 @@ using Nano.App.ApiClient.Requests.Auth.Models;
 using Nano.App.Exceptions;
 using Nano.Common.Consts;
 using Nano.Common.Serialization;
+using Nano.Data.Abstractions.Exceptions;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Nano.Data.Abstractions.Identity.Extensions;
 using Nano.Data.Abstractions.Models.Abstractions;
