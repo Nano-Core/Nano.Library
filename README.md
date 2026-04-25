@@ -25,7 +25,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;✨ **[Highlighted Features](#-highlighted-features)**  
 &nbsp;&nbsp;&nbsp;&nbsp;🏛️ **[Nano Architectures](#%EF%B8%8F-nano-architectures)**  
 &nbsp;&nbsp;&nbsp;&nbsp;🧩 **[Solution Composition](#-solution-composition)**  
-&nbsp;&nbsp;&nbsp;&nbsp;<img src="https://api.nuget.org/v3-flatcontainer/nuget.protocol/6.0.0/icon" width="19" /> **[NuGet Packages](#-nuget-packages)**  
+&nbsp;&nbsp;&nbsp;&nbsp;📦 **[NuGet Packages](#-nuget-packages)**  
 &nbsp;&nbsp;&nbsp;&nbsp;🔏 **[Licenses](#-licenses)**  
 
 ### Documentation
@@ -177,7 +177,7 @@ In the following table shows the different files and folder strucutre.
 | `LICENSE`                                           | (✓) | (✓) | ✗   | License file for the Git repository and the application’s NuGet package _(Optional)_.                                                                                                                                                          |
 | `{name}.sln`                                        | ✓   | ✓   | ✓   | The visual studio solution file.                                                                                                                                                                                                                |
 
-## <img src="https://api.nuget.org/v3-flatcontainer/nuget.protocol/6.0.0/icon" width="27" /> NuGet Packages
+## 📦 NuGet Packages
 These packages are all-inclusive packages, where all other Nano packages are included. Easy to get started, but it's recommended to instead select only the
 packages needed by your application, to avoid unnecessary depdendencies.  
 
