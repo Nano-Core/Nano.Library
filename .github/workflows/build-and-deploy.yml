@@ -87,4 +87,4 @@ jobs:
           artifacts: "**/nupkgs/*"
           token: ${{ secrets.GITHUB_TOKEN }}
           draft: false
-          prerelease: false
+          prerelease: ${{ contains(env.VERSION, '-') }}
