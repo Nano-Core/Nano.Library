@@ -9,10 +9,6 @@ on:
 env:
   APP_NAME: Nano.Library
   VERSION: 10.0.0-preview1
-  NUGET_HOST: https://api.nuget.org/v3/index.json
-  NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
-  NUGET_HOST_PREVIEW: https://nuget.pkg.github.com/Nano-Core/index.json
-  NUGET_APIKEY_PREVIEW: ${{ secrets.GITHUB_TOKEN }}
 jobs:
   build-and-deploy:
     runs-on: windows-latest
@@ -57,8 +53,8 @@ jobs:
         if: github.ref == 'refs/heads/master'
         run: |
           dotnet nuget push "**/nupkgs/*.nupkg" `
-              --source ${{ env.NUGET_HOST }} `
-              --api-key ${{ env.NUGET_APIKEY }} `
+              --source https://api.nuget.org/v3/index.json `
+              --api-key ${{ secrets.NUGET_APIKEY }} `
               --skip-duplicate;
 
           if ($LastExitCode -ne 0)
@@ -70,8 +66,8 @@ jobs:
         if: github.ref != 'refs/heads/master'
         run: |
           dotnet nuget push "**/nupkgs/*.nupkg" `
-              --source ${{ env.NUGET_HOST_PREVIEW }} `
-              --api-key ${{ env.NUGET_APIKEY_PREVIEW }} `
+              --source https://nuget.pkg.github.com/Nano-Core/index.json `
+              --api-key ${{ secrets.GITHUB_TOKEN }} `
               --skip-duplicate;
 
           if ($LastExitCode -ne 0)
