@@ -79,7 +79,7 @@ jobs:
         #if: github.ref == 'refs/heads/master'
         uses: ncipollo/release-action@v1
         with:
-          tag: v${{ env.VERSION }}
+          tag: v${{ env.VERSION }}.${{ github.run_number }}
           name: "Release ${{ env.VERSION }}"
           body: |
             Version: ${{ env.VERSION }}
