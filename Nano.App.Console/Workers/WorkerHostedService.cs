@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Nano.App.Console.Workers.Abstractions;
-using Nano.App.Startup;
+using Nano.App.StartUp;
 using System;
 using System.Collections.Generic;
 using System.Linq;

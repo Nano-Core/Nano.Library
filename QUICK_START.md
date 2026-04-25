@@ -5,6 +5,7 @@
 ***
 
 ## Table of Contents
+* **[Home](https://github.com/Nano-Core/Nano.Library#nano-library)**
 * **[1. Requirements](#requirements)**
 * **[2. Choosing Application Type](#choosing-application-type)**
 * **[3. Application Configuration](#application-configuration)**
@@ -280,7 +281,7 @@ properties can be included in published events, making it easy to synchronize co
 
 Entity events require an Eventing Provider to be registered (see further sections).
 
-Another noteworthy feature of the data provider is the **[`[Include] Aattribute`](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#include-annotation)**. Navigation 
+Another noteworthy feature of the data provider is the **[`[Include] Attribute`](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#include-annotation)**. Navigation 
 properties on entity models can be annotated with this attribute to create a graph-lite structure. When an entity is retrieved through the 
 **[Data Repositories](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#repositories)**, all included navigation properties are automatically loaded as part 
 of the query.

@@ -186,6 +186,12 @@ packages needed by your application, to avoid unnecessary depdendencies.
 | Nano.All   | [![NuGet](https://img.shields.io/nuget/dt/Nano.All.svg)](https://www.nuget.org/packages/Nano.All/)  | [![NuGet](https://img.shields.io/nuget/v/Nano.All.svg)](https://www.nuget.org/packages/Nano.All/)   |
 | NanoCore   | [![NuGet](https://img.shields.io/nuget/dt/NanoCore.svg)](https://www.nuget.org/packages/NanoCore/)  | [![NuGet](https://img.shields.io/nuget/v/NanoCore.svg)](https://www.nuget.org/packages/NanoCore/)   |
 
+And the Common Package.  
+
+| Package                      | Type              | Downloads                                                                                                  | Latest Version                                                                                            |
+| ---------------------------- | ----------------- | ---------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Nano.Common                  | _`Transitive`_    | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/)   | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/)   |
+
 The next packages are application packages. Include only one matching the application type you want to create.  
 
 | Package                      | Type              | Downloads                                                                                                           | Latest Version                                                                                                     |

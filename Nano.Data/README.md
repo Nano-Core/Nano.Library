@@ -10,7 +10,7 @@
 ***
 
 ## Table of Contents
-* **[Home](https://github.com/Nano-Core/Nano.Library#nano-library)**
+* **[Home](https://github.com/Nano-Core/Nano.Library#nano-library#nanolibrary)**
 * **[Summary](#summary)**
 * **[Registration](#registration)**
 * **[Configuration](#configuration)**
