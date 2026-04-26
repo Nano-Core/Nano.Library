@@ -77,7 +77,6 @@ public class NanoApiApplication : BaseNanoApplication<IApiApplication, WebApplic
         return this;
     }
 
-
     /// <summary>
     /// Gets the <see cref="ApiKeyOptions"/> from the <see cref="IConfiguration"/>.
     /// </summary>
