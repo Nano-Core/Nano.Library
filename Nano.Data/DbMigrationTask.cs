@@ -52,7 +52,7 @@ internal sealed class DbMigrationTask<TIdentity>(ILogger<DbMigrationTask<TIdenti
         this.logger
             .LogInformation("Applying Migrations at start-up.");
 
-        const int MAX_RETRIES = 5;
+        const int MAX_RETRIES = 3;
 
         for (var i = 0; i < MAX_RETRIES; i++)
         {
@@ -61,11 +61,8 @@ internal sealed class DbMigrationTask<TIdentity>(ILogger<DbMigrationTask<TIdenti
                 await this.dbContext.Database
                     .MigrateAsync(cancellationToken);
             }
-            catch (Exception ex)
+            catch
             {
-                this.logger
-                    .LogWarning(ex, ex.Message);
-
                 await Task.Delay(2000, cancellationToken);
             }
         }
