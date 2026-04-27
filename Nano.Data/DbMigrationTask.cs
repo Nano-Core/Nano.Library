@@ -61,8 +61,11 @@ internal sealed class DbMigrationTask<TIdentity>(ILogger<DbMigrationTask<TIdenti
                 await this.dbContext.Database
                     .MigrateAsync(cancellationToken);
             }
-            catch
+            catch (Exception ex)
             {
+                this.logger
+                    .LogWarning(ex, ex.Message);
+
                 await Task.Delay(2000, cancellationToken);
             }
         }

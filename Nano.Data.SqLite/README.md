@@ -19,6 +19,8 @@
 ## Summary
 Data Provider implementation for SqLite data access.  
 
+> ⚠️ SqLite does not natively support spatial types, and `mod_spatialite` is not reliable.
+
 > 📖 Learn more about **[Nano Data](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data)**.
 
 Try it out yourself using the **[Api.Data.SqLite](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.SqLite)**, or 
@@ -90,14 +92,6 @@ services:
   {service-name}:
     volumes:
       - ./bin/data:/data
-```
-
-Also the `Dockerfile` must have SqLite installed with spatial support. Add the following to both the `Dockerfile` and the `Dockerfile.Local`.  
-
-```dockerfile
-RUN apt-get update \
-    && apt-get install -y libsqlite3-mod-spatialite \
-    && apt-get install -y libspatialite-dev
 ```
 
 ## Kubernetes
