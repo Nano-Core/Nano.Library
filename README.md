@@ -60,7 +60,7 @@ more, Nano helps cover the full application lifecycle, from development and conf
 To support production-grade environments, Nano also provides the foundation for running applications securely and at scale in Kubernetes on Azure. Nano includes ready-to-use templates
 for Kubernetes and GitHub Actions, enabling consistent CI/CD pipelines and infrastructure provisioning.
 
-> 📖 Learn more about **[Nano.Azure](https://github.com/Nano-Core/Nano.Azure)** and **[Nano.Azure.Kubernetes](https://github.com/Nano-Core/Nano.Azure.Kubernetes)**
+> 📖 Learn more about **[Nano.Azure](https://github.com/Nano-Core/Nano.Azure/README.md#nanoazure)** and **[Nano.Azure.Kubernetes](https://github.com/Nano-Core/Nano.Azure.Kubernetes/README.md#nanoazurekubernetes)**
 
 Together, these capabilities make Nano a strong choice for designing, building, and maintaining microservice architectures, even for small teams.
 
@@ -135,7 +135,7 @@ Nano supports multiple distributed architecture styles, depending on the complex
 | Microservice Orchestration (Top-down)            | API-driven orchestration where a central API coordinates downstream services.    |
 | Microservice Orchestration (Service-to-Service)  | Decentralized communication where services interact directly with each other.    |
 
-## Setup Requirements
+## ⚙️ Setup Requirements
 Before getting started, make sure you have the following tools installed and configured.  
 
 | Tool                     | Description                                                                  |

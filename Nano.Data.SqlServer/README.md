@@ -20,7 +20,7 @@
 Data Provider implementation for Sql Server data access.  
 
 > 📖 Learn more about **[Nano Data](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data/README.md#nanodata)**.
-> 📖 Learn more about **[Nano Azure Sql Server](https://github.com/Nano-Core/Nano.Kubernetes/tree/master/Nano.Azure.Sql/SqlServer)**.  
+> 📖 Learn more about **[Nano Azure Sql Server](https://github.com/Nano-Core/Nano.Kubernetes/tree/master/Nano.Azure.SqlServer/README.md#nanoazuresqlserver)**.  
 
 Try it out yourself using the **[Api.Data.SqlServer](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.SqlServer)**, or 
 **[Console.Data.SqlServer](https://github.com/Nano-Core/Nano.Lessons/tree/master/Console.Data.SqlServer)** example.  

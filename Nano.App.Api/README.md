@@ -1354,6 +1354,8 @@ When configured, all uploaded files are automatically processed through the Clam
 If any uploaded file is found to contain a virus, the request is rejected and a `500 Internal Server Error` is returned. The response includes a message indicating 
 the name of the virus detected and which file(s) triggered the scan.  
 
+> 📖 Learn more about **[ClamAV Virus Scan](https://github.com/Nano-Core/Nano.Kubernetes/tree/master/Nano.Azure.Kubernetes/Nano.Azure.Kubernetes.ClamAV/README.md#nanoazurekubernetesclamav)
+
 This feature ensures that all file uploads are automatically checked for malware, providing an extra layer of security for your application. By integrating ClamAV scanning 
 into the middleware pipeline, Nano helps enforce security best practices and prevents potentially harmful files from entering your system.
 

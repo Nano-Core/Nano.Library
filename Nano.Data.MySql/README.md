@@ -20,7 +20,7 @@
 Data Provider implementation for MySql data access.  
 
 > 📖 Learn more about **[Nano Data](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data/README.md#nanodata)**.
-> 📖 Learn more about **[Nano Azure MySql](https://github.com/Nano-Core/Nano.Kubernetes/tree/master/Nano.Azure.Sql/MySql)**.  
+> 📖 Learn more about **[Nano Azure MySql](https://github.com/Nano-Core/Nano.Kubernetes/tree/master/Nano.Azure.MySql/README.md#nanoazuremysql)**.  
 
 Try it out yourself using the **[Api.Data.MySql](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.MySql)**, or 
 **[Console.Data.MySql](https://github.com/Nano-Core/Nano.Lessons/tree/master/Console.Data.MySql)** example.  

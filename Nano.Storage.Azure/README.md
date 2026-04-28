@@ -25,7 +25,7 @@ enables your application to read from and write to the storage directly, while t
 No changes to your application code are required and you can interact with the file share using the `IPathProvider` interface.  
 
 > 📖 Learn more about **[Nano Storage](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage/README.md/nanostorage)**.
-> 📖 Learn more about **[Nano Azure File Share](https://github.com/Nano-Core/Nano.Azure/tree/master/Nano.Azure.Storage)**.  
+> 📖 Learn more about **[Nano Azure File Share](https://github.com/Nano-Core/Nano.Azure/tree/master/Nano.Azure.Storage/README.md#nanoazurestorage)**.  
 
 Try it out yourself using the **[Api.Storage.Azure](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Storage.Azure)** or 
 **[Console.Storage.Azure](https://github.com/Nano-Core/Nano.Lessons/tree/master/Console.Storage.Azure)** example.  
@@ -77,7 +77,7 @@ services:
 
 ## Kubernetes
 Next, the following to your Kubernetes `deployment.yaml` or `cronjob.yaml` (depending on application type) for the Nano application.
-You also need to map the `storage-account-secret` that is created alongside the [Nano Azure Storage Account](https://github.com/Nano-Core/Nano.Azure/tree/master/Nano.Azure.Storage) 
+You also need to map the `storage-account-secret` that is created alongside the [Nano Azure Storage Account](https://github.com/Nano-Core/Nano.Azure/tree/master/Nano.Azure.Storage/README.md#nanoazurestorage) 
 in the `deployment.yaml` for fileshare authentication.
 
 ```json

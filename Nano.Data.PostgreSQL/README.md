@@ -20,7 +20,7 @@
 Data Provider implementation for PostgreSQL data access.  
 
 > 📖 Learn more about **[Nano Data](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data/README.md#nanodata)**.
-> 📖 Learn more about **[Nano Azure PostgreSQL](https://github.com/Nano-Core/Nano.Kubernetes/tree/master/Nano.Azure.Sql/PostgreSql)**.  
+> 📖 Learn more about **[Nano Azure PostgreSQL](https://github.com/Nano-Core/Nano.Kubernetes/tree/master/Nano.Azure.PostgreSql/README.md#nanoazurepostgresql)**.  
 
 Try it out yourself using the **[Api.Data.PostgreSQL](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.PostgreSQL)**, or 
 **[Console.Data.PostgreSQL](https://github.com/Nano-Core/Nano.Lessons/tree/master/Console.Data.PostgreSQL)** example.  

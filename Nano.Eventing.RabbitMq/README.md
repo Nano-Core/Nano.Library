@@ -108,7 +108,7 @@ spec:
               key: rabbitmq-password
 ```
 
-You also need to map the `rabbitmq` secret that is created alongside the **[Nano Azure Kuberenetes Eventing](https://github.com/Nano-Core/Nano.Azure.Kubernetes/tree/master/Nano.Azure.Kubernetes.RabbitMQ)** 
+You also need to map the `rabbitmq` secret that is created alongside the **[Nano Azure Kuberenetes Eventing](https://github.com/Nano-Core/Nano.Azure.Kubernetes/tree/master/Nano.Azure.Kubernetes.RabbitMQ/README.md#nanoazurekubernetesrabbitmq)** 
 in the `deployment.yaml` or `cronjob.yaml` for eventing authentication.
 
 > ⚠️ The `rabbitmq` secret will be reused for all applications using RabbitMQ as eventing provider.  
