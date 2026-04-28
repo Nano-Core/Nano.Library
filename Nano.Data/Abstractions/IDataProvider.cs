@@ -7,7 +7,7 @@ namespace Nano.Data.Abstractions;
 /// <summary>
 /// Defines a data provider used to configure the application's data access layer.
 /// </summary>
-/// <remarks>Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data</remarks>
+/// <remarks>Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data/README.md#nanodata</remarks>
 public interface IDataProvider
 {
     /// <summary>

@@ -24,7 +24,7 @@ public static class ServiceCollectionExtensions
     ///         <item>Registers <see cref="IStorageProvider"/> and <see cref="IPathProvider"/> in the dependency injection container.</item>
     ///     </list>
     /// </remarks>
-    /// <remarks>Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage</remarks>
+    /// <remarks>Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage/README.md/nanostorage</remarks>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="services"/> is <c>null</c>.</exception>
     public static IServiceCollection AddNanoStorage<TProvider>(this IServiceCollection services)
         where TProvider : IStorageProvider

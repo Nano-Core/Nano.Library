@@ -10,7 +10,7 @@ namespace Nano.Logging.Serilog;
 /// <summary>
 /// A logging provider that configures Serilog as the application's logging framework.
 /// </summary>
-/// <remarks>Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging.Serilog</remarks>
+/// <remarks>Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging.Serilog/README.md#nanologgingserilog</remarks>
 public sealed class SerilogProvider : ILoggingProvider
 {
     /// <summary>

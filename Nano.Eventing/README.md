@@ -10,7 +10,7 @@
 ***
 
 ## Table of Contents
-* **[Home](https://github.com/Nano-Core/Nano.Library#nano-library)**
+* **[Home](https://github.com/Nano-Core/Nano.Library/blob/master/README.md#nanolibrary)**
 * **[Summary](#summary)**
 * **[Registration](#registration)**
 * **[Configuration](#configuration)**
@@ -83,7 +83,7 @@ The ```Eventing``` section in the configuration defines the eventing provider an
 }
 ```
 
-> 📖 Learn more about **[Application Configuration](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#configuration)** here.  
+> 📖 Learn more about **[Application Configuration](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App/README.md#configuration)** here.  
 
 ## Health Checks
 When health checks are enabled in the eventing configuration, Nano automatically registers a health check for the configured eventing provider.  
@@ -128,7 +128,7 @@ services
 ```
 
 The following eventing providers are currently supported in Nano:
-* [Nano.Eventing.RabbitMq](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Eventing.RabbitMq)
+* **[Nano.Eventing.RabbitMq](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Eventing.RabbitMq/README.md#nanoeventingrabbitmq)**
 
 Additional providers can be implemented by following the same pattern, allowing you to extend Nano’s eventing system to any messaging broker of your choice.
 
@@ -144,7 +144,7 @@ public class MyEvent
 }
 ```
 
-The event model may by any type derived from Nano types, as well as all `Geometry` types from `NetTopologySuite`. Keep it simple though. See [Serialization](#Serialization)
+The event model may by any type derived from Nano types, as well as all `Geometry` types from `NetTopologySuite`. Keep it simple though. See **[Serialization](#Serialization)**
 for details.    
 
 > ⚠️ Share the event model as a NuGet package to ensure a consistent contract between publishers and subscribers. Exchange and queue names are derived automatically 

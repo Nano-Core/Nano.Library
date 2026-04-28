@@ -13,7 +13,7 @@ namespace Nano.Data.MySql;
 /// </summary>
 /// <remarks>
 ///     Supports retry policies, batching, spatial data via NetTopologySuite, query splitting behavior, and optional health checks.
-///     Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.MySql
+///     Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.MySql/README.md#nanodatamysql.
 /// </remarks>
 public sealed class MySqlProvider : IDataProvider
 {

@@ -8,7 +8,7 @@
 *** 
 
 ## Table of Contents
-* **[Home](https://github.com/Nano-Core/Nano.Library#nano-library)**
+* **[Home](https://github.com/Nano-Core/Nano.Library/blob/master/README.md#nanolibrary)**
 * **[Summary](#summary)**
 * **[Registration](#registration)**
 * **[Configuration](#configuration)**
@@ -21,7 +21,7 @@ Storage provider implementation for local file shares.
 
 This provider is intended for mapping a Kubernetes persistent volume as a local file system. Registering it with Nano gives you access to the `IPathProvider` interface.
 
-> 📖 Learn more about **[Nano Storage](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage)**.
+> 📖 Learn more about **[Nano Storage](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage/README.md/nanostorage)**.
 
 Try it out yourself using the **[Api.Storage.Local](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Storage.Local)** or 
 **[Console.Storage.Local](https://github.com/Nano-Core/Nano.Lessons/tree/master/Console.Storage.Local)** example.  

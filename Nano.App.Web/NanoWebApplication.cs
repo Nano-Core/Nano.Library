@@ -17,7 +17,7 @@ namespace Nano.App.Web;
 /// <summary>
 /// Represents a Nano Web application.
 /// </summary>
-/// <remarks>Documentation: <see href="https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Web">Nano Web Application</see></remarks>
+/// <remarks>Documentation: <see href="https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Web/README.md#nanoappweb">Nano Web Application</see></remarks>
 public class NanoWebApplication : NanoApiApplication, IWebApplication
 {
     /// <summary>

@@ -10,7 +10,7 @@
 ***
 
 ## Table of Contents
-* **[Home](https://github.com/Nano-Core/Nano.Library#nano-library)**
+* **[Home](https://github.com/Nano-Core/Nano.Library/blob/master/README.md#nanolibrary)**
 * **[Summary](#summary)**
 * **[Registration](#registration)**
 * **[Configuration](#configuration)**
@@ -20,7 +20,7 @@
 ## Summary
 Extends the API application with built-in support for Razor Pages and Blazor through registered services and middleware.  
 
-> ⚠️ Before proceeding, it is highly recommended to familiarize yourself generally with **[Nano Applications](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App)**.  
+> ⚠️ Before proceeding, it is highly recommended to familiarize yourself generally with **[Nano Applications](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App/README.md#nanoapp)**.  
 
 ## Registration
 First install the [Nano.App.Web](https://www.nuget.org/packages/Nano.App.Web) NuGet package.  
@@ -48,7 +48,7 @@ Register your custom services in the `ConfigureServices(x => { })` method to ext
 The `App` section in the configuration controls application-level behavior, similar to the API application.  
 Currently, the web application does not add any additional configuration options beyond those available in the API application.  
 
-> 📖 Learn more about **[Nano API Configuration](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api#configuration)**.
+> 📖 Learn more about **[Nano API Configuration](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api/README.md#configuration)**.
 
 ## Razor
 Coming...

@@ -10,7 +10,7 @@
 ***
 
 ## Table of Contents
-* **[Home](https://github.com/Nano-Core/Nano.Library#nano-library)**
+* **[Home](https://github.com/Nano-Core/Nano.Library/blob/master/README.md#nanolibrary)**
 * **[Summary](#summary)**
 * **[Environment](#environment)**
 * **[Configuration](#configuration)**
@@ -32,11 +32,11 @@ are initialized consistently using you configuration, reducing boilerplate code 
 
 Three concrete types application are avaialble in Nano.  
 
-| Application   | Documentation                                                                           | Minimal Example                                                                                  |
-| ------------- | --------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| Nano API      | [Documentation](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api)     | [Example](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api._Blank)      |
-| Nano Console  | [Documentation](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Console) | [Example](https://github.com/Nano-Core/Nano.Lessons/tree/master/Console._Blank)  |
-| Nano Web      | [Documentation](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Web)     | [Example](https://github.com/Nano-Core/Nano.Lessons/tree/master/Web._Blank)      |
+| Application   | Documentation                                                                                                  | Minimal Example                                                                                  |
+| ------------- | -------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Nano API      | [Documentation](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api/README#nanoappapi)          | [Example](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api._Blank)      |
+| Nano Console  | [Documentation](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Console/README#nanoappconsole)  | [Example](https://github.com/Nano-Core/Nano.Lessons/tree/master/Console._Blank)  |
+| Nano Web      | [Documentation](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Web/README#nanoappweb)          | [Example](https://github.com/Nano-Core/Nano.Lessons/tree/master/Web._Blank)      |
 
 ## Environment
 By design, Nano is environment-neutral: it does not rely on environment-specific code or behavior.  
@@ -79,14 +79,14 @@ With the `NullLogger`, all log messages are discarded, so no logs are persisted.
 
 This is intended as a safety fallback.  
 
-> 📖 Learn more about [Nano Logging Providers](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging).  
+> 📖 Learn more about **[Nano Logging Providers](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging/README.md#nanologging)**.  
 
 ## Api Clients
 Nano provides a generic API client implementation that allows other Nano applications to seamlessly connect and communicate with your application over HTTP.  
 
 This feature is intended for API-based application types. Console applications do not implement API clients, since they do not expose HTTP endpoints, but they can still consume 
 API clients from other applications. To create an API client, derive from either `BaseApiClient` or `BaseApiClient<TIdentity>` and implement the required constructor. If your 
-application uses Nano [Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#identity), you should instead derive from `BaseIdentityApiClient<TUser>` or 
+application uses Nano **[Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data/README.md#identity)**, you should instead derive from `BaseIdentityApiClient<TUser>` or 
 `BaseIdentityApiClient<TUser, TIdentity>`, where `TUser` represents the `IEntityUser` model defined in your application and `TIdentity` represents the identity type.  
 
 The base classes provide a structured set of methods for invoking built-in Nano API endpoints. They expose controllers and actions through a generic, convention-based approach, 
@@ -157,8 +157,8 @@ The application has access to several groups of endpoints exposed as properties 
 have access to the Identity group. Each group contains endpoints organized by their respective domain and purpose. Endpoints that are not enabled in the API application via configuration 
 will return a 404 response if invoked. For example, if authentication is disabled and an endpoint from the Auth group is called, the request will result in a 404 response.  
 
-The Entity method group in the API client provides generic methods for working with your [entity data models](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#data-models) 
-through the [Entity Controllers](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api#controllers) in your application. It exposes methods for all standard Nano controller 
+The Entity method group in the API client provides generic methods for working with your **[entity data models](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data/README.md#data-models)** 
+through the **[Entity Controllers](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api/README.md#controllers)** in your application. It exposes methods for all standard Nano controller 
 actions, including get, query, add, edit, and delete. The `TEntity` generic parameter defines the entity type used when invoking a method and also determines the corresponding controller 
 route segment. For example, using `MyEntity` will target the `/MyEntitys/` route, following Nano’s controller naming conventions.  
 
@@ -305,13 +305,13 @@ public class MyCustomRequest : BaseRequest
 
 Next, add properties to the request and annotate them with request data attributes. The table below lists the available Nano attributes, along with their purpose and behavior.
 
-| Attribute   | Description                                                                                                                                                                                                                                                                                                                                                                             |
-| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `[Header]`  | Defines a header key/value pair that will be added to the request headers. It provides two optional properties: `Name`, which overrides the header key (otherwise the property name is used), and `ValuePrefix`, which prefixes the header value.                                                                                                                                                                                     |
-| `[Route]`   | Defines route parameters. Multiple properties can use `[Route]`. The optional parameter determines the order in which values are substituted into the route defined by the `[Action]` attribute on the request class.                                                                                                                                                                                                                 |
-| `[Query]`   | Defines query string parameters. These should be scalar types. The optional `Name` parameter overrides the query parameter name; otherwise, the property name is used.                                                                                                                                                                                                                                                                |
-| `[Body]`    | Defines the request body. It must be a serializable complex type. Typically, this is a dedicated contract class representing the request payload. Nano automatically serializes it when invoking the request. `NetTopologySuite` geometry types are supported, as well as Nano’s built-in `Query`, `Pagination`, and `Ordering` types.                                                                                                |
-| `[Form]`    | Defines a form field included in a multipart request. Properties must be scalar types or one of the thgese file types: `IFormFile`, `FileInfo`, `FileStream`, `Stream`, or `NamedStream` (including `IEnumerable` variants). ⚠️ Complex objects are also supported, but require the use of [`[FromFormBody]`](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api#request-multipart-json)  on the controller action.   |
+| Attribute   | Description                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `[Header]`  | Defines a header key/value pair that will be added to the request headers. It provides two optional properties: `Name`, which overrides the header key (otherwise the property name is used), and `ValuePrefix`, which prefixes the header value.                                                                                                                                                                                                   |
+| `[Route]`   | Defines route parameters. Multiple properties can use `[Route]`. The optional parameter determines the order in which values are substituted into the route defined by the `[Action]` attribute on the request class.                                                                                                                                                                                                                               |
+| `[Query]`   | Defines query string parameters. These should be scalar types. The optional `Name` parameter overrides the query parameter name; otherwise, the property name is used.                                                                                                                                                                                                                                                                              |
+| `[Body]`    | Defines the request body. It must be a serializable complex type. Typically, this is a dedicated contract class representing the request payload. Nano automatically serializes it when invoking the request. `NetTopologySuite` geometry types are supported, as well as Nano’s built-in `Query`, `Pagination`, and `Ordering` types.                                                                                                              |
+| `[Form]`    | Defines a form field included in a multipart request. Properties must be scalar types or one of the thgese file types: `IFormFile`, `FileInfo`, `FileStream`, `Stream`, or `NamedStream` (including `IEnumerable` variants). ⚠️ Complex objects are also supported, but require the use of **[`[FromFormBody]`](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api/README.md#request-multipart-json)**  on the controller action.   |
 
 The updated request example below demonstrates how each attribute can be used in practice.
 

@@ -10,14 +10,14 @@
 ***
 
 ## Table of Contents
-* **[Home](https://github.com/Nano-Core/Nano.Library#nano-library)**
+* **[Home](https://github.com/Nano-Core/Nano.Library/blob/master/README.md#nanolibrary)**
 * **[Summary](#summary)**
 
 ## Summary
 This NuGet provides the core configuration, interfaces, and base abstractions used across all storage providers.
 
 This package is not meant to be included directly.  
-It serves as a transitive dependency for concrete storage providers and is also included in [Nano Application](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App), 
+It serves as a transitive dependency for concrete storage providers and is also included in **[Nano Application](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App/README.md#nanoapp)**, 
 allowing Nano applications to rely on storage abstractions rather than specific implementations.
 
-> 📖 Learn more about [Nano Storage](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage)
+> 📖 Learn more about **[Nano Storage](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage/README.md#nanostorage)**.

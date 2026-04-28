@@ -8,13 +8,13 @@
 ***
 
 ## Table of Contents
-* [Home](https://github.com/Nano-Core/Nano.Library#nano-library)
+* [Home](https://github.com/Nano-Core/Nano.Library/blob/master/README.md#nanolibrary)
 * [Summary](#summary)
 
 ## Summary
 Includes all Nano packages bundled into a single package for convenience.  
 
-> 📖 Explore the full **[Nano Documentation](https://github.com/Nano-Core/Nano.Library#nano-library)**.
+> 📖 Explore the full **[Nano Documentation](https://github.com/Nano-Core/Nano.Library/blob/master/README.md#nanolibrary)**.
 
 > ⚠️ While this package provides everything out of the box, it’s generally recommended to reference individual Nano packages as needed in your application.  
 > Learn more about **[Nano NuGet Packages](https://github.com/Nano-Core/Nano.Library#nuget-packages)**.

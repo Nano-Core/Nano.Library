@@ -8,7 +8,7 @@
 *** 
 
 ## Table of Contents
-* **[Home](https://github.com/Nano-Core/Nano.Library#nano-library)**
+* **[Home](https://github.com/Nano-Core/Nano.Library/blob/master/README.md#nanolibrary)**
 * **[Summary](#summary)**
 * **[Registration](#registration)**
 * **[Configuration](#configuration)**
@@ -18,14 +18,14 @@
 ## Summary
 Eventing Provider implementation for RabbitMq.  
 
-> 📖 Learn more about **[Nano Eventing](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Eventing)**.  
+> 📖 Learn more about **[Nano Eventing](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Eventing/README.md#nanoeventing)**.  
 > 📖 Learn more about **[Nano Kubernetes RabbitMq](https://github.com/Nano-Core/Nano.Kubernetes/tree/master/Nano.Kubernetes.RabbitMq)**.  
 
 Try it out yourself using the **[Api.Eventing.RabbitMq](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Eventing.RabbitMq)** or 
 **[Console.Eventing.RabbitMq](https://github.com/Nano-Core/Nano.Lessons/tree/master/Console.Eventing.RabbitMq)** example.  
 
 ## Registration
-Install the **[Nano.Eventing.RabbitMq](https://www.nuget.org/packages/Nano.Eventing.RabbitMq)** NuGet package.  
+Install the **[Nano.Eventing.RabbitMq](https://www.nuget.org/packages/Nano.Eventing.RabbitMq/README.md#nanoeventingrabbitmq)** NuGet package.  
 
 ```powershell
 dotnet add package Nano.Eventing.RabbitMq;
@@ -108,7 +108,7 @@ spec:
               key: rabbitmq-password
 ```
 
-You also need to map the `rabbitmq` secret that is created alongside the [Nano Azure Kuberenetes Eventing](https://github.com/Nano-Core/Nano.Azure.Kubernetes/tree/master/Nano.Azure.Kubernetes.RabbitMQ) 
+You also need to map the `rabbitmq` secret that is created alongside the **[Nano Azure Kuberenetes Eventing](https://github.com/Nano-Core/Nano.Azure.Kubernetes/tree/master/Nano.Azure.Kubernetes.RabbitMQ)** 
 in the `deployment.yaml` or `cronjob.yaml` for eventing authentication.
 
 > ⚠️ The `rabbitmq` secret will be reused for all applications using RabbitMQ as eventing provider.  

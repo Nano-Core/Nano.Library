@@ -10,7 +10,7 @@
 ***
 
 ## Table of Contents
-* **[Home](https://github.com/Nano-Core/Nano.Library#nano-library)**
+* **[Home](https://github.com/Nano-Core/Nano.Library/blob/master/README.md#nanolibrary)**
 * **[Summary](#summary)**
 * **[Registration](#registration)**
 * **[Configuration](#configuration)**
@@ -68,7 +68,7 @@ The ```Logging``` section in the configuration defines the logging provider and 
 }
 ```
 
-> 📖 Learn more about **[Application Configuration](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#configuration)** here.  
+> 📖 Learn more about **[Application Configuration](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App/README.md#configuration)** here.  
 
 ## Logging Providers
 Nano provides several logging providers, so usually there is no need to implement a custom provider for your application.  
@@ -81,7 +81,7 @@ and then register your provider with the application using `.AddNanoLogging<TPro
 
 The following logging providers are currently supported in Nano.  
 
-* [Log4Net](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging.Log4Net)
-* [Microsoft](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging.Microsoft)
-* [NLog](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging.NLog)
-* [Serilog](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging.Serilog)
+* [Log4Net](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging.Log4Net/README.md#nanologginglog4net)
+* [Microsoft](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging.Microsoft/README.md#nanologgingmicrosoft)
+* [NLog](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging.NLog/README.md#nanologgingnlog)
+* [Serilog](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging.Serilog/README.md#nanologgingserilog)

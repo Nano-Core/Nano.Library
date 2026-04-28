@@ -8,7 +8,7 @@
 *** 
 
 ## Table of Contents
-* **[Home](https://github.com/Nano-Core/Nano.Library#nano-library)**
+* **[Home](https://github.com/Nano-Core/Nano.Library/blob/master/README.md#nanolibrary)**
 * **[Summary](#summary)**
 * **[Registration](#registration)**
 * **[Configuration](#configuration)**
@@ -18,7 +18,7 @@ Data Provider implementation for in-memory data access.
 
 The in-memory data provider doesn't use migrations and there is no need to implement the `BaseDbContextFactory`. 
 
-> 📖 Learn more about **[Nano Data](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data)**.
+> 📖 Learn more about **[Nano Data](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data/README.md#nanodata)**.
 
 Try it out yourself using the **[Api.Data.InMemory](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.InMemory)**, or 
 **[Console.Data.InMemory](https://github.com/Nano-Core/Nano.Lessons/tree/master/Console.Data.InMemory)** example.  

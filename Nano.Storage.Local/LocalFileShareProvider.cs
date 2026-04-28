@@ -23,7 +23,7 @@ namespace Nano.Storage.Local;
 ///         When health checks are enabled via <see cref="StorageOptions.HealthCheck"/>,
 ///         a lightweight file system health check is registered to verify that the configured storage path exists and is accessible.
 ///     </para>
-///     <para>Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage.Azure</para>
+///     <para>Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage.Local/README.md/nanostoragelocal</para>
 /// </remarks>
 public sealed class LocalFileShareProvider : IStorageProvider
 {

@@ -8,7 +8,7 @@
 ***
 
 ## Table of Contents
-* **[Home](https://github.com/Nano-Core/Nano.Library#nano-library)**
+* **[Home](https://github.com/Nano-Core/Nano.Library/blob/master/README.md#nanolibrary)**
 * **[Summary](#summary)**
 * **[Registration](#registration)**
 
@@ -20,7 +20,7 @@ The provider is preconfigured to write log output to the console using a concise
 ${date:format=dd-MM-yyyy HH\\:mm\\:ss.ffffff} [${level:uppercase=true:truncate=3}] ${message}${onexception:${newline}${exception:format=toString}}
 ```
 
-> 📖 Learn more about **[Nano Logging](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging)**.
+> 📖 Learn more about **[Nano Logging](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging/README.md#nanologging)**.
 
 Try it out yourself using the **[Api.Logging.NLog](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Logging.NLog)** or 
 **[Console.Logging.NLog](https://github.com/Nano-Core/Nano.Lessons/tree/master/Console.Logging.NLog)** example.  

@@ -10,11 +10,11 @@
 ***
 
 ## Table of Contents
-* **[Home](https://github.com/Nano-Core/Nano.Library#nano-library)**
+* **[Home](https://github.com/Nano-Core/Nano.Library/blob/master/README.md#nanolibrary)**
 * **[Summary](#summary)**
 
 ## Summary
 Shared building blocks and core implementations used across multiple parts of the Nano ecosystem. 
 These components provide consistent behavior, reduce duplication, and serve as the foundation for higher-level Nano features used throughout the solution.  
 
-> 📖 Explore the full **[Nano Documentation](https://github.com/Nano-Core/Nano.Library#nano-library)**.
+> 📖 Explore the full **[Nano Documentation](https://github.com/Nano-Core/Nano.Library/blob/master/README.md#nanolibrary)**.

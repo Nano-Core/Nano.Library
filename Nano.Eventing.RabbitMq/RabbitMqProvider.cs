@@ -18,7 +18,7 @@ namespace Nano.Eventing.RabbitMq;
 ///     </list>
 /// </para>
 /// </summary>
-/// <remarks>Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Eventing.RabbitMq</remarks>
+/// <remarks>Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Eventing.RabbitMq/README.md#nanoeventingrabbitmq</remarks>
 public sealed class RabbitMqProvider : IEventingProvider
 {
     /// <inheritdoc />

@@ -10,14 +10,14 @@
 ***
 
 ## Table of Contents
-* **[Home](https://github.com/Nano-Core/Nano.Library#nano-library)**
+* **[Home](https://github.com/Nano-Core/Nano.Library/blob/master/README.md#nanolibrary)**
 * **[Summary](#summary)**
 
 ## Summary
 This NuGet provides the core configuration, interfaces, and base abstractions used across all logging providers.
 
 This package is not meant to be included directly.  
-It serves as a transitive dependency for concrete logging providers and is also included in [Nano.Application](https://www.nuget.org/packages/Nano.App), 
+It serves as a transitive dependency for concrete logging providers and is also included in **[Nano Application](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App/README.md#nanoapp)**,
 allowing Nano applications to rely on logging abstractions rather than specific implementations.
 
-> 📖 Learn more about [Nano Logging](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging)
+> 📖 Learn more about **[Nano Logging](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging/README.md#nanologging)**.

@@ -10,7 +10,7 @@
 ***
 
 ## Table of Contents
-* **[Home](https://github.com/Nano-Core/Nano.Library#nano-library)**
+* **[Home](https://github.com/Nano-Core/Nano.Library/blob/master/README.md#nanolibrary)**
 * **[Summary](#summary)**
 * **[Registration](#registration)**
 * **[Configuration](#configuration)**
@@ -93,7 +93,7 @@ The ```Storage``` section in the configuration defines the storage provider and 
 }
 ```
 
-> 📖 Learn more about **[Application Configuration](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#configuration)** here.  
+> 📖 Learn more about **[Application Configuration](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App/README.md#configuration)** here.  
 
 ## Health Checks
 When health checks are enabled in the storage configuration, Nano automatically registers a health check for the configured storage provider.  
@@ -114,7 +114,7 @@ health check system and can be used by monitoring tools, load balancers, or cont
 ```
 
 > ⚠️ In order for storage healthcheck to take effect, healthchecks must be enabled for the application. 
-Read more about **[Nano Health Check](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api#health-checks)**.
+Read more about **[Nano Health Check](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api/README.md#health-checks)**.
 
 ## Storage Providers
 Nano provides several storage providers, so usually there is no need to implement a custom provider for your application.  
@@ -127,5 +127,5 @@ and then register your provider with the application using `.AddNanoStorage<TPro
 
 The following storage providers are currently supported in Nano.  
 
-* **[Nano.Storage.Azure](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage.Azure)**
-* **[Nano.Storage.Local](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage.Local)**
+* **[Nano.Storage.Azure](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage.Azure/README.md/nanostorageazure)**
+* **[Nano.Storage.Local](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage.Local/README.md/nanostoragelocal)**

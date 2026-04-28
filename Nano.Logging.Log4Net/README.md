@@ -8,7 +8,7 @@
 ***
 
 ## Table of Contents
-* **[Home](https://github.com/Nano-Core/Nano.Library#nano-library)**
+* **[Home](https://github.com/Nano-Core/Nano.Library/blob/master/README.md#nanolibrary)**
 * **[Summary](#summary)**
 * **[Registration](#registration)**
 
@@ -20,9 +20,9 @@ The provider is preconfigured to write log output to the console using a concise
 %utcdate{dd-MM-yyyy HH:mm:ss.ffffff} [%level{3}] %message%newline%exception
 ```
 
-> 📖 Learn more about **[Nano Logging](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging)**.
+> 📖 Learn more about **[Nano Logging](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging/README.md#nanologging)**.
 
-Try it out yourself using the **[Api.Logging.Log4Net](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Logging.Log4Net)** or 
+Try it out yourself using the **[Api.Logging.Log4Net](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Logging.Log4Net/README.md#nanologginglog4net)** or 
 **[Console.Logging.Log4Net](https://github.com/Nano-Core/Nano.Lessons/tree/master/Console.Logging.Log4Net)** example.  
 
 ## Registration
