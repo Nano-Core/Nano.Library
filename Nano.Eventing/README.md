@@ -10,7 +10,7 @@
 ***
 
 ## Table of Contents
-* **[Home](https://github.com/Nano-Core/Nano.Library/blob/master/README.md#nanolibrary)**
+* **[Home](https://github.com/Nano-Core/Nano.Library/tree/master/README.md#nanolibrary)**
 * **[Summary](#summary)**
 * **[Registration](#registration)**
 * **[Configuration](#configuration)**
