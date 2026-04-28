@@ -6,33 +6,14 @@
 
 ## Table of Contents
 * **[Home](https://github.com/Nano-Core/Nano.Library/tree/master/README.md#nanolibrary)**
-* **[1. Requirements](#requirements)**
-* **[2. Choosing Application Type](#choosing-application-type)**
-* **[3. Application Configuration](#application-configuration)**
-* **[4. Adding Logging Provider](#adding-logging-provider)**
-* **[5. Adding Data Provider](#adding-data-provider)**
-* **[6. Adding Eventing Provider](#adding-eventing-provider)**
-* **[7. Adding Storage Provider](#adding-storage-provider)**
-* **[8. Implementing Your Application Domain](#implementing-your-application-domain)**
-* **[9. Congratz, Launch](#congratz-launch)**
-
-## Requirements
-Before getting started, make sure you have the following tools installed and configured.  
-
-| Tool                     | Description                                                                  |
-| ------------------------ | ---------------------------------------------------------------------------- |
-| **Docker Desktop**       | Runs supporting services such as databases and message brokers locally.      |
-| **Visual Studio (.NET)** | Primary IDE with .NET workload for building and running the application.     |
-| .NET SDK                 | Required to build and run the application (CLI or non-Visual Studio usage).  |
-| Git                      | Used for cloning the repository and managing source code.                    |
-| Terminal / CLI           | Executes commands (PowerShell, bash, Windows Terminal, etc.).                |
-
-And a few optional, but recommended, tools.  
-
-| Tool                     | Description                                                                  |
-| ------------------------ | ---------------------------------------------------------------------------- |
-| Postman (or similar)     | Helps test and explore API endpoints during development.                     |
-| Docker Compose           | Defines and runs multi-container setups (included with Docker Desktop).      |
+* **[1. Choosing Application Type](#choosing-application-type)**
+* **[2. Application Configuration](#application-configuration)**
+* **[3. Adding Logging Provider](#adding-logging-provider)**
+* **[4. Adding Data Provider](#adding-data-provider)**
+* **[5. Adding Eventing Provider](#adding-eventing-provider)**
+* **[6. Adding Storage Provider](#adding-storage-provider)**
+* **[7. Implementing Your Application Domain](#implementing-your-application-domain)**
+* **[8. Congratz, Launch](#congratz-launch)**
 
 ## Choosing Application Type
 The first step is to choose the application type that best fits your use case. Nano currently supports three application types: **[Api](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api/README.md#nanoapi)**, 

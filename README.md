@@ -24,6 +24,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;📌 **[Summary](#-summary)**  
 &nbsp;&nbsp;&nbsp;&nbsp;✨ **[Highlighted Features](#-highlighted-features)**  
 &nbsp;&nbsp;&nbsp;&nbsp;🏛️ **[Nano Architectures](#%EF%B8%8F-nano-architectures)**  
+&nbsp;&nbsp;&nbsp;&nbsp;⚙️ **[Setup Requirements](#-setup-requirements)**  
 &nbsp;&nbsp;&nbsp;&nbsp;🧩 **[Solution Composition](#-solution-composition)**  
 &nbsp;&nbsp;&nbsp;&nbsp;📦 **[NuGet Packages](#-nuget-packages)**  
 &nbsp;&nbsp;&nbsp;&nbsp;🔏 **[Licenses](#-licenses)**  
@@ -133,6 +134,23 @@ Nano supports multiple distributed architecture styles, depending on the complex
 | Solo Application                                 | A single, independent application.                                               |
 | Microservice Orchestration (Top-down)            | API-driven orchestration where a central API coordinates downstream services.    |
 | Microservice Orchestration (Service-to-Service)  | Decentralized communication where services interact directly with each other.    |
+
+## Setup Requirements
+Before getting started, make sure you have the following tools installed and configured.  
+
+| Tool                     | Description                                                                  |
+| ------------------------ | ---------------------------------------------------------------------------- |
+| **Docker Desktop**       | Runs supporting services such as databases and message brokers locally.      |
+| **Visual Studio (.NET)** | Primary IDE with .NET workload for building and running the application.     |
+| Git                      | Used for cloning the repository and managing source code.                    |
+| Terminal / CLI           | Executes commands (PowerShell, bash, Windows Terminal, etc.).                |
+
+And a few optional, but recommended, tools.  
+
+| Tool                     | Description                                                                  |
+| ------------------------ | ---------------------------------------------------------------------------- |
+| Postman (or similar)     | Helps test and explore API endpoints during development.                     |
+| Docker Compose           | Defines and runs multi-container setups (included with Docker Desktop).      |
 
 ## 🧩 Solution Composition
 All Nano applications follow a consistent and predictable solution structure.  
