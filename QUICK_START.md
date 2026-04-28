@@ -5,7 +5,7 @@
 ***
 
 ## Table of Contents
-* **[Home](https://github.com/Nano-Core/Nano.Library#nano-library)**
+* **[Home](https://github.com/Nano-Core/Nano.Library/README.md#nano-library)**
 * **[1. Requirements](#requirements)**
 * **[2. Choosing Application Type](#choosing-application-type)**
 * **[3. Application Configuration](#application-configuration)**
