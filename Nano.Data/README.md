@@ -472,13 +472,27 @@ Explore spatial and other advanced mappings using the **[Api.Data.MySql.Mappings
 ## Migrations
 Migrations in Nano work the same way as standard Entity Framework migrations.  
 
+First, ensure that the EF Core tools are installed. If they aren’t, install them. If they are already installed, verify that the version matches the EF version used in Nano by 
+running the following command.
+
+```powershell
+dotnet ef --version
+```
+
+```powershell
+dotnet tool install --global dotnet-ef
+```
+
+```powershell
+dotnet tool update --global dotnet-ef --version {{version}}
+```
 Before creating migrations, ensure you have implemented a `BaseDbContextFactory<MySqlProvider, MySqlDbContext>`. Then, in PowerShell, add a new migration.  
 
 ```powershell
 dotnet ef migrations add Initial --project {project}
 ```
 
-Migrations are not applied automatically unless the `StartupAction` option is set to `Migrate` in the configuration.
+Migrations are not applied automatically unless the `StartupAction` option is set to `Migrate` in the configuration.  
 
 > ⚠️ It is recommended to enable migrations only in `Development` environments.
 
