@@ -119,10 +119,10 @@ Last, the `build-and-deploy.yaml` needs a few additional environmental variables
 
 ```yaml
 env: 
+  STORAGE_SIZE: 1000
   STORAGE_SHARE_NAME: {share-name}
   STORAGE_CREDENTIALS_ID: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_STORAGE_CREDENTIALS_ID || secrets.STAGING_STORAGE_CREDENTIALS_ID }}
   STORAGE_CREDENTIALS_SECRET: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_STORAGE_CREDENTIALS_SECRET || secrets.STAGING_STORAGE_CREDENTIALS_SECRET }}
-  STORAGE_SIZE: 1000
 ```
 
 Also, the Azure fileshare needs to be created during deployment if it does not already exist. Add the following step to the `build-and-deploy.yaml`.  
@@ -131,10 +131,19 @@ Also, the Azure fileshare needs to be created during deployment if it does not a
 - name: Create Fileshare
   shell: pwsh
   run: |
-    $env:EXISTING_FILE_SHARE = sudo az storage share list --account-name $env:STORAGE_CREDENTIALS_ID --account-key $env:STORAGE_CREDENTIALS_SECRET --query "[?contains(name, '$env:STORAGE_SHARE_NAME')].[name]" -o tsv;
-    if ([string]::IsNullOrEmpty($env:EXISTING_FILE_SHARE))
+    $env:STORAGE_FILE_SHARE = sudo az storage share list `
+        --account-name $env:STORAGE_CREDENTIALS_ID `
+        --account-key $env:STORAGE_CREDENTIALS_SECRET `
+        --query "[?contains(name, '$env:STORAGE_SHARE_NAME')].[name]" -o tsv;
+
+    if ([string]::IsNullOrEmpty($env:STORAGE_FILE_SHARE))
     { 
-        sudo az storage share create -n $env:STORAGE_SHARE_NAME --account-name $env:STORAGE_CREDENTIALS_ID --account-key $env:STORAGE_CREDENTIALS_SECRET --quota $env:STORAGE_SIZE;
+        sudo az storage share create `
+            -n $env:STORAGE_SHARE_NAME `
+            --account-name $env:STORAGE_CREDENTIALS_ID `
+            --account-key $env:STORAGE_CREDENTIALS_SECRET `
+            --quota $env:STORAGE_SIZE;
+             
         if ($LastExitCode -ne 0) 
         { 
             throw "error";

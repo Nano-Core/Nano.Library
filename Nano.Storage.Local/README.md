@@ -96,6 +96,6 @@ Last, The `build-and-deploy.yaml` needs additional environmental variables relat
 
 ```yaml
 env:
-  STORAGE_SHARE_NAME: {share-name}
   STORAGE_SIZE: {size}
+  STORAGE_SHARE_NAME: {share-name}
 ```

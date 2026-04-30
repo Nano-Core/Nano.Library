@@ -126,14 +126,15 @@ Add the following environment variables to the `buid-and-deply.yml`.
 
 ```yaml
 env:
-  DATA_HOST: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_SQLSERVER_HOST || secrets.STAGING_SQLSERVER_HOST }}
-  DATA_NAME: nanoDb
-  DATA_USER: api-data-sqlserver-user
-  DATA_PASSWORD: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_SQLSERVER_NANO_DB_PASSWORD || secrets.STAGING_SQLSERVER_NANO_DB_PASSWORD }}
-  DATA_ADMIN_USER: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_SQLSERVER_ADMIN_USER || secrets.STAGING_SQLSERVER_ADMIN_USER }}
-  DATA_ADMIN_PASSWORD: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_SQLSERVER_ADMIN_PASSWORD || secrets.STAGING_SQLSERVER_ADMIN_PASSWORD }}
-  DATA_CONNECTIONSTRING: Server=${{ env.DATA_HOST }},${{ vars.DATA_SQLSERVER_PORT }};Database=${{ env.DATA_NAME }};User Id=${{ env.DATA_USER }};Password=${{ env.DATA_PASSWORD }};
-  DATA_MIGRATION_CONNECTIONSTRING: Server=${{ env.DATA_HOST }},${{ vars.DATA_SQLSERVER_PORT }};Database=${{ env.DATA_NAME }};User Id=${{ env.DATA_ADMIN_USER }};Password=${{ env.DATA_ADMIN_PASSWORD }};
+  DATA_HOST: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_DATA_HOST || secrets.STAGING_DATA_HOST }}
+  DATA_NAME: {database-name}
+  DATA_USER: {database-user}
+  DATA_PORT: ${{ vars.DATA_PORT }}
+  DATA_PASSWORD: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_DATA_NANO_DB_PASSWORD || secrets.STAGING_DATA_NANO_DB_PASSWORD }}
+  DATA_ADMIN_USER: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_DATA_ADMIN_USER || secrets.STAGING_DATA_ADMIN_USER }}
+  DATA_ADMIN_PASSWORD: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_DATA_ADMIN_PASSWORD || secrets.STAGING_DATA_ADMIN_PASSWORD }}
+  DATA_CONNECTIONSTRING: Server=${{ env.DATA_HOST }},${{ vars.DATA_PORT }};Database=${{ env.DATA_NAME }};User Id=${{ env.DATA_USER }};Password=${{ env.DATA_PASSWORD }};
+  DATA_MIGRATION_CONNECTIONSTRING: Server=${{ env.DATA_HOST }},${{ vars.DATA_PORT }};Database=${{ env.DATA_NAME }};User Id=${{ env.DATA_ADMIN_USER }};Password=${{ env.DATA_ADMIN_PASSWORD }};
 ```
 
 Additionally, this step has been added to ensure database migrations are applied, and the application database user has been created before the application is deployed.  
@@ -156,7 +157,7 @@ Additionally, this step has been added to ensure database migrations are applied
     sudo apt-get install -y mssql-tools unixodbc-dev
 
     $loginExists = sqlcmd `
-        -S "$env:DATA_HOST,$env:DATA_SQLSERVER_PORT" `
+        -S "$env:DATA_HOST,$env:DATA_PORT" `
         -U $env:DATA_ADMIN_USER `
         -P $env:DATA_ADMIN_PASSWORD `
         -d master `
@@ -166,7 +167,7 @@ Additionally, this step has been added to ensure database migrations are applied
     if ($loginExists -eq 0)
     {
         sqlcmd `
-            -S "$env:DATA_HOST,$env:DATA_SQLSERVER_PORT" `
+            -S "$env:DATA_HOST,$env:DATA_PORT" `
             -U $env:DATA_ADMIN_USER `
             -P $env:DATA_ADMIN_PASSWORD `
             -d master `
@@ -174,7 +175,7 @@ Additionally, this step has been added to ensure database migrations are applied
     }
 
     $userExists = sqlcmd `
-        -S "$env:DATA_HOST,$env:DATA_SQLSERVER_PORT" `
+        -S "$env:DATA_HOST,$env:DATA_PORT" `
         -U $env:DATA_ADMIN_USER `
         -P $env:DATA_ADMIN_PASSWORD `
         -d $env:DATA_NAME `
@@ -184,7 +185,7 @@ Additionally, this step has been added to ensure database migrations are applied
    if ($userExists -eq 0)
    {
        sqlcmd `
-           -S "$env:DATA_HOST,$env:DATA_SQLSERVER_PORT" `
+           -S "$env:DATA_HOST,$env:DATA_PORT" `
            -U $env:DATA_ADMIN_USER `
            -P $env:DATA_ADMIN_PASSWORD `
            -d $env:DATA_NAME `

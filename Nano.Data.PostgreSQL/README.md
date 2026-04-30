@@ -126,14 +126,14 @@ Add the following environment variables to the `buid-and-deply.yml`.
 
 ```yaml
 env:
-  DATA_HOST: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_POSTGRE_HOST || secrets.STAGING_POSTGRE_HOST }}
-  DATA_NAME: nanoDb
-  DATA_USER: api-data-postgre-user
-  DATA_PASSWORD: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_POSTGRE_NANO_DB_PASSWORD || secrets.STAGING_POSTGRE_NANO_DB_PASSWORD }}
-  DATA_ADMIN_USER: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_POSTGRE_ADMIN_USER || secrets.STAGING_POSTGRE_ADMIN_USER }}
-  DATA_ADMIN_PASSWORD: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_POSTGRE_ADMIN_PASSWORD || secrets.STAGING_POSTGRE_ADMIN_PASSWORD }}
-  DATA_CONNECTIONSTRING: Host=${{ env.DATA_HOST }};Port=${{ vars.DATA_POSTGRE_PORT }};Database=${{ env.DATA_NAME }};Username=${{ env.DATA_USER }};Password=${{ env.DATA_PASSWORD }};SSL Mode=Prefer;Trust Server Certificate=true
-  DATA_MIGRATION_CONNECTIONSTRING: Host=${{ env.DATA_HOST }};Port=${{ vars.DATA_POSTGRE_PORT }};Database=${{ env.DATA_NAME }};Username=${{ env.DATA_ADMIN_USER }};Password=${{ env.DATA_ADMIN_PASSWORD }};SSL Mode=Prefer;Trust Server Certificate=true
+  DATA_HOST: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_DATA_HOST || secrets.STAGING_DATA_HOST }}
+  DATA_NAME: {database-name}
+  DATA_USER: {database-user}
+  DATA_PASSWORD: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_DATA_NANO_DB_PASSWORD || secrets.STAGING_DATA_NANO_DB_PASSWORD }}
+  DATA_ADMIN_USER: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_DATA_ADMIN_USER || secrets.STAGING_DATA_ADMIN_USER }}
+  DATA_ADMIN_PASSWORD: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_DATA_ADMIN_PASSWORD || secrets.STAGING_DATA_ADMIN_PASSWORD }}
+  DATA_CONNECTIONSTRING: Host=${{ env.DATA_HOST }};Port=${{ vars.DATA_PORT }};Database=${{ env.DATA_NAME }};Username=${{ env.DATA_USER }};Password=${{ env.DATA_PASSWORD }};SSL Mode=Prefer;Trust Server Certificate=true
+  DATA_MIGRATION_CONNECTIONSTRING: Host=${{ env.DATA_HOST }};Port=${{ vars.DATA_PORT }};Database=${{ env.DATA_NAME }};Username=${{ env.DATA_ADMIN_USER }};Password=${{ env.DATA_ADMIN_PASSWORD }};SSL Mode=Prefer;Trust Server Certificate=true
 ```
 
 Additionally, this step has been added to ensure database migrations are applied, and the application database user has been created before the application is deployed.  
@@ -155,31 +155,31 @@ Additionally, this step has been added to ensure database migrations are applied
     sudo apt-get update
     sudo apt-get install -y postgresql-client
 
-    $userExists = psql "host=$env:DATA_HOST port=$env:DATA_POSTGRE_PORT user=$env:DATA_ADMIN_USER password=$env:DATA_ADMIN_PASSWORD dbname=postgres" `
+    $userExists = psql "$env:DATA_CONNECTION_STRING" `
         -tAc "SELECT 1 FROM pg_roles WHERE rolname='$env:DATA_USER';"
 
     if ($userExists -ne "1")
     {
-    psql "host=$env:DATA_HOST port=$env:DATA_POSTGRE_PORT user=$env:DATA_ADMIN_USER password=$env:DATA_ADMIN_PASSWORD dbname=postgres" `
-        -c "CREATE ROLE $env:DATA_USER WITH LOGIN PASSWORD '$env:DATA_PASSWORD';"
+        psql "$env:DATA_CONNECTION_STRING" `
+            -c "CREATE ROLE $env:DATA_USER WITH LOGIN PASSWORD '$env:DATA_PASSWORD';"
     }
 
-    $userDbExists = psql "host=$env:DATA_HOST port=$env:DATA_POSTGRE_PORT user=$env:DATA_ADMIN_USER password=$env:DATA_ADMIN_PASSWORD dbname=$env:DATA_NAME" `
+    $userDbExists = psql "$env:DATA_CONNECTION_STRING" `
         -tAc "SELECT 1 FROM pg_roles WHERE rolname='$env:DATA_USER';"
 
     if ($userDbExists -ne "1")
     {
-        psql "host=$env:DATA_HOST port=$env:DATA_POSTGRE_PORT user=$env:DATA_ADMIN_USER password=$env:DATA_ADMIN_PASSWORD dbname=$env:DATA_NAME" `
+        psql "$env:DATA_CONNECTION_STRING" `
             -c "GRANT CONNECT ON DATABASE $env:DATA_NAME TO $env:DATA_USER;"
 
-        psql "host=$env:DATA_HOST port=$env:DATA_POSTGRE_PORT user=$env:DATA_ADMIN_USER password=$env:DATA_ADMIN_PASSWORD dbname=$env:DATA_NAME" `
+        psql "$env:DATA_CONNECTION_STRING" `
             -c "GRANT USAGE ON SCHEMA public TO $env:DATA_USER;"
 
-        psql "host=$env:DATA_HOST port=$env:DATA_POSTGRE_PORT user=$env:DATA_ADMIN_USER password=$env:DATA_ADMIN_PASSWORD dbname=$env:DATA_NAME" `
+        psql "$env:DATA_CONNECTION_STRING" `
             -c "GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO $env:DATA_USER;"
 
-       psql "host=$env:DATA_HOST port=$env:DATA_POSTGRE_PORT user=$env:DATA_ADMIN_USER password=$env:DATA_ADMIN_PASSWORD dbname=$env:DATA_NAME" `
-           -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO $env:DATA_USER;"
+        psql "$env:DATA_CONNECTION_STRING" `
+            -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO $env:DATA_USER;"
     }
 ```
 

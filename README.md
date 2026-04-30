@@ -257,3 +257,116 @@ Dependencies are distributed under a combination of the following licenses.
 | [BSD-2 Clause](https://licenses.nuget.org/BSD-2-Clause) | Simple permissive license with attribution.                                     |
 | [BSD-3 Clause](https://licenses.nuget.org/BSD-3-Clause) | Permissive with non-endorsement clause.                                         |
 | [PostgreSQL](https://licenses.nuget.org/PostgreSQL)     | Permissive, similar to MIT/BSD. _Only when using PostgreSQL as data provider_.  |
+
+
+
+
+
+
+
+
+
+## Variables And Secrets
+
+Nano requires a GitHub organization variable named `VERSION` that defines the major and minor version. The full version is then automatically composed during each workflow run 
+by appending the run metadata (`run_number` and `run_attempt`) to this base version.
+
+```yaml
+env:
+  VERSION: "${{ vars.VERSION }}.${{ github.run_number }}.${{ github.run_attempt }}"
+```
+
+This produces versions in the following format: `1.0.123.1`, where: `1.0` is manually maintained major/minor version, `123` is the GitHub run number (auto-incremented), and 
+`1` is the run attempt (increments on deployment retries).
+
+
+
+
+
+
+  APP_NAME: Api.Data.Repository.AutoSave
+  IMAGE_NAME: api.data.repository.autosave
+  SERVICE_NAME: api-data-repository-autosave
+  VERSION: '${{ vars.VERSION }}.${{ github.run_number }}.${{ github.run_attempt }}'
+  DOTNET_SDK_VERSION: 10.0
+  DOTNET_ASPNET_VERSION: 10.0
+  
+  API / Web
+  ASPNETCORE_ENVIRONMENT: ${{ github.ref == 'refs/heads/master' && 'Production' || 'Staging' }}
+
+  Console
+  DOTNET_ENVIRONMENT: ${{ github.ref == 'refs/heads/master' && 'Production' || 'Staging' }}
+  KUBERNETES_CRONJOB_SCHEDULE: "0 * * * *"
+
+
+  Storage
+  STORAGE_SIZE: 1000
+  STORAGE_SHARE_NAME: nano-storage-local
+
+  Storage Azure
+  STORAGE_CREDENTIALS_ID: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_STORAGE_CREDENTIALS_ID  || secrets.STAGING_STORAGE_CREDENTIALS_ID }}
+  STORAGE_CREDENTIALS_SECRET: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_STORAGE_CREDENTIALS_SECRET  || secrets.STAGING_STORAGE_CREDENTIALS_SECRET }}
+
+  Https
+  CERTIFICATE_ISSUER: letsencrypt-prod
+  CERTIFICATE_ORGANIZATION: ${{ vars.CERTIFICATE_ORGANIZATION }}
+  CERTIFICATE_HOST: ${{ github.ref == 'refs/heads/master' && vars.HOST_API_SUBDOMAIN + '.' + vars.PRODUCTION_HOST || vars.HOST_API_SUBDOMAIN + '.' + vars.STAGING_HOST }}
+
+  Authentication	
+  AUTH_JWT_PUBLIC_KEY: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_AUTH_JWT_PUBLIC_KEY || secrets.STAGING_AUTH_JWT_PUBLIC_KEY }}
+  AUTH_JWT_PRIVATE_KEY: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_AUTH_JWT_PRIVATE_KEY || secrets.STAGING_AUTH_JWT_PRIVATE_KEY }}
+  AUTH_API_KEY_SECRET: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_AUTH_API_KEY_SECRET || secrets.STAGING_AUTH_API_KEY_SECRET }}
+
+  Data
+  DATA_HOST: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_DATA_HOST || secrets.STAGING_DATA_HOST }}
+  DATA_NAME: {database-name}
+  DATA_USER: {database-user}
+  DATA_PASSWORD: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_DATA_NANO_DB_PASSWORD || secrets.STAGING_DATA_NANO_DB_PASSWORD }}
+  DATA_ADMIN_USER: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_DATA_ADMIN_USER || secrets.STAGING_DATA_ADMIN_USER }}
+  DATA_ADMIN_PASSWORD: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_DATA_ADMIN_PASSWORD || secrets.STAGING_DATA_ADMIN_PASSWORD }}
+  DATA_CONNECTIONSTRING: Server=${{ env.DATA_HOST }},${{ vars.DATA_PORT }};Database=${{ env.DATA_NAME }};User Id=${{ env.DATA_USER }};Password=${{ env.DATA_PASSWORD }};
+  DATA_MIGRATION_CONNECTIONSTRING: Server=${{ env.DATA_HOST }},${{ vars.DATA_PORT }};Database=${{ env.DATA_NAME }};User Id=${{ env.DATA_ADMIN_USER }};Password=${{ env.DATA_ADMIN_PASSWORD }};
+
+  Sql Server
+  DATA_PORT: ${{ vars.DATA_PORT }}
+
+
+
+  KUBERNETES_CLUSTER: ${{ github.ref == 'refs/heads/master' && vars.PRODUCTION_KUBERNETES_CLUSTER || vars.STAGING_KUBERNETES_CLUSTER }}
+  KUBERNETES_NODEPOOL_COMPUTE: cpu
+  KUBERNETES_NAMESPACE: default
+  KUBERNETES_REPLICA_COUNT: ${{ github.ref == 'refs/heads/master' && 3 || 2 }}
+  KUBERNETES_REPLICA_COUNT_MAX: ${{ github.ref == 'refs/heads/master' && 8 || 5 }}
+  KUBERNETES_REPLICA_HISTORY_COUNT: 0
+  KUBERNETES_MEMORY_REQUEST: 512Mi   
+  KUBERNETES_MEMORY_LIMIT: 1536Mi
+  KUBERNETES_MEMORY_SCALING: 180
+  KUBERNETES_CPU_REQUEST: 200m
+  KUBERNETES_CPU_LIMIT: 600m
+  KUBERNETES_CPU_SCALING: 180
+
+
+
+
+  Nano.GitHub
+  
+  NUGET_HOST: ${{ secrets.NUGET_HOST }}
+  NUGET_USERNAME: ${{ secrets.NUGET_USERNAME }}
+  NUGET_PASSWORD: ${{ secrets.NUGET_APIKEY }}
+  NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
+  CONTAINER_REGISTRY_HOST: ${{ vars.CONTAINER_REGISTRY_HOST }}
+  CONTAINER_REGISTRY_USERNAME: ${{ secrets.CONTAINER_REGISTRY_USERNAME }}
+  CONTAINER_REGISTRY_PASSWORD: ${{ secrets.CONTAINER_REGISTRY_PASSWORD }}
+  CONTAINER_REGISTRY_SOURCE_LABEL: https://github.com/${{ github.repository }}
+
+
+
+
+  Nano.Azure
+
+  AZURE_GROUP: ${{ vars.AZURE_KUBERNETES_RESOURCE_GROUP }}
+  AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+  AZURE_SUBSCRIPTION_ID: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_AZURE_SUBSCRIPTION_ID || secrets.STAGING_AZURE_SUBSCRIPTION_ID }}
+
