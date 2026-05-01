@@ -25,7 +25,6 @@
 &nbsp;&nbsp;&nbsp;&nbsp;✨ **[Highlighted Features](#-highlighted-features)**  
 &nbsp;&nbsp;&nbsp;&nbsp;🏛️ **[Nano Architectures](#%EF%B8%8F-nano-architectures)**  
 &nbsp;&nbsp;&nbsp;&nbsp;⚙️ **[Required Tools](#-required-tools)**  
-&nbsp;&nbsp;&nbsp;&nbsp;🛡️ **[Variables And Secrets](#-variables-and-secrets)**  
 &nbsp;&nbsp;&nbsp;&nbsp;🧩 **[Solution Composition](#-solution-composition)**  
 &nbsp;&nbsp;&nbsp;&nbsp;📦 **[NuGet Packages](#-nuget-packages)**  
 &nbsp;&nbsp;&nbsp;&nbsp;🔏 **[Licenses](#-licenses)**  
@@ -151,41 +150,6 @@ And optional, but recommended, tools.
 | Tool                     | Description                                                                  |
 | ------------------------ | ---------------------------------------------------------------------------- |
 | Postman (or similar)     | Helps test and explore API endpoints during development.                     |
-
-## 🛡️ Variables And Secrets
-Nano requires several organization-level variables and secrets. In addition to those already configured when deploying infrastructure and tools, the following must also be created. 
-Some are only required when specific features are enabled. Whenever a feature depends on additional variables or secrets, this will be clearly stated in the corresponding 
-documentation section.
-
-These variables are required by all Nano applications and must be configured for the system to function correctly.  
-
-| Variable                              | Type     | Usage                                            |
-| ------------------------------------- | -------- | ------------------------------------------------ |
-| VERSION                               | vars     | Defines the major and minor version. E.g `1.0`.  |
-
-> 💡 The full version is then automatically composed by appending the run metadata (`run_number` and `run_attempt`) to this base version as revision and build.
-
-Secrets used for JWT signing and API key authentication.  
-
-| Variable                              | Type     | Description                            |
-| ------------------------------------- | -------- | -------------------------------------- |
-| {{environment}}_AUTH_JWT_PUBLIC_KEY   | secrets  | The public JWT key.                    |
-| {{environment}}_AUTH_JWT_PRIVATE_KEY  | secrets  | The private JWT key.                   |
-| {{environment}}_AUTH_API_KEY_SECRET   | secrets  | Secret used for encrypting API keys.   |
-
-Variables used when exposing an application publically with a certificate.  
-
-| Variable                              | Type     | Description                                                                                                                                                                                                   |
-| ------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| {{environment}}_HOST                  | vars     | The primary host of the system (e.g. https://mydomain.com).                                                                                                                                                   |
-| HOST_{{name}}_SUBDOMAIN   | vars     | Subdomain used by the application. It is required when exposing a web-based application through Kubernetes Ingress with TLS certificates. A separate value must be configured for each exposed application.   |
-| CERTIFICATE_ORGANIZATION              | vars     | Organization name used in issued TLS certificates.                                                                                                                                                            |
-
-Secrets used when an application has a registered data provider and requires a dedicated database user with limited privileges.  
-
-| Variable                              | Type     | Description                                           |
-| ------------------------------------- | -------- | ----------------------------------------------------- |
-| DATA_{{database-name}}_PASSWORD       | secrets  | This database password for the application sql user.  |
 
 ## 🧩 Solution Composition
 All Nano applications follow a consistent and predictable solution structure.  

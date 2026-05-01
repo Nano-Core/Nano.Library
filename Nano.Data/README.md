@@ -13,6 +13,7 @@
 * **[Home](https://github.com/Nano-Core/Nano.Library/tree/master/README.md#nanolibrary#nanolibrary)**
 * **[Summary](#summary)**
 * **[Registration](#registration)**
+* **[Variables And Secrets](#variables-and-secrets)**
 * **[Configuration](#configuration)**
   * **[Connection Pool](#connection-pool)**
   * **[Identity](#identity)**
@@ -82,6 +83,13 @@ If you want to use a custom identity type, it must be specified during registrat
 
 > ⚠️ When using a non-default identity type, `TIdentity` must also be specified on **[Data Models](#data-models)**, **[Data Mappings](#data-mappings)**, and other related 
 Nano abstractions.  
+
+## Variables And Secrets
+Nano data providers require a set of secrets.  
+
+| Variable                              | Type     | Description                                           |
+| ------------------------------------- | -------- | ----------------------------------------------------- |
+| DATA_{{database-name}}_PASSWORD       | secrets  | This database password for the application sql user.  |
 
 ## Configuration
 The `Data` section in the configuration defines the data provider and related settings used by the application.

@@ -11,6 +11,7 @@
 * **[Home](https://github.com/Nano-Core/Nano.Library/tree/master/README.md#nanolibrary)**
 * **[Summary](#summary)**
 * **[Registration](#registration)**
+* **[Variables And Secrets](#variables-and-secrets)**
 * **[Configuration](#configuration)**
   * **[Localization](#localization)**
   * **[Exception Handling](#exception-handling)**
@@ -53,6 +54,17 @@ NanoConsoleApplication
 ```
 
 Register your custom services in the `ConfigureServices(x => { })` method to extend Nano with additional functionality or integrations.  
+
+## Variables And Secrets
+Nano console applications require a set of organization-level variables and secrets.  
+
+These variables are required and must be configured for the system to function correctly.  
+
+| Variable                              | Type     | Usage                                            |
+| ------------------------------------- | -------- | ------------------------------------------------ |
+| VERSION                               | vars     | Defines the major and minor version. E.g `1.0`.  |
+
+> 💡 The full version is automatically composed by appending GitHub `run_number` and `run_attempt` as revision and build.
 
 ## Configuration
 The `App` section in the configuration defines behavior related to the application.  

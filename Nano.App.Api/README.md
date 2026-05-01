@@ -11,6 +11,7 @@
 * **[Home](https://github.com/Nano-Core/Nano.Library/tree/master/README.md#nanolibrary)**
 * **[Summary](#summary)**
 * **[Registration](#registration)**
+* **[Variables And Secrets](#variables-and-secrets)**
 * **[Configuration](#configuration)**
   * **[Hosting](#hosting)**
     * **[Http](#http)**
@@ -93,6 +94,36 @@ NanoApiApplication
 ```
 
 Register your custom services in the `ConfigureServices(x => { })` method to extend Nano with additional functionality or integrations.  
+
+## Variables And Secrets
+Nano API applications require a set of organization-level variables and secrets. In addition, certain features may require extra configuration when enabled. Any feature-specific 
+requirements will be clearly documented in the relevant sections.  
+
+The tables below provide a consolidated overview of all variables and secrets used by Nano API applications.  
+
+These variables are required and must be configured for the system to function correctly.  
+
+| Variable                              | Type     | Usage                                            |
+| ------------------------------------- | -------- | ------------------------------------------------ |
+| VERSION                               | vars     | Defines the major and minor version. E.g `1.0`.  |
+
+> 💡 The full version is automatically composed by appending GitHub `run_number` and `run_attempt` as revision and build.
+
+Secrets used for JWT signing and API key authentication.  
+
+| Variable                              | Type     | Description                            |
+| ------------------------------------- | -------- | -------------------------------------- |
+| {{environment}}_AUTH_JWT_PUBLIC_KEY   | secrets  | The public JWT key.                    |
+| {{environment}}_AUTH_JWT_PRIVATE_KEY  | secrets  | The private JWT key.                   |
+| {{environment}}_AUTH_API_KEY_SECRET   | secrets  | Secret used for encrypting API keys.   |
+
+Variables used when exposing an application publically with HTTPS and SSL certificate.  
+
+| Variable                   | Type     | Description                                                                                                   |
+| -------------------------- | -------- | ------------------------------------------------------------------------------------------------------------- |
+| {{environment}}_HOST       | vars     | The primary host of the system (e.g. https://mydomain.com).                                                   |
+| HOST_{{name}}_SUBDOMAIN    | vars     | Subdomain for the application, used with Kubernetes Ingress and TLS. Configure one per exposed application.   |
+| CERTIFICATE_ORGANIZATION   | vars     | Organization name used in issued TLS certificates.                                                            |
 
 ## Configuration
 The `App` section in the configuration defines behavior related to the application.  
