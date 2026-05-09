@@ -1,5 +1,4 @@
-﻿using Nano.Common.Config;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Storage.Abstractions.Config;
 
@@ -24,12 +23,7 @@ public class StorageOptions
     public virtual string ShareName { get; set; } = null!;
 
     /// <summary>
-    /// Get or sets the credentials or account information used to connect to the storage provider.
-    /// </summary>
-    public virtual CredentialOptions? Credentials { get; set; }
-
-    /// <summary>
     /// Options for configuring health-checks.
     /// </summary>
-    public virtual HealthCheckOptions? HealthCheck { get; set; }
+    public virtual StorageHealthCheckOptions? HealthCheck { get; set; }
 }

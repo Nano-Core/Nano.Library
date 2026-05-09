@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Threading;
-using System.Threading.Tasks;
-using Azure.Storage.Files.Shares;
+﻿using Azure.Storage.Files.Shares;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
 using Nano.Storage.Abstractions.Config;
+using System;
+using System.Collections.Concurrent;
+using System.Net.Sockets;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Nano.Storage.Azure.HealthChecks;
 
@@ -19,20 +20,17 @@ namespace Nano.Storage.Azure.HealthChecks;
 public sealed class AzureFileshareStorageHealthCheck : IHealthCheck
 {
     private readonly IOptionsMonitor<StorageOptions> options;
-    private readonly ShareClientOptions? clientOptions;
 
-    private static readonly ConcurrentDictionary<string, ShareClient> clientsHolder = new();
+    private static readonly ConcurrentDictionary<string, bool> dnsCache = new();
 
     /// <summary>
     /// Initializes a new instance of <see cref="AzureFileshareStorageHealthCheck"/>.
     /// </summary>
     /// <param name="options">A non-null <see cref="IOptionsMonitor{StorageOptions}"/> providing the connectionstring and share name for the Azure File Share.</param>
-    /// <param name="clientOptions">Optional <see cref="ShareClientOptions"/> used to configure the underlying <see cref="ShareClient"/>. If <c>null</c>, default client options are used.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="options"/> is <c>null</c>.</exception>
-    public AzureFileshareStorageHealthCheck(IOptionsMonitor<StorageOptions> options, ShareClientOptions? clientOptions = null)
+    public AzureFileshareStorageHealthCheck(IOptionsMonitor<StorageOptions> options)
     {
         this.options = options ?? throw new ArgumentNullException(nameof(options));
-        this.clientOptions = clientOptions;
     }
 
     /// <summary>
@@ -51,14 +49,15 @@ public sealed class AzureFileshareStorageHealthCheck : IHealthCheck
 
         try
         {
-            var client = this.GetClient();
+            var accountName = this.options.CurrentValue.HealthCheck?.AccountName ?? throw new InvalidOperationException("Storage account name missing");
 
-            var shareExists = await client
-                .ExistsAsync(cancellationToken);
+            var host = $"{accountName}.file.core.windows.net";
 
-            return shareExists
-                ? HealthCheckResult.Healthy()
-                : new HealthCheckResult(context.Registration.FailureStatus, $"Storage '{client.Name}' not found");
+            var portOpen = await IsPortOpenAsync(host, 445, TimeSpan.FromSeconds(3), cancellationToken);
+
+            return portOpen
+                ? HealthCheckResult.Healthy("Azure Files endpoint reachable")
+                : new HealthCheckResult(context.Registration.FailureStatus, $"Cannot reach Azure Files endpoint {host}:445");
         }
         catch (Exception ex)
         {
@@ -67,32 +66,24 @@ public sealed class AzureFileshareStorageHealthCheck : IHealthCheck
     }
 
 
-    private ShareClient GetClient()
+    private static async Task<bool> IsPortOpenAsync(string host, int port, TimeSpan timeout, CancellationToken cancellationToken)
     {
-        var connectionString = this.GetConnectionString();
+        ArgumentNullException.ThrowIfNull(host);
 
-        clientsHolder
-            .TryGetValue(connectionString, out var client);
-
-        if (client != null)
+        try
         {
-            return client;
+            using var tcpClient = new TcpClient();
+
+            var connectTask = tcpClient
+                .ConnectAsync(host, port);
+
+            var completed = await Task.WhenAny(connectTask, Task.Delay(timeout, cancellationToken));
+
+            return completed == connectTask && tcpClient.Connected;
         }
-
-        client = new ShareClient(connectionString, this.options.CurrentValue.ShareName, this.clientOptions);
-
-        clientsHolder
-            .TryAdd(connectionString, client);
-
-        return client;
-    }
-    private string GetConnectionString()
-    {
-        if (this.options.CurrentValue.Credentials == null)
+        catch
         {
-            throw new NullReferenceException(nameof(this.options.CurrentValue.Credentials));
+            return false;
         }
-
-        return $"DefaultEndpointsProtocol=https;AccountName={this.options.CurrentValue.Credentials.Id};AccountKey={this.options.CurrentValue.Credentials.Secret};EndpointSuffix=core.windows.net";
     }
 }

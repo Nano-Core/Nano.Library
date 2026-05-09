@@ -52,6 +52,7 @@ Register the `AzureFileshareProvider` provider during application startup in the
 ## Configuration
 Add the storage configuration.  
 
+REMOVE CREDENTIALS
 ```json
 "Storage": {
   "ShareName": null,
@@ -76,53 +77,39 @@ services:
 ```
 
 ## Kubernetes
-Next, the following to your Kubernetes `deployment.yaml` or `cronjob.yaml` (depending on application type) for the Nano application.
-You also need to map the `storage-account-secret` that is created alongside the [Nano Azure Storage Account](https://github.com/Nano-Core/Nano.Azure/tree/master/Nano.Azure.Storage/README.md#nanoazurestorage) 
-in the `deployment.yaml` for fileshare authentication.
+New templates are added for storage, depending on type of storage these differs slightly. Common is that a Persistent Volume and Persistent Volume Claim is needed, and then it must
+be mapped into your Kubernetes `deployment.yaml` or `cronjob.yaml` (depending on application type) for the Nano application.
 
-```json
+```yaml
 spec:
   template:
     spec:
       containers:
-        env:
-        - name: Storage__Account__Id
-          valueFrom:
-            secretKeyRef:
-              name: storage-account-secret
-              key: azurestorageaccountname
-        - name: Storage__Account__Secret
-          valueFrom:
-            secretKeyRef:
-              name: storage-account-secret
-              key: azurestorageaccountkey
         volumeMounts:
-        - name: tmp
-          mountPath: /tmp
         - name: %SERVICE_NAME%-volume
           mountPath: /mnt/%STORAGE_SHARE_NAME%
+        - name: tmp
+          mountPath: /tmp
       volumes:
+      - name: %SERVICE_NAME%-volume
+        persistentVolumeClaim:
+          claimName: %SERVICE_NAME%-pvc
       - name: tmp
         emptyDir: {}
-      - name: %SERVICE_NAME%-volume
-        azureFile:
-          secretName: storage-account-secret
-          shareName: %STORAGE_SHARE_NAME%
-          readOnly: false
 ```
 
-> ⚠️ The `storage-account-secret` secret will be reused for all applications using Azure Fileshare as storage provider.  
-That makes it easy to change the secret values later on when needed, and just requires the secret values to be updated and re-deployed.  
+The `configmap.yaml` file stores the `$env:STORAGE_ACCOUNT_NAME` value, which is used by the TCP-based storage health check to validate connectivity to the Azure File Share endpoint. This 
+is required if `HealthCheck` is configured.  
 
 ## GitHub Actions
 Last, the `build-and-deploy.yaml` needs a few additional environmental variables related to Azure storage provder.  
 
 ```yaml
 env: 
+  AZURE_GROUP_BACKUP: ${{ vars.AZURE_BACKUP_RESOURCE_GROUP }}
+  AZURE_GROUP_STORAGE: ${{ vars.AZURE_STORAGE_RESOURCE_GROUP }}
   STORAGE_SIZE: 1000
   STORAGE_SHARE_NAME: {share-name}
-  STORAGE_CREDENTIALS_ID: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_STORAGE_CREDENTIALS_ID || secrets.STAGING_STORAGE_CREDENTIALS_ID }}
-  STORAGE_CREDENTIALS_SECRET: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_STORAGE_CREDENTIALS_SECRET || secrets.STAGING_STORAGE_CREDENTIALS_SECRET }}
 ```
 
 Also, the Azure fileshare needs to be created during deployment if it does not already exist. Add the following step to the `build-and-deploy.yaml`.  
@@ -131,22 +118,40 @@ Also, the Azure fileshare needs to be created during deployment if it does not a
 - name: Create Fileshare
   shell: pwsh
   run: |
-    $env:STORAGE_FILE_SHARE = sudo az storage share list `
-        --account-name $env:STORAGE_CREDENTIALS_ID `
-        --account-key $env:STORAGE_CREDENTIALS_SECRET `
-        --query "[?contains(name, '$env:STORAGE_SHARE_NAME')].[name]" -o tsv;
+    $env:STORAGE_ACCOUNT_NAME = sudo az storage account list -g $env:AZURE_GROUP_STORAGE --query [0].name -o tsv;
 
-    if ([string]::IsNullOrEmpty($env:STORAGE_FILE_SHARE))
+    $env:FILE_SHARE_EXISTS = sudo az storage share-rm exists `
+        -g $env:AZURE_GROUP_STORAGE `
+        -n $env:STORAGE_SHARE_NAME `
+        --storage-account $env:STORAGE_ACCOUNT_NAME `
+        --query exists;
+
+    if ($env:FILE_SHARE_EXISTS -eq "false")
     { 
-        sudo az storage share create `
+        sudo az storage share-rm create `
+            -g $env:AZURE_GROUP_STORAGE `
             -n $env:STORAGE_SHARE_NAME `
-            --account-name $env:STORAGE_CREDENTIALS_ID `
-            --account-key $env:STORAGE_CREDENTIALS_SECRET `
+            --storage-account $env:STORAGE_ACCOUNT_NAME `
+            --access-tier TransactionOptimized `
             --quota $env:STORAGE_SIZE;
-             
+              
         if ($LastExitCode -ne 0) 
         { 
             throw "error";
-        };  
+        };
+
+        $env:BACKUP_VAULT_NAME = sudo az backup vault list -g $env:AZURE_GROUP_BACKUP --query [0].name -o tsv;
+
+        sudo az backup protection enable-for-azurefileshare `
+            -g $env:AZURE_GROUP_BACKUP `
+            -v $env:BACKUP_VAULT_NAME `
+            -p $env:STORAGE_ACCOUNT_NAME-backup-policy `
+            --storage-account $env:STORAGE_ACCOUNT_NAME `
+            --azure-file-share $env:STORAGE_SHARE_NAME;
+              
+        if ($LastExitCode -ne 0) 
+        { 
+            throw "error";
+        };
     }
 ```

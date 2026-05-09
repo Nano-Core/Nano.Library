@@ -22,7 +22,7 @@ internal static class HealthChecksBuilderExtensions
                 var options = x
                     .GetRequiredService<IOptionsMonitor<StorageOptions>>();
 
-                return new AzureFileshareStorageHealthCheck(options, new ShareClientOptions());
+                return new AzureFileshareStorageHealthCheck(options);
             }, failureStatus, tags, timeout));
 
         return builder;

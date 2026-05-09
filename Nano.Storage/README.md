@@ -74,21 +74,15 @@ storage provider. See supported **[Storage Providers](#storage-providers)** for 
 ## Configuration
 The ```Storage``` section in the configuration defines the storage provider and related settings used by the application.
 
-| Setting                         | Type   | Default     | Description                                                                                                                              |
-| ------------------------------- | ------ | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-|  `ShareName`                    | string | null        | The logical container, share, or bucket name used for file storage.                                                                      |
-|  `Credentials`                  | object | null        | Optional. The credential or account of the storage provider.                                                                             |
-|  `Credentials.Id`               | string | null        | Required. The account id, username or tenant identifier used to authenticate with the storage provider.                                  |
-|  `Credentials.Secret`           | string | null        | Required. The password, secret, key, password or credential used to authenticate with the storage provider.                              |
-|  `HealthCheck`                  | object | null        | Storage health check. _Only relevant for `NanoApiApplication` and `NanoWebApplication`_..                                                |
+| Setting            | Type   | Default     | Description                                                                                 |
+| ------------------ | ------ | ----------- | ------------------------------------------------------------------------------------------- |
+|  `ShareName`       | string | null        | The logical container, share, or bucket name used for file storage.                         |
+|  `Credentials`     | object | null        | Optional. The credential or account of the storage provider.                                |
+|  `HealthCheck`     | object | null        | Storage health check. _Only relevant for `NanoApiApplication` and `NanoWebApplication`_..   |
 
 ```json
 "Storage": {
   "ShareName": null,
-  "Credentials": {
-    "Id": null,
-    "Secret": null
-  },
   "HealthCheck": null
 }
 ```
@@ -101,13 +95,15 @@ When health checks are enabled in the storage configuration, Nano automatically 
 This allows the application to verify that the underlying storage fileshare connection is available and operational. The health check integrates with ASP.NET Core's 
 health check system and can be used by monitoring tools, load balancers, or container orchestrators to determine the health status of the application.  
 
-| Setting                         | Type   | Default     | Description                                                                                                                              |
-| ------------------------------- | ------ | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-|  `HealthCheck.UnhealthyStatus`  | enum   | Unhealthy   | The health status reported when the storage provider is unavailable. _Only relevant for `NanoApiApplication` and `NanoWebApplication`_.  |
+| Setting             | Type   | Default     | Description                                                                                                                              |
+| ------------------- | ------ | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+|  `AccountName`      | string | null        | The storage account name used by health checks for some storage providers.                                                               |
+|  `UnhealthyStatus`  | enum   | Unhealthy   | The health status reported when the storage provider is unavailable. _Only relevant for `NanoApiApplication` and `NanoWebApplication`_.  |
 
 ```json
 "Storage": {
   "HealthCheck": {
+    "AccountName": null,
     "UnhealthyStatus": "Unhealthy"
   }
 }
