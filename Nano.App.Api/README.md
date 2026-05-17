@@ -99,7 +99,7 @@ Register your custom services in the `ConfigureServices(x => { })` method to ext
 Nano API applications require a set of organization-level variables and secrets. In addition, certain features may require extra configuration when enabled. Any feature-specific 
 requirements will be clearly documented in the relevant sections.  
 
-The tables below provide a consolidated overview of all variables and secrets used by Nano API applications.  
+The tables below provide an overview of all global variables and secrets used by Nano API applications.  
 
 These variables are required and must be configured for the system to function correctly.  
 
@@ -108,22 +108,6 @@ These variables are required and must be configured for the system to function c
 | VERSION                               | vars     | Defines the major and minor version. E.g `1.0`.  |
 
 > 💡 The full version is automatically composed by appending GitHub `run_number` and `run_attempt` as revision and build.
-
-Secrets used for JWT signing and API key authentication.  
-
-| Variable                              | Type     | Description                            |
-| ------------------------------------- | -------- | -------------------------------------- |
-| {{environment}}_AUTH_JWT_PUBLIC_KEY   | secrets  | The public JWT key.                    |
-| {{environment}}_AUTH_JWT_PRIVATE_KEY  | secrets  | The private JWT key.                   |
-| {{environment}}_AUTH_API_KEY_SECRET   | secrets  | Secret used for encrypting API keys.   |
-
-Variables used when exposing an application publically with HTTPS and SSL certificate.  
-
-| Variable                   | Type     | Description                                                                                                   |
-| -------------------------- | -------- | ------------------------------------------------------------------------------------------------------------- |
-| {{environment}}_HOST       | vars     | The primary host of the system (e.g. https://mydomain.com).                                                   |
-| HOST_{{name}}_SUBDOMAIN    | vars     | Subdomain for the application, used with Kubernetes Ingress and TLS. Configure one per exposed application.   |
-| CERTIFICATE_ORGANIZATION   | vars     | Organization name used in issued TLS certificates.                                                            |
 
 ## Configuration
 The `App` section in the configuration defines behavior related to the application.  
@@ -222,7 +206,7 @@ Configuring HTTPS allows the API to communicate over a secure SSL/TLS connection
 To use HTTPS, you must specify at least one port along with a certificate path and password to establish a valid security protocol. If you want the 
 application to accept only secure connections, enable `UseHttpsRequired`.  
 
-HTTPS is primarily intended for local development. In production environments, secure connections and certificates are typically handled at the network ingress level.  
+HTTPS is primarily intended for local development. In production environments, secure connections and certificates are typically handled at the network gateway level.  
 
 > ⚠️ You should at least specify one HTTP or HTTPS port. 
 
@@ -262,9 +246,6 @@ services:
     volumes:
       - ../:/root/.dotnet/https
 ```
-
-The solution should also include `certificate.yaml` and `ingress.yml` Kubernetes resources for both the `Staging` and `Production`, and the `build-and-deploy.yml` should 
-include additional environmental variables and apply commands.  
 
 Try it out yourself using the **[Api.Hosting.Https](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Hosting.Https)** example.  
 
@@ -1127,18 +1108,6 @@ Cookie name: `.AspNetCore.Session`
 
 > ⚠️ Sessions are discouraged, as tit breaks statelessness and complicates scaling.
 
-For sessions to work properly in a scaled environment, enable sticky sessions by adding these annotations to your `ingress.yaml` resource.
-
-```yaml
-kind: Ingress
-metadata:
-  annotations:
-    nginx.ingress.kubernetes.io/affinity: "cookie"
-    nginx.ingress.kubernetes.io/affinity-mode: "persistent"
-    nginx.ingress.kubernetes.io/session-cookie-name: "eventssticky"
-    nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
-```
-
 | Setting       | Type     | Default  | Description                                         |
 | ------------- | -------- | -------- | --------------------------------------------------- |
 | `Timeout`     | TimeSpan | 00:20:00 | Session timeout duration. Default is 20 minutes.    |
@@ -1311,27 +1280,33 @@ When documentation is enabled in the configuration, the API's web-based document
 }
 ```
 
-#### CSP Nonce:
-This value allows Swagger to function correctly when using Content Security Policy (CSP) nonce values for scripts and styles. 
-A static nonce is configured for Swagger and any other frontends you may have. The `ingress-controller` in Kubenetes will then replace these static nonces 
-with dynamically generated tokens before serving the pages to clients.  
+Try it out yourself using the **[Api.Documentation](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Documentation)** example.  
 
-Example `ingress.yaml` configuration:
+The `CspNonce` configuration value allows Swagger to function correctly when using Content Security Policy (CSP) nonce values for scripts and styles. A static nonce is configured for 
+Swagger and other frontend applications, and should be replaced with a dynamic value such as a `request_id` generated by the frontend middleware.  
+
+The nonce token should be stored as a GitHub variable and injected into the application's `configmap.yaml`.
+
+| Variable                      | Type  | Description                            |
+| ----------------------------- | ----- | -------------------------------------- |
+| {{environment}}_NONCE_TOKEN   | vars  | The CSP NONCE token used for Swagger.  |
+
+Then add the environments in GitHub Actions.
+
+```yaml
+env:
+  NONCE_TOKEN: ${{ vars.{{environment}}_NONCE_TOKEN }}
+```
+
+and finally, map it into the `configmap.yaml`.  
 
 ```
-kind: Ingress
-metadata:
-  annotations:
-    nginx.ingress.kubernetes.io/configuration-snippet: | 
-      more_set_headers "Content-Security-Policy: script-src 'self' 'nonce-${request_id}'; style-src 'self' 'nonce-${request_id}'";
-      sub_filter_once off;
-      sub_filter '%NONCE_TOKEN%' $request_id;
-      sub_filter '(<body[^>]*>)(.*?)%NONCE_TOKEN%(.*?<\/body>)' '$1$2"$request_id"$3';
+App__Documentation__CspNonce: %NONCE_TOKEN%
 ```
+
+Try it out yourself using the **[Api.Documentation.Nonce](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Documentation.Nonce)** example.  
 
 > 📖 Learn more about **[Swashbuckle.AspNetCore](https://github.com/domaindrivendev/Swashbuckle.AspNetCore)**.  
-
-Try it out yourself using the **[Api.Documentation](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Documentation)** example.  
 
 ## Health Checks
 When health checks are enabled in the configuration, a `/healthz` endpoint is exposed.  
@@ -1562,7 +1537,14 @@ The following configuration is available for authentication.
 In a distributed application architecture, the application responsible for signing in users must be configured with both a private and a public key, while all other 
 applications only need the public key. The private key is used to generate JWT tokens, whereas the public key is sufficient to validate them.  
 
-Both the public and private keys should be stored securely as a Kubernetes secret for the `Staging` and `Production` environments and should not be exposed.  
+Both the public and private keys should be stored securily on GitHub and deployed as Kubernetes secrets for the `Staging` and `Production` environments and should not be exposed.  
+
+| Variable                              | Type     | Description                            |
+| ------------------------------------- | -------- | -------------------------------------- |
+| {{environment}}_AUTH_JWT_PUBLIC_KEY   | secrets  | The public JWT key.                    |
+| {{environment}}_AUTH_JWT_PRIVATE_KEY  | secrets  | The private JWT key.                   |
+
+The variables should be created in Kubernetes as a secret and referenced in the deployment, to securely store the public and private keys.  
 
 In Nano, all authentication features are accessed through a set of repository interfaces. The table below details each supported login type and its corresponding registered 
 interfaces, showing what is available for use in your application.
@@ -1781,25 +1763,12 @@ Nano also supports authentication using an API key, provided in the `X-Api-Key` 
 **[Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data/README.md#identity)** to be configured for API keys. When an API key is included in the HTTP header, 
 Nano authenticates the request using `ApiKeyAuthenticationHandler<TIdentity>`.
 
-Having both JWt and API Key authentication alongside is perfectly valid, and Nano will direct the request to the correct authentication handler depending on whether the `Authorization`
-header or the `X-Api-Key` header. Nano default to JWT authentication scheme.
-
-In a layered architecture, when using API key authentication, the Kubernetes ingress must handle the authentication step before requests reach your services. This means the 
-ingress needs to validate the API key by calling an authentication endpoint and exchanging it for a JWT token that can be forwarded to your backend service. Without this, services 
-behind the ingress won't automatically authenticate API-key requests. Nano comes with a built-in endpoint when both API key and JWT has been configured, that can be used in the ingress.
-
-You can use the `nginx.ingress.kubernetes.io/auth-url` annotation to forward requests to the Nano apikey login endpoint, like this.  
-
-```yaml
-metadata:
-  annotations:
-    nginx.ingress.kubernetes.io/auth-url: "http://{service-name}/auth/login/apikey"
-    nginx.ingress.kubernetes.io/auth-method: "GET"
-    nginx.ingress.kubernetes.io/auth-response-headers: "Authorization"
-```
-
 Having both JWT and API Key authentication enabled side by side is perfectly valid. Nano will route each incoming request to the appropriate authentication handler based on the 
 presence of either the `Authorization` header or the `X-Api-Key` header. By default, Nano uses the JWT authentication scheme when no explicit API key is provided.
+
+In a layered architecture, when using API key authentication, the Kubernetes gateway must handle the authentication step before requests reach your services. This means it needs to 
+validate the API key by calling an authentication endpoint: `http://{app-name}/auth/login/apikey`,  and exchanging it for a JWT token that can be forwarded to your backend service. Without 
+this, services behind the gateway won't automatically authenticate API-key requests. Nano comes with a built-in endpoint when both API key and JWT has been configured, that can be used.
 
 Try it out yourself using the **[Api.Data.Identity.Auth.ApiKey](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Auth.ApiKey)** example.  
 

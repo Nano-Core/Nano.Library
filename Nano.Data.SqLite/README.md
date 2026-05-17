@@ -106,7 +106,7 @@ spec:
       containers:
         volumeMounts:
         - name: %SERVICE_NAME%-volume
-          mountPath: /mnt/%STORAGE_SHARE_NAME%
+          mountPath: /mnt/data
       volumes:
       - name: %SERVICE_NAME%-volume
         persistentVolumeClaim:

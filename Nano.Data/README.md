@@ -152,7 +152,7 @@ access control.
 | Setting                               | Type     | Default         | Description                                                                                                              |
 | ------------------------------------- | -------- | --------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | `TokensExpirationInHours`             | TimeSpan | 24:00:00        | The expiration time for tokens in hours.                                                                                 |
-| `UseAudit`                            | enum     | None            | Defines which intitity models to to audit. Allows multiple values. See possible values below.                            |
+| `UseAudit`                            | enum     | None            | Defines which identity models to to audit. Allows multiple values. See possible values below.                            |
 | `User`                                | object   | default         | Options for user-specific settings.                                                                                      |
 | `User.IsUniqueEmailAddressRequired`   | bool     | true            | A value indicating whether each user must have a unique email address.                                                   |
 | `User.IsUniquePhoneNumberRequired`    | bool     | false           | A value indicating whether each user must have a unique phone number.                                                    |
@@ -211,6 +211,12 @@ access control.
   }
 }
 ```
+
+The `ApiKey.Secret` must be stored securily on GitHub.  
+
+| Variable                              | Type     | Description                            |
+| ------------------------------------- | -------- | -------------------------------------- |
+| {{environment}}_AUTH_API_KEY_SECRET   | secrets  | Secret used for encrypting API keys.   |
 
 The following values can be used for the `UseAudit` configuration setting. Multiple values can be specified as a comma-separated list in `appsettings.json`.
 
