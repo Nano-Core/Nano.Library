@@ -206,7 +206,7 @@ Configuring HTTPS allows the API to communicate over a secure SSL/TLS connection
 To use HTTPS, you must specify at least one port along with a certificate path and password to establish a valid security protocol. If you want the 
 application to accept only secure connections, enable `UseHttpsRequired`.  
 
-HTTPS is primarily intended for local development. In production environments, secure connections and certificates are typically handled at the network gateway level.  
+HTTPS with configured certificate is primarily intended for local development. In live environments, secure connections and certificates are typically handled at the network gateway level.  
 
 > ⚠️ You should at least specify one HTTP or HTTPS port. 
 
@@ -220,6 +220,8 @@ HTTPS is primarily intended for local development. In production environments, s
 | `Certificate.Path`      | string  | null     | Required. File path to the certificate.       |
 | `Certificate.Password`  | string  | null     | Required. Password for the certificate.       |
 
+The default `appsettings.json` should not have https configured.
+
 ```json
 "App": {
   "Hosting": {
@@ -227,6 +229,20 @@ HTTPS is primarily intended for local development. In production environments, s
       "Ports": [
       ],
       "UseHttpsRequired": false
+      "Certificate": { 
+        "Path": null,
+        "Password": null
+      }
+    }
+  }
+}
+```
+
+The `appsettings.Development.json` should have the credentials for the self-signed development certificate configured, specifying the `Path` and the `Password` which default to `null`.  
+
+```json
+"App": {
+  "Hosting": {
       "Certificate": { 
         "Path": null,
         "Password": null
@@ -245,6 +261,32 @@ services:
       - 4443:4443
     volumes:
       - ../:/root/.dotnet/https
+```
+
+In `Staging` and `Production`, TLS certificates are automatically managed by the [Kubernetes Gateway](https://github.com/Nano-Core/Nano.Azure.Kubernetes/tree/master/Nano.Azure.Kubernetes.Gateway/README.md#nanoazurekubernetesgateway) 
+and [Cert-Manager](https://github.com/Nano-Core/Nano.Azure.Kubernetes/tree/master/Nano.Azure.Kubernetes.CertManager/README.md#nanoazurekubernetescertmanager).  
+
+Applications that are exposed publicly just need to define a subdomain and create an `HTTPRoute` Kubernetes resource.  
+
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{name}}-route
+  namespace: {{namespace}}
+spec:
+  parentRefs:
+    - name: {{gateway-name}}
+  hostnames:
+    - {{sub-domain}}{{dns-zone-name]]
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: {{name}}
+          port: 8080
 ```
 
 Try it out yourself using the **[Api.Hosting.Https](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Hosting.Https)** example.  
