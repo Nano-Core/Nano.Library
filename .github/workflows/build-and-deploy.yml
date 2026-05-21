@@ -11,7 +11,7 @@ env:
   VERSION: 10.0.0-rc1
 jobs:
   build-and-deploy:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     permissions:
       contents: write
       packages: write
