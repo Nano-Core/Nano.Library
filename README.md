@@ -27,7 +27,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;⚙️ **[Required Tools](#-required-tools)**  
 &nbsp;&nbsp;&nbsp;&nbsp;🧩 **[Solution Composition](#-solution-composition)**  
 &nbsp;&nbsp;&nbsp;&nbsp;📦 **[NuGet Packages](#-nuget-packages)**  
-&nbsp;&nbsp;&nbsp;&nbsp;🔏 **[Licenses](#-licenses)**  
+&nbsp;&nbsp;&nbsp;&nbsp;⚖️ **[Licenses](#-licenses)**  
 
 ### Documentation
 &nbsp;&nbsp;&nbsp;&nbsp;🚀 **[Applications](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#README.md#nanoapp)**  
@@ -245,7 +245,7 @@ Last, provider packages. These enable functionality related to Nano providers.
 | Nano.Storage.Azure           | `Storage`                    | [![NuGet](https://img.shields.io/nuget/dt/Nano.Storage.Azure.svg)](https://www.nuget.org/packages/Nano.Storage.Azure/)                   | [![NuGet](https://img.shields.io/nuget/v/Nano.Storage.Azure.svg)](https://www.nuget.org/packages/Nano.Storage.Azure/)                   |
 | Nano.Storage.Local           | `Storage`                    | [![NuGet](https://img.shields.io/nuget/dt/Nano.Storage.Local.svg)](https://www.nuget.org/packages/Nano.Storage.Local/)                   | [![NuGet](https://img.shields.io/nuget/v/Nano.Storage.Local.svg)](https://www.nuget.org/packages/Nano.Storage.Local/)                   |
 
-## 🔏 Licenses
+## ⚖️ Licenses
 Nano is free to use and released under the MIT License.  
 Dependencies are distributed under a combination of the following licenses.
 
