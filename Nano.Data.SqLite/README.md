@@ -118,9 +118,9 @@ Add the following environment variables to the `buid-and-deply.yml`.
 
 ```yaml
 env:
-  DATA_NAME: nanoDb
-  DATA_SIZE: 10Gi
-  DATA_CONNECTIONSTRING: "Data Source=/data/{{ env.nanoDb }}.sqlite"
+  SQL_NAME: nanoDb
+  SQL_SIZE: 10Gi
+  SQL_CONNECTIONSTRING: "Data Source=/data/{{ env.nanoDb }}.sqlite"
 ```
 
 Additionally, this step has been added to ensure database migrations are applied.  
@@ -132,7 +132,7 @@ Additionally, this step has been added to ensure database migrations are applied
     dotnet ef database update `
       --no-build `
       --startup-project $env:APP_NAME `
-      --connection "$env:DATA_MIGRATION_CONNECTIONSTRING" `;
+      --connection "$env:SQL_MIGRATION_CONNECTIONSTRING" `;
 
     if ($LastExitCode -ne 0)
     { 

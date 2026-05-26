@@ -117,7 +117,7 @@ spec:
         - name: Data__ConnectionString
           valueFrom:
             secretKeyRef:
-              name: %SERVICE_NAME%-data-secret
+              name: %SERVICE_NAME%-sql-auth-secret
               key: data-connectionstring
 ```
 
@@ -126,81 +126,73 @@ Add the following environment variables to the `buid-and-deply.yml`.
 
 ```yaml
 env:
-  DATA_HOST: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_DATA_HOST || secrets.STAGING_DATA_HOST }}
-  DATA_NAME: {database-name}
-  DATA_USER: {database-user}
-  DATA_PORT: ${{ vars.DATA_PORT }}
-  DATA_PASSWORD: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_DATA_NANO_DB_PASSWORD || secrets.STAGING_DATA_NANO_DB_PASSWORD }}
-  DATA_ADMIN_USER: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_DATA_ADMIN_USER || secrets.STAGING_DATA_ADMIN_USER }}
-  DATA_ADMIN_PASSWORD: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_DATA_ADMIN_PASSWORD || secrets.STAGING_DATA_ADMIN_PASSWORD }}
-  DATA_CONNECTIONSTRING: Server=${{ env.DATA_HOST }},${{ vars.DATA_PORT }};Database=${{ env.DATA_NAME }};User Id=${{ env.DATA_USER }};Password=${{ env.DATA_PASSWORD }};
-  DATA_MIGRATION_CONNECTIONSTRING: Server=${{ env.DATA_HOST }},${{ vars.DATA_PORT }};Database=${{ env.DATA_NAME }};User Id=${{ env.DATA_ADMIN_USER }};Password=${{ env.DATA_ADMIN_PASSWORD }};
+  SQL_NAME: nanoDb
+  SQL_USER: api-data-sqlserver-user
+  SQL_PASSWORD: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_SQL_NANO_DB_PASSWORD || secrets.STAGING_SQL_NANO_DB_PASSWORD }}
+  SQL_ADMIN_PASSWORD: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_SQL_ADMIN_PASSWORD || secrets.STAGING_SQL_ADMIN_PASSWORD }}
 ```
 
 Additionally, this step has been added to ensure database migrations are applied, and the application database user has been created before the application is deployed.  
 
 ```yaml
-- name: Database Migration
+- name: Database Migration & User
   shell: pwsh
   run: |
+    $env:SQL_HOST = az sql server list -g $env:AZURE_GROUP_DATABASE --query "[0].fullyQualifiedDomainName" -o tsv;
+    $env:SQL_PORT = "1433"
+    $env:SQL_ADMIN_USER = az sql server list -g $env:AZURE_GROUP_DATABASE --query "[0].administratorLogin" -o tsv;
+    $env:SQL_MIGRATION_CONNECTIONSTRING = "Server=$env:SQL_HOST,$env:SQL_PORT;Database=$env:SQL_NAME;User Id=$env:SQL_ADMIN_USER;Password=$env:SQL_ADMIN_PASSWORD;Encrypt=True;TrustServerCertificate=True;";
+
     dotnet ef database update `
       --no-build `
       --startup-project $env:APP_NAME `
-      --connection "$env:DATA_MIGRATION_CONNECTIONSTRING" `;
+      --connection "$env:SQL_MIGRATION_CONNECTIONSTRING";
 
     if ($LastExitCode -ne 0)
     { 
         throw "error";
     };
-         
-    sudo apt-get update
-    sudo apt-get install -y mssql-tools unixodbc-dev
+          
+    apt-get update
+    apt-get install -y mssql-tools unixodbc-dev
 
     $loginExists = sqlcmd `
-        -S "$env:DATA_HOST,$env:DATA_PORT" `
-        -U $env:DATA_ADMIN_USER `
-        -P $env:DATA_ADMIN_PASSWORD `
-        -d master `
-        -h -1 `
-        -Q "SET NOCOUNT ON; SELECT COUNT(*) FROM sys.server_principals WHERE name = '$env:DATA_USER';"
+      -S "$env:SQL_HOST,$env:SQL_PORT" `
+      -U $env:SQL_ADMIN_USER `
+      -P $env:SQL_ADMIN_PASSWORD `
+      -d master `
+      -h -1 `
+      -Q "SET NOCOUNT ON; SELECT COUNT(*) FROM sys.server_principals WHERE name = '$env:SQL_USER';"
 
     if ($loginExists -eq 0)
     {
         sqlcmd `
-            -S "$env:DATA_HOST,$env:DATA_PORT" `
-            -U $env:DATA_ADMIN_USER `
-            -P $env:DATA_ADMIN_PASSWORD `
-            -d master `
-            -Q "CREATE LOGIN [$env:DATA_USER] WITH PASSWORD = '$env:DATA_PASSWORD';"
-    }
+          -S "$env:SQL_HOST,$env:SQL_PORT" `
+          -U $env:SQL_ADMIN_USER `
+          -P $env:SQL_ADMIN_PASSWORD `
+          -d master `
+          -Q "CREATE LOGIN [$env:SQL_USER] WITH PASSWORD = '$env:SQL_PASSWORD';"
+    };
 
     $userExists = sqlcmd `
-        -S "$env:DATA_HOST,$env:DATA_PORT" `
-        -U $env:DATA_ADMIN_USER `
-        -P $env:DATA_ADMIN_PASSWORD `
-        -d $env:DATA_NAME `
-        -h -1 `
-        -Q "SET NOCOUNT ON; SELECT COUNT(*) FROM sys.database_principals WHERE name = '$env:DATA_USER';"
+      -S "$env:SQL_HOST,$env:SQL_PORT" `
+      -U $env:SQL_ADMIN_USER `
+      -P $env:SQL_ADMIN_PASSWORD `
+      -d $env:SQL_NAME `
+      -h -1 `
+      -Q "SET NOCOUNT ON; SELECT COUNT(*) FROM sys.database_principals WHERE name = '$env:SQL_USER';"
 
-   if ($userExists -eq 0)
-   {
-       sqlcmd `
-           -S "$env:DATA_HOST,$env:DATA_PORT" `
-           -U $env:DATA_ADMIN_USER `
-           -P $env:DATA_ADMIN_PASSWORD `
-           -d $env:DATA_NAME `
-           -Q "CREATE USER [$env:DATA_USER] FOR LOGIN [$env:DATA_USER];
-               ALTER ROLE db_datareader ADD MEMBER [$env:DATA_USER];
-               ALTER ROLE db_datawriter ADD MEMBER [$env:DATA_USER];"
-   }
+    if ($userExists -eq 0)
+    {
+        sqlcmd `
+          -S "$env:SQL_HOST,$env:SQL_PORT" `
+          -U $env:SQL_ADMIN_USER `
+          -P $env:SQL_ADMIN_PASSWORD `
+          -d $env:SQL_NAME `
+          -Q "CREATE USER [$env:SQL_USER] FOR LOGIN [$env:SQL_USER];
+              ALTER ROLE db_datareader ADD MEMBER [$env:SQL_USER];
+              ALTER ROLE db_datawriter ADD MEMBER [$env:SQL_USER];"
+    };
 ```
 
 Last, the application connectionstring must be added in a secret in Kubernetes in the `Kubernetes Deploy` step.  
-
-```yaml
-sudo kubectl create secret generic $env:SERVICE_NAME-data-secret ` --from-literal=data-connectionstring=$env:DATA_CONNECTIONSTRING --save-config --dry-run=client -o yaml | sudo kubectl apply -f -;
-if ($LastExitCode -ne 0)
-{ 
-    throw "error";
-};
-```

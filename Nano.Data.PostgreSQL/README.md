@@ -117,7 +117,7 @@ spec:
         - name: Data__ConnectionString
           valueFrom:
             secretKeyRef:
-              name: %SERVICE_NAME%-data-secret
+              name: %SERVICE_NAME%-sql-auth-secret
               key: data-connectionstring
 ```
 
@@ -126,69 +126,62 @@ Add the following environment variables to the `buid-and-deply.yml`.
 
 ```yaml
 env:
-  DATA_HOST: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_DATA_HOST || secrets.STAGING_DATA_HOST }}
-  DATA_NAME: {database-name}
-  DATA_USER: {database-user}
-  DATA_PASSWORD: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_DATA_NANO_DB_PASSWORD || secrets.STAGING_DATA_NANO_DB_PASSWORD }}
-  DATA_ADMIN_USER: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_DATA_ADMIN_USER || secrets.STAGING_DATA_ADMIN_USER }}
-  DATA_ADMIN_PASSWORD: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_DATA_ADMIN_PASSWORD || secrets.STAGING_DATA_ADMIN_PASSWORD }}
-  DATA_CONNECTIONSTRING: Host=${{ env.DATA_HOST }};Port=${{ vars.DATA_PORT }};Database=${{ env.DATA_NAME }};Username=${{ env.DATA_USER }};Password=${{ env.DATA_PASSWORD }};SSL Mode=Prefer;Trust Server Certificate=true
-  DATA_MIGRATION_CONNECTIONSTRING: Host=${{ env.DATA_HOST }};Port=${{ vars.DATA_PORT }};Database=${{ env.DATA_NAME }};Username=${{ env.DATA_ADMIN_USER }};Password=${{ env.DATA_ADMIN_PASSWORD }};SSL Mode=Prefer;Trust Server Certificate=true
+  SQL_NAME: nanoDb
+  SQL_USER: api-data-postgres-user
+  SQL_PASSWORD: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_SQL_NANO_DB_PASSWORD || secrets.STAGING_SQL_NANO_DB_PASSWORD }}
+  SQL_ADMIN_PASSWORD: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_SQL_ADMIN_PASSWORD || secrets.STAGING_SQL_ADMIN_PASSWORD }}
 ```
 
 Additionally, this step has been added to ensure database migrations are applied, and the application database user has been created before the application is deployed.  
 
 ```yaml
-- name: Database Migration
+- name: Database Migration & User
   shell: pwsh
   run: |
+    $env:SQL_HOST = az postgres flexible-server list -g $env:AZURE_GROUP_DATABASE --query "[0].fullyQualifiedDomainName" -o tsv;
+    $env:SQL_PORT = "5432";
+    $env:SQL_ADMIN_USER = az postgres flexible-server list -g $env:AZURE_GROUP_DATABASE --query "[0].username" -o tsv;
+    $env:SQL_MIGRATION_CONNECTIONSTRING = "Host=$env:SQL_HOST;Port=$env:SQL_PORT;Database=$env:SQL_NAME;Username=$env:SQL_ADMIN_USER;Password=$env:SQL_ADMIN_PASSWORD;SSL Mode=Prefer;Trust Server Certificate=true";
+
     dotnet ef database update `
       --no-build `
       --startup-project $env:APP_NAME `
-      --connection "$env:DATA_MIGRATION_CONNECTIONSTRING" `;
+      --connection "$env:SQL_MIGRATION_CONNECTIONSTRING" `;
 
     if ($LastExitCode -ne 0)
     { 
         throw "error";
     };
          
-    sudo apt-get update
-    sudo apt-get install -y postgresql-client
+    apt-get update
+    apt-get install -y postgresql-client
 
-    $userExists = psql "$env:DATA_CONNECTION_STRING" `
-        -tAc "SELECT 1 FROM pg_roles WHERE rolname='$env:DATA_USER';"
+    $userExists = psql "$env:SQL_MIGRATION_CONNECTIONSTRING" `
+        -tAc "SELECT 1 FROM pg_roles WHERE rolname='$env:SQL_USER';"
 
     if ($userExists -ne "1")
     {
-        psql "$env:DATA_CONNECTION_STRING" `
-            -c "CREATE ROLE $env:DATA_USER WITH LOGIN PASSWORD '$env:DATA_PASSWORD';"
+        psql "$env:SQL_MIGRATION_CONNECTIONSTRING" `
+            -c "CREATE ROLE $env:SQL_USER WITH LOGIN PASSWORD '$env:SQL_PASSWORD';"
     }
 
-    $userDbExists = psql "$env:DATA_CONNECTION_STRING" `
-        -tAc "SELECT 1 FROM pg_roles WHERE rolname='$env:DATA_USER';"
+    $userDbExists = psql "$env:SQL_MIGRATION_CONNECTIONSTRING" `
+        -tAc "SELECT 1 FROM pg_roles WHERE rolname='$env:SQL_USER';"
 
     if ($userDbExists -ne "1")
     {
-        psql "$env:DATA_CONNECTION_STRING" `
-            -c "GRANT CONNECT ON DATABASE $env:DATA_NAME TO $env:DATA_USER;"
+        psql "$env:SQL_MIGRATION_CONNECTIONSTRING" `
+            -c "GRANT CONNECT ON DATABASE $env:SQL_NAME TO $env:SQL_USER;"
 
-        psql "$env:DATA_CONNECTION_STRING" `
-            -c "GRANT USAGE ON SCHEMA public TO $env:DATA_USER;"
+        psql "$env:SQL_MIGRATION_CONNECTIONSTRING" `
+            -c "GRANT USAGE ON SCHEMA public TO $env:SQL_USER;"
 
-        psql "$env:DATA_CONNECTION_STRING" `
-            -c "GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO $env:DATA_USER;"
+        psql "$env:SQL_MIGRATION_CONNECTIONSTRING" `
+            -c "GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO $env:SQL_USER;"
 
-        psql "$env:DATA_CONNECTION_STRING" `
-            -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO $env:DATA_USER;"
+        psql "$env:SQL_MIGRATION_CONNECTIONSTRING" `
+            -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO $env:SQL_USER;"
     }
 ```
 
 Last, the application connectionstring must be added in a secret in Kubernetes in the `Kubernetes Deploy` step.  
-
-```yaml
-sudo kubectl create secret generic $env:SERVICE_NAME-data-secret ` --from-literal=data-connectionstring=$env:DATA_CONNECTIONSTRING --save-config --dry-run=client -o yaml | sudo kubectl apply -f -;
-if ($LastExitCode -ne 0)
-{ 
-    throw "error";
-};
-```
