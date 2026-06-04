@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Net.Http.Headers;
 using Nano.App.Api.Config;
-using Nano.App.Api.Mvc.Documentation.Extensions;
 using Nano.App.Api.Mvc.Extensions;
 using Nano.App.Api.Mvc.HealthChecks.Const;
 using Nano.App.Api.Mvc.Middleware;
@@ -636,7 +635,6 @@ internal static class ApplicationBuilderExtensions
                 x.DefaultModelsExpandDepth(1);
                 x.DefaultModelRendering(ModelRendering.Example);
                 x.DocExpansion(DocExpansion.None);
-                x.UseCspNonce(options.CspNonce);
             });
 
         return applicationBuilder;
