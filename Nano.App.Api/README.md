@@ -8,9 +8,10 @@
 ***
 
 ## Table of Contents
-* **[Home](https://github.com/Nano-Core/Nano.Library#nano-library)**
+* **[Home](https://github.com/Nano-Core/Nano.Library/tree/master/README.md#nanolibrary)**
 * **[Summary](#summary)**
 * **[Registration](#registration)**
+* **[Variables And Secrets](#variables-and-secrets)**
 * **[Configuration](#configuration)**
   * **[Hosting](#hosting)**
     * **[Http](#http)**
@@ -93,6 +94,20 @@ NanoApiApplication
 ```
 
 Register your custom services in the `ConfigureServices(x => { })` method to extend Nano with additional functionality or integrations.  
+
+## Variables And Secrets
+Nano API applications require a set of organization-level variables and secrets. In addition, certain features may require extra configuration when enabled. Any feature-specific 
+requirements will be clearly documented in the relevant sections.  
+
+The tables below provide an overview of all global variables and secrets used by Nano API applications.  
+
+These variables are required and must be configured for the system to function correctly.  
+
+| Variable                              | Type     | Usage                                            |
+| ------------------------------------- | -------- | ------------------------------------------------ |
+| VERSION                               | vars     | Defines the major and minor version. E.g `1.0`.  |
+
+> 💡 The full version is automatically composed by appending GitHub `run_number` and `run_attempt` as revision and build.
 
 ## Configuration
 The `App` section in the configuration defines behavior related to the application.  
@@ -191,7 +206,7 @@ Configuring HTTPS allows the API to communicate over a secure SSL/TLS connection
 To use HTTPS, you must specify at least one port along with a certificate path and password to establish a valid security protocol. If you want the 
 application to accept only secure connections, enable `UseHttpsRequired`.  
 
-HTTPS is primarily intended for local development. In production environments, secure connections and certificates are typically handled at the network ingress level.  
+HTTPS with configured certificate is primarily intended for local development. In live environments, secure connections and certificates are typically handled at the network gateway level.  
 
 > ⚠️ You should at least specify one HTTP or HTTPS port. 
 
@@ -205,6 +220,8 @@ HTTPS is primarily intended for local development. In production environments, s
 | `Certificate.Path`      | string  | null     | Required. File path to the certificate.       |
 | `Certificate.Password`  | string  | null     | Required. Password for the certificate.       |
 
+The default `appsettings.json` should not have https configured.
+
 ```json
 "App": {
   "Hosting": {
@@ -212,6 +229,20 @@ HTTPS is primarily intended for local development. In production environments, s
       "Ports": [
       ],
       "UseHttpsRequired": false
+      "Certificate": { 
+        "Path": null,
+        "Password": null
+      }
+    }
+  }
+}
+```
+
+The `appsettings.Development.json` should have the credentials for the self-signed development certificate configured, specifying the `Path` and the `Password` which default to `null`.  
+
+```json
+"App": {
+  "Hosting": {
       "Certificate": { 
         "Path": null,
         "Password": null
@@ -232,8 +263,31 @@ services:
       - ../:/root/.dotnet/https
 ```
 
-The solution should also include `certificate.yaml` and `ingress.yml` Kubernetes resources for both the `Staging` and `Production`, and the `build-and-deploy.yml` should 
-include additional environmental variables and apply commands.  
+In `Staging` and `Production`, TLS certificates are automatically managed by the [Kubernetes Gateway](https://github.com/Nano-Core/Nano.Azure.Kubernetes/tree/master/Nano.Azure.Kubernetes.Gateway/README.md#nanoazurekubernetesgateway) 
+and [Cert-Manager](https://github.com/Nano-Core/Nano.Azure.Kubernetes/tree/master/Nano.Azure.Kubernetes.CertManager/README.md#nanoazurekubernetescertmanager).  
+
+Applications that are exposed publicly just need to define a subdomain and create an `HTTPRoute` Kubernetes resource.  
+
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{name}}-route
+  namespace: {{namespace}}
+spec:
+  parentRefs:
+    - name: {{gateway-name}}
+  hostnames:
+    - {{sub-domain}}{{dns-zone-name]]
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: {{name}}
+          port: 8080
+```
 
 Try it out yourself using the **[Api.Hosting.Https](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Hosting.Https)** example.  
 
@@ -1096,18 +1150,6 @@ Cookie name: `.AspNetCore.Session`
 
 > ⚠️ Sessions are discouraged, as tit breaks statelessness and complicates scaling.
 
-For sessions to work properly in a scaled environment, enable sticky sessions by adding these annotations to your `ingress.yaml` resource.
-
-```yaml
-kind: Ingress
-metadata:
-  annotations:
-    nginx.ingress.kubernetes.io/affinity: "cookie"
-    nginx.ingress.kubernetes.io/affinity-mode: "persistent"
-    nginx.ingress.kubernetes.io/session-cookie-name: "eventssticky"
-    nginx.ingress.kubernetes.io/session-cookie-max-age: "172800"
-```
-
 | Setting       | Type     | Default  | Description                                         |
 | ------------- | -------- | -------- | --------------------------------------------------- |
 | `Timeout`     | TimeSpan | 00:20:00 | Session timeout duration. Default is 20 minutes.    |
@@ -1256,7 +1298,6 @@ When documentation is enabled in the configuration, the API's web-based document
 | `License.Name`       | string  | null      | The license name used for the API.                                                                                                           |
 | `License.Identifier` | string  | null      | An SPDX license expression for the API. The identifier field is mutually exclusive of the url field.                                         |
 | `License.Url`        | string  | null      | The URL pointing to the contact information. MUST be in the format of a URL. Must be a valid url.                                            |
-| `CspNonce`           | string  | null      | Optional Content Security Policy nonce. See [CSP Nonce](#csp-nonce).                                                                         |
 | `HideDefaultVersion` | bool    | true      | Hide default API version (`App:Version`). Default version routes will be hidden in swagger, only the default non-versioned routes will show. |
 
 ```json
@@ -1274,29 +1315,12 @@ When documentation is enabled in the configuration, the API's web-based document
       "Name": null,
       "Url": null
     },
-    "CspNonce": null,
     "HideDefaultVersion": true
   }
 }
 ```
 
-#### CSP Nonce:
-This value allows Swagger to function correctly when using Content Security Policy (CSP) nonce values for scripts and styles. 
-A static nonce is configured for Swagger and any other frontends you may have. The `ingress-controller` in Kubenetes will then replace these static nonces 
-with dynamically generated tokens before serving the pages to clients.  
-
-Example `ingress.yaml` configuration:
-
-```
-kind: Ingress
-metadata:
-  annotations:
-    nginx.ingress.kubernetes.io/configuration-snippet: | 
-      more_set_headers "Content-Security-Policy: script-src 'self' 'nonce-${request_id}'; style-src 'self' 'nonce-${request_id}'";
-      sub_filter_once off;
-      sub_filter '%NONCE_TOKEN%' $request_id;
-      sub_filter '(<body[^>]*>)(.*?)%NONCE_TOKEN%(.*?<\/body>)' '$1$2"$request_id"$3';
-```
+When configuring a strict CSP policy, add the following style hash: `"sha256-RL3ie0nH+Lzz2YNqQN83mnU0J1ot4QL7b99vMdIX99w="` to ensure Swagger UI images and icons render correctly.  
 
 > 📖 Learn more about **[Swashbuckle.AspNetCore](https://github.com/domaindrivendev/Swashbuckle.AspNetCore)**.  
 
@@ -1354,6 +1378,8 @@ When configured, all uploaded files are automatically processed through the Clam
 If any uploaded file is found to contain a virus, the request is rejected and a `500 Internal Server Error` is returned. The response includes a message indicating 
 the name of the virus detected and which file(s) triggered the scan.  
 
+> 📖 Learn more about **[ClamAV Virus Scan](https://github.com/Nano-Core/Nano.Kubernetes/tree/master/Nano.Azure.Kubernetes/Nano.Azure.Kubernetes.ClamAV/README.md#nanoazurekubernetesclamav)
+
 This feature ensures that all file uploads are automatically checked for malware, providing an extra layer of security for your application. By integrating ClamAV scanning 
 into the middleware pipeline, Nano helps enforce security best practices and prevents potentially harmful files from entering your system.
 
@@ -1394,7 +1420,7 @@ Try it out yourself using the **[Api.ContentNegotiation](https://github.com/Nano
 
 ## Request Tracing
 A `X-Request-Id` is generated by the first Nano instance encountered in the architecture and is propagated through all layers of the system. 
-When using layered Nano APIs with [Nano Api Client](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#api-client), the `X-Request-Id` is 
+When using layered Nano APIs with **[Nano Api Client](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App/README.md#api-client)**, the `X-Request-Id` is 
 automatically passed along. It can also be set by the frontend, which is recommended to ensure that every layer uses the same identifier.  
 
 In controllers deriving from `BaseController`, the `X-Request-Id` header value is accessible via the `RequestId` property.
@@ -1402,7 +1428,7 @@ The `X-Request-Id` is also added to the http response, so the consumer can see i
 
 No configuration or additional setup is required.  
 
-When [Logging](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging) is enabled, Nano adds the `X-Request-Id` to all logs for endpoint requests and responses, 
+When **[Logging](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging/README.md#nanologging)** is enabled, Nano adds the `X-Request-Id` to all logs for endpoint requests and responses, 
 enabling request-level tracing and correlation.  
 
 You can try this out using the **[Api.RequestTracing](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.RequestTracing)** example.
@@ -1426,7 +1452,7 @@ Nano includes a centralized error handling middleware that catches all unhandled
 consistent HTTP error responses with appropriate status codes. All error responses are written using `ProblemDetails`, in accordance 
 with [https://datatracker.ietf.org/doc/html/rfc7807](https://datatracker.ietf.org/doc/html/rfc7807).
 
-Additionally, when [Logging](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging) is registered with the application, 
+Additionally, when **[Logging](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging/README.md#nanologging)** is registered with the application, 
 the error is logged using the configured provider.  
 
 Nano provides built-in mappings between common exception types and HTTP error responses.
@@ -1448,7 +1474,7 @@ Nano provides built-in mappings between common exception types and HTTP error re
 The exceptions above may be thrown anywhere in the application, and the Nano error handling middleware will automatically construct the appropriate `ProblemDetails` response.
 
 Nano supports any HTTP status code as long as `ProblemDetails` is used. This also enables proper error propagation when using Nano in a layered architecture 
-with the [Nano Api Client](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#api-client). When returning custom error responses directly from controllers, 
+with the **[Nano Api Client](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App/README.md#api-client)**. When returning custom error responses directly from controllers, 
 always return `ProblemDetails` or no response body. Returning custom objects for error responses will not work in a layered Nano architecture, 
 as the API client can only propagate `ProblemDetails` and will otherwise fall back to a generic `500 Internal Server Error`.
 
@@ -1474,7 +1500,7 @@ identity data is passed to Nano (e.g., via external sign-in or sign-up). Nano wi
 In Nano, authentication can be either with an identity store to manage user data, or without - transient, relying on external providers without storing identity information.  
 
 When your application needs to manage usernames, passwords, roles, permissions, or other persistent user data, you should configure 
-**[Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#identity)**. This enables Nano to store and maintain user credentials and claims in a 
+**[Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data/README.md#identity)**. This enables Nano to store and maintain user credentials and claims in a 
 centralized identity store. Roles and claims can then be automatically loaded for each user, simplifying access control and authorization across your application.  
 
 With transient authentication, users authenticate through external providers, and a Nano JWT tokens are generated for use in subsequent requests. Roles and claims 
@@ -1495,7 +1521,7 @@ Transient roles and claims may also be added when using persistent authenticatio
 legal name at login and add it as a transient claim, rather than storing it permanently in the identity system. This approach ensures that certain information is always 
 current without the need to update persistent claims when data changes.  
 
-> ⚠️ API key authentication is only supported when using the built-in identity store, and is configured as part of **[Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#identity)**.
+> ⚠️ API key authentication is only supported when using the built-in identity store, and is configured as part of **[Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data/README.md#identity)**.
 
 The following configuration is available for authentication.  
 
@@ -1529,7 +1555,14 @@ The following configuration is available for authentication.
 In a distributed application architecture, the application responsible for signing in users must be configured with both a private and a public key, while all other 
 applications only need the public key. The private key is used to generate JWT tokens, whereas the public key is sufficient to validate them.  
 
-Both the public and private keys should be stored securely as a Kubernetes secret for the `Staging` and `Production` environments and should not be exposed.  
+Both the public and private keys should be stored securily on GitHub and deployed as Kubernetes secrets for the `Staging` and `Production` environments and should not be exposed.  
+
+| Variable                              | Type     | Description                            |
+| ------------------------------------- | -------- | -------------------------------------- |
+| {{environment}}_AUTH_JWT_PUBLIC_KEY   | secrets  | The public JWT key.                    |
+| {{environment}}_AUTH_JWT_PRIVATE_KEY  | secrets  | The private JWT key.                   |
+
+The variables should be created in Kubernetes as a secret and referenced in the deployment, to securely store the public and private keys.  
 
 In Nano, all authentication features are accessed through a set of repository interfaces. The table below details each supported login type and its corresponding registered 
 interfaces, showing what is available for use in your application.
@@ -1745,28 +1778,15 @@ All the `HttpContext` extension methods returns null, if not authenticated.
 The refresh token may be used to extend the access-token when expired.  
 
 Nano also supports authentication using an API key, provided in the `X-Api-Key` header. This requires 
-**[Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#identity)** to be configured for API keys. When an API key is included in the HTTP header, 
+**[Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data/README.md#identity)** to be configured for API keys. When an API key is included in the HTTP header, 
 Nano authenticates the request using `ApiKeyAuthenticationHandler<TIdentity>`.
-
-Having both JWt and API Key authentication alongside is perfectly valid, and Nano will direct the request to the correct authentication handler depending on whether the `Authorization`
-header or the `X-Api-Key` header. Nano default to JWT authentication scheme.
-
-In a layered architecture, when using API key authentication, the Kubernetes ingress must handle the authentication step before requests reach your services. This means the 
-ingress needs to validate the API key by calling an authentication endpoint and exchanging it for a JWT token that can be forwarded to your backend service. Without this, services 
-behind the ingress won't automatically authenticate API-key requests. Nano comes with a built-in endpoint when both API key and JWT has been configured, that can be used in the ingress.
-
-You can use the `nginx.ingress.kubernetes.io/auth-url` annotation to forward requests to the Nano apikey login endpoint, like this.  
-
-```yaml
-metadata:
-  annotations:
-    nginx.ingress.kubernetes.io/auth-url: "http://{service-name}/auth/login/apikey"
-    nginx.ingress.kubernetes.io/auth-method: "GET"
-    nginx.ingress.kubernetes.io/auth-response-headers: "Authorization"
-```
 
 Having both JWT and API Key authentication enabled side by side is perfectly valid. Nano will route each incoming request to the appropriate authentication handler based on the 
 presence of either the `Authorization` header or the `X-Api-Key` header. By default, Nano uses the JWT authentication scheme when no explicit API key is provided.
+
+In a layered architecture, when using API key authentication, the Kubernetes gateway must handle the authentication step before requests reach your services. This means it needs to 
+validate the API key by calling an authentication endpoint: `http://{app-name}/auth/login/apikey`,  and exchanging it for a JWT token that can be forwarded to your backend service. Without 
+this, services behind the gateway won't automatically authenticate API-key requests. Nano comes with a built-in endpoint when both API key and JWT has been configured, that can be used.
 
 Try it out yourself using the **[Api.Data.Identity.Auth.ApiKey](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Auth.ApiKey)** example.  
 
@@ -1835,7 +1855,7 @@ to keep the API surface minimal and explicit.
 
 When exposing entity models mapped from SQL views, use `BaseEntityViewController` base class.  
 
-> ⚠️ Entity controllers require **[Nano.Data](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data)** to be configured for the application.
+> ⚠️ Entity controllers require **[Nano.Data](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data/README.md#nanodata)** to be configured for the application.
 
 Each concrete implementation of an entity controller must specify two generic parameters. First, the entity model, which defines the database table and its properties 
 that the controller will work with. This model comes from **[Nano Data Models](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#data-models)** and uses 
@@ -1895,7 +1915,7 @@ Nano entity controllers have two required constructor dependencies and one optio
 | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `ILogger`     | Required. Provides logging capabilities for the controller.                                                                                                                                        |
 | `IRepository` | Required. Provides methods to get, add, update, delete, and query entity data.                                                                                                                     |
-| `IEventing`   | Optional. If eventing is configured, this allows the controller to publish events from its actions. See **[Nano.Eventing](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Eventing)**.  |
+| `IEventing`   | Optional. If eventing is configured, this allows the controller to publish events from its actions. See **[Nano.Eventing](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Eventing/README.md#nanoeventing)**.  |
 
 A controller using the default `Guid` as `TIdentity` would look like this.  
 
@@ -1904,7 +1924,7 @@ public class MyEntitysController(ILogger<MyEntitysController> logger, IRepositor
     : BaseEntityController<MyEntity, MyEntityQueryCriteria>(logger, repository, eventing);
 ```
 
-If you have specified a `TIdentity` type when registering **[Nano.Data](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data)**, you must also specify the same type 
+If you have specified a `TIdentity` type when registering **[Nano.Data](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data/README.md#nanodata)**, you must also specify the same type 
 when deriving your concrete controllers from the Nano base controllers. If `TIdentity` is a `string`, your controller would look like this.  
 
 ```csharp
@@ -1945,7 +1965,7 @@ When everything is configured and registered, the following endpoints becomes av
 Try it yourself using one of the **[Api.Data Lessons](https://github.com/Nano-Core/Nano.Lessons)**, such as **[Api.Data.MySql](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.MySql)**, 
 or any of the other data provider examples.
 
-When **[Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#identity)** is enabled, Nano provides a specialized base controller for managing 
+When **[Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data/README.md#identity)** is enabled, Nano provides a specialized base controller for managing 
 entity identities. The `BaseEntityUserController<TEntity, TCriteria>` offers a rich set of methods for creating, updating, and managing user identities within your application. 
 To use it, derive a concrete implementation of this controller to expose identity-related actions for your application, using a user entity model derived from `BaseEntityUser` or 
 `BaseEntityUser<TIdentity>`. It behaves similarly to other entity controllers but includes additional actions tailored for identity management, such as handling usernames, passwords, 
@@ -2019,7 +2039,7 @@ controller.
 
 Endpoints for user refresh tokens are only exposed if JWT authentication is configured. Similarly, endpoints for API keys are only exposed when API key authentication is configured.  
 
-> 📖 Learn more about **[Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#identity)**.
+> 📖 Learn more about **[Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data/README.md#identity)**.
 
 Try it yourself using the **[Api.Data.Identity](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity)** example.  
 
@@ -2059,7 +2079,7 @@ The following endpoints are available.
 | `/api/audit/query/first`       | GET, POST     | query, criteria, includeDepth    | reader  | Retrieves the first entity matching the specified criteria.                  |
 | `/api/audit/query/count`       | GET, POST     | criteria, includeDepth           | reader  | Gets the total count of entities matching the specified criteria.            |
 
-> 📖 Learn more about **[Data Audit](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#audit)**.
+> 📖 Learn more about **[Data Audit](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data/README.md#audit)**.
 
 Try it yourself using the **[Api.Data.Audit](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Audit)**, or any of the other data provider examples.
 
@@ -2107,7 +2127,7 @@ and all `Geometry` types from `NetTopologySuite`.
 
 The serializer only serializes navigations that is of type `IEntity`, when they are annotated with `IncludeAttribute`. This is to avoid returning unwanted navigation 
 references, that is automatically added if dependent navigations are loaded separately into the data context. Read more about 
-**[Include Annotation](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.App#include-annotation)**. Responses that doesn't inherit from `IEntity` will be 
+**[Include Annotation](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.App/README.md#include-annotation)**. Responses that doesn't inherit from `IEntity` will be 
 serialized normally.
 
 > ⚠️ Serialization respects only the configured include depth. Loaded navigations within that depth may in rare cases be returned even if the request `includeDepth` is lower.

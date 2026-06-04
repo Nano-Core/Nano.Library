@@ -11,7 +11,7 @@ namespace Nano.Storage.Abstractions;
 ///     Implementations are responsible for registering all required services (such as clients, health checks, and path providers)
 ///     into the dependency injection container based on the supplied <see cref="StorageOptions"/>.
 /// </remarks>
-/// <remarks>Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage</remarks>
+/// <remarks>Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage/README.md/nanostorage</remarks>
 public interface IStorageProvider
 {
     /// <summary>

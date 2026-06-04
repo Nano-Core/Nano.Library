@@ -6,11 +6,11 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Nano.App.ApiClient.Extensions;
 using Nano.App.Config;
 using Nano.App.Config.Extensions;
-using Nano.App.Startup;
-using Nano.App.Startup.Abstractions;
 using Nano.Common.Extensions;
 using System;
 using System.Linq;
+using Nano.App.StartUp;
+using Nano.App.StartUp.Abstractions;
 using Nano.Common;
 
 namespace Nano.App.Extensions;

@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Nano.App.Startup.Abstractions;
+using Nano.App.StartUp.Abstractions;
 
-namespace Nano.App.Startup;
+namespace Nano.App.StartUp;
 
 /// <summary>
 /// A hosted service that runs all registered <see cref="IStartupTask"/> instances during application startup

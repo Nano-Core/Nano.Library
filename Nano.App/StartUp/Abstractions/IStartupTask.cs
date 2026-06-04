@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Nano.App.Startup.Abstractions;
+namespace Nano.App.StartUp.Abstractions;
 
 /// <summary>
 /// Represents a startup task that runs when the application starts and can perform cleanup on stop.

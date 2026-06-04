@@ -8,7 +8,7 @@
 *** 
 
 ## Table of Contents
-* **[Home](https://github.com/Nano-Core/Nano.Library#nano-library)**
+* **[Home](https://github.com/Nano-Core/Nano.Library/tree/master/README.md#nanolibrary)**
 * **[Summary](#summary)**
 * **[Registration](#registration)**
 * **[Configuration](#configuration)**
@@ -19,7 +19,9 @@
 ## Summary
 Data Provider implementation for SqLite data access.  
 
-> 📖 Learn more about **[Nano Data](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data)**.
+> ⚠️ SqLite does not natively support spatial types, and `mod_spatialite` is not reliable.
+
+> 📖 Learn more about **[Nano Data](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data/README.md#nanodata)**.
 
 Try it out yourself using the **[Api.Data.SqLite](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.SqLite)**, or 
 **[Console.Data.SqLite](https://github.com/Nano-Core/Nano.Lessons/tree/master/Console.Data.SqLite)** example.  
@@ -92,14 +94,6 @@ services:
       - ./bin/data:/data
 ```
 
-Also the `Dockerfile` must have SqLite installed with spatial support. Add the following to both the `Dockerfile` and the `Dockerfile.Local`.  
-
-```dockerfile
-RUN apt-get update \
-    && apt-get install -y libsqlite3-mod-spatialite \
-    && apt-get install -y libspatialite-dev
-```
-
 ## Kubernetes
 Add two additional kubernetes templates, `storageclass.yaml` and `pvc.yaml`, for dynamically manage and creating the disk for the SqLite database.
 
@@ -112,7 +106,7 @@ spec:
       containers:
         volumeMounts:
         - name: %SERVICE_NAME%-volume
-          mountPath: /mnt/%STORAGE_SHARE_NAME%
+          mountPath: /mnt/data
       volumes:
       - name: %SERVICE_NAME%-volume
         persistentVolumeClaim:
@@ -124,9 +118,9 @@ Add the following environment variables to the `buid-and-deply.yml`.
 
 ```yaml
 env:
-  DATA_NAME: nanoDb
-  DATA_SIZE: 10Gi
-  DATA_CONNECTIONSTRING: "Data Source=/data/{{ env.nanoDb }}.sqlite"
+  SQL_NAME: nanoDb
+  SQL_SIZE: 10Gi
+  SQL_CONNECTIONSTRING: "Data Source=/data/{{ env.nanoDb }}.sqlite"
 ```
 
 Additionally, this step has been added to ensure database migrations are applied.  
@@ -138,7 +132,7 @@ Additionally, this step has been added to ensure database migrations are applied
     dotnet ef database update `
       --no-build `
       --startup-project $env:APP_NAME `
-      --connection "$env:DATA_MIGRATION_CONNECTIONSTRING" `;
+      --connection "$env:SQL_MIGRATION_CONNECTIONSTRING" `;
 
     if ($LastExitCode -ne 0)
     { 

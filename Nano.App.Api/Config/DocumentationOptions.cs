@@ -37,11 +37,6 @@ public class DocumentationOptions
     public virtual OpenApiLicense? License { get; set; }
 
     /// <summary>
-    /// Optional Content Security Policy nonce.
-    /// </summary>
-    public virtual string? CspNonce { get; set; }
-
-    /// <summary>
     /// Hide default API version if true.
     /// Default version routes will be hidden in swagger.
     /// </summary>

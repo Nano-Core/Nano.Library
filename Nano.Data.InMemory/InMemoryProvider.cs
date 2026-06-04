@@ -11,7 +11,7 @@ namespace Nano.Data.InMemory;
 /// </summary>
 /// <remarks>
 ///     This provider uses Entity Framework Core's in-memory database and does not register additional services such as health checks.
-///     Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.InMemory
+///     Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.InMemory/README.md#nanodatainmemory.
 /// </remarks>
 public sealed class InMemoryProvider : IDataProvider
 {

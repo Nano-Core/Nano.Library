@@ -15,7 +15,7 @@ namespace Nano.App.Console;
 /// Represents a Nano console application designed to run as a background service or cron job.
 /// Provides an entry point for configuring services and running console-based Nano applications.
 /// </summary>
-/// <remarks>Documentation: <see href="https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Console">Nano Console Application</see></remarks>
+/// <remarks>Documentation: <see href="https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Console/README.md#nanoappconsole">Nano Console Application</see></remarks>
 public class NanoConsoleApplication : BaseNanoApplication<IConsoleApplication, IHost, HostApplicationBuilder>, IConsoleApplication
 {
     /// <summary>

@@ -14,7 +14,7 @@ namespace Nano.Logging.Log4Net;
 /// <summary>
 /// A logging provider that configures log4net as the application's logging framework.
 /// </summary>
-/// <remarks>Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging.Log4Net</remarks>
+/// <remarks>Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging.Log4Net/README.md#nanologginglog4net</remarks>
 public sealed class Log4NetProvider : ILoggingProvider
 {
     /// <summary>

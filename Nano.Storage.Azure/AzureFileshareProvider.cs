@@ -14,7 +14,7 @@ namespace Nano.Storage.Azure;
 ///     This Nano provider registers Azure File Share–related services based on the supplied <see cref="StorageOptions"/>.
 ///     When health checks are enabled, it adds an Azure File Share health check to the application's health check pipeline.
 /// </remarks>
-/// <remarks>Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage.Azure</remarks>
+/// <remarks>Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage.Azure/README.md/nanostorageazure</remarks>
 public sealed class AzureFileshareProvider : IStorageProvider
 {
     /// <summary>

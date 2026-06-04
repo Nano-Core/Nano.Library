@@ -2,6 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Nano.App.ApiClient.Abstractions;
+using Nano.App.ApiClient.Exceptions;
+using Nano.Data.Abstractions.Exceptions;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 
 namespace Nano.App.ApiClient;
@@ -26,6 +28,10 @@ public sealed class AccessTokenProvider : IAccessTokenProvider
         try
         {
             return this.accessToken ??= await factory(cancellationToken);
+        }
+        catch (ApiClientException)
+        {
+            return null;
         }
         finally
         {

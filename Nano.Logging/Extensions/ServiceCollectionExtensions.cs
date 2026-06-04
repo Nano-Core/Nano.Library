@@ -19,7 +19,7 @@ public static class ServiceCollectionExtensions
     /// <typeparam name="TProvider">The type of the logging provider to register. Must implement <see cref="ILoggingProvider"/> and have a parameterless constructor.</typeparam>
     /// <param name="services">The <see cref="IServiceCollection"/> to add the logging provider to.</param>
     /// <returns>The same <see cref="IServiceCollection"/> instance for chaining.</returns>
-    /// <remarks>Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging</remarks>
+    /// <remarks>Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging/README.md#nanologging.</remarks>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="services"/> is <c>null</c>.</exception>
     public static IServiceCollection AddNanoLogging<TProvider>(this IServiceCollection services)
         where TProvider : ILoggingProvider

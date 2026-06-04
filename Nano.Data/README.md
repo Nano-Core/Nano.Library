@@ -10,9 +10,10 @@
 ***
 
 ## Table of Contents
-* **[Home](https://github.com/Nano-Core/Nano.Library#nano-library)**
+* **[Home](https://github.com/Nano-Core/Nano.Library/tree/master/README.md#nanolibrary#nanolibrary)**
 * **[Summary](#summary)**
 * **[Registration](#registration)**
+* **[Variables And Secrets](#variables-and-secrets)**
 * **[Configuration](#configuration)**
   * **[Connection Pool](#connection-pool)**
   * **[Identity](#identity)**
@@ -83,6 +84,13 @@ If you want to use a custom identity type, it must be specified during registrat
 > ⚠️ When using a non-default identity type, `TIdentity` must also be specified on **[Data Models](#data-models)**, **[Data Mappings](#data-mappings)**, and other related 
 Nano abstractions.  
 
+## Variables And Secrets
+Nano data providers require a set of secrets.  
+
+| Variable                              | Type     | Description                                           |
+| ------------------------------------- | -------- | ----------------------------------------------------- |
+| DATA_{{database-name}}_PASSWORD       | secrets  | This database password for the application sql user.  |
+
 ## Configuration
 The `Data` section in the configuration defines the data provider and related settings used by the application.
 
@@ -127,7 +135,7 @@ The `Data` section in the configuration defines the data provider and related se
 }
 ```
 
-> 📖 Learn more about **[Application Configuration](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#configuration)** here.  
+> 📖 Learn more about **[Application Configuration](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App/README.md#configuration)** here.  
 
 ## Connection Pool
 Nano supports optional connection pooling for the underlying Entity Framework data provider. When enabled, database contexts are reused from a pool, which can improve performance 
@@ -144,7 +152,7 @@ access control.
 | Setting                               | Type     | Default         | Description                                                                                                              |
 | ------------------------------------- | -------- | --------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | `TokensExpirationInHours`             | TimeSpan | 24:00:00        | The expiration time for tokens in hours.                                                                                 |
-| `UseAudit`                            | enum     | None            | Defines which intitity models to to audit. Allows multiple values. See possible values below.                            |
+| `UseAudit`                            | enum     | None            | Defines which identity models to to audit. Allows multiple values. See possible values below.                            |
 | `User`                                | object   | default         | Options for user-specific settings.                                                                                      |
 | `User.IsUniqueEmailAddressRequired`   | bool     | true            | A value indicating whether each user must have a unique email address.                                                   |
 | `User.IsUniquePhoneNumberRequired`    | bool     | false           | A value indicating whether each user must have a unique phone number.                                                    |
@@ -203,6 +211,12 @@ access control.
   }
 }
 ```
+
+The `ApiKey.Secret` must be stored securily on GitHub.  
+
+| Variable                              | Type     | Description                            |
+| ------------------------------------- | -------- | -------------------------------------- |
+| {{environment}}_AUTH_API_KEY_SECRET   | secrets  | Secret used for encrypting API keys.   |
 
 The following values can be used for the `UseAudit` configuration setting. Multiple values can be specified as a comma-separated list in `appsettings.json`.
 
@@ -282,11 +296,11 @@ Once implemented, the provider can be added to the application during startup co
 
 The following data providers are currently supported in Nano.  
 
-* **[Nano.Data.InMemory](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.InMemory)**
-* **[Nano.Data.MySql](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.MySql)**
-* **[Nano.Data.PostgreSQL](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.PostgreSQL)**
-* **[Nano.Data.SqLite](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.SqLite)**
-* **[Nano.Data.SqlServer](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.SqlServer)**
+* **[Nano.Data.InMemory](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.InMemory/README.md#nanodatainmemory)**
+* **[Nano.Data.MySql](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.MySql/README.md#nanodatamysql)**
+* **[Nano.Data.PostgreSQL](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.PostgreSQL/README.md#nanodatapostgresql)**
+* **[Nano.Data.SqLite](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.SqLite/README.md#nanodatasqlite)**
+* **[Nano.Data.SqlServer](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.SqlServer/README.md#nanodatasqlserver)**
 
 ## Data Context
 Nano provides built-in management for the `DbContext` while still letting you use it as you normally would.  
@@ -472,13 +486,27 @@ Explore spatial and other advanced mappings using the **[Api.Data.MySql.Mappings
 ## Migrations
 Migrations in Nano work the same way as standard Entity Framework migrations.  
 
+First, ensure that the EF Core tools are installed. If they aren’t, install them. If they are already installed, verify that the version matches the EF version used in Nano by 
+running the following command.
+
+```powershell
+dotnet ef --version
+```
+
+```powershell
+dotnet tool install --global dotnet-ef
+```
+
+```powershell
+dotnet tool update --global dotnet-ef --version {{version}}
+```
 Before creating migrations, ensure you have implemented a `BaseDbContextFactory<MySqlProvider, MySqlDbContext>`. Then, in PowerShell, add a new migration.  
 
 ```powershell
 dotnet ef migrations add Initial --project {project}
 ```
 
-Migrations are not applied automatically unless the `StartupAction` option is set to `Migrate` in the configuration.
+Migrations are not applied automatically unless the `StartupAction` option is set to `Migrate` in the configuration.  
 
 > ⚠️ It is recommended to enable migrations only in `Development` environments.
 
@@ -793,7 +821,7 @@ create, update, or delete operations to the local model.
 
 This approach provides a simple and consistent mechanism for maintaining data synchronization across services, reducing integration complexity while preserving clear ownership boundaries between applications.  
 
-> ⚠️ Entity Events require **[Eventing](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Eventing)** to be configured in the application.
+> ⚠️ Entity Events require **[Eventing](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Eventing/README.md#nanoeventing)** to be configured in the application.
 
 Only entities implementing `IEntityIdentity<TIdentity>` are eligible for participation in entity eventing. The attribute allows a configurable list of publish properties, which determines the data included 
 in the generated event payload. For entities deriving from `BaseEntity`, the `CreatedAt` property is automatically included to ensure consistent timestamp synchronization between publishers and subscribers.

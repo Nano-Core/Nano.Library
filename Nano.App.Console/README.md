@@ -8,9 +8,10 @@
 ***
 
 ## Table of Contents
-* **[Home](https://github.com/Nano-Core/Nano.Library#nano-library)**
+* **[Home](https://github.com/Nano-Core/Nano.Library/tree/master/README.md#nanolibrary)**
 * **[Summary](#summary)**
 * **[Registration](#registration)**
+* **[Variables And Secrets](#variables-and-secrets)**
 * **[Configuration](#configuration)**
   * **[Localization](#localization)**
   * **[Exception Handling](#exception-handling)**
@@ -54,6 +55,17 @@ NanoConsoleApplication
 
 Register your custom services in the `ConfigureServices(x => { })` method to extend Nano with additional functionality or integrations.  
 
+## Variables And Secrets
+Nano console applications require a set of organization-level variables and secrets.  
+
+These variables are required and must be configured for the system to function correctly.  
+
+| Variable                              | Type     | Usage                                            |
+| ------------------------------------- | -------- | ------------------------------------------------ |
+| VERSION                               | vars     | Defines the major and minor version. E.g `1.0`.  |
+
+> 💡 The full version is automatically composed by appending GitHub `run_number` and `run_attempt` as revision and build.
+
 ## Configuration
 The `App` section in the configuration defines behavior related to the application.  
 
@@ -93,7 +105,7 @@ The `DefaultCultureInfo` will be set to the configured default culture.
 ## Exception Handling
 Exceptions thrown by individual Nano workers are handled internally, ensuring that failures in one worker do not impact the execution of others.  
 
-When a **[Logging Provider](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging)** is registered, any worker that fails will automatically log the exception.  
+When a **[Logging Provider](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging/README.md#nanologging)** is registered, any worker that fails will automatically log the exception.  
 
 No additional configuration or setup is required.  
 
@@ -103,7 +115,7 @@ Try it out yourself using the **[Api.ExceptionHandling](https://github.com/Nano-
 Nano API clients provide a consistent and structured way for applications to communicate with other Nano API services.  
 
 In console applications, they allow worker processes to establish connections with one or more 
-**[Nano API applications](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api)**, send requests, and retrieve responses in a reliable and predictable manner. 
+**[Nano API applications](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api/README.md#nanoappapi)**, send requests, and retrieve responses in a reliable and predictable manner. 
 This enables console workers to leverage the functionality of multiple Nano services while keeping service boundaries clear and maintaining consistent 
 error handling, logging, and response propagation across the system.
 

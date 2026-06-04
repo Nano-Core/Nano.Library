@@ -5,7 +5,7 @@ using Microsoft.OpenApi;
 using Nano.App.Api.Config;
 using Nano.App.Api.Mvc.Documentation.Filters.Document;
 using Nano.App.Api.Mvc.Documentation.Filters.Schema;
-using Nano.App.Api.Mvc.Documentation.Regex;
+using Nano.App.Api.Mvc.Documentation.RegularExpressions;
 using Nano.Common.Consts;
 using Nano.Common.Extensions;
 using Nano.Data.Abstractions.Identity.Authentication.Consts;

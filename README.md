@@ -24,19 +24,20 @@
 &nbsp;&nbsp;&nbsp;&nbsp;📌 **[Summary](#-summary)**  
 &nbsp;&nbsp;&nbsp;&nbsp;✨ **[Highlighted Features](#-highlighted-features)**  
 &nbsp;&nbsp;&nbsp;&nbsp;🏛️ **[Nano Architectures](#%EF%B8%8F-nano-architectures)**  
+&nbsp;&nbsp;&nbsp;&nbsp;⚙️ **[Required Tools](#-required-tools)**  
 &nbsp;&nbsp;&nbsp;&nbsp;🧩 **[Solution Composition](#-solution-composition)**  
-&nbsp;&nbsp;&nbsp;&nbsp;<img src="https://api.nuget.org/v3-flatcontainer/nuget.protocol/6.0.0/icon" width="19" /> **[NuGet Packages](#-nuget-packages)**  
-&nbsp;&nbsp;&nbsp;&nbsp;🔏 **[Licenses](#-licenses)**  
+&nbsp;&nbsp;&nbsp;&nbsp;📦 **[NuGet Packages](#-nuget-packages)**  
+&nbsp;&nbsp;&nbsp;&nbsp;⚖️ **[Licenses](#-licenses)**  
 
 ### Documentation
-&nbsp;&nbsp;&nbsp;&nbsp;🚀 **[Applications](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App)**  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;📡 **[Api](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api)**  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⚙️ **[Console](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Console)**  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;🌐 **[Web](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Web)**  
-&nbsp;&nbsp;&nbsp;&nbsp;📜 **[Logging](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging)**  
-&nbsp;&nbsp;&nbsp;&nbsp;🛢️ **[Data](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data)**  
-&nbsp;&nbsp;&nbsp;&nbsp;⚡ **[Eventing](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Eventing)**  
-&nbsp;&nbsp;&nbsp;&nbsp;🗂 **[Storage](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage)**  
+&nbsp;&nbsp;&nbsp;&nbsp;🚀 **[Applications](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#README.md#nanoapp)**  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;📡 **[Api](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api/README.md#nanoappapi)**  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⚙️ **[Console](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Console/README.md#nanoappconsole)**  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;🌐 **[Web](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Web/README.md#nanoappweb)**  
+&nbsp;&nbsp;&nbsp;&nbsp;📜 **[Logging](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging/README.md#nanologging)**  
+&nbsp;&nbsp;&nbsp;&nbsp;🛢️ **[Data](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data/README.md#nanodata)**  
+&nbsp;&nbsp;&nbsp;&nbsp;⚡ **[Eventing](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Eventing/README.md#nanoeventing)**  
+&nbsp;&nbsp;&nbsp;&nbsp;🗂 **[Storage](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage/README.md#nanostorage)**  
 
 ## 📌 Summary
 Nano is a lightweight library for rapidly building modern .NET applications.
@@ -59,17 +60,17 @@ more, Nano helps cover the full application lifecycle, from development and conf
 To support production-grade environments, Nano also provides the foundation for running applications securely and at scale in Kubernetes on Azure. Nano includes ready-to-use templates
 for Kubernetes and GitHub Actions, enabling consistent CI/CD pipelines and infrastructure provisioning.
 
-> 📖 Learn more about **[Nano.Azure](https://github.com/Nano-Core/Nano.Azure)** and **[Nano.Azure.Kubernetes](https://github.com/Nano-Core/Nano.Azure.Kubernetes)**
+> 📖 Learn more about **[Nano.Azure](https://github.com/Nano-Core/Nano.Azure/README.md#nanoazure)** and **[Nano.Azure.Kubernetes](https://github.com/Nano-Core/Nano.Azure.Kubernetes/README.md#nanoazurekubernetes)**
 
 Together, these capabilities make Nano a strong choice for designing, building, and maintaining microservice architectures, even for small teams.
 
 ### 🚀 Launch Your App in Under 60 Minutes 
-Get started quickly by building your own Nano **[Api](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api)**, **[Web](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Web)**, 
-or **[Console](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Console)** application, and have it configured and running in less than an hour. Nano follows a flexible, 
-opt-in approach, allowing you to configure and enable only the features you need. For the four core pillars of distributed systems, **[Logging](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging)**, **[Data](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data)**, 
-**[Eventing](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Eventing)**, and **[Storage](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage)**, Nano 
-provides pluggable providers that integrate seamlessly into your application. Simply choose and configure the providers that match your requirements for each pillar, and Nano handles 
-the rest.
+Get started quickly by building your own Nano **[Api](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api/README.md&nanoapi)**, **[Web](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Web/README.md#nanoweb)**, 
+or **[Console](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Console/README.md#nanoconsole)** application, and have it configured and running in less than an hour. Nano follows a flexible, 
+opt-in approach, allowing you to configure and enable only the features you need. For the four core pillars of distributed systems, **[Logging](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging/README.md#nanologging)**, 
+**[Data](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data/README.md#nanodata)**, **[Eventing](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Eventing/README.md#nanoeventing)**, 
+and **[Storage](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage#/README.md#nanostorage)**, Nano provides pluggable providers that integrate seamlessly into your application. 
+Simply choose and configure the providers that match your requirements for each pillar, and Nano handles the rest.
 
 It’s recommended to start with the **[Quick Start Guide](https://github.com/Nano-Core/Nano.Library/tree/master/QUICK_START.md)** to get familiar with Nano, and then continue exploring 
 the documentation for applications and providers to learn how to configure, use, and customize it. You can also dive into **[Nano.Lessons](https://github.com/Nano-Core/Nano.Lessons)**, 
@@ -90,7 +91,7 @@ In addition to built-in capabilities, Nano supports extending API clients with c
 functionality. Authentication, headers, and request metadata are handled automatically, including secure propagation between services. This ensures reliable, consistent, and 
 secure communication across all connected Nano applications without additional boilerplate.
 
-> 📖 Learn more about **[Api Clients](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#api-clients)**
+> 📖 Learn more about **[Api Clients](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App/README#api-clients)**
 
 ### ✨ Entity Eventing
 Entity Events in Nano provide a lightweight, attribute-driven mechanism for synchronizing entity changes across distributed applications. They automatically propagate create, update, 
@@ -104,7 +105,7 @@ dependent entities to propagate back to root aggregates.
 
 This model reduces coupling between services while maintaining data consistency across boundaries.  
 
-> 📖 Learn more about **[Entity Eventing](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#entity-eventing)**
+> 📖 Learn more about **[Entity Eventing](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data/README.md#entity-eventing)**
 
 ### ✨ Include Annotation (graph-lite)
 Nano’s Include feature automatically loads navigation properties when retrieving entities through repositories, enabling full entity graphs with recursive inclusion up to a configured 
@@ -113,7 +114,7 @@ depth. It supports both references and collections, simplifying data access for 
 This is especially useful when you want to work with complete object graphs instead of manually composing related data. However, inclusion can be selectively controlled per query, 
 allowing you to retrieve only the main entity when full graphs are not needed.  
 
-> 📖 Learn more about **[Include Annotations](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#include-annotation)**
+> 📖 Learn more about **[Include Annotations](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data/README.md#include-annotation)**
 
 ### ✨ Cascading Health Checks
 Nano provides built-in health checks exposed through a /healthz endpoint for monitoring application status.
@@ -123,7 +124,7 @@ failures propagate through related components and applications to provide a cons
 
 In addition, custom health checks can be registered during application startup, allowing application-specific components to integrate seamlessly into the same monitoring system.
 
-> 📖 Learn more about **[Api Health Checks](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api#health-checks)**
+> 📖 Learn more about **[Api Health Checks](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api/README.md#health-checks)**
 
 ## 🏛️ Nano Architectures
 Nano supports multiple distributed architecture styles, depending on the complexity and communication patterns of your system.
@@ -133,6 +134,22 @@ Nano supports multiple distributed architecture styles, depending on the complex
 | Solo Application                                 | A single, independent application.                                               |
 | Microservice Orchestration (Top-down)            | API-driven orchestration where a central API coordinates downstream services.    |
 | Microservice Orchestration (Service-to-Service)  | Decentralized communication where services interact directly with each other.    |
+
+## ⚙️ Required Tools
+Before getting started, make sure you have the following tools installed and configured.  
+
+| Tool                     | Description                                                                  |
+| ------------------------ | ---------------------------------------------------------------------------- |
+| **Docker Desktop**       | Runs supporting services such as databases and message brokers locally.      |
+| **Visual Studio (.NET)** | Primary IDE with .NET workload for building and running the application.     |
+| Git                      | Used for cloning the repository and managing source code.                    |
+| Terminal / CLI           | Executes commands (PowerShell, bash, Windows Terminal, etc.).                |
+
+And optional, but recommended, tools.  
+
+| Tool                     | Description                                                                  |
+| ------------------------ | ---------------------------------------------------------------------------- |
+| Postman (or similar)     | Helps test and explore API endpoints during development.                     |
 
 ## 🧩 Solution Composition
 All Nano applications follow a consistent and predictable solution structure.  
@@ -154,10 +171,9 @@ In the following table shows the different files and folder strucutre.
 | `.github/workflows/build-and-deploy.yml`            | ✓   | ✓   | ✓   | GitHub Actions workflow that builds, tests, publishes artifacts, and deploys a Nano application.                                                                                                                                                |
 | `.kubernetes/configmap.yaml`                        | ✓   | ✓   | ✓   | [ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/) specification for Kubernetes.                                                                                                                                         |
 | `.kubernetes/autoscaler.yaml`                       | ✓   | ✓   | ✗  | [Horizontal Pod Autoscaler (HPA)](https://kubernetes.io/docs/concepts/workloads/autoscaling/horizontal-pod-autoscale/) specification.                                                                                                           |
-| `.kubernetes/deployment.yaml`                       | ✓   | ✓   | ✗  | [Deployment](https://kubernetes.io/docs/concepts/services-networking/ingress/) specification.                                                                                                                                                   |
+| `.kubernetes/deployment.yaml`                       | ✓   | ✓   | ✗  | [Deployment](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/) specification.                                                                                                                                              |
 | `.kubernetes/service.yaml`                          | ✓   | ✓   | ✗  | [Service](https://kubernetes.io/docs/concepts/services-networking/service/) exposure specification.                                                                                                                                             |
-| `.kubernetes/ingress.yaml`                          | (✓) | (✓) | ✗  | [Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/) specification _(Optional)_.                                                                                                                                         |
-| `.kubernetes/certificate.yaml`                      | (✓) | (✓) | ✗  | [SSL Certificate](https://cert-manager.io/docs/usage/certificate/) specification _(Optional)_.                                                                                                                                                  |
+| `.kubernetes/httproute.yaml`                        | (✓) | (✓) | ✗  | [HTTPRoute](https://kubernetes.io/docs/concepts/services-networking/gateway/#api-kind-httproute) specification _(Optional)_.                                                                                                                    |
 | `.kubernetes/cronjob.yaml`                          | ✗  | ✗   | ✓   | [CronJob](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/) specification.                                                                                                                                                  |
 | `.tests/Tests.{name}.csproj`                        | ✓   | ✓   | ✓   | Test project, which is empty by default and included to demonstrate the structure and where unit or integration tests should be added.                                                                                                          |
 | `.tests/Properties/DoNotParallelize.cs`             | ✓   | ✓   | ✓   | Ensures tests are not Parallelized.                                                                                                                                                                                                             |
@@ -172,12 +188,12 @@ In the following table shows the different files and folder strucutre.
 | `.dockerignore`                                     | ✓   | ✓   | ✓   | Lists files and folders to ignore when building Docker images.                                                                                                                                                                                  |
 | `.gitignore`                                        | ✓   | ✓   | ✓   | Lists files and folders to ignore in Git version control.                                                                                                                                                                                       |
 | `Dockerfile`                                        | ✓   | ✓   | ✓   | The `Dockerfile` used to build the container image for `Staging` and `Production` deployments.                                                                                                                                                  |
-| `README.md`                                         | (✓) | (✓) | (✓) | Documentation asset for the Git repository and the application’s NuGet package _(Optional)_.                                                                                                                                                   |
+| `README.md`                                         | (✓) | (✓) | (✓) | Documentation asset for the Git repository and the application’s NuGet package _(Optional)_.                                                                                                                                                    |
 | `icon.png`                                          | (✓) | (✓) | ✗   | Icon asset for the application’s NuGet package _(Optional)_.                                                                                                                                                                                   |
 | `LICENSE`                                           | (✓) | (✓) | ✗   | License file for the Git repository and the application’s NuGet package _(Optional)_.                                                                                                                                                          |
-| `{name}.sln`                                        | ✓   | ✓   | ✓   | The visual studio solution file.                                                                                                                                                                                                                |
+| `{name}.sln`                                        | ✓   | ✓   | ✓    | The visual studio solution file.                                                                                                                                                                                                                |
 
-## <img src="https://api.nuget.org/v3-flatcontainer/nuget.protocol/6.0.0/icon" width="27" /> NuGet Packages
+## 📦 NuGet Packages
 These packages are all-inclusive packages, where all other Nano packages are included. Easy to get started, but it's recommended to instead select only the
 packages needed by your application, to avoid unnecessary depdendencies.  
 
@@ -185,6 +201,12 @@ packages needed by your application, to avoid unnecessary depdendencies.
 | ---------- | --------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
 | Nano.All   | [![NuGet](https://img.shields.io/nuget/dt/Nano.All.svg)](https://www.nuget.org/packages/Nano.All/)  | [![NuGet](https://img.shields.io/nuget/v/Nano.All.svg)](https://www.nuget.org/packages/Nano.All/)   |
 | NanoCore   | [![NuGet](https://img.shields.io/nuget/dt/NanoCore.svg)](https://www.nuget.org/packages/NanoCore/)  | [![NuGet](https://img.shields.io/nuget/v/NanoCore.svg)](https://www.nuget.org/packages/NanoCore/)   |
+
+And the Common Package.  
+
+| Package                      | Type              | Downloads                                                                                                  | Latest Version                                                                                            |
+| ---------------------------- | ----------------- | ---------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Nano.Common                  | _`Transitive`_    | [![NuGet](https://img.shields.io/nuget/dt/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/)   | [![NuGet](https://img.shields.io/nuget/v/Nano.Common.svg)](https://www.nuget.org/packages/Nano.Common/)   |
 
 The next packages are application packages. Include only one matching the application type you want to create.  
 
@@ -223,7 +245,7 @@ Last, provider packages. These enable functionality related to Nano providers.
 | Nano.Storage.Azure           | `Storage`                    | [![NuGet](https://img.shields.io/nuget/dt/Nano.Storage.Azure.svg)](https://www.nuget.org/packages/Nano.Storage.Azure/)                   | [![NuGet](https://img.shields.io/nuget/v/Nano.Storage.Azure.svg)](https://www.nuget.org/packages/Nano.Storage.Azure/)                   |
 | Nano.Storage.Local           | `Storage`                    | [![NuGet](https://img.shields.io/nuget/dt/Nano.Storage.Local.svg)](https://www.nuget.org/packages/Nano.Storage.Local/)                   | [![NuGet](https://img.shields.io/nuget/v/Nano.Storage.Local.svg)](https://www.nuget.org/packages/Nano.Storage.Local/)                   |
 
-## 🔏 Licenses
+## ⚖️ Licenses
 Nano is free to use and released under the MIT License.  
 Dependencies are distributed under a combination of the following licenses.
 

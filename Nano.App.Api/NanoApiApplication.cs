@@ -14,7 +14,7 @@ namespace Nano.App.Api;
 /// <summary>
 /// Represents a Nano API application.
 /// </summary>
-/// <remarks>Documentation: <see href="https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api">Nano Api Application</see></remarks>
+/// <remarks>Documentation: <see href="https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api/README.md#nanoappapi">Nano Api Application</see></remarks>
 public class NanoApiApplication : BaseNanoApplication<IApiApplication, WebApplication, WebApplicationBuilder>, IApiApplication
 {
     /// <summary>
@@ -76,7 +76,6 @@ public class NanoApiApplication : BaseNanoApplication<IApiApplication, WebApplic
 
         return this;
     }
-
 
     /// <summary>
     /// Gets the <see cref="ApiKeyOptions"/> from the <see cref="IConfiguration"/>.

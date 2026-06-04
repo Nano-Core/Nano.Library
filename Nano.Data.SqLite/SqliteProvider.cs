@@ -1,3 +1,4 @@
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.Common.Mvc.HealthChecks.Extensions;
@@ -5,6 +6,8 @@ using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Config;
 using Nano.Data.Extensions;
 using System;
+using System.IO;
+using System.Runtime.InteropServices;
 
 namespace Nano.Data.SqLite;
 
@@ -13,7 +16,7 @@ namespace Nano.Data.SqLite;
 /// </summary>
 /// <remarks>
 ///     Intended for local development, lightweight deployments, and embedded database scenarios.
-///     Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.SqLite
+///     Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.SqLite/README.md#nanodatasqlite
 /// </remarks>
 public sealed class SqLiteProvider : IDataProvider
 {
@@ -53,10 +56,7 @@ public sealed class SqLiteProvider : IDataProvider
                     .GetQuerySplittingBehavior();
 
                 x.MaxBatchSize(batchSize);
-                x.UseNetTopologySuite();
                 x.UseQuerySplittingBehavior(querySplittingBehavior);
             });
-
-        SQLitePCL.Batteries.Init();
     }
 }

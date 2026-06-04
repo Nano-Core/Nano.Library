@@ -11,7 +11,7 @@ namespace Nano.Logging.Microsoft;
 /// <summary>
 /// A logging provider that configures the built-in Microsoft.Extensions.Logging framework.
 /// </summary>
-/// <remarks>Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging.Microsoft</remarks>
+/// <remarks>Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging.Microsoft/README.md#nanologgingmicrosoft</remarks>
 public sealed class MicrosoftProvider : ILoggingProvider
 {
     /// <summary>
