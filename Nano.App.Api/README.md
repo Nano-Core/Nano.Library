@@ -1564,6 +1564,34 @@ Both the public and private keys should be stored securily on GitHub and deploye
 
 The variables should be created in Kubernetes as a secret and referenced in the deployment, to securely store the public and private keys.  
 
+To generate the private and public keys, run the following in a Console application.
+
+```csharp
+using System.Security.Cryptography;
+
+using var rsa = RSA.Create();
+
+var publicKey = rsa
+    .ExportRSAPublicKeyPem()
+    .Replace("-----BEGIN RSA PUBLIC KEY-----", "")
+    .Replace("-----END RSA PUBLIC KEY-----", "")
+    .Replace("\n", string.Empty);
+
+var privateKey = rsa
+    .ExportRSAPrivateKeyPem()
+    .Replace("-----BEGIN RSA PRIVATE KEY-----", "")
+    .Replace("-----END RSA PRIVATE KEY-----", "")
+    .Replace("\n", string.Empty);
+
+Console.WriteLine("PUBLIC KEY:");
+Console.WriteLine(publicKey);
+Console.WriteLine();
+Console.WriteLine("PRIVATE KEY:");
+Console.WriteLine(privateKey);
+
+Console.Read();
+```
+
 In Nano, all authentication features are accessed through a set of repository interfaces. The table below details each supported login type and its corresponding registered 
 interfaces, showing what is available for use in your application.
 
