@@ -8,22 +8,18 @@ on:
       - master 
 env:
   APP_NAME: Nano.Library
-  VERSION: 10.0.0
+  VERSION: 10.0.0-rc2
 jobs:
   build-and-deploy:
     runs-on: windows-latest
     permissions:
       contents: write
       packages: write
-      id-token: write
     concurrency:
       group: ${{ github.repository }}
       cancel-in-progress: false
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: 10.0.x
 
       - name: Build
         shell: pwsh
