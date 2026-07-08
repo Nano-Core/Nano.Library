@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Nano.App.ApiClient.Abstractions;
 using Nano.App.ApiClient.Exceptions;
-using Nano.Data.Abstractions.Exceptions;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 
 namespace Nano.App.ApiClient;
