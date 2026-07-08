@@ -6,7 +6,7 @@ using Nano.Common.Serialization;
 using Nano.Eventing.Abstractions;
 using Nano.Eventing.Abstractions.Config;
 
-namespace Nano.Eventing.RabbitMq.Extensions;
+namespace Nano.Eventing.RabbitMq.HealthChecks.Extensions;
 
 /// <summary>
 /// Extension methods for <see cref="IServiceCollection"/> to register eventing services.

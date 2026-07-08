@@ -49,8 +49,8 @@ services:
       - ./bin/{share-name}:/mnt/{share-name}
 ```
 
-When deploying Nano applications to Kubernetes, ensure your `deployment.yaml` or `cronjob.yaml`, depending on the application type, maps the shared storage directory and 
-a secret is created for the storage account. The exact configuration depends on the storage provider. See supported **[Storage Providers](#storage-providers)** for details.  
+When deploying Nano applications to Kubernetes, ensure your `deployment.yaml` or `cronjob.yaml`, depending on the application type, maps the shared storage directory. The exact 
+configuration depends on the storage provider. See supported **[Storage Providers](#storage-providers)** for details.  
 
 > ⚠️ Optionally, map a writable `tmp` directory for temporary files.  
 This allows the main container to remain immutable while supporting temporary data.  
