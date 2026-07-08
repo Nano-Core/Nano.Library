@@ -70,7 +70,8 @@ public sealed class DefaultStorageHealthCheck : IHealthCheck
 
         var probeTask = Task.Run(() =>
         {
-            var probeFile = Path.Combine(path, $".healthcheck-{Environment.MachineName}");
+            var probeFileName = Path.GetFileName($".healthcheck-{Environment.MachineName}");
+            var probeFile = Path.Combine(path, probeFileName);
 
             File.WriteAllText(probeFile, "ok");
             File.Delete(probeFile);
