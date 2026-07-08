@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 using Nano.Eventing.Abstractions.Config;
 using RabbitMQ.Client;
 
-namespace Nano.Eventing.RabbitMq.HealthChecks;
+namespace Nano.Eventing.RabbitMq.HealthChecks.Extensions;
 
 internal static class HealtCheckBuilderExtensions
 {
