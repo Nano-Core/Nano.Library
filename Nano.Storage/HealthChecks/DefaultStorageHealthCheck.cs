@@ -71,6 +71,12 @@ public sealed class DefaultStorageHealthCheck : IHealthCheck
         var probeTask = Task.Run(() =>
         {
             var probeFileName = Path.GetFileName($".healthcheck-{Environment.MachineName}");
+
+            if (Path.IsPathRooted(probeFileName))
+            {
+                throw new InvalidOperationException("Probe file name must be a relative file name.");
+            }
+
             var probeFile = Path.Combine(path, probeFileName);
 
             File.WriteAllText(probeFile, "ok");
