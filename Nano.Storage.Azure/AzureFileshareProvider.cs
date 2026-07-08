@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Nano.Common.Mvc.HealthChecks.Extensions;
 using Nano.Storage.Abstractions;
 using Nano.Storage.Abstractions.Config;
-using Nano.Storage.Azure.HealthChecks.Extensions;
+using Nano.Storage.HealthChecks.Extensions;
 
 namespace Nano.Storage.Azure;
 
@@ -42,6 +42,6 @@ public sealed class AzureFileshareProvider : IStorageProvider
 
         services
             .AddHealthChecks()
-            .AddAzureFileshareStorage(failureStatus);
+            .AddDefaultStorageHealthCheck(failureStatus);
     }
 }
