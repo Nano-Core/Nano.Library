@@ -141,12 +141,15 @@ Additionally, this step has been added to ensure database migrations are applied
     $env:SQL_HOST = az sql server list -g $env:AZURE_GROUP_DATABASE --query "[0].fullyQualifiedDomainName" -o tsv;
     $env:SQL_PORT = "1433"
     $env:SQL_ADMIN_USER = az sql server list -g $env:AZURE_GROUP_DATABASE --query "[0].administratorLogin" -o tsv;
-    $env:SQL_MIGRATION_CONNECTIONSTRING = "Server=$env:SQL_HOST,$env:SQL_PORT;Database=$env:SQL_NAME;User Id=$env:SQL_ADMIN_USER;Password=$env:SQL_ADMIN_PASSWORD;Encrypt=True;TrustServerCertificate=True;";
 
-    dotnet ef database update `
-      --no-build `
-      --startup-project $env:APP_NAME `
-      --connection "$env:SQL_MIGRATION_CONNECTIONSTRING";
+    $env:DATA__CONNECTIONSTRING = "Server=$env:SQL_HOST,$env:SQL_PORT;Database=$env:SQL_NAME;User Id=$env:SQL_ADMIN_USER;Password=$env:SQL_ADMIN_PASSWORD;Encrypt=True;TrustServerCertificate=True;";
+
+    & "/opt/ef-tools/$env:DOTNET_EF_TOOLS_VERSION/dotnet-ef" database update `
+    --no-build `
+    --configuration Release `
+    --startup-project $env:APP_NAME `
+    -- `
+    --environment $env:ASPNETCORE_ENVIRONMENT;
 
     if ($LastExitCode -ne 0)
     { 
@@ -157,42 +160,45 @@ Additionally, this step has been added to ensure database migrations are applied
     apt-get install -y mssql-tools unixodbc-dev
 
     $loginExists = sqlcmd `
-      -S "$env:SQL_HOST,$env:SQL_PORT" `
-      -U $env:SQL_ADMIN_USER `
-      -P $env:SQL_ADMIN_PASSWORD `
-      -d master `
-      -h -1 `
-      -Q "SET NOCOUNT ON; SELECT COUNT(*) FROM sys.server_principals WHERE name = '$env:SQL_USER';"
+    -S "$env:SQL_HOST,$env:SQL_PORT" `
+    -U $env:SQL_ADMIN_USER `
+    -P $env:SQL_ADMIN_PASSWORD `
+    -d main `
+    -h -1 `
+    -Q "SET NOCOUNT ON; SELECT COUNT(*) FROM sys.server_principals WHERE name = '$env:SQL_USER';"
 
     if ($loginExists -eq 0)
     {
         sqlcmd `
-          -S "$env:SQL_HOST,$env:SQL_PORT" `
-          -U $env:SQL_ADMIN_USER `
-          -P $env:SQL_ADMIN_PASSWORD `
-          -d master `
-          -Q "CREATE LOGIN [$env:SQL_USER] WITH PASSWORD = '$env:SQL_PASSWORD';"
+        -S "$env:SQL_HOST,$env:SQL_PORT" `
+        -U $env:SQL_ADMIN_USER `
+        -P $env:SQL_ADMIN_PASSWORD `
+        -d main `
+        -Q "CREATE LOGIN [$env:SQL_USER] WITH PASSWORD = '$env:SQL_PASSWORD';"
     };
 
     $userExists = sqlcmd `
-      -S "$env:SQL_HOST,$env:SQL_PORT" `
-      -U $env:SQL_ADMIN_USER `
-      -P $env:SQL_ADMIN_PASSWORD `
-      -d $env:SQL_NAME `
-      -h -1 `
-      -Q "SET NOCOUNT ON; SELECT COUNT(*) FROM sys.database_principals WHERE name = '$env:SQL_USER';"
+    -S "$env:SQL_HOST,$env:SQL_PORT" `
+    -U $env:SQL_ADMIN_USER `
+    -P $env:SQL_ADMIN_PASSWORD `
+    -d $env:SQL_NAME `
+    -h -1 `
+    -Q "SET NOCOUNT ON; SELECT COUNT(*) FROM sys.database_principals WHERE name = '$env:SQL_USER';"
 
     if ($userExists -eq 0)
     {
         sqlcmd `
-          -S "$env:SQL_HOST,$env:SQL_PORT" `
-          -U $env:SQL_ADMIN_USER `
-          -P $env:SQL_ADMIN_PASSWORD `
-          -d $env:SQL_NAME `
-          -Q "CREATE USER [$env:SQL_USER] FOR LOGIN [$env:SQL_USER];
-              ALTER ROLE db_datareader ADD MEMBER [$env:SQL_USER];
-              ALTER ROLE db_datawriter ADD MEMBER [$env:SQL_USER];"
+        -S "$env:SQL_HOST,$env:SQL_PORT" `
+        -U $env:SQL_ADMIN_USER `
+        -P $env:SQL_ADMIN_PASSWORD `
+        -d $env:SQL_NAME `
+        -Q "CREATE USER [$env:SQL_USER] FOR LOGIN [$env:SQL_USER];
+            ALTER ROLE db_datareader ADD MEMBER [$env:SQL_USER];
+            ALTER ROLE db_datawriter ADD MEMBER [$env:SQL_USER];"
     };
+
+    echo "SQL_HOST=$env:SQL_HOST" >> $env:GITHUB_ENV;
+    echo "SQL_PORT=$env:SQL_PORT" >> $env:GITHUB_ENV;
 ```
 
 Last, the application connectionstring must be added in a secret in Kubernetes in the `Kubernetes Deploy` step.  

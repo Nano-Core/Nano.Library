@@ -13,7 +13,6 @@
 ![GitHub Pull Requests](https://img.shields.io/github/issues-pr/Nano-Core/Nano.Library)
 ![GitHub Contributors](https://img.shields.io/github/contributors/Nano-Core/Nano.Library)
 ![GitHub Sponsors](https://img.shields.io/github/sponsors/Nano-Core)
-![GitHub Discussions](https://img.shields.io/github/discussions/Nano-Core/Nano.Library)
 ![GitHub Size](https://img.shields.io/github/languages/code-size/Nano-Core/Nano.Library)
 
 > _Nano - Your lightweight foundation for building modern .NET applications._  

@@ -1,12 +1,12 @@
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Nano.Eventing.Abstractions.Config;
 using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Options;
+using Nano.Eventing.Abstractions.Config;
 using RabbitMQ.Client;
 
-namespace Nano.Eventing.RabbitMq.Extensions;
+namespace Nano.Eventing.RabbitMq.HealthChecks.Extensions;
 
 internal static class HealtCheckBuilderExtensions
 {

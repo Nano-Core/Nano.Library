@@ -1,8 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Nano.Eventing.Abstractions;
 using Nano.Eventing.Abstractions.Config;
-using Nano.Eventing.RabbitMq.Extensions;
 using System;
+using Nano.Eventing.RabbitMq.Extensions;
 
 namespace Nano.Eventing.RabbitMq;
 

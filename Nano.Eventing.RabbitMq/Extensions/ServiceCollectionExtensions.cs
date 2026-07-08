@@ -5,6 +5,7 @@ using Nano.Common.Mvc.HealthChecks.Extensions;
 using Nano.Common.Serialization;
 using Nano.Eventing.Abstractions;
 using Nano.Eventing.Abstractions.Config;
+using Nano.Eventing.RabbitMq.HealthChecks.Extensions;
 
 namespace Nano.Eventing.RabbitMq.Extensions;
 

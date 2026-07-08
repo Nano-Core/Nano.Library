@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Nano.Common.Mvc.HealthChecks.Extensions;
 using Nano.Storage.Abstractions;
 using Nano.Storage.Abstractions.Config;
-using Nano.Storage.Local.HealthChecks;
+using Nano.Storage.HealthChecks.Extensions;
 
 namespace Nano.Storage.Local;
 
@@ -58,6 +58,6 @@ public sealed class LocalFileShareProvider : IStorageProvider
 
         services
             .AddHealthChecks()
-            .AddCheck<LocalFileShareHealthCheck>("local-fileshare", failureStatus);
+            .AddDefaultStorageHealthCheck(failureStatus);
     }
 }

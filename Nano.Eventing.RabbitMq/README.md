@@ -101,15 +101,29 @@ spec:
     spec:
       containers:
         env:
+        - name: Eventing__Credentials__Host
+          valueFrom:
+            secretKeyRef:
+              name: rabbitmq-default-user
+              key: host
+        - name: Eventing__Credentials__Port
+          valueFrom:
+            secretKeyRef:
+              name: rabbitmq-default-user
+              key: port
+        - name: Eventing__Credentials__Id
+          valueFrom:
+            secretKeyRef:
+              name: rabbitmq-default-user
+              key: username
         - name: Eventing__Credentials__Secret
           valueFrom:
             secretKeyRef:
-              name: rabbitmq
-              key: rabbitmq-password
+              name: rabbitmq-default-user
+              key: password
 ```
 
 You also need to map the `rabbitmq` secret that is created alongside the **[Nano Azure Kuberenetes Eventing](https://github.com/Nano-Core/Nano.Azure.Kubernetes/tree/master/Nano.Azure.Kubernetes.RabbitMQ/README.md#nanoazurekubernetesrabbitmq)** 
 in the `deployment.yaml` or `cronjob.yaml` for eventing authentication.
 
 > ⚠️ The `rabbitmq` secret will be reused for all applications using RabbitMQ as eventing provider.  
-That makes it easy to change the secret values later on when needed, and just requires the secret values to be updated and re-deployed.  
