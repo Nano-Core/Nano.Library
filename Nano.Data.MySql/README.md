@@ -140,33 +140,51 @@ Additionally, this step must be added to ensure database migrations are applied,
 - name: Database Migration & User
   shell: pwsh
   run: |
-    $env:SQL_HOST = az mysql flexible-server list -g $env:AZURE_GROUP_DATABASE --query [0].fullyQualifiedDomainName;
-    $env:SQL_PORT = az mysql flexible-server list -g $env:AZURE_GROUP_DATABASE --query [0].databasePort;
-    $env:SQL_ADMIN_USER = az mysql flexible-server list -g $env:AZURE_GROUP_DATABASE --query [0].administratorLogin;
-    $env:SQL_MIGRATION_CONNECTIONSTRING = "Server=$env:SQL_HOST;Port=$env:SQL_PORT;Database=$env:SQL_NAME;Uid=$env:SQL_ADMIN_USER;Pwd=$env:SQL_ADMIN_PASSWORD;SslMode=Preferred";
+    $env:SQL_HOST = az mysql flexible-server list -g $env:AZURE_GROUP_DATABASE --query [0].fullyQualifiedDomainName -o tsv;
+    $env:SQL_PORT = az mysql flexible-server list -g $env:AZURE_GROUP_DATABASE --query [0].databasePort -o tsv;
+    $env:SQL_ADMIN_USER = az mysql flexible-server list -g $env:AZURE_GROUP_DATABASE --query [0].administratorLogin -o tsv;
 
-    dotnet ef database update `
-      --no-build `
-      --startup-project $env:APP_NAME `
-      --connection "$env:SQL_MIGRATION_CONNECTIONSTRING ";
+    $env:DATA__CONNECTIONSTRING = "Server=$env:SQL_HOST;Port=$env:SQL_PORT;Database=$env:SQL_NAME;Uid=$env:SQL_ADMIN_USER;Pwd=$env:SQL_ADMIN_PASSWORD;SslMode=Required";
+
+    & "/opt/ef-tools/$env:DOTNET_EF_TOOLS_VERSION/dotnet-ef" database update `
+    --no-build `
+    --configuration Release `
+    --startup-project $env:APP_NAME `
+    -- `
+    --environment $env:ASPNETCORE_ENVIRONMENT;
 
     if ($LastExitCode -ne 0)
     { 
         throw "error";
     };
           
-    apt-get update;
-    apt-get install -y mysql-client;
+    $env:MYSQL_PWD = $env:SQL_ADMIN_PASSWORD
 
-    $userExists = mysql --batch -e "SELECT EXISTS(SELECT 1 FROM mysql.user WHERE user = '$env:SQL_USER');" $env:SQL_MIGRATION_CONNECTIONSTRING;
+    $userExists = mysql `
+        --host $env:SQL_HOST `
+        --port $env:SQL_PORT `
+        --user $env:SQL_ADMIN_USER `
+        --ssl-mode=REQUIRED `
+        -e "SELECT EXISTS(SELECT 1 FROM mysql.user WHERE user = '$env:SQL_USER');";
 
     if ($userExists -eq 0) 
     {
-        mysql --connect-expired-password -e " `
-            CREATE USER '$env:SQL_USER'@'%' IDENTIFIED BY '$env:SQL_PASSWORD'; `
-            GRANT SELECT, INSERT, UPDATE, DELETE ON $database.* TO '$env:SQL_USER'@'%'; `
-            FLUSH PRIVILEGES;" $env:SQL_MIGRATION_CONNECTIONSTRING;
+        mysql `
+            --host $env:SQL_HOST `
+            --port $env:SQL_PORT `
+            --user $env:SQL_ADMIN_USER `
+            --ssl-mode=REQUIRED `
+            -e "CREATE USER '$env:SQL_USER'@'%' IDENTIFIED BY '$env:SQL_PASSWORD'; GRANT SELECT, INSERT, UPDATE, DELETE ON $env:SQL_NAME.* TO '$env:SQL_USER'@'%'; FLUSH PRIVILEGES;";
+
+        if ($LastExitCode -ne 0)
+        { 
+            throw "error";
+        };
     }
+
+    echo "SQL_HOST=$env:SQL_HOST" >> $env:GITHUB_ENV;
+    echo "SQL_PORT=$env:SQL_PORT" >> $env:GITHUB_ENV;
 ```
+
 
 Last, the application connectionstring must be added in a secret in Kubernetes in the `Kubernetes Deploy` step.  
