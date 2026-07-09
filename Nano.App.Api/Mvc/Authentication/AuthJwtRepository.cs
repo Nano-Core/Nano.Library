@@ -15,9 +15,42 @@ using Nano.Data.Abstractions.Identity.Consts;
 namespace Nano.App.Api.Mvc.Authentication;
 
 /// <inheritdoc />
-public class AuthJwtRepository(JwtAuthenticationOptions options) : IAuthJwtRepository
+public class AuthJwtRepository : IAuthJwtRepository
 {
-    private readonly JwtAuthenticationOptions options = options ?? throw new ArgumentNullException(nameof(options));
+    private readonly JwtAuthenticationOptions options;
+    private readonly RsaSecurityKey rsaPublicSecurityKey;
+    private readonly RsaSecurityKey? rsaPrivateSecurityKey;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="AuthJwtRepository"/> class, loading the
+    /// RSA public key (and private key, if configured) used to validate and sign JWTs.
+    /// </summary>
+    /// <param name="options">The JWT authentication options, including the RSA public/private keys, issuer, and audience.</param>
+    /// <exception cref="ArgumentNullException"><paramref name="options"/> is <see langword="null"/>.</exception>
+    public AuthJwtRepository(JwtAuthenticationOptions options)
+    {
+        ArgumentNullException.ThrowIfNull(options);
+
+        this.options = options ?? throw new ArgumentNullException(nameof(options));
+
+        this.rsaPublicSecurityKey = this.options.PublicKey
+            .CreatePublicRsaSecurityKey();
+
+        this.rsaPrivateSecurityKey = this.options.PrivateKey?
+            .CreatePrivateRsaSecurityKey();
+    }
+
+    /// <summary>
+    /// Releases the unmanaged RSA key handles held by the public and, if present, private <see cref="RsaSecurityKey"/> instances used for JWT signing and validation.
+    /// </summary>
+    public void Dispose()
+    {
+        this.rsaPublicSecurityKey.Rsa?
+            .Dispose();
+        
+        this.rsaPrivateSecurityKey?.Rsa?
+            .Dispose();
+    }
 
     /// <inheritdoc />
     public virtual AccessToken GenerateJwtToken(GenerateJwtToken generateJwtToken)
@@ -43,10 +76,7 @@ public class AuthJwtRepository(JwtAuthenticationOptions options) : IAuthJwtRepos
         var notBeforeAt = DateTimeOffset.UtcNow;
         var expireAt = DateTimeOffset.UtcNow.Add(this.options.Expiration);
 
-        var rsaSecurityKey = this.options.PrivateKey?
-            .CreatePrivateRsaSecurityKey();
-
-        var signingCredentials = new SigningCredentials(rsaSecurityKey, SecurityAlgorithms.RsaSha512);
+        var signingCredentials = new SigningCredentials(this.rsaPrivateSecurityKey, SecurityAlgorithms.RsaSha512);
         var securityToken = new JwtSecurityToken(this.options.Issuer, this.options.Audience, claims, notBeforeAt.DateTime, expireAt.DateTime, signingCredentials);
 
         var token = new JwtSecurityTokenHandler()
@@ -78,9 +108,6 @@ public class AuthJwtRepository(JwtAuthenticationOptions options) : IAuthJwtRepos
     /// <inheritdoc />
     public virtual void ValidateTokenForRefresh(string refreshToken)
     {
-        var rsaSecurityKey = this.options.PublicKey
-            .CreatePublicRsaSecurityKey();
-
         var validationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -89,7 +116,7 @@ public class AuthJwtRepository(JwtAuthenticationOptions options) : IAuthJwtRepos
             ValidateIssuerSigningKey = true,
             ValidIssuer = this.options.Issuer,
             ValidAudience = this.options.Audience,
-            IssuerSigningKey = rsaSecurityKey,
+            IssuerSigningKey = this.rsaPublicSecurityKey,
             ClockSkew = TimeSpan.FromMinutes(5)
         };
 
