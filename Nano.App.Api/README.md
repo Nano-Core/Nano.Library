@@ -1555,14 +1555,66 @@ The following configuration is available for authentication.
 In a distributed application architecture, the application responsible for signing in users must be configured with both a private and a public key, while all other 
 applications only need the public key. The private key is used to generate JWT tokens, whereas the public key is sufficient to validate them.  
 
-Both the public and private keys should be stored securily on GitHub and deployed as Kubernetes secrets for the `Staging` and `Production` environments and should not be exposed.  
+Both the public and private keys should be stored securily on GitHub and deployed as Kubernetes secrets for the `Staging` and `Production` environments and should not be exposed.
 
 | Variable                              | Type     | Description                            |
 | ------------------------------------- | -------- | -------------------------------------- |
 | {{environment}}_AUTH_JWT_PUBLIC_KEY   | secrets  | The public JWT key.                    |
 | {{environment}}_AUTH_JWT_PRIVATE_KEY  | secrets  | The private JWT key.                   |
 
-The variables should be created in Kubernetes as a secret and referenced in the deployment, to securely store the public and private keys.  
+Configure the GitHub Actions workflow for the application responsible for generating JWT tokens by adding the following environment variables.
+
+```yaml
+env:
+  AUTH_JWT_PUBLIC_KEY: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_AUTH_JWT_PUBLIC_KEY || secrets.STAGING_AUTH_JWT_PUBLIC_KEY }}
+  AUTH_JWT_PRIVATE_KEY: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_AUTH_JWT_PRIVATE_KEY || secrets.STAGING_AUTH_JWT_PRIVATE_KEY }}
+```
+
+Create a Kubernetes secret that stores the JWT public and private keys, allowing them to be securely consumed by the application.  
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: auth-jwt-secret
+  namespace: %KUBERNETES_NAMESPACE%
+type: Opaque
+stringData:
+  jwt-public-key: %AUTH_JWT_PUBLIC_KEY%
+  jwt-private-key: %AUTH_JWT_PRIVATE_KEY%
+```
+
+During the Kubernetes deployment step in the GitHub Actions workflow, expand the environment variables in the secret manifest and apply the secret to the cluster.
+
+```powershell
+Get-Content .kubernetes/auth-jwt-secret.yaml | foreach { [Environment]::ExpandEnvironmentVariables($_) } | Set-Content .kubernetes/auth-jwt-secret.tmp.yaml;
+kubectl apply -f .kubernetes/auth-jwt-secret.tmp.yaml;
+if ($LastExitCode -ne 0)
+{ 
+    throw "error";
+};
+```
+
+Finally, reference the secret in the application `deployment.yaml`. Applications that only validate JWT tokens only need to reference the public key, while applications that 
+generate JWT tokens should reference both the public and private keys.
+
+```yaml
+spec:
+  template:
+    spec:
+      containers:
+        env:
+        - name: App__Authentication__Jwt__PublicKey
+          valueFrom:
+            secretKeyRef:
+              name: auth-jwt-secret
+              key: jwt-public-key
+        - name: App__Authentication__Jwt__PrivateKey
+          valueFrom:
+            secretKeyRef:
+              name: auth-jwt-secret
+              key: jwt-private-key
+```
 
 To generate the private and public keys, run the following in a Console application.
 
