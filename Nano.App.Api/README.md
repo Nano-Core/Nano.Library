@@ -243,10 +243,9 @@ The `appsettings.Development.json` should have the credentials for the self-sign
 ```json
 "App": {
   "Hosting": {
-      "Certificate": { 
-        "Path": null,
-        "Password": null
-      }
+    "Certificate": { 
+      "Path": null,
+      "Password": null
     }
   }
 }
@@ -944,9 +943,9 @@ Nano intercepts browser preflight (OPTIONS) requests and responds with the corre
 
 | Setting                  | Type    | Default  | Description                                                                                                                                |
 | ------------------------ | ------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| `AllowedOrigins`         | array   | []       | Allowed origins.                                                                                                                           |
-| `AllowedHeaders`         | array   | []       | Allowed HTTP headers.                                                                                                                      |
-| `AllowedMethods`         | array   | []       | Allowed HTTP methods.                                                                                                                      |
+| `AllowedOrigins`         | array   | []       | Allowed origins. Empty array means allowing all.                                                                                           |
+| `AllowedHeaders`         | array   | []       | Allowed HTTP headers. Empty array means allowing all.                                                                                      |
+| `AllowedMethods`         | array   | []       | Allowed HTTP methods. Empty array means allowing all.                                                                                      |
 | `AllowCredentials`       | bool    | false    | Indicates whether credentials are allowed.                                                                                                 |
 | `Origin`                 | object  | default  | Origin-specific CORS policies.                                                                                                             |
 | `Origin.EmbedderPolicy`  | object  | default  | The HTTP Cross-Origin-Embedder-Policy (COEP) response header configures the current document's policy for loading and embedding cross-origin resources. Allowed values: `UnsafeNone`⭐, `RequireCorp` or `Credentialless`.  |
