@@ -478,7 +478,7 @@ implement a strong Content-Security-Policy that disables the use of inline JavaS
 
 Try it out yourself using the **[Api.PolicyHeaders.XssProtection](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.PolicyHeaders.XssProtection)** example.  
 
-## Content Security Policy
+## Content Security Policy (CSP)
 The HTTP Content-Security-Policy response header allows website administrators to control resources the user agent is allowed to load for a given page. 
 With a few exceptions, policies mostly involve specifying server origins and script endpoints. This helps guard against cross-site scripting attacks.  
 
