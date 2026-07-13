@@ -106,11 +106,14 @@ public static class ConfigManager
         {
             var overrideValue = property.Value;
 
+            var existingProperty = baseJson
+                .Property(property.Name, StringComparison.OrdinalIgnoreCase);
+
             if (overrideValue.Type == JTokenType.Null)
             {
-                baseJson
-                    .Remove(property.Name);
-
+                existingProperty?
+                    .Remove();
+                
                 continue;
             }
 
@@ -118,15 +121,19 @@ public static class ConfigManager
             {
                 if (!overrideObj.HasValues)
                 {
-                    baseJson[property.Name] = new JObject
+                    if (existingProperty != null)
                     {
-                        ["__empty"] = true
-                    };
+                        existingProperty.Value = new JObject { ["__empty"] = true };
+                    }
+                    else
+                    {
+                        baseJson[property.Name] = new JObject { ["__empty"] = true };
+                    }
 
                     continue;
                 }
 
-                if (baseJson[property.Name] is JObject baseObj)
+                if (existingProperty?.Value is JObject baseObj)
                 {
                     RemoveNulls(baseObj, overrideObj);
 
@@ -134,7 +141,14 @@ public static class ConfigManager
                 }
             }
 
-            baseJson[property.Name] = overrideValue.DeepClone();
+            if (existingProperty != null)
+            {
+                existingProperty.Value = overrideValue.DeepClone();
+            }
+            else
+            {
+                baseJson[property.Name] = overrideValue.DeepClone();
+            }
         }
     }
 }
