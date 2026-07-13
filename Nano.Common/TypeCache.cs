@@ -64,9 +64,9 @@ public static class TypeCache
             LoadRecursive(entry, assemblies);
         }
 
-        foreach (var asm in AppDomain.CurrentDomain.GetAssemblies())
+        foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
         {
-            LoadRecursive(asm, assemblies);
+            LoadRecursive(assembly, assemblies);
         }
 
         return assemblies;
@@ -85,7 +85,8 @@ public static class TypeCache
 
         try
         {
-            references = assembly.GetReferencedAssemblies();
+            references = assembly
+                .GetReferencedAssemblies();
         }
         catch
         {

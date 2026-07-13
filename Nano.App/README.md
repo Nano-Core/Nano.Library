@@ -153,6 +153,8 @@ to avoid conflicts.
 All API client implementations are automatically registered during startup using the options defined in the configuration. They can then be injected and used wherever needed through 
 dependency injection.  
 
+> ⚠️ Nano only registers API clients that are actually used. If an API client is configured but never injected or referenced by the application, it will not be registered. 
+
 The application has access to several groups of endpoints exposed as properties on the `BaseApiClient`: Entity, Auth, and Audit. Implementations deriving from `BaseIdentityApiClient` also 
 have access to the Identity group. Each group contains endpoints organized by their respective domain and purpose. Endpoints that are not enabled in the API application via configuration 
 will return a 404 response if invoked. For example, if authentication is disabled and an endpoint from the Auth group is called, the request will result in a 404 response.  

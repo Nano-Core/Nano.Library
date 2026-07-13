@@ -422,10 +422,6 @@ internal static class ServiceCollectionExtensions
                     .FirstOrDefault();
             });
 
-
-        services
-            .AddScoped<ExceptionHandlingMiddleware>();
-
         return services;
     }
 
