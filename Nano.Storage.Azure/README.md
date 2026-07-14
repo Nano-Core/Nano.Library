@@ -75,10 +75,65 @@ services:
 New templates are added for storage, depending on type of storage these differs slightly. Common is that a Persistent Volume and Persistent Volume Claim is needed, and then it must
 be mapped into your Kubernetes `deployment.yaml` or `cronjob.yaml` (depending on application type) for the Nano application.
 
+This is the actual kubernetes templates.
+
+```yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: %SERVICE_NAME%-azurefile-pv-%VOLUME_NAME_SUFFIX%
+spec:
+  capacity:
+    storage: %STORAGE_SIZE%
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: azurefile-static
+  mountOptions:
+    - dir_mode=0777
+    - file_mode=0777
+    - uid=0
+    - gid=0
+  claimRef:
+    name: %SERVICE_NAME%-azurefile-pvc-%VOLUME_NAME_SUFFIX%
+    namespace: %KUBERNETES_NAMESPACE%
+  csi:
+    driver: file.csi.azure.com
+    volumeHandle: %AZURE_GROUP_STORAGE%#%STORAGE_ACCOUNT_NAME%#%STORAGE_SHARE_NAME%-%VOLUME_NAME_SUFFIX%
+    volumeAttributes:
+      shareName: %STORAGE_SHARE_NAME%
+      storageAccount: %STORAGE_ACCOUNT_NAME%
+      resourceGroup: %AZURE_GROUP_STORAGE%
+      clientID: %IDENTITY_CLIENT_ID%
+      mountWithWorkloadIdentityToken: "true"
+```
+
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: %SERVICE_NAME%-azurefile-pvc-%VOLUME_NAME_SUFFIX%
+  namespace: %KUBERNETES_NAMESPACE%
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: azurefile-static
+  resources:
+    requests:
+      storage: %STORAGE_SIZE%
+  volumeName: %SERVICE_NAME%-azurefile-pv-%VOLUME_NAME_SUFFIX%
+```
+
+And for the `deployment.yaml` or `cronjob.yaml`
+
 ```yaml
 spec:
   template:
+    metadata:
+      labels:
+        azure.workload.identity/use: "true"
     spec:
+      serviceAccountName: %SERVICE_NAME%-service-account
       containers:
         volumeMounts:
         - name: %SERVICE_NAME%-volume
@@ -88,7 +143,7 @@ spec:
       volumes:
       - name: %SERVICE_NAME%-volume
         persistentVolumeClaim:
-          claimName: %SERVICE_NAME%-pvc
+          claimName: %SERVICE_NAME%-azurefile-pvc-%VOLUME_NAME_SUFFIX%
       - name: tmp
         emptyDir: {}
 ```
@@ -208,3 +263,12 @@ Also, the Azure fileshare needs to be created during deployment if it does not a
 
     echo "IDENTITY_NAME=$env:IDENTITY_NAME" >> $env:GITHUB_ENV;
 ```
+
+Last, during the Kubernetes deployment step, before any resources are applied, environmental variables required for the new `stoerage-pv.yaml` and `stoerage-pvc.yaml` must be set.
+
+```powershell
+$env:IDENTITY_CLIENT_ID = az identity show -g $env:AZURE_GROUP_KUBERNETES -n $env:IDENTITY_NAME --query clientId -o tsv;
+$env:VOLUME_NAME_SUFFIX = $env:IDENTITY_CLIENT_ID.Substring(0, 5);
+```
+
+The deployment commands have been updated to apply the new Kubernetes storage templates.  

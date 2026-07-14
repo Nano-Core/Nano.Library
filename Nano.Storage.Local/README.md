@@ -99,3 +99,5 @@ env:
   STORAGE_SIZE: {size}
   STORAGE_SHARE_NAME: {share-name}
 ```
+
+And the new Kubernetes templetes must be applied.

@@ -118,9 +118,7 @@ Add the following environment variables to the `buid-and-deply.yml`.
 
 ```yaml
 env:
-  SQL_NAME: nanoDb
   SQL_SIZE: 10Gi
-  SQL_CONNECTIONSTRING: "Data Source=/data/{{ env.nanoDb }}.sqlite"
 ```
 
 Deployment commands must also be updated to apply each of the new Kubernetes templates.  
