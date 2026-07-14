@@ -1048,14 +1048,14 @@ this header can be used to identify the IP address, host, and protocol, of the o
 | Setting                  | Type    | Default  | Description                                                                                              |
 | ------------------------ | ------- | -------- | -------------------------------------------------------------------------------------------------------- |
 | `Headers`                | object  | All      | Defines the headers that should forwarded.                                                               |
-| `RequireHeaderSymmetry`  | bool    | true     | Specifies that forwarded headers will only be processed if the set of headers is complete for that hop.  |
+| `RequireHeaderSymmetry`  | bool    | false    | Specifies that forwarded headers will only be processed if the set of headers is complete for that hop.  |
 
 ```json
 "App": {
   "HttpPolicyHeaders": {
     "ForwardedHeaders": {
       "Headers": "All",
-      "RequireHeaderSymmetry": true
+      "RequireHeaderSymmetry": false
     }
   }
 }

@@ -15,7 +15,7 @@ public class ForwardedHeadersOptions
 
     /// <summary>
     /// Specifies that forwarded headers will only be processed if the set of headers is complete for that hop.
-    /// Default to <c>true</c>.
+    /// Default to <c>false</c>.
     /// </summary>
-    public virtual bool RequireHeaderSymmetry { get; set; } = true;
+    public virtual bool RequireHeaderSymmetry { get; set; } = false;
 }
