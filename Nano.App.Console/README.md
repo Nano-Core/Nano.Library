@@ -119,6 +119,8 @@ In console applications, they allow worker processes to establish connections wi
 This enables console workers to leverage the functionality of multiple Nano services while keeping service boundaries clear and maintaining consistent 
 error handling, logging, and response propagation across the system.
 
+> 💡 It's recommended to use anonymous API client methods for console workers to avoid configuring root credentials.
+
 > 📖 Learn more **[Nano Api Clients](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#api-clients)**
 
 ## Console Workers
