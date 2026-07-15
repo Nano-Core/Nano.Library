@@ -13,7 +13,7 @@ public class ResetPasswordToken<TIdentity>
     /// The id of the user.
     /// </summary>
     [Required]
-    public virtual required TIdentity Id { get; set; }
+    public virtual required TIdentity UserId { get; set; }
 
     /// <summary>
     /// The token used to authorize the password reset.

@@ -369,7 +369,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
 
         return new ResetPasswordToken<TIdentity>
         {
-            Id = identityUser.Id,
+            UserId = identityUser.Id,
             Token = token
         };
     }
