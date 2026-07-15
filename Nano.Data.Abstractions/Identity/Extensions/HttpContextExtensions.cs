@@ -24,16 +24,39 @@ public static class HttpContextExtensions
     }
 
     /// <summary>
-    /// Gets the user identifier ("sub") claim from the JWT token in the HTTP context as a <see cref="Guid"/>.
+    /// Gets the user identifier ("sub") claim from the JWT token in the HTTP context.
     /// </summary>
     /// <param name="httpContext">The current HTTP context.</param>
-    /// <returns>The user identifier as a <see cref="Guid"/> if present and valid; otherwise, null.</returns>
+    /// <returns>The user identifier if present and valid; otherwise, null.</returns>
     public static string? GetJwtUserId(this HttpContext httpContext)
     {
         ArgumentNullException.ThrowIfNull(httpContext);
 
         var value = httpContext
             .GetJwtClaimValue(JwtRegisteredClaimNames.Sub);
+
+        return value;
+    }
+
+    /// <summary>
+    /// Gets the user identifier ("sub") claim from the JWT token in the HTTP context as a <see cref="Guid"/>.
+    /// </summary>
+    /// <param name="httpContext">The current HTTP context.</param>
+    /// <returns>The user identifier as a <see cref="Guid"/> if present and valid; otherwise, null.</returns>
+    public static TIdentity? GetJwtUserId<TIdentity>(this HttpContext httpContext)
+    {
+        ArgumentNullException.ThrowIfNull(httpContext);
+
+        var stringValue = httpContext
+            .GetJwtUserId();
+
+        if (stringValue == null)
+        {
+            return default;
+        }
+
+        var value = stringValue
+            .ConvertToIdentity<TIdentity>();
 
         return value;
     }
