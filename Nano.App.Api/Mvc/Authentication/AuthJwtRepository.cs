@@ -47,7 +47,7 @@ public class AuthJwtRepository : IAuthJwtRepository
     {
         this.rsaPublicSecurityKey.Rsa?
             .Dispose();
-        
+
         this.rsaPrivateSecurityKey?.Rsa?
             .Dispose();
     }

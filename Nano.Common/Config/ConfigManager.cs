@@ -113,7 +113,7 @@ public static class ConfigManager
             {
                 existingProperty?
                     .Remove();
-                
+
                 continue;
             }
 

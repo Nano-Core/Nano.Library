@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
@@ -220,48 +221,50 @@ public sealed class ApiClient(ApiClientOptions options, HttpClient httpClient, I
             ? $"{type.GenericTypeArguments[0].Name}s"
             : $"{type.Name.ToLower()}s";
     }
+
     private static async Task GetResponseAsync(HttpResponseMessage httpResponse, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(httpResponse);
 
+        if (httpResponse.IsSuccessStatusCode)
+        {
+            return;
+        }
+
+        if (httpResponse.StatusCode == HttpStatusCode.NotFound)
+        {
+            return;
+        }
+
         var content = await httpResponse.Content
             .ReadAsStringAsync(cancellationToken);
 
-        switch ((int)httpResponse.StatusCode)
+        try
         {
-            case >= 400 and < 600:
+            var serializerSettings = SerializerSettings.GetDefault();
+            var problemDetails = JsonConvert.DeserializeObject<ProblemDetails>(content, serializerSettings);
+
+            if (problemDetails != null)
             {
-                if (!string.IsNullOrEmpty(content))
-                {
-                    try
-                    {
-                        var serializerSettings = SerializerSettings.GetDefault();
-                        var problemDetails = JsonConvert.DeserializeObject<ProblemDetails>(content, serializerSettings);
-
-                        if (problemDetails != null)
-                        {
-                            throw new ProblemDetailsException(problemDetails);
-                        }
-                    }
-                    catch (JsonException)
-                    {
-                    }
-                }
-
-                throw new ApiClientException(content, httpResponse.StatusCode);
+                throw new ProblemDetailsException(problemDetails);
             }
-
-            default:
-                httpResponse
-                    .EnsureSuccessStatusCode();
-
-                break;
         }
+        catch (JsonException)
+        {
+            // Ignore
+        }
+
+        throw new ApiClientException(content, httpResponse.StatusCode);
     }
     private static async Task<TResponse?> GetResponseAsync<TResponse>(HttpResponseMessage httpResponse, CancellationToken cancellationToken = default)
         where TResponse : class
     {
         ArgumentNullException.ThrowIfNull(httpResponse);
+
+        if (httpResponse.StatusCode == HttpStatusCode.NotFound)
+        {
+            return null;
+        }
 
         await GetResponseAsync(httpResponse, cancellationToken);
 
@@ -270,25 +273,23 @@ public sealed class ApiClient(ApiClientOptions options, HttpClient httpClient, I
             var stream = await httpResponse.Content
                 .ReadAsStreamAsync(cancellationToken);
 
-            if (typeof(TResponse) != typeof(NamedStream))
+            if (typeof(TResponse) == typeof(NamedStream))
             {
-                return stream as TResponse;
+                var name = httpResponse.Content.Headers.ContentDisposition.FileName;
+
+                if (name == null)
+                {
+                    throw new NullReferenceException(nameof(name));
+                }
+
+                return new NamedStream
+                {
+                    Name = name,
+                    Stream = stream
+                } as TResponse;
             }
 
-            var name = httpResponse.Content.Headers.ContentDisposition?.FileName;
-
-            if (name == null)
-            {
-                throw new NullReferenceException(nameof(name));
-            }
-
-            var namedStream = new NamedStream
-            {
-                Name = name,
-                Stream = stream
-            };
-
-            return namedStream as TResponse;
+            return stream as TResponse;
         }
 
         var content = await httpResponse.Content
