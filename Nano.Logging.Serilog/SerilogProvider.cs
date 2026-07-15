@@ -38,7 +38,7 @@ public sealed class SerilogProvider : ILoggingProvider
                     .Is(options.LogLevel.GetLogLevel());
 
                 x.WriteTo
-                    .Console(outputTemplate: "{Timestamp:dd-MM-yyyy HH:mm:ss.ffffff} [{Level:u3}] {Message}{NewLine}{Exception}");
+                    .Console(outputTemplate: "{Timestamp:dd-MM-yyyy HH:mm:ss.ffffff} [{Level:u3}] {Message:lj}{NewLine}{Exception}");
 
                 foreach (var @override in options.LogLevelOverrides)
                 {
