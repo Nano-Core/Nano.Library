@@ -108,7 +108,7 @@ services:
 ```
 
 ## Kubernetes
-Add the `%SERVICE_NAME%-secret` for the connectionstring to the `deployment.yaml`.  
+Add the `auth-sql-secret.yaml` for the connectionstring to the `deployment.yaml`.  
 
 ```json
 spec:
@@ -128,6 +128,8 @@ Add the following environment variables to the `buid-and-deply.yml`.
 
 ```yaml
 env:
+  DOTNET_EF_TOOLS_VERSION: "10.0"
+  AZURE_GROUP_DATABASE : ${{ vars.AZURE_RESOURCE_GROUP_DATABASE }}
   SQL_NAME: nanoDb
   SQL_USER: api-data-mysql-user
   SQL_PASSWORD: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_SQL_NANO_DB_PASSWORD || secrets.STAGING_SQL_NANO_DB_PASSWORD }}
@@ -186,5 +188,10 @@ Additionally, this step must be added to ensure database migrations are applied,
     echo "SQL_PORT=$env:SQL_PORT" >> $env:GITHUB_ENV;
 ```
 
+Last, before applying the new Kubernetes templates, these environmental variables must be set.
 
-Last, the application connectionstring must be added in a secret in Kubernetes in the `Kubernetes Deploy` step.  
+```powershell
+$env:SQL_CONNECTIONSTRING = "Server=$env:SQL_HOST;Port=$env:SQL_PORT;Database=$env:SQL_NAME;Uid=$env:SQL_USER;Pwd=$env:SQL_PASSWORD;SslMode=Required";
+```
+
+Finally, apply the templates.

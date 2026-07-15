@@ -352,7 +352,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
     }
 
     /// <inheritdoc />
-    public virtual async Task<ResetPasswordToken> GenerateResetPasswordTokenAsync(GenerateResetPasswordToken generateResetPasswordToken, CancellationToken cancellationToken = default)
+    public virtual async Task<ResetPasswordToken<TIdentity>> GenerateResetPasswordTokenAsync(GenerateResetPasswordToken generateResetPasswordToken, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(generateResetPasswordToken);
 
@@ -367,8 +367,9 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
         var token = await this.userManager
             .GeneratePasswordResetTokenAsync(identityUser);
 
-        return new ResetPasswordToken
+        return new ResetPasswordToken<TIdentity>
         {
+            UserId = identityUser.Id,
             Token = token
         };
     }

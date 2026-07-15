@@ -195,14 +195,14 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     /// <param name="request">The reset token generation request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>The generated password reset token.</returns>
-    public async Task<ResetPasswordToken> GetResetPasswordTokenAsync(GenerateResetPasswordTokenRequest request, CancellationToken cancellationToken = default)
+    public async Task<ResetPasswordToken<TIdentity>> GetResetPasswordTokenAsync(GenerateResetPasswordTokenRequest request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
         request.Controller = IdentityController;
 
         var resetPasswordToken = await api
-            .InvokeAsync<GenerateResetPasswordTokenRequest, ResetPasswordToken>(request, cancellationToken);
+            .InvokeAsync<GenerateResetPasswordTokenRequest, ResetPasswordToken<TIdentity>>(request, cancellationToken);
 
         return resetPasswordToken ?? throw new NullReferenceException(nameof(resetPasswordToken));
     }

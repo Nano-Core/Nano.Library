@@ -408,7 +408,7 @@ public abstract class BaseEntityUserController<TEntity, TIdentity, TCriteria> : 
     [AllowAnonymous]
     [Consumes(HttpContentType.JSON)]
     [Produces(HttpContentType.JSON)]
-    [ProducesResponseType(typeof(ResetPasswordToken), (int)HttpStatusCode.OK)]
+    [ProducesResponseType(typeof(ResetPasswordToken<string>), (int)HttpStatusCode.OK)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]

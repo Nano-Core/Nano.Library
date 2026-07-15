@@ -187,10 +187,10 @@ public interface IIdentityRepository<TIdentity>
     /// </summary>
     /// <param name="generateResetPasswordToken">The <see cref="GenerateResetPasswordToken"/> request containing the username.</param>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
-    /// <returns>A <see cref="ResetPasswordToken"/> containing the generated token and user id.</returns>
+    /// <returns>A <see cref="ResetPasswordToken{TIdentity}"/> containing the generated token and user id.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="generateResetPasswordToken"/> is <c>null</c>.</exception>
     /// <exception cref="UnauthorizedException">Thrown if the user is not found or deactivated.</exception>
-    Task<ResetPasswordToken> GenerateResetPasswordTokenAsync(GenerateResetPasswordToken generateResetPasswordToken, CancellationToken cancellationToken = default);
+    Task<ResetPasswordToken<TIdentity>> GenerateResetPasswordTokenAsync(GenerateResetPasswordToken generateResetPasswordToken, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Resets the password of a user using a valid reset token.

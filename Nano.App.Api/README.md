@@ -5,7 +5,7 @@
 
 > _Nano API application._
 
-***
+*** 
 
 ## Table of Contents
 * **[Home](https://github.com/Nano-Core/Nano.Library/tree/master/README.md#nanolibrary)**
@@ -203,6 +203,7 @@ Try it out yourself using the **[Api.Hosting.Http](https://github.com/Nano-Core/
 
 ## Https
 Configuring HTTPS allows the API to communicate over a secure SSL/TLS connection.  
+
 To use HTTPS, you must specify at least one port along with a certificate path and password to establish a valid security protocol. If you want the 
 application to accept only secure connections, enable `UseHttpsRequired`.  
 
@@ -220,38 +221,30 @@ HTTPS with configured certificate is primarily intended for local development. I
 | `Certificate.Path`      | string  | null     | Required. File path to the certificate.       |
 | `Certificate.Password`  | string  | null     | Required. Password for the certificate.       |
 
-The default `appsettings.json` should not have https configured.
+Since HTTPS should only be enabled during development, no configuration is required in `appsettings.json`. Instead, configure the self-signed development certificate in `appsettings.Development.json` 
+by specifying the certificate `Path` and `Password`, which both default to `null`.
 
 ```json
 "App": {
   "Hosting": {
+    "http": {
+      "UseHttpsRedirection": true
+    },
     "Https": {
       "Ports": [
+        4443
       ],
-      "UseHttpsRequired": false
-      "Certificate": { 
-        "Path": null,
-        "Password": null
-      }
+      "Certificate": {
+        "Path": "/root/.dotnet/https/localhost.pfx",
+        "Password": "password"
+      },
+      "UseHttpsRequired": true
     }
   }
 }
 ```
 
-The `appsettings.Development.json` should have the credentials for the self-signed development certificate configured, specifying the `Path` and the `Password` which default to `null`.  
-
-```json
-"App": {
-  "Hosting": {
-    "Certificate": { 
-      "Path": null,
-      "Password": null
-    }
-  }
-}
-```
-
-When configuring HTTPS, the `docker-compose.yml` file must also be updated:
+When configuring HTTPS, the `docker-compose.yml` file should include a volume storing the SSL certificate.
 
 ```yaml
 services:
@@ -1048,14 +1041,14 @@ this header can be used to identify the IP address, host, and protocol, of the o
 | Setting                  | Type    | Default  | Description                                                                                              |
 | ------------------------ | ------- | -------- | -------------------------------------------------------------------------------------------------------- |
 | `Headers`                | object  | All      | Defines the headers that should forwarded.                                                               |
-| `RequireHeaderSymmetry`  | bool    | true     | Specifies that forwarded headers will only be processed if the set of headers is complete for that hop.  |
+| `RequireHeaderSymmetry`  | bool    | false    | Specifies that forwarded headers will only be processed if the set of headers is complete for that hop.  |
 
 ```json
 "App": {
   "HttpPolicyHeaders": {
     "ForwardedHeaders": {
       "Headers": "All",
-      "RequireHeaderSymmetry": true
+      "RequireHeaderSymmetry": false
     }
   }
 }
@@ -1583,19 +1576,9 @@ stringData:
   jwt-private-key: %AUTH_JWT_PRIVATE_KEY%
 ```
 
-During the Kubernetes deployment step in the GitHub Actions workflow, expand the environment variables in the secret manifest and apply the secret to the cluster.
+Finally, reference the secret in the application `deployment.yaml` or `cronjob.yaml`.   
 
-```powershell
-Get-Content .kubernetes/auth-jwt-secret.yaml | foreach { [Environment]::ExpandEnvironmentVariables($_) } | Set-Content .kubernetes/auth-jwt-secret.tmp.yaml;
-kubectl apply -f .kubernetes/auth-jwt-secret.tmp.yaml;
-if ($LastExitCode -ne 0)
-{ 
-    throw "error";
-};
-```
-
-Finally, reference the secret in the application `deployment.yaml`. Applications that only validate JWT tokens only need to reference the public key, while applications that 
-generate JWT tokens should reference both the public and private keys.
+Applications that only validate JWT tokens only need to reference the public key, while applications that generate JWT tokens should reference both the public and private keys.
 
 ```yaml
 spec:
