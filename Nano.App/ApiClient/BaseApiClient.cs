@@ -21,8 +21,6 @@ public abstract class BaseApiClient(ApiClient apiClient)
 public abstract class BaseApiClient<TIdentity>(ApiClient apiClient)
     where TIdentity : IEquatable<TIdentity>
 {
-    private readonly ApiClient apiClient = apiClient;
-
     /// <summary>
     /// Provides access to authentication-related API endpoints.
     /// </summary>
@@ -50,7 +48,7 @@ public abstract class BaseApiClient<TIdentity>(ApiClient apiClient)
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        return this.apiClient.InvokeAsync(request, cancellationToken);
+        return apiClient.InvokeAsync(request, cancellationToken);
     }
 
     /// <summary>
@@ -67,7 +65,7 @@ public abstract class BaseApiClient<TIdentity>(ApiClient apiClient)
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        return this.apiClient.InvokeAsync<TRequest, TResponse>(request, cancellationToken);
+        return apiClient.InvokeAsync<TRequest, TResponse>(request, cancellationToken);
     }
 
     /// <summary>
@@ -86,7 +84,7 @@ public abstract class BaseApiClient<TIdentity>(ApiClient apiClient)
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        return this.apiClient
+        return apiClient
             .InvokeAsync<TEntity, TRequest, TResponse>(request, cancellationToken);
     }
 }

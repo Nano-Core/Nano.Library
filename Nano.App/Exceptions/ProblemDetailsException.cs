@@ -27,6 +27,6 @@ public class ProblemDetailsException : Exception
     {
         ArgumentNullException.ThrowIfNull(problemDetails);
 
-        return problemDetails.Detail;
+        return problemDetails.Title;
     }
 }

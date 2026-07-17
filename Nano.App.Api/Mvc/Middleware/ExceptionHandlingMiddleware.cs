@@ -226,7 +226,7 @@ public sealed class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddlew
         if (success)
         {
             queryString = queryString?
-                .Replace(accessToken.ToString(), "<<secret>>");
+                .Replace(accessToken.ToString(), "***");
         }
 
         var elapsed = (Stopwatch.GetTimestamp() - timestamp) * 1000D / Stopwatch.Frequency;
