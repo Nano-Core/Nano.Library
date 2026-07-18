@@ -144,35 +144,6 @@ public sealed class AuditApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Executes <c>audit/query</c> using a query abstraction.
-    /// </summary>
-    public Task<IEnumerable<AuditEntry<TIdentity>>> QueryAsync<TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
-        where TCriteria : IQueryCriteria, new()
-    {
-        ArgumentNullException.ThrowIfNull(query);
-
-        return this.QueryAsync(new QueryRequest<TCriteria>
-        {
-            Query = query
-        }, cancellationToken);
-    }
-
-    /// <summary>
-    /// Executes <c>audit/query</c> using a query abstraction with related data.
-    /// </summary>
-    public Task<IEnumerable<AuditEntry<TIdentity>>> QueryAsync<TCriteria>(IQuery<TCriteria> query, int includeDepth, CancellationToken cancellationToken = default)
-        where TCriteria : IQueryCriteria, new()
-    {
-        ArgumentNullException.ThrowIfNull(query);
-
-        return this.QueryAsync(new QueryRequest<TCriteria>
-        {
-            Query = query,
-            IncludeDepth = includeDepth
-        }, cancellationToken);
-    }
-
-    /// <summary>
     /// Executes <c>audit/query/first</c> to retrieve the first matching audit entry.
     /// </summary>
     public Task<AuditEntry<TIdentity>?> QueryFirstAsync<TCriteria>(QueryFirstRequest<TCriteria> request, CancellationToken cancellationToken = default)
@@ -184,35 +155,6 @@ public sealed class AuditApi<TIdentity>(ApiClient api)
 
         return this.api
             .InvokeAsync<QueryFirstRequest<TCriteria>, AuditEntry<TIdentity>>(request, cancellationToken);
-    }
-
-    /// <summary>
-    /// Executes <c>audit/query/first</c> using a query abstraction.
-    /// </summary>
-    public Task<AuditEntry<TIdentity>?> QueryFirstAsync<TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
-        where TCriteria : IQueryCriteria, new()
-    {
-        ArgumentNullException.ThrowIfNull(query);
-
-        return this.QueryFirstAsync(new QueryFirstRequest<TCriteria>
-        {
-            Query = query
-        }, cancellationToken);
-    }
-
-    /// <summary>
-    /// Executes <c>audit/query/first</c> using a query abstraction with related data.
-    /// </summary>
-    public Task<AuditEntry<TIdentity>?> QueryFirstAsync<TCriteria>(IQuery<TCriteria> query, int includeDepth, CancellationToken cancellationToken = default)
-        where TCriteria : IQueryCriteria, new()
-    {
-        ArgumentNullException.ThrowIfNull(query);
-
-        return this.QueryFirstAsync(new QueryFirstRequest<TCriteria>
-        {
-            Query = query,
-            IncludeDepth = includeDepth
-        }, cancellationToken);
     }
 
     /// <summary>
@@ -231,19 +173,5 @@ public sealed class AuditApi<TIdentity>(ApiClient api)
         int.TryParse(response, out var count);
 
         return count;
-    }
-
-    /// <summary>
-    /// Executes <c>audit/query/count</c> using criteria.
-    /// </summary>
-    public Task<int> QueryCountAsync<TCriteria>(TCriteria criteria, CancellationToken cancellationToken = default)
-        where TCriteria : IQueryCriteria, new()
-    {
-        ArgumentNullException.ThrowIfNull(criteria);
-
-        return this.QueryCountAsync(new QueryCountRequest<TCriteria>
-        {
-            Criteria = criteria
-        }, cancellationToken);
     }
 }
