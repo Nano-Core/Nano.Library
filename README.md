@@ -29,14 +29,14 @@
 &nbsp;&nbsp;&nbsp;&nbsp;⚖️ **[Licenses](#-licenses)**  
 
 ### Documentation
-&nbsp;&nbsp;&nbsp;&nbsp;🚀 **[Applications](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#README.md#nanoapp)**  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;📡 **[Api](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api/README.md#nanoappapi)**  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⚙️ **[Console](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Console/README.md#nanoappconsole)**  
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;🌐 **[Web](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Web/README.md#nanoappweb)**  
-&nbsp;&nbsp;&nbsp;&nbsp;📜 **[Logging](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging/README.md#nanologging)**  
-&nbsp;&nbsp;&nbsp;&nbsp;🛢️ **[Data](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data/README.md#nanodata)**  
-&nbsp;&nbsp;&nbsp;&nbsp;⚡ **[Eventing](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Eventing/README.md#nanoeventing)**  
-&nbsp;&nbsp;&nbsp;&nbsp;🗂 **[Storage](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage/README.md#nanostorage)**  
+&nbsp;&nbsp;&nbsp;&nbsp;🚀 **[Applications](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App/README.md#nanoapp)**  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;📡 **[Api](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App.Api/README.md#nanoappapi)**  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;⚙️ **[Console](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App.Console/README.md#nanoappconsole)**  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;🌐 **[Web](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App.Web/README.md#nanoappweb)**  
+&nbsp;&nbsp;&nbsp;&nbsp;📜 **[Logging](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Logging/README.md#nanologging)**  
+&nbsp;&nbsp;&nbsp;&nbsp;🛢️ **[Data](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data/README.md#nanodata)**  
+&nbsp;&nbsp;&nbsp;&nbsp;⚡ **[Eventing](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Eventing/README.md#nanoeventing)**  
+&nbsp;&nbsp;&nbsp;&nbsp;🗂 **[Storage](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Storage/README.md#nanostorage)**  
 
 ## 📌 Summary
 Nano is a lightweight library for rapidly building modern .NET applications.
@@ -59,23 +59,23 @@ more, Nano helps cover the full application lifecycle, from development and conf
 To support production-grade environments, Nano also provides the foundation for running applications securely and at scale in Kubernetes on Azure. Nano includes ready-to-use templates
 for Kubernetes and GitHub Actions, enabling consistent CI/CD pipelines and infrastructure provisioning.
 
-> 📖 Learn more about **[Nano.Azure](https://github.com/Nano-Core/Nano.Azure/README.md#nanoazure)** and **[Nano.Azure.Kubernetes](https://github.com/Nano-Core/Nano.Azure.Kubernetes/README.md#nanoazurekubernetes)**
+> 📖 Learn more about **[Nano.Azure](https://github.com/Nano-Core/Nano.Azure/blob/master/README.md#nanoazure)** and **[Nano.Azure.Kubernetes](https://github.com/Nano-Core/Nano.Azure.Kubernetes/blob/master/README.md#nanoazurekubernetes)**
 
 Together, these capabilities make Nano a strong choice for designing, building, and maintaining microservice architectures, even for small teams.
 
 ### 🚀 Launch Your App in Under 60 Minutes 
-Get started quickly by building your own Nano **[Api](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api/README.md&nanoapi)**, **[Web](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Web/README.md#nanoweb)**, 
-or **[Console](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Console/README.md#nanoconsole)** application, and have it configured and running in less than an hour. Nano follows a flexible, 
-opt-in approach, allowing you to configure and enable only the features you need. For the four core pillars of distributed systems, **[Logging](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging/README.md#nanologging)**, 
-**[Data](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data/README.md#nanodata)**, **[Eventing](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Eventing/README.md#nanoeventing)**, 
-and **[Storage](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage#/README.md#nanostorage)**, Nano provides pluggable providers that integrate seamlessly into your application. 
+Get started quickly by building your own Nano **[Api](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App.Api/README.md#nanoappapi)**, **[Web](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App.Web/README.md#nanoappweb)**, 
+or **[Console](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App.Console/README.md#nanoappconsole)** application, and have it configured and running in less than an hour. Nano follows a flexible, 
+opt-in approach, allowing you to configure and enable only the features you need. For the four core pillars of distributed systems, **[Logging](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Logging/README.md#nanologging)**, 
+**[Data](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data/README.md#nanodata)**, **[Eventing](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Eventing/README.md#nanoeventing)**, 
+and **[Storage](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Storage/README.md#nanostorage)**, Nano provides pluggable providers that integrate seamlessly into your application. 
 Simply choose and configure the providers that match your requirements for each pillar, and Nano handles the rest.
 
-It’s recommended to start with the **[Quick Start Guide](https://github.com/Nano-Core/Nano.Library/tree/master/QUICK_START.md)** to get familiar with Nano, and then continue exploring 
+It’s recommended to start with the **[Quick Start Guide](https://github.com/Nano-Core/Nano.Library/blob/master/QUICK_START.md#quick-start-guide)** to get familiar with Nano, and then continue exploring 
 the documentation for applications and providers to learn how to configure, use, and customize it. You can also dive into **[Nano.Lessons](https://github.com/Nano-Core/Nano.Lessons)**, 
 which contains **100+** focused examples that demonstrate individual features in isolation.
 
-> 💡 Explore API requests for all lessons in our **[Public Nano Workspace on Postman](https://www.postman.com/nanocore/nano-lessons)**.
+> 💡 Explore API requests for all lessons in our **[Public Nano Workspace on Postman](https://www.postman.com/nanocore)**.
 
 ## ✨ Highlighted features
 
@@ -90,7 +90,7 @@ In addition to built-in capabilities, Nano supports extending API clients with c
 functionality. Authentication, headers, and request metadata are handled automatically, including secure propagation between services. This ensures reliable, consistent, and 
 secure communication across all connected Nano applications without additional boilerplate.
 
-> 📖 Learn more about **[Api Clients](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App/README#api-clients)**
+> 📖 Learn more about **[Api Clients](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App/README.md#api-clients)**
 
 ### ✨ Entity Eventing
 Entity Events in Nano provide a lightweight, attribute-driven mechanism for synchronizing entity changes across distributed applications. They automatically propagate create, update, 
@@ -104,7 +104,7 @@ dependent entities to propagate back to root aggregates.
 
 This model reduces coupling between services while maintaining data consistency across boundaries.  
 
-> 📖 Learn more about **[Entity Eventing](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data/README.md#entity-eventing)**
+> 📖 Learn more about **[Entity Eventing](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data/README.md#entity-events)**
 
 ### ✨ Include Annotation (graph-lite)
 Nano’s Include feature automatically loads navigation properties when retrieving entities through repositories, enabling full entity graphs with recursive inclusion up to a configured 
@@ -113,7 +113,7 @@ depth. It supports both references and collections, simplifying data access for 
 This is especially useful when you want to work with complete object graphs instead of manually composing related data. However, inclusion can be selectively controlled per query, 
 allowing you to retrieve only the main entity when full graphs are not needed.  
 
-> 📖 Learn more about **[Include Annotations](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data/README.md#include-annotation)**
+> 📖 Learn more about **[Include Annotations](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data/README.md#include-annotation)**
 
 ### ✨ Cascading Health Checks
 Nano provides built-in health checks exposed through a /healthz endpoint for monitoring application status.
@@ -123,7 +123,7 @@ failures propagate through related components and applications to provide a cons
 
 In addition, custom health checks can be registered during application startup, allowing application-specific components to integrate seamlessly into the same monitoring system.
 
-> 📖 Learn more about **[Api Health Checks](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App.Api/README.md#health-checks)**
+> 📖 Learn more about **[Api Health Checks](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App.Api/README.md#health-checks)**
 
 ## 🏛️ Nano Architectures
 Nano supports multiple distributed architecture styles, depending on the complexity and communication patterns of your system.
@@ -131,8 +131,10 @@ Nano supports multiple distributed architecture styles, depending on the complex
 | Architecture                                     | Description                                                                                                                                                               |
 | ------------------------------------------------ | -------------------------------------------------------------------------------- |
 | Solo Application                                 | A single, independent application.                                               |
-| Microservice Orchestration (Top-down)            | API-driven orchestration where a central API coordinates downstream services.    |
+| Microservice Orchestration (Top-Down)            | API-driven orchestration where a central API coordinates downstream services.    |
 | Microservice Orchestration (Service-to-Service)  | Decentralized communication where services interact directly with each other.    |
+
+![Nano Application Architecture](https://raw.githubusercontent.com/Nano-Core/Nano.Library/blob/.assets/Nano-Application-Architecture.png)
 
 ## ⚙️ Required Tools
 Before getting started, make sure you have the following tools installed and configured.  

@@ -678,4 +678,19 @@ internal static class ApplicationBuilderExtensions
 
         return applicationBuilder;
     }
+
+    internal static IApplicationBuilder UseNanoMetrics(this IApplicationBuilder applicationBuilder, MetricsOptions? options = null)
+    {
+        ArgumentNullException.ThrowIfNull(applicationBuilder);
+
+        if (options == null)
+        {
+            return applicationBuilder;
+        }
+
+        applicationBuilder
+            .UseOpenTelemetryPrometheusScrapingEndpoint();
+
+        return applicationBuilder;
+    }
 }

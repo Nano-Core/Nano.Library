@@ -8,7 +8,7 @@
 *** 
 
 ## Table of Contents
-* **[Home](https://github.com/Nano-Core/Nano.Library/tree/master/README.md#nanolibrary)**
+* **[Home](https://github.com/Nano-Core/Nano.Library/blob/master/README.md#nanolibrary)**
 * **[Summary](#summary)**
 * **[Registration](#registration)**
 * **[Configuration](#configuration)**
@@ -19,11 +19,11 @@
 ## Summary
 Data Provider implementation for PostgreSQL data access.  
 
-> 📖 Learn more about **[Nano Data](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data/README.md#nanodata)**.
-> 📖 Learn more about **[Nano Azure PostgreSQL](https://github.com/Nano-Core/Nano.Kubernetes/tree/master/Nano.Azure.PostgreSql/README.md#nanoazurepostgresql)**.  
+> 📖 Learn more about **[Nano Data](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data/README.md#nanodata)**.
+> 📖 Learn more about **[Nano Azure PostgreSQL](https://github.com/Nano-Core/Nano.Azure/blob/master/Nano.Azure.PostgreSql/README.md#nanoazurepostgresql)**.  
 
-Try it out yourself using the **[Api.Data.PostgreSQL](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.PostgreSQL)**, or 
-**[Console.Data.PostgreSQL](https://github.com/Nano-Core/Nano.Lessons/tree/master/Console.Data.PostgreSQL)** example.  
+Try it out yourself using the **[Api.Data.PostgreSQL](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Data.PostgreSQL)**, or 
+**[Console.Data.PostgreSQL](https://github.com/Nano-Core/Nano.Lessons/blob/master/Console.Data.PostgreSQL)** example.  
 
 ## Registration
 Install the **[Nano.Data.PostgreSQL](https://www.nuget.org/packages/Nano.Data.PostgreSQL)** NuGet package.  

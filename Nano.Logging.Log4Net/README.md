@@ -8,7 +8,7 @@
 ***
 
 ## Table of Contents
-* **[Home](https://github.com/Nano-Core/Nano.Library/tree/master/README.md#nanolibrary)**
+* **[Home](https://github.com/Nano-Core/Nano.Library/blob/master/README.md#nanolibrary)**
 * **[Summary](#summary)**
 * **[Registration](#registration)**
 
@@ -20,10 +20,10 @@ The provider is preconfigured to write log output to the console using a concise
 %utcdate{dd-MM-yyyy HH:mm:ss.ffffff} [%level{3}] %message%newline%exception
 ```
 
-> 📖 Learn more about **[Nano Logging](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging/README.md#nanologging)**.
+> 📖 Learn more about **[Nano Logging](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Logging/README.md#nanologging)**.
 
-Try it out yourself using the **[Api.Logging.Log4Net](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Logging.Log4Net/README.md#nanologginglog4net)** or 
-**[Console.Logging.Log4Net](https://github.com/Nano-Core/Nano.Lessons/tree/master/Console.Logging.Log4Net)** example.  
+Try it out yourself using the **[Api.Logging.Log4Net](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Logging.Log4Net)** or 
+**[Console.Logging.Log4Net](https://github.com/Nano-Core/Nano.Lessons/blob/master/Console.Logging.Log4Net)** example.  
 
 ## Registration
 Install the **[Nano.Logging.Log4Net](https://www.nuget.org/packages/Nano.Logging.Log4Net)** NuGet package.

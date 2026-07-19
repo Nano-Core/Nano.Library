@@ -29,6 +29,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Linq;
 using System.Text.Json.Serialization;
+using OpenTelemetry.Metrics;
 using Vivet.AspNetCore.RequestTimeZone.Enums;
 using Vivet.AspNetCore.RequestTimeZone.Extensions;
 using Vivet.AspNetCore.RequestTimeZone.Providers;
@@ -65,8 +66,9 @@ internal static class ServiceCollectionExtensions
             .AddNanoFormOptions(options.Hosting.MultipartLimits)
             .AddNanoHttpsRedirection(options.Hosting.Http, options.Hosting.Https)
             .AddNanoMvc()
+            .AddNanoMetrics()
             .AddNanoDocumentation(options.Documentation)
-            .AddNanoSelfHealthChecking()
+            .AddNanoStartupHealthCheck()
             .AddHttpContextAccessor();
 
         return services;
@@ -460,6 +462,24 @@ internal static class ServiceCollectionExtensions
         return services;
     }
 
+    internal static IServiceCollection AddNanoMetrics(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        services
+            .AddOpenTelemetry()
+            .WithMetrics(metrics =>
+            {
+                metrics
+                    .AddAspNetCoreInstrumentation()
+                    .AddHttpClientInstrumentation()
+                    .AddRuntimeInstrumentation()
+                    .AddPrometheusExporter();
+            });
+
+        return services;
+    }
+
     internal static IServiceCollection AddNanoDocumentation(this IServiceCollection services, DocumentationOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(services);
@@ -490,7 +510,7 @@ internal static class ServiceCollectionExtensions
         return services;
     }
 
-    internal static IServiceCollection AddNanoSelfHealthChecking(this IServiceCollection services)
+    internal static IServiceCollection AddNanoStartupHealthCheck(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
 

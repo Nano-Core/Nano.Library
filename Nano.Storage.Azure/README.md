@@ -8,12 +8,12 @@
 *** 
 
 ## Table of Contents
-* **[Home](https://github.com/Nano-Core/Nano.Library/tree/master/README.md#nanolibrary)**
+* **[Home](https://github.com/Nano-Core/Nano.Library/blob/master/README.md#nanolibrary)**
 * **[Summary](#summary)**
 * **[Registration](#registration)**
 * **[Configuration](#configuration)**
 * **[Docker Compose](#docker-compose)**
-* **[Kuberentes](#kuberentes)**
+* **[Kubernetes](#kubernetes)**
 * **[GitHub Actions](#github-actions)**
 
 ## Summary
@@ -24,11 +24,11 @@ enables your application to read from and write to the storage directly, while t
 
 No changes to your application code are required and you can interact with the file share using the `IPathProvider` interface.  
 
-> 📖 Learn more about **[Nano Storage](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Storage/README.md/nanostorage)**.
-> 📖 Learn more about **[Nano Azure File Share](https://github.com/Nano-Core/Nano.Azure/tree/master/Nano.Azure.Storage/README.md#nanoazurestorage)**.  
+> 📖 Learn more about **[Nano Storage](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Storage/README.md#nanostorage)**.
+> 📖 Learn more about **[Nano Azure File Share](https://github.com/Nano-Core/Nano.Azure/blob/master/Nano.Azure.Storage/README.md#nanoazurestorage)**.  
 
-Try it out yourself using the **[Api.Storage.Azure](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Storage.Azure)** or 
-**[Console.Storage.Azure](https://github.com/Nano-Core/Nano.Lessons/tree/master/Console.Storage.Azure)** example.  
+Try it out yourself using the **[Api.Storage.Azure](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Storage.Azure)** or 
+**[Console.Storage.Azure](https://github.com/Nano-Core/Nano.Lessons/blob/master/Console.Storage.Azure)** example.  
 
 ## Registration
 Install the **[Nano.Storage.Azure](https://www.nuget.org/packages/Nano.Storage.Azure)** NuGet package.

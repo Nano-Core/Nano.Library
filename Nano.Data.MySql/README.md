@@ -8,7 +8,7 @@
 *** 
 
 ## Table of Contents
-* **[Home](https://github.com/Nano-Core/Nano.Library/tree/master/README.md#nanolibrary)**
+* **[Home](https://github.com/Nano-Core/Nano.Library/blob/master/README.md#nanolibrary)**
 * **[Summary](#summary)**
 * **[Registration](#registration)**
 * **[Configuration](#configuration)**
@@ -19,11 +19,11 @@
 ## Summary
 Data Provider implementation for MySql data access.  
 
-> 📖 Learn more about **[Nano Data](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data/README.md#nanodata)**.
-> 📖 Learn more about **[Nano Azure MySql](https://github.com/Nano-Core/Nano.Kubernetes/tree/master/Nano.Azure.MySql/README.md#nanoazuremysql)**.  
+> 📖 Learn more about **[Nano Data](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data/README.md#nanodata)**.
+> 📖 Learn more about **[Nano Azure MySql](https://github.com/Nano-Core/Nano.Azure/blob/master/Nano.Azure.MySql/README.md#nanoazuremysql)**.  
 
-Try it out yourself using the **[Api.Data.MySql](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.MySql)**, or 
-**[Console.Data.MySql](https://github.com/Nano-Core/Nano.Lessons/tree/master/Console.Data.MySql)** example.  
+Try it out yourself using the **[Api.Data.MySql](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Data.MySql)**, or 
+**[Console.Data.MySql](https://github.com/Nano-Core/Nano.Lessons/blob/master/Console.Data.MySql)** example.  
 
 ## Registration
 Install the **[Nano.Data.MySql](https://www.nuget.org/packages/Nano.Data.MySql)** NuGet package.  

@@ -8,7 +8,7 @@
 ***
 
 ## Table of Contents
-* **[Home](https://github.com/Nano-Core/Nano.Library/tree/master/README.md#nanolibrary)**
+* **[Home](https://github.com/Nano-Core/Nano.Library/blob/master/README.md#nanolibrary)**
 * **[Summary](#summary)**
 * **[Registration](#registration)**
 
@@ -20,10 +20,10 @@ The provider is preconfigured to write log output to the console using a concise
 ${date:format=dd-MM-yyyy HH\\:mm\\:ss.ffffff} [${level:uppercase=true:truncate=3}] ${message}${onexception:${newline}${exception:format=toString}}
 ```
 
-> 📖 Learn more about **[Nano Logging](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging/README.md#nanologging)**.
+> 📖 Learn more about **[Nano Logging](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Logging/README.md#nanologging)**.
 
-Try it out yourself using the **[Api.Logging.NLog](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Logging.NLog)** or 
-**[Console.Logging.NLog](https://github.com/Nano-Core/Nano.Lessons/tree/master/Console.Logging.NLog)** example.  
+Try it out yourself using the **[Api.Logging.NLog](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Logging.NLog)** or 
+**[Console.Logging.NLog](https://github.com/Nano-Core/Nano.Lessons/blob/master/Console.Logging.NLog)** example.  
 
 ## Registration
 Install the **[Nano.Logging.NLog](https://www.nuget.org/packages/Nano.Logging.NLog)** NuGet package.

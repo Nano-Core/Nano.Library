@@ -8,7 +8,7 @@
 *** 
 
 ## Table of Contents
-* **[Home](https://github.com/Nano-Core/Nano.Library/tree/master/README.md#nanolibrary)**
+* **[Home](https://github.com/Nano-Core/Nano.Library/blob/master/README.md#nanolibrary)**
 * **[Summary](#summary)**
 * **[Registration](#registration)**
 * **[Variables And Secrets](#variables-and-secrets)**
@@ -37,6 +37,7 @@
   * **[Versioning](#versioning)**
   * **[Documentation](#documentation)**
   * **[Health Checks](#health-checks)**
+  * **[Metrics (OpenTelemetry)](#opentelemetry-metrics)**
   * **[Virus Scan](#virus-scan)**
   * **[Content Negotiation](#content-negotiation)**
   * **[Request Tracing](#request-tracing)**
@@ -49,7 +50,7 @@
   * **[Request Validation](#request-validation)**
   * **[Request Multipart JSON](#request-multipart-json)**
   * **[Response Serialization](#response-serialization)**
-* **[Startup Tasks](#startup-tasks)**
+* **[Startup Tasks](#start-up-tasks)**
 
 ## Summary
 The `NanoApiApplication` is a ready-to-use application template for building APIs with Nano.  
@@ -60,18 +61,18 @@ It also provides convenient static methods to create and configure the applicati
 through the `ConfigureServices` method. This design ensures that all core API behaviors are initialized consistently using you configuration, reducing boilerplate code 
 and simplifying the setup of new API applications.  
 
-> ⚠️ Before proceeding, it is highly recommended to familiarize yourself generally with **[Nano Applications](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App)**.  
+> ⚠️ Before proceeding, it is highly recommended to familiarize yourself generally with **[Nano Applications](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App#nanoapp)**.  
 
 The `NanoApiApplication` can operate as either an internal service or an externally accessible API.
 As an internal service, it can run behind your network boundary, handling requests from other applications within the system, 
-using the built-in **[Nano Api Client](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#api-client)**.
+using the built-in **[Nano Api Client](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App#api-clients)**.
 When exposed as an external API, it sits behind an entry point that manages incoming traffic, providing controlled access to clients while keeping 
 the internal implementation consistent. This design allows the same application to function in both roles without changing its core configuration or service logic, 
 supporting flexible deployment scenarios.  
 
-> 📖 Learn more about the overall Nano architecture here: **[Nano Architectures](https://github.com/Nano-Core/Nano.Library#nano-architectures)**.  
+> 📖 Learn more about the overall Nano architecture here: **[Nano Architectures](https://github.com/Nano-Core/Nano.Library#%EF%B8%8F-nano-architectures)**.  
 
-Also checkout the **[Api.Blank](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api._Blank)** example, that shows a minimal configured API application.  
+Also checkout the **[Api.Blank](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api._Blank)** example, that shows a minimal configured API application.  
 
 ## Registration
 First install the [Nano.App.Api](https://www.nuget.org/packages/Nano.App.Api) NuGet package.  
@@ -112,7 +113,7 @@ These variables are required and must be configured for the system to function c
 ## Configuration
 The `App` section in the configuration defines behavior related to the application.  
 
-| Setting                   | Type       | Default    | Description                                                                                                                                                          |
+| Setting                   | Type       | Default    | Description                                                                                                 |
 | ------------------------- | ---------- | ---------- | ----------------------------------------------------------------------------------------------------------- |
 | `Version`                 | string     | 1.0.0.0    | Application version identifier.                                                                             |
 | `ShutdownTimeout`         | int        | 10         | Number of seconds to wait after a SIGTERM signal before shutting down.                                      |
@@ -124,7 +125,8 @@ The `App` section in the configuration defines behavior related to the applicati
 | `TimeZone`                | object     | null       | Timezone configuration options. See **[TimeZone](#timezone)**.                                              |
 | `Localization`            | object     | null       | Localization configuration options. See **[Localization](#localization)**.                                  |
 | `Documentation`           | object     | null       | API documentation options (Swagger). See **[Documentation](#documentation)**.                               |
-| `HealthCheck`             | object     | null       | Health-check configuration options. See **[health Check](#health-check)**.                                  |
+| `HealthCheck`             | object     | null       | Health-check configuration options. See **[Health Check](#health-check)**.                                  |
+| `Metrics`                 | object     | null       | OpenTelemetry metrics configuration options. See **[Metrics](#opentelemetry-metrics)**.                     |
 | `VirusScan`               | object     | null       | Virus scanning options. See **[Virus Scan](#virus-scan)**.                                                  |
 | `ErrorHandling`           | object     | default    | Error handling configuration options. See **[Error Handling](#error-handling)**.                            |
 | `Authentication`          | object     | default    | Authentication configuration options. See **[Authentication](#authentication)**.                            |
@@ -150,7 +152,7 @@ The `App` section in the configuration defines behavior related to the applicati
 }
 ```
 
-> 💡 Learn more about **[Application Configuration](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#configuration)** here.  
+> 💡 Learn more about **[Application Configuration](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App#configuration)** here.  
 
 ## Hosting
 Hosting configuration specifies how the API is hosted on the Kestrel web server, defining endpoint exposure as well as request handling limits.  
@@ -199,7 +201,7 @@ If **[Https](#https)** is also enabled, consider turning on `UseHttpsRedirection
 
 ```
 
-Try it out yourself using the **[Api.Hosting.Http](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Hosting.Http)** example.  
+Try it out yourself using the **[Api.Hosting.Http](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Hosting.Http)** example.  
 
 ## Https
 Configuring HTTPS allows the API to communicate over a secure SSL/TLS connection.  
@@ -255,8 +257,8 @@ services:
       - ../:/root/.dotnet/https
 ```
 
-In `Staging` and `Production`, TLS certificates are automatically managed by the [Kubernetes Gateway](https://github.com/Nano-Core/Nano.Azure.Kubernetes/tree/master/Nano.Azure.Kubernetes.Gateway/README.md#nanoazurekubernetesgateway) 
-and [Cert-Manager](https://github.com/Nano-Core/Nano.Azure.Kubernetes/tree/master/Nano.Azure.Kubernetes.CertManager/README.md#nanoazurekubernetescertmanager).  
+In `Staging` and `Production`, TLS certificates are automatically managed by the [Kubernetes Gateway](https://github.com/Nano-Core/Nano.Azure.Kubernetes/blob/master/Nano.Azure.Kubernetes.Gateway/README.md#nanoazurekubernetesgateway) 
+and [Cert-Manager](https://github.com/Nano-Core/Nano.Azure.Kubernetes/blob/master/Nano.Azure.Kubernetes.CertManager/README.md#nanoazurekubernetescertmanager).  
 
 Applications that are exposed publicly just need to define a subdomain and create an `HTTPRoute` Kubernetes resource.  
 
@@ -281,7 +283,7 @@ spec:
           port: 8080
 ```
 
-Try it out yourself using the **[Api.Hosting.Https](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Hosting.Https)** example.  
+Try it out yourself using the **[Api.Hosting.Https](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Hosting.Https)** example.  
 
 ## Routing
 Routing in Nano is handled automatically and requires no explicit configuration. Routes are derived from controllers that inherit from the Nano base controllers, which 
@@ -312,7 +314,7 @@ Otherwise, it is recommended to specify maximum upload sizes and timeouts to pro
 }
 ```
 
-Try it out yourself using the **[Api.Hosting.MultipartLimits](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Hosting.MultipartLimits)** example.  
+Try it out yourself using the **[Api.Hosting.MultipartLimits](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Hosting.MultipartLimits)** example.  
 
 ## Http Policy Headers
 Configure headers such as HSTS, XSS protection, CSP, CORS, and other policies to secure and control HTTP behavior.
@@ -365,7 +367,7 @@ The header allows you to avoid MIME type sniffing by specifying that the MIME ty
 
 > 📖 Learn more about **[Content Type Options](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/X-Content-Type-Options)**
 
-Try it out yourself using the **[Api.PolicyHeaders.ContentType](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.PolicyHeaders.ContentTypeOptions)** example.  
+Try it out yourself using the **[Api.PolicyHeaders.ContentTypeOptions](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.PolicyHeaders.ContentTypeOptions)** example.  
 
 ## Referrer Policy
 The HTTP Referrer-Policy response header controls how much referrer information (sent with the Referer header) should be included with requests.  
@@ -401,7 +403,7 @@ Use `[ReferrerPolicy]` to override the global configuration, if needed.
 
 > 📖 Learn more about **[Referrer Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Referrer-Policy)**
 
-Try it out yourself using the **[Api.PolicyHeaders.ReferrerPolicy](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.PolicyHeaders.ReferrerPolicy)** example.  
+Try it out yourself using the **[Api.PolicyHeaders.ReferrerPolicy](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.PolicyHeaders.ReferrerPolicy)** example.  
 
 ## Frame Options
 The HTTP X-Frame-Options response header can be used to indicate whether a browser should be allowed to render the document 
@@ -434,7 +436,7 @@ then the browser will allow other sites to embed this document.
     
 > 📖 Learn more about **[Frame Options Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/X-Frame-Options)**
 
-Try it out yourself using the **[Api.PolicyHeaders.FrameOptions](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.PolicyHeaders.FrameOptions)** example.  
+Try it out yourself using the **[Api.PolicyHeaders.FrameOptions](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.PolicyHeaders.FrameOptions)** example.  
 
 ## Xss Protection
 The HTTP X-XSS-Protection response header was a feature of Internet Explorer, Chrome and Safari that stopped pages from loading 
@@ -469,7 +471,7 @@ implement a strong Content-Security-Policy that disables the use of inline JavaS
 
 > 📖 Learn more about **[Xss Protection](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/X-XSS-Protection)**
 
-Try it out yourself using the **[Api.PolicyHeaders.XssProtection](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.PolicyHeaders.XssProtection)** example.  
+Try it out yourself using the **[Api.PolicyHeaders.XssProtection](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.PolicyHeaders.XssProtection)** example.  
 
 ## Content Security Policy (CSP)
 The HTTP Content-Security-Policy response header allows website administrators to control resources the user agent is allowed to load for a given page. 
@@ -926,7 +928,7 @@ If configured, both the `Report-To` and `Reporting-Endpoints` headers are emitte
 
 > 📖 Learn more about **[Content Security Policy](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Content-Security-Policy)**
 
-Try it out yourself using the **[Api.PolicyHeaders.ContentSecurityPolicy](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.PolicyHeaders.ContentSecurityPolicy)** example.  
+Try it out yourself using the **[Api.PolicyHeaders.ContentSecurityPolicy](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.PolicyHeaders.ContentSecurityPolicy)** example.  
 
 ## Cors
 Cross-Origin Resource Sharing (CORS) is an HTTP-header-based security mechanism that allows a server to authorize web browsers to load resources 
@@ -973,7 +975,7 @@ Use `[EnableCors]` and `[DisableCors]` to override the global configuration, if 
 
 > 📖 Learn more about **[Hsts](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS)**
 
-Try it out yourself using the **[Api.PolicyHeaders.Cors](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.PolicyHeaders.Cors)** example.  
+Try it out yourself using the **[Api.PolicyHeaders.Cors](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.PolicyHeaders.Cors)** example.  
 
 ## Strict Transport Security (Hsts)
 HTTP Strict Transport Security (HSTS) is a web security policy mechanism that forces browsers to interact with websites solely through secure HTTPS connections.  
@@ -998,7 +1000,7 @@ HTTP Strict Transport Security (HSTS) is a web security policy mechanism that fo
 
 > 📖 Learn more about **[Hsts](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Strict-Transport-Security)**
 
-Try it out yourself using the **[Api.PolicyHeaders.Hsts](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.PolicyHeaders.Hsts)** example.  
+Try it out yourself using the **[Api.PolicyHeaders.Hsts](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.PolicyHeaders.Hsts)** example.  
 
 ## Robots
 The `X-Robots-Tag` response header defines how crawlers should index URLs. While not part of any specification, it is a de-facto standard method 
@@ -1032,7 +1034,7 @@ for communicating with search bots, web crawlers, and similar user agents.
 
 > 📖 Learn more about **[X-Robots-Tag](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/X-Robots-Tag)**
 
-Try it out yourself using the **[Api.PolicyHeaders.Robots](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.PolicyHeaders.Robots)** example.  
+Try it out yourself using the **[Api.PolicyHeaders.Robots](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.PolicyHeaders.Robots)** example.  
 
 ## Forwarded Headers
 When connecting through a HTTP proxy (or load balancer), server logs will only contain the IP address, host address, and protocol of the proxy; 
@@ -1079,7 +1081,7 @@ Therefore, this approach is safe only if your traffic always passes through a tr
 
 > 📖 Learn more about **[Forwarded Headers](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Forwarded)**
 
-Try it out yourself using the **[Api.PolicyHeaders.ForwardedHeaders](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.PolicyHeaders.ForwardedHeaders)** example.  
+Try it out yourself using the **[Api.PolicyHeaders.ForwardedHeaders](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.PolicyHeaders.ForwardedHeaders)** example.  
 
 ## Response Cache
 The HTTP cache stores a response associated with a request and reuses the stored response for subsequent requests.  
@@ -1110,7 +1112,7 @@ restore the session based on the cookie, query the DB for results, or render the
 
 > 📖 Learn more about **[Response Caching](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Caching)**
 
-Try it out yourself using the **[Api.ResponseCache](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.ResponseCache)** example.  
+Try it out yourself using the **[Api.ResponseCache](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.ResponseCache)** example.  
 
 ## Response Compression
 HTTP response compression is a technique used to reduce the size of data sent from a web server to a client (usually a browser). 
@@ -1132,7 +1134,7 @@ By shrinking the payload, it improves website loading speeds, reduces bandwidth 
 
 > 📖 Learn more about **[Response Compression](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Compression)**
 
-Try it out yourself using the **[Api.ResponseCompression](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.ResponseCompression)** example.  
+Try it out yourself using the **[Api.ResponseCompression](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.ResponseCompression)** example.  
 
 ## Session
 Adds session state support to the application, allowing user-specific data to persist across requests. 
@@ -1154,7 +1156,7 @@ Cookie name: `.AspNetCore.Session`
 }
 ```
 
-Try it out yourself using the **[Api.Session](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Session)** example.  
+Try it out yourself using the **[Api.Session](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Session)** example.  
 
 ## Cookies
 Cookies in Nano are pre-configured for security and cannot be customized. This ensures that all cookies follow best practices by default.  
@@ -1171,7 +1173,7 @@ When a cookie is created, Nano automatically enforces these settings.
 If a cookie’s options already match the policy or are stricter, they remain unchanged. 
 However, if a cookie’s options violate the policy, the middleware adjusts them to ensure they conform before the response is sent to the client.
 
-Try it out yourself using the **[Api.Cookies](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Cookies)** example.  
+Try it out yourself using the **[Api.Cookies](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Cookies)** example.  
 
 ## TimeZone
 Nano supports built-in methods for specifying the timezone when making requests.  
@@ -1187,8 +1189,7 @@ To specify the timezone in a request, you can use one of the following methods:
 * Querystring parameter (`tz=Europe/Copenhagen`)
 * Cookie (`.AspNetCore.TimeZone=Europe/Copenhagen`)
 
-When using layered Nano APIs, the `tz` header is automatically propagated across all layers when leveraging
-the built-in [Nano Api Client](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#api-client).  
+When using layered Nano APIs, the `tz` header is automatically propagated across all layers when leveraging the built-in [Nano Api Clients](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App#api-clients).  
 
 To easily obtain the current date and time, use the following properties on `DateTimeInfo`:
 
@@ -1211,9 +1212,9 @@ Cookie name: `.AspNetCore.TimeZone`
 }
 ```
 
-> 📖 Learn more about **[Request TimeZone](https://github.com/vivet/Vivet.AspNetCore/tree/master/Vivet.AspNetCore.RequestTimeZone#vivetaspnetcorerequesttimezone)**.  
+> 📖 Learn more about **[Request TimeZone](https://github.com/vivet/Vivet.AspNetCore/blob/master/Vivet.AspNetCore.RequestTimeZone#vivetaspnetcorerequesttimezone)**.  
 
-Try it out yourself using the **[Api.TimeZone](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.TimeZone)** example.  
+Try it out yourself using the **[Api.TimeZone](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.TimeZone)** example.  
 
 ## Localization
 Nano provides built-in support for specifying the language when making requests.
@@ -1223,8 +1224,7 @@ To specify the language for a request, you can use one of the following methods:
 * Query parameter (```culture=da-DK```)
 * Cookie (`.AspNetCore.Culture=c=da-DK|uic=da-DK`)
 
-When using layered Nano APIs, the `Accept-Language` header is automatically propagated across all layers when leveraging 
-the built-in [Nano Api Client](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#api-client).  
+When using layered Nano APIs, the `Accept-Language` header is automatically propagated across all layers when leveraging the built-in [Nano Api Client](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App#api-clients).  
 
 Cookie name: `.AspNetCore.Culture`
 
@@ -1245,7 +1245,7 @@ Cookie name: `.AspNetCore.Culture`
 
 > 📖 Learn more about **[Request Localization](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/localization)**.  
 
-Try it out yourself using the **[Api.Localization](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Localization)** example.  
+Try it out yourself using the **[Api.Localization](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Localization)** example.  
 
 ## Versioning
 API versioning in **Nano** requires no additional configuration. It leverages the built-in versioning support provided by ASP.NET Core. 
@@ -1272,7 +1272,7 @@ to the other veresion providers.
 > Managing multiple API versions quickly adds complexity and maintenance overhead. Whenever possible, prefer evolving the API in a backward-compatible way 
 so existing clients continue to work without requiring new versions. Use versioning only in rare cases where breaking changes are unavoidable.
 
-Try it out yourself using the **[Api.Versioning](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Versioning)** example.  
+Try it out yourself using the **[Api.Versioning](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Versioning)** example.  
 
 ## Documentation
 When documentation is enabled in the configuration, the API's web-based documentation interface (Swagger) is available at `/docs`.
@@ -1316,10 +1316,19 @@ When configuring a strict CSP policy, add the following style hash: `"sha256-RL3
 
 > 📖 Learn more about **[Swashbuckle.AspNetCore](https://github.com/domaindrivendev/Swashbuckle.AspNetCore)**.  
 
-Try it out yourself using the **[Api.Documentation](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Documentation)** example.  
+Try it out yourself using the **[Api.Documentation](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Documentation)** example.  
 
 ## Health Checks
 When health checks are enabled in the configuration, a `/healthz` endpoint is exposed.  
+
+There are no configuration options required for health checks. You can simply enable health-checks by adding an empty configuration object as shown below.  
+
+```json
+"App": {
+  "HealthCheck": {
+  }
+}
+```
 
 A _self_ startup health check is performed to await the completion of all pending startup tasks before the application is reported as ready. 
 As additional Nano providers and services are added to the application, they will automatically appear in the health checks and report their status, 
@@ -1344,24 +1353,48 @@ Dependencies between services are represented as a tree of health checks. If any
 to the configured rules, affecting the overall health status of the application. This makes it easy to monitor the health of all components and dependencies 
 in a consistent and centralized way.  
 
-There are no configuration options required for health checks. You can simply enable health-checks by adding an empty configuration object as shown below.  
-
-```json
-"App": {
-  "HealthCheck": {
-  }
-}
-```
-
 It is also possible to add health checks for custom services. Simply register the health check during application startup in `ConfigureServices(...)`, and it will 
 run alongside the built-in health checks provided by Nano.  
 
 > 📖 Learn more about **[AspNetCore.Diagnostics.HealthChecks](https://github.com/Xabaril/AspNetCore.Diagnostics.HealthChecks)**.  
 
-Try it out yourself using the **[Api.HealthChecks](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.HealthChecks)** example.  
+Try it out yourself using the **[Api.HealthChecks](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.HealthChecks)** example.  
 
 > 💡 Health Checks can also serve as an availability check mechanism.  
 The health check example also demonstrates how to configure availability monitoring using _Azure Application Insights_.  
+
+## Metrics (OpenTelemetry)
+When health checks are enabled in the configuration, a `/metrics` endpoint is exposed.  
+
+The endpoint provides Prometheus-compatible metrics collected through OpenTelemetry, including ASP.NET Core request metrics, HTTP client metrics, and .NET runtime 
+metrics. These metrics can be scraped by Azure Managed Prometheus and visualized in Grafana dashboards. 
+
+There are no configuration options required for metrics. You can simply enable metrics by adding an empty configuration object as shown below.  
+
+```json
+"App": {
+  "Metrics": {
+  }
+}
+```
+
+A Kubernetes `ServiceMonitor` is required to configure Prometheus scraping for the application metrics endpoint.
+
+```yaml
+apiVersion: azmonitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: %SERVICE_NAME%-monitor
+  namespace: %KUBERNETES_NAMESPACE%
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: %SERVICE_NAME%
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 1m
+```
 
 ## Virus Scan
 Nano provides built-in virus scanning through a connected `ClamAV` service.  
@@ -1370,7 +1403,7 @@ When configured, all uploaded files are automatically processed through the Clam
 If any uploaded file is found to contain a virus, the request is rejected and a `500 Internal Server Error` is returned. The response includes a message indicating 
 the name of the virus detected and which file(s) triggered the scan.  
 
-> 📖 Learn more about **[ClamAV Virus Scan](https://github.com/Nano-Core/Nano.Kubernetes/tree/master/Nano.Azure.Kubernetes/Nano.Azure.Kubernetes.ClamAV/README.md#nanoazurekubernetesclamav)
+> 📖 Learn more about **[ClamAV Virus Scan](https://github.com/Nano-Core/Nano.Azure.Kubernetes/blob/master/Nano.Azure.Kubernetes.ClamAV/README.md#nanoazurekubernetesclamav)
 
 This feature ensures that all file uploads are automatically checked for malware, providing an extra layer of security for your application. By integrating ClamAV scanning 
 into the middleware pipeline, Nano helps enforce security best practices and prevents potentially harmful files from entering your system.
@@ -1396,9 +1429,9 @@ into the middleware pipeline, Nano helps enforce security best practices and pre
 }
 ```
 
-> 📖 Learn more about **[Request Virus Scan](https://github.com/vivet/Vivet.AspNetCore/tree/master/Vivet.AspNetCore.RequestVirusScan#vivetaspnetcorerequestvirusscan)**.  
+> 📖 Learn more about **[Request Virus Scan](https://github.com/vivet/Vivet.AspNetCore/blob/master/Vivet.AspNetCore.RequestVirusScan#vivetaspnetcorerequestvirusscan)**.  
 
-Try it out yourself using the **[Api.VirusScan](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.VirusScan)** example.  
+Try it out yourself using the **[Api.VirusScan](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.VirusScan)** example.  
 
 ## Content Negotiation
 Content negotiation allows clients to request a specific response format via the `Accept` header.  
@@ -1408,11 +1441,11 @@ such as when returning files. If `Accept` header is omitted from the request, Na
 
 No configuration or additional setup is required.  
 
-Try it out yourself using the **[Api.ContentNegotiation](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.ContentNegotiation)** example.  
+Try it out yourself using the **[Api.ContentNegotiation](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.ContentNegotiation)** example.  
 
 ## Request Tracing
 A `X-Request-Id` is generated by the first Nano instance encountered in the architecture and is propagated through all layers of the system. 
-When using layered Nano APIs with **[Nano Api Client](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App/README.md#api-client)**, the `X-Request-Id` is 
+When using layered Nano APIs with **[Nano Api Client](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App/README.md#api-clients)**, the `X-Request-Id` is 
 automatically passed along. It can also be set by the frontend, which is recommended to ensure that every layer uses the same identifier.  
 
 In controllers deriving from `BaseController`, the `X-Request-Id` header value is accessible via the `RequestId` property.
@@ -1420,10 +1453,10 @@ The `X-Request-Id` is also added to the http response, so the consumer can see i
 
 No configuration or additional setup is required.  
 
-When **[Logging](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging/README.md#nanologging)** is enabled, Nano adds the `X-Request-Id` to all logs for endpoint requests and responses, 
+When **[Logging](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Logging/README.md#nanologging)** is enabled, Nano adds the `X-Request-Id` to all logs for endpoint requests and responses, 
 enabling request-level tracing and correlation.  
 
-You can try this out using the **[Api.RequestTracing](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.RequestTracing)** example.
+You can try this out using the **[Api.RequestTracing](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.RequestTracing)** example.
 
 ## Error Handling
 This configuration section is required and will automatically be populated if omitted.
@@ -1444,7 +1477,7 @@ Nano includes a centralized error handling middleware that catches all unhandled
 consistent HTTP error responses with appropriate status codes. All error responses are written using `ProblemDetails`, in accordance 
 with [https://datatracker.ietf.org/doc/html/rfc7807](https://datatracker.ietf.org/doc/html/rfc7807).
 
-Additionally, when **[Logging](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Logging/README.md#nanologging)** is registered with the application, 
+Additionally, when **[Logging](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Logging/README.md#nanologging)** is registered with the application, 
 the error is logged using the configured provider.  
 
 Nano provides built-in mappings between common exception types and HTTP error responses.
@@ -1466,11 +1499,11 @@ Nano provides built-in mappings between common exception types and HTTP error re
 The exceptions above may be thrown anywhere in the application, and the Nano error handling middleware will automatically construct the appropriate `ProblemDetails` response.
 
 Nano supports any HTTP status code as long as `ProblemDetails` is used. This also enables proper error propagation when using Nano in a layered architecture 
-with the **[Nano Api Client](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App/README.md#api-client)**. When returning custom error responses directly from controllers, 
+with the **[Nano Api Client](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App/README.md#api-clients)**. When returning custom error responses directly from controllers, 
 always return `ProblemDetails` or no response body. Returning custom objects for error responses will not work in a layered Nano architecture, 
 as the API client can only propagate `ProblemDetails` and will otherwise fall back to a generic `500 Internal Server Error`.
 
-Try it out yourself using the **[Api.ErrorHandling](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.ErrorHandling)** example.  
+Try it out yourself using the **[Api.ErrorHandling](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.ErrorHandling)** example.  
 
 ## Static Files
 Static Files are served directly by the web host without passing through the endpoint pipeline. Common static assets such as 
@@ -1480,7 +1513,7 @@ Static files must always be placed in the `wwwroot` folder.
 
 This is enabled by default and requires no additional configuration.  
 
-Try it out yourself using the **[Api.StaticFiles](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.StaticFiles)** example.  
+Try it out yourself using the **[Api.StaticFiles](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.StaticFiles)** example.  
 
 ## Authentication
 Nano supports two built-in authentication schemes, JWT and API key authentication. If no authentication schemes has been configured, all endpoints will be accessible anonymously by default.  
@@ -1492,7 +1525,7 @@ identity data is passed to Nano (e.g., via external sign-in or sign-up). Nano wi
 In Nano, authentication can be either with an identity store to manage user data, or without - transient, relying on external providers without storing identity information.  
 
 When your application needs to manage usernames, passwords, roles, permissions, or other persistent user data, you should configure 
-**[Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data/README.md#identity)**. This enables Nano to store and maintain user credentials and claims in a 
+**[Data Identity](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data/README.md#identity)**. This enables Nano to store and maintain user credentials and claims in a 
 centralized identity store. Roles and claims can then be automatically loaded for each user, simplifying access control and authorization across your application.  
 
 With transient authentication, users authenticate through external providers, and a Nano JWT tokens are generated for use in subsequent requests. Roles and claims 
@@ -1513,7 +1546,7 @@ Transient roles and claims may also be added when using persistent authenticatio
 legal name at login and add it as a transient claim, rather than storing it permanently in the identity system. This approach ensures that certain information is always 
 current without the need to update persistent claims when data changes.  
 
-> ⚠️ API key authentication is only supported when using the built-in identity store, and is configured as part of **[Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data/README.md#identity)**.
+> ⚠️ API key authentication is only supported when using the built-in identity store, and is configured as part of **[Data Identity](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data/README.md#identity)**.
 
 The following configuration is available for authentication.  
 
@@ -1668,7 +1701,7 @@ The `IAuthRootRepository` contains just a single method.
 | ---------------- | ------------ | --------------------------------------------------------------------------------------------------------------------------------- |
 | `LogInRootAsync` | logInRoot    | Signs in the admin/root user using credentials. The credentials must match the root username and password in the configuration.   |
 
-Try it out yourself using the **[Api.Authentication.RootLogin](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Authentication.RootLogin)** example.  
+Try it out yourself using the **[Api.Auth.RootLogin](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Auth.RootLogin)** example.  
 
 The most basic and commonly used authentication method is logging in with credentials, a username and password, validated against the configured identity store.  
 
@@ -1682,7 +1715,7 @@ The `IAuthIdentityRepository` provides the following methods to support this fun
 | `LogInRefreshAsync`                 | logInRefresh                     | Refreshes an existing access token using a valid refresh token, generating a new JWT and refresh token.                                 |
 | `LogOutAsync`                       | userId, appId                    | Logs out the current user.                                                                                                              |
 
-Try it out yourself using the **[Api.Data.Identity.Auth.Jwt](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Auth.Jwt)** example.  
+Try it out yourself using the **[Api.Data.Identity.Auth.Jwt](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Data.Identity.Auth.Jwt)** example.  
 
 The `IAuthIdentityRepository` supports external authentication backed by the identity store, as shown in the table above. In contrast, the `IAuthTransientRepository`, shown in the table below, 
 also supports external authentication but is designed for transient logins without persistence and provides dedicated methods for external transient authentication.
@@ -1789,17 +1822,17 @@ intermediate steps, and then use the resulting authentication data together with
 
 Try out external authentication yourself using one of these examples.  
 
-* **[Api.Data.Identity.Auth.External.Custom](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Auth.External.Custom)** 
-* **[Api.Data.Identity.Auth.External.Facebook](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Auth.External.Facebook)** 
-* **[Api.Data.Identity.Auth.External.Google](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Auth.External.Google)** 
-* **[Api.Data.Identity.Auth.External.Microsoft](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Auth.External.Microsoft)** 
+* **[Api.Data.Identity.Auth.External.Custom](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Data.Identity.Auth.External.Custom)** 
+* **[Api.Data.Identity.Auth.External.Facebook](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Data.Identity.Auth.External.Facebook)** 
+* **[Api.Data.Identity.Auth.External.Google](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Data.Identity.Auth.External.Google)** 
+* **[Api.Data.Identity.Auth.External.Microsoft](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Data.Identity.Auth.External.Microsoft)** 
 
 ...or the equivalent transient examples.  
 
-* **[Api.Auth.External.Custom](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Auth.External.Custom)** 
-* **[Api.Auth.External.Facebook](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Auth.External.Facebook)** 
-* **[Api.Auth.External.Google](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Auth.External.Google)** 
-* **[Api.Auth.External.Microsoft](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Auth.External.Microsoft)** 
+* **[Api.Auth.External.Custom](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Auth.External.Custom)** 
+* **[Api.Auth.External.Facebook](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Auth.External.Facebook)** 
+* **[Api.Auth.External.Google](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Auth.External.Google)** 
+* **[Api.Auth.External.Microsoft](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Auth.External.Microsoft)** 
 
 All authentication repositories are leveraged by the `BaseAuthController` when implemented to expose authentication endpoints. In most cases, you do not need to interact with 
 the repositories directly. Using the controller provides a consistent, simplified interface to access all configured authentication actions, ensuring that authentication flows are 
@@ -1840,7 +1873,7 @@ All the `HttpContext` extension methods returns null, if not authenticated.
 The refresh token may be used to extend the access-token when expired.  
 
 Nano also supports authentication using an API key, provided in the `X-Api-Key` header. This requires 
-**[Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data/README.md#identity)** to be configured for API keys. When an API key is included in the HTTP header, 
+**[Data Identity](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data/README.md#identity)** to be configured for API keys. When an API key is included in the HTTP header, 
 Nano authenticates the request using `ApiKeyAuthenticationHandler<TIdentity>`.
 
 Having both JWT and API Key authentication enabled side by side is perfectly valid. Nano will route each incoming request to the appropriate authentication handler based on the 
@@ -1850,7 +1883,7 @@ In a layered architecture, when using API key authentication, the Kubernetes gat
 validate the API key by calling an authentication endpoint: `http://{app-name}/auth/login/apikey`,  and exchanging it for a JWT token that can be forwarded to your backend service. Without 
 this, services behind the gateway won't automatically authenticate API-key requests. Nano comes with a built-in endpoint when both API key and JWT has been configured, that can be used.
 
-Try it out yourself using the **[Api.Data.Identity.Auth.ApiKey](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Auth.ApiKey)** example.  
+Try it out yourself using the **[Api.Data.Identity.Auth.ApiKey](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Data.Identity.Auth.ApiKey)** example.  
 
 ## Authorization
 Nano supports authorization using either a JWT token or an API key. JWT tokens are provided in the `Authorization` header, while API keys are provided in 
@@ -1858,7 +1891,7 @@ the `X-Api-Key` header. If both are configured and both headers are present in a
 an application, Nano allows _anonymous_ access by default.  
 
 When building layered Nano applications, the `Authorization` header is automatically propagated between applications when using the built-in  
-[Nano Api Client](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#api-client). This ensures that the authenticated context is preserved 
+[Nano Api Client](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App#api-clients). This ensures that the authenticated context is preserved 
 across application boundaries.
 
 In Nano, _claims_ are primarily used for carrying user information, while _roles_ are used for authorization. Nano can be extended to support any kind of custom 
@@ -1866,7 +1899,7 @@ authorization strategies. For example, you can override the `[Authorize]` attrib
 during application startup. By default, however, Nano base controllers rely on role-based authorization. See [Controllers](#controllers) for details on which 
 roles are required for specific base controllers and actions.
 
-Try it out yourself using the **[Api.Authorization](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity.Auth.ApiApi.AuthorizationKey)** example.  
+Try it out yourself using the **[Api.Authorization](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Authorization)** example.  
 
 ## Api Clients
 Nano API clients provide a structured way to communicate with other Nano API applications. They are designed to simplify service-to-service communication while maintaining 
@@ -1878,7 +1911,7 @@ into the business logic. Responses and errors are propagated in a predictable wa
 When used together with Nano’s **[Error Handling](#error-handling)** and `ProblemDetails` support, API clients ensure that errors can flow through multiple layers without being lost 
 or transformed into generic failures.
 
-> 📖 Learn more **[Nano Api Clients](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#api-clients)**
+> 📖 Learn more **[Nano Api Clients](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App#api-clients)**
 
 ## Controllers
 Nano provides several base controller classes that concrete API controllers are expected to inherit from.
@@ -1917,10 +1950,10 @@ to keep the API surface minimal and explicit.
 
 When exposing entity models mapped from SQL views, use `BaseEntityViewController` base class.  
 
-> ⚠️ Entity controllers require **[Nano.Data](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data/README.md#nanodata)** to be configured for the application.
+> ⚠️ Entity controllers require **[Nano.Data](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data/README.md#nanodata)** to be configured for the application.
 
 Each concrete implementation of an entity controller must specify two generic parameters. First, the entity model, which defines the database table and its properties 
-that the controller will work with. This model comes from **[Nano Data Models](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#data-models)** and uses 
+that the controller will work with. This model comes from **[Nano Data Models](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data#data-models)** and uses 
 Entity Framework. 
 
 ```csharp
@@ -1977,7 +2010,7 @@ Nano entity controllers have two required constructor dependencies and one optio
 | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `ILogger`     | Required. Provides logging capabilities for the controller.                                                                                                                                        |
 | `IRepository` | Required. Provides methods to get, add, update, delete, and query entity data.                                                                                                                     |
-| `IEventing`   | Optional. If eventing is configured, this allows the controller to publish events from its actions. See **[Nano.Eventing](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Eventing/README.md#nanoeventing)**.  |
+| `IEventing`   | Optional. If eventing is configured, this allows the controller to publish events from its actions. See **[Nano.Eventing](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Eventing/README.md#nanoeventing)**.  |
 
 A controller using the default `Guid` as `TIdentity` would look like this.  
 
@@ -1986,7 +2019,7 @@ public class MyEntitysController(ILogger<MyEntitysController> logger, IRepositor
     : BaseEntityController<MyEntity, MyEntityQueryCriteria>(logger, repository, eventing);
 ```
 
-If you have specified a `TIdentity` type when registering **[Nano.Data](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data/README.md#nanodata)**, you must also specify the same type 
+If you have specified a `TIdentity` type when registering **[Nano.Data](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data/README.md#nanodata)**, you must also specify the same type 
 when deriving your concrete controllers from the Nano base controllers. If `TIdentity` is a `string`, your controller would look like this.  
 
 ```csharp
@@ -2024,10 +2057,10 @@ When everything is configured and registered, the following endpoints becomes av
 
 > ⚠️ Do not set `includeDepth` higher than the configured include depth. **[Response Serialization](#response-serialization)** will only consider the configured value.
 
-Try it yourself using one of the **[Api.Data Lessons](https://github.com/Nano-Core/Nano.Lessons)**, such as **[Api.Data.MySql](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.MySql)**, 
+Try it yourself using one of the **[Api.Data Lessons](https://github.com/Nano-Core/Nano.Lessons)**, such as **[Api.Data.MySql](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Data.MySql)**, 
 or any of the other data provider examples.
 
-When **[Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data/README.md#identity)** is enabled, Nano provides a specialized base controller for managing 
+When **[Data Identity](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data/README.md#identity)** is enabled, Nano provides a specialized base controller for managing 
 entity identities. The `BaseEntityUserController<TEntity, TCriteria>` offers a rich set of methods for creating, updating, and managing user identities within your application. 
 To use it, derive a concrete implementation of this controller to expose identity-related actions for your application, using a user entity model derived from `BaseEntityUser` or 
 `BaseEntityUser<TIdentity>`. It behaves similarly to other entity controllers but includes additional actions tailored for identity management, such as handling usernames, passwords, 
@@ -2101,9 +2134,9 @@ controller.
 
 Endpoints for user refresh tokens are only exposed if JWT authentication is configured. Similarly, endpoints for API keys are only exposed when API key authentication is configured.  
 
-> 📖 Learn more about **[Data Identity](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data/README.md#identity)**.
+> 📖 Learn more about **[Data Identity](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data/README.md#identity)**.
 
-Try it yourself using the **[Api.Data.Identity](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity)** example.  
+Try it yourself using the **[Api.Data.Identity](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Data.Identity)** example.  
 
 Nano includes the `BaseAuthController` and `BaseAuthController<TIdentity>` classes to handle authentication-related operations. To expose authentication endpoints in your API, 
 simply derive a concrete controller from one of these base classes. There is no need to implement any actions in your derived controller, as all necessary functionality is provided.
@@ -2141,9 +2174,9 @@ The following endpoints are available.
 | `/api/audit/query/first`       | GET, POST     | query, criteria, includeDepth    | reader  | Retrieves the first entity matching the specified criteria.                  |
 | `/api/audit/query/count`       | GET, POST     | criteria, includeDepth           | reader  | Gets the total count of entities matching the specified criteria.            |
 
-> 📖 Learn more about **[Data Audit](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data/README.md#audit)**.
+> 📖 Learn more about **[Data Audit](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data/README.md#audit)**.
 
-Try it yourself using the **[Api.Data.Audit](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Audit)**, or any of the other data provider examples.
+Try it yourself using the **[Api.Data.Audit](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Data.Audit)**, or any of the other data provider examples.
 
 ## Request Validation
 When deriving a controller from `BaseController`, model validation is automatically enabled. Validation is based on the attributes applied to model properties. If 
@@ -2181,7 +2214,7 @@ while the controller receives fully bound and validated models.
 
 > ⚠️ Make sure the JSON field name matches the name of the model parameter in your action.
 
-Try it out yourself using the **[Api.MultipartJson](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.MultipartJson)** example.  
+Try it out yourself using the **[Api.MultipartJson](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.MultipartJson)** example.  
 
 ## Response Serialization
 Nano uses `Newtonsoft.Json` for serialization and deserialization. It supports all built-in Nano types, types derived from Nano base types, 
@@ -2189,7 +2222,7 @@ and all `Geometry` types from `NetTopologySuite`.
 
 The serializer only serializes navigations that is of type `IEntity`, when they are annotated with `IncludeAttribute`. This is to avoid returning unwanted navigation 
 references, that is automatically added if dependent navigations are loaded separately into the data context. Read more about 
-**[Include Annotation](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.App/README.md#include-annotation)**. Responses that doesn't inherit from `IEntity` will be 
+**[Include Annotation](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data/README.md#include-annotation)**. Responses that doesn't inherit from `IEntity` will be 
 serialized normally.
 
 > ⚠️ Serialization respects only the configured include depth. Loaded navigations within that depth may in rare cases be returned even if the request `includeDepth` is lower.
@@ -2210,6 +2243,6 @@ is fully initialized before becoming available.
 > 💡 When using health checks and startup tasks, configure the Kubernetes readiness probe correctly to prevent unwanted pod restarts.  
 Keep startup tasks simple and fast to ensure smooth application startup
 
-> 📖 Learn more about **[Nano Startup Tasks](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App#startup-tasks)**.
+> 📖 Learn more about **[Nano Startup Tasks](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App#startup-tasks)**.
 
-Try it out yourself using the **[Api.StartupTasks](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.StartupTasks)** example.  
+Try it out yourself using the **[Api.StartupTasks](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App#start-up-tasks)** example.  

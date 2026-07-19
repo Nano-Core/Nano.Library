@@ -21,6 +21,8 @@ public abstract class BaseApiClient(ApiClient apiClient)
 public abstract class BaseApiClient<TIdentity>(ApiClient apiClient)
     where TIdentity : IEquatable<TIdentity>
 {
+    private readonly ApiClient apiClient = apiClient ?? throw new ArgumentNullException(nameof(apiClient));
+
     /// <summary>
     /// Provides access to authentication-related API endpoints.
     /// </summary>

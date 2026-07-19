@@ -155,48 +155,6 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Executes <c>query</c> for <typeparamref name="TEntity"/> using a query object.
-    /// </summary>
-    /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <typeparam name="TCriteria">The query criteria type.</typeparam>
-    /// <param name="query">The query object.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>A collection of matching entities.</returns>
-    public Task<IEnumerable<TEntity>> QueryAsync<TEntity, TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
-        where TEntity : class, IEntity
-        where TCriteria : IQueryCriteria, new()
-    {
-        ArgumentNullException.ThrowIfNull(query);
-
-        return this.QueryAsync<TEntity, TCriteria>(new QueryRequest<TCriteria>
-        {
-            Query = query
-        }, cancellationToken);
-    }
-
-    /// <summary>
-    /// Executes <c>query</c> for <typeparamref name="TEntity"/> using a query object with include depth.
-    /// </summary>
-    /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <typeparam name="TCriteria">The query criteria type.</typeparam>
-    /// <param name="query">The query object.</param>
-    /// <param name="includeDepth">The include depth level.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>A collection of matching entities.</returns>
-    public Task<IEnumerable<TEntity>> QueryAsync<TEntity, TCriteria>(IQuery<TCriteria> query, int includeDepth, CancellationToken cancellationToken = default)
-        where TEntity : class, IEntity
-        where TCriteria : IQueryCriteria, new()
-    {
-        ArgumentNullException.ThrowIfNull(query);
-
-        return this.QueryAsync<TEntity, TCriteria>(new QueryRequest<TCriteria>
-        {
-            Query = query,
-            IncludeDepth = includeDepth
-        }, cancellationToken);
-    }
-
-    /// <summary>
     /// Executes <c>query/first</c> for <typeparamref name="TEntity"/> to retrieve the first matching entity by request.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
@@ -212,48 +170,6 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
 
         return this.api
             .InvokeAsync<QueryFirstRequest<TCriteria>, TEntity>(request, cancellationToken);
-    }
-
-    /// <summary>
-    /// Executes <c>query/first</c> for <typeparamref name="TEntity"/> using a query object.
-    /// </summary>
-    /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <typeparam name="TCriteria">The query criteria type.</typeparam>
-    /// <param name="query">The query object.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The first matching entity, or <c>null</c> if none found.</returns>
-    public Task<TEntity?> QueryFirstAsync<TEntity, TCriteria>(IQuery<TCriteria> query, CancellationToken cancellationToken = default)
-        where TEntity : class, IEntity
-        where TCriteria : IQueryCriteria, new()
-    {
-        ArgumentNullException.ThrowIfNull(query);
-
-        return this.QueryFirstAsync<TEntity, TCriteria>(new QueryFirstRequest<TCriteria>
-        {
-            Query = query
-        }, cancellationToken);
-    }
-
-    /// <summary>
-    /// Executes <c>query/first</c> for <typeparamref name="TEntity"/> using a query object with include depth.
-    /// </summary>
-    /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <typeparam name="TCriteria">The query criteria type.</typeparam>
-    /// <param name="query">The query object.</param>
-    /// <param name="includeDepth">The include depth level.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The first matching entity, or <c>null</c> if none found.</returns>
-    public Task<TEntity?> QueryFirstAsync<TEntity, TCriteria>(IQuery<TCriteria> query, int includeDepth, CancellationToken cancellationToken = default)
-        where TEntity : class, IEntity
-        where TCriteria : IQueryCriteria, new()
-    {
-        ArgumentNullException.ThrowIfNull(query);
-
-        return this.QueryFirstAsync<TEntity, TCriteria>(new QueryFirstRequest<TCriteria>
-        {
-            Query = query,
-            IncludeDepth = includeDepth
-        }, cancellationToken);
     }
 
     /// <summary>
@@ -276,26 +192,6 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
         int.TryParse(response, out var count);
 
         return count;
-    }
-
-    /// <summary>
-    /// Executes <c>query/count</c> for <typeparamref name="TEntity"/> to count matching entities by criteria.
-    /// </summary>
-    /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <typeparam name="TCriteria">The query criteria type.</typeparam>
-    /// <param name="criteria">The query criteria.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The number of matching entities.</returns>
-    public Task<int> QueryCountAsync<TEntity, TCriteria>(TCriteria criteria, CancellationToken cancellationToken = default)
-        where TEntity : class, IEntity
-        where TCriteria : IQueryCriteria, new()
-    {
-        ArgumentNullException.ThrowIfNull(criteria);
-
-        return this.QueryCountAsync<TEntity, TCriteria>(new QueryCountRequest<TCriteria>
-        {
-            Criteria = criteria
-        }, cancellationToken);
     }
 
     #endregion
@@ -322,24 +218,6 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'create' endpoint of the entity in the api.
-    /// </summary>
-    /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="entity">The entity to create.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The created entity.</returns>
-    public Task<TEntity> CreateAsync<TEntity>(IEntityCreatable entity, CancellationToken cancellationToken = default)
-        where TEntity : class, IEntityCreatable
-    {
-        ArgumentNullException.ThrowIfNull(entity);
-
-        return this.CreateAsync<TEntity>(new CreateRequest
-        {
-            Entity = entity
-        }, cancellationToken);
-    }
-
-    /// <summary>
     /// Invokes the 'create/edit' endpoint of the entity in the api.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
@@ -355,24 +233,6 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
             .InvokeAsync<CreateOrEditRequest, TEntity>(request, cancellationToken);
 
         return entityCreated ?? throw new NotFoundException(nameof(entityCreated));
-    }
-
-    /// <summary>
-    /// Invokes the 'create/edit' endpoint of the entity in the api.
-    /// </summary>
-    /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="entity">The entity to create.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The created or edited entity.</returns>
-    public Task<TEntity> CreateOrEditAsync<TEntity>(IEntityCreatableAndUpdatable entity, CancellationToken cancellationToken = default)
-        where TEntity : class, IEntityCreatableAndUpdatable
-    {
-        ArgumentNullException.ThrowIfNull(entity);
-
-        return this.CreateOrEditAsync<TEntity>(new CreateOrEditRequest
-        {
-            Entity = entity
-        }, cancellationToken);
     }
 
     /// <summary>
@@ -394,24 +254,6 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'create/get' endpoint of the entity in the api.
-    /// </summary>
-    /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="entity">The entity to create or get.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The created or existing entity.</returns>
-    public Task<TEntity> CreateOrGetAsync<TEntity>(IEntityCreatable entity, CancellationToken cancellationToken = default)
-        where TEntity : class, IEntityCreatable, IEntityIdentity<TIdentity>
-    {
-        ArgumentNullException.ThrowIfNull(entity);
-
-        return this.CreateOrGetAsync<TEntity>(new CreateOrGetRequest
-        {
-            Entity = entity
-        }, cancellationToken);
-    }
-
-    /// <summary>
     /// Invokes the 'create/reload' endpoint of the entity in the api.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
@@ -427,24 +269,6 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
             .InvokeAsync<CreateAndGetRequest, TEntity>(request, cancellationToken);
 
         return entityCreated ?? throw new NotFoundException(nameof(entityCreated));
-    }
-
-    /// <summary>
-    /// Invokes the 'create/reload' endpoint of the entity in the api.
-    /// </summary>
-    /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="entity">The entity to create and reload.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>The created entity.</returns>
-    public Task<TEntity?> CreateAndGetAsync<TEntity>(IEntityCreatable entity, CancellationToken cancellationToken = default)
-        where TEntity : class, IEntityCreatable, IEntityIdentity<TIdentity>
-    {
-        ArgumentNullException.ThrowIfNull(entity);
-
-        return this.CreateAndGetAsync<TEntity>(new CreateAndGetRequest
-        {
-            Entity = entity
-        }, cancellationToken);
     }
 
     /// <summary>
@@ -464,24 +288,6 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Invokes the 'create/many' endpoint of the entity in the api.
-    /// </summary>
-    /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="entities">The entities to create.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>Operation result.</returns>
-    public Task CreateManyAsync<TEntity>(IEnumerable<IEntityCreatable> entities, CancellationToken cancellationToken = default)
-        where TEntity : class, IEntityCreatable
-    {
-        ArgumentNullException.ThrowIfNull(entities);
-
-        return this.CreateManyAsync<TEntity>(new CreateManyRequest
-        {
-            Entities = entities
-        }, cancellationToken);
-    }
-
-    /// <summary>
     /// Invokes the 'create/many' bulk endpoint of the entity in the api.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
@@ -495,24 +301,6 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
 
         return this.api
             .InvokeAsync<CreateManyBulkRequest, IEnumerable<TEntity>>(request, cancellationToken);
-    }
-
-    /// <summary>
-    /// Invokes the 'create/many/bulk' bulk endpoint of the entity in the api.
-    /// </summary>
-    /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="entities">The entities to create in bulk.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>Operation result.</returns>
-    public Task CreateManyBulkAsync<TEntity>(IEnumerable<IEntityCreatable> entities, CancellationToken cancellationToken = default)
-        where TEntity : class, IEntityCreatable
-    {
-        ArgumentNullException.ThrowIfNull(entities);
-
-        return this.CreateManyBulkAsync<TEntity>(new CreateManyBulkRequest
-        {
-            Entities = entities
-        }, cancellationToken);
     }
 
     #endregion
@@ -540,25 +328,6 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Updates an entity via the 'edit' endpoint using an updatable entity instance.
-    /// Route: edit
-    /// </summary>
-    /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="entity">The entity containing updated values.</param>
-    /// <param name="cancellationToken">A token to cancel the operation.</param>
-    /// <returns>The updated entity instance.</returns>
-    public Task<TEntity?> EditAsync<TEntity>(IEntityUpdatable entity, CancellationToken cancellationToken = default)
-        where TEntity : class, IEntityUpdatable
-    {
-        ArgumentNullException.ThrowIfNull(entity);
-
-        return this.EditAsync<TEntity>(new EditRequest
-        {
-            Entity = entity
-        }, cancellationToken);
-    }
-
-    /// <summary>
     /// Updates and returns an entity via the 'edit/get' endpoint.
     /// Route: edit/get
     /// </summary>
@@ -575,25 +344,6 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
             .InvokeAsync<EditAndGetRequest, TEntity>(request, cancellationToken);
 
         return entityEdited ?? throw new NotFoundException(nameof(entityEdited));
-    }
-
-    /// <summary>
-    /// Updates and returns an entity via the 'edit/get' endpoint using an entity instance.
-    /// Route: edit/get
-    /// </summary>
-    /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="entity">The entity containing updated values.</param>
-    /// <param name="cancellationToken">A token to cancel the operation.</param>
-    /// <returns>The updated entity instance.</returns>
-    public Task<TEntity?> EditGetAsync<TEntity>(IEntityUpdatable entity, CancellationToken cancellationToken = default)
-        where TEntity : class, IEntityUpdatable, IEntityIdentity<TIdentity>
-    {
-        ArgumentNullException.ThrowIfNull(entity);
-
-        return this.EditAndGetAsync<TEntity>(new EditAndGetRequest
-        {
-            Entity = entity
-        }, cancellationToken);
     }
 
     /// <summary>
@@ -614,25 +364,6 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Updates multiple entities via the 'edit/many' endpoint using entity instances.
-    /// Route: edit/many
-    /// </summary>
-    /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="entities">The entities to update.</param>
-    /// <param name="cancellationToken">A token to cancel the operation.</param>
-    /// <returns>A task representing the operation.</returns>
-    public Task EditManyAsync<TEntity>(IEnumerable<IEntityUpdatable> entities, CancellationToken cancellationToken = default)
-        where TEntity : class, IEntityUpdatable
-    {
-        ArgumentNullException.ThrowIfNull(entities);
-
-        return this.EditManyAsync<TEntity>(new EditManyRequest
-        {
-            Entities = entities
-        }, cancellationToken);
-    }
-
-    /// <summary>
     /// Bulk updates multiple entities via the 'edit/many/bulk' endpoint.
     /// Route: edit/many/bulk
     /// </summary>
@@ -647,25 +378,6 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
 
         return this.api
             .InvokeAsync<EditManyBulkRequest, IEnumerable<TEntity>>(request, cancellationToken);
-    }
-
-    /// <summary>
-    /// Bulk updates multiple entities via the 'edit/many/bulk' endpoint using entity instances.
-    /// Route: edit/many/bulk
-    /// </summary>
-    /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <param name="entities">The entities to update.</param>
-    /// <param name="cancellationToken">A token to cancel the operation.</param>
-    /// <returns>A task representing the operation.</returns>
-    public Task EditManyBulkAsync<TEntity>(IEnumerable<IEntityUpdatable> entities, CancellationToken cancellationToken = default)
-        where TEntity : class, IEntityUpdatable
-    {
-        ArgumentNullException.ThrowIfNull(entities);
-
-        return this.EditManyBulkAsync<TEntity>(new EditManyBulkRequest
-        {
-            Entities = entities
-        }, cancellationToken);
     }
 
     /// <summary>
@@ -688,33 +400,6 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Updates entities matching a query via the 'edit/query' endpoint using criteria and property updates.
-    /// Route: edit/query
-    /// </summary>
-    /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <typeparam name="TCriteria">The query criteria type.</typeparam>
-    /// <param name="criteria">Selection criteria for entities to update.</param>
-    /// <param name="propertyUpdates">Dictionary of property updates to apply.</param>
-    /// <param name="cancellationToken">A token to cancel the operation.</param>
-    /// <returns>A task representing the operation.</returns>
-    public Task EditQueryAsync<TEntity, TCriteria>(TCriteria criteria, IDictionary<string, object> propertyUpdates, CancellationToken cancellationToken = default)
-        where TEntity : class, IEntityDeletable
-        where TCriteria : class, IQueryCriteria, new()
-    {
-        ArgumentNullException.ThrowIfNull(criteria);
-        ArgumentNullException.ThrowIfNull(propertyUpdates);
-
-        return this.EditQueryAsync<TEntity, TCriteria>(new EditQueryRequest<TCriteria>
-        {
-            Query =
-            {
-                Criteria = criteria,
-                PropertyUpdates = propertyUpdates
-            }
-        }, cancellationToken);
-    }
-
-    /// <summary>
     /// Bulk (batch) updates entities matching a query via the 'edit/query/bulk' endpoint.
     /// Route: edit/query/bulk
     /// </summary>
@@ -731,33 +416,6 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
 
         await this.api
             .InvokeAsync<EditQueryBulkRequest<TCriteria>, TEntity>(request, cancellationToken);
-    }
-
-    /// <summary>
-    /// Bulk (batch) updates entities matching a query via the 'edit/query/bulk' endpoint using criteria and property updates.
-    /// Route: edit/query/bulk
-    /// </summary>
-    /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <typeparam name="TCriteria">The query criteria type.</typeparam>
-    /// <param name="criteria">Selection criteria for entities to update.</param>
-    /// <param name="propertyUpdates">Dictionary of property updates to apply.</param>
-    /// <param name="cancellationToken">A token to cancel the operation.</param>
-    /// <returns>A task representing the operation.</returns>
-    public Task EditQueryBulkAsync<TEntity, TCriteria>(TCriteria criteria, IDictionary<string, object> propertyUpdates, CancellationToken cancellationToken = default)
-        where TEntity : class, IEntityDeletable
-        where TCriteria : class, IQueryCriteria, new()
-    {
-        ArgumentNullException.ThrowIfNull(criteria);
-        ArgumentNullException.ThrowIfNull(propertyUpdates);
-
-        return this.EditQueryBulkAsync<TEntity, TCriteria>(new EditQueryBulkRequest<TCriteria>
-        {
-            Query =
-            {
-                Criteria = criteria,
-                PropertyUpdates = propertyUpdates
-            }
-        }, cancellationToken);
     }
 
     #endregion
@@ -884,26 +542,6 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     }
 
     /// <summary>
-    /// Deletes entities matching criteria using the 'delete/query' endpoint.
-    /// </summary>
-    /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <typeparam name="TCriteria">The criteria type.</typeparam>
-    /// <param name="criteria">The selection criteria.</param>
-    /// <param name="cancellationToken">A token to cancel the operation.</param>
-    /// <returns>A task representing the asynchronous operation.</returns>
-    public Task DeleteQueryAsync<TEntity, TCriteria>(TCriteria criteria, CancellationToken cancellationToken = default)
-        where TEntity : class, IEntityDeletable
-        where TCriteria : IQueryCriteria, new()
-    {
-        ArgumentNullException.ThrowIfNull(criteria);
-
-        return this.DeleteQueryAsync<TEntity, TCriteria>(new DeleteQueryRequest<TCriteria>
-        {
-            Criteria = criteria
-        }, cancellationToken);
-    }
-
-    /// <summary>
     /// Deletes (batch) entities in bulk using a query via the 'delete/query/bulk' endpoint.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
@@ -919,26 +557,6 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
 
         await this.api
             .InvokeAsync<DeleteQueryBulkRequest<TCriteria>, TEntity>(request, cancellationToken);
-    }
-
-    /// <summary>
-    /// Deletes (batch) entities in bulk matching criteria using the 'delete/query/bulk' endpoint.
-    /// </summary>
-    /// <typeparam name="TEntity">The entity type.</typeparam>
-    /// <typeparam name="TCriteria">The criteria type.</typeparam>
-    /// <param name="criteria">The selection criteria.</param>
-    /// <param name="cancellationToken">A token to cancel the operation.</param>
-    /// <returns>A task representing the asynchronous operation.</returns>
-    public Task DeleteQueryBulkAsync<TEntity, TCriteria>(TCriteria criteria, CancellationToken cancellationToken = default)
-        where TEntity : class, IEntityIdentity<TIdentity>, IEntityDeletable
-        where TCriteria : IQueryCriteria, new()
-    {
-        ArgumentNullException.ThrowIfNull(criteria);
-
-        return this.DeleteQueryBulkAsync<TEntity, TCriteria>(new DeleteQueryBulkRequest<TCriteria>
-        {
-            Criteria = criteria
-        }, cancellationToken);
     }
 
     #endregion

@@ -8,7 +8,7 @@
 *** 
 
 ## Table of Contents
-* **[Home](https://github.com/Nano-Core/Nano.Library/tree/master/README.md#nanolibrary)**
+* **[Home](https://github.com/Nano-Core/Nano.Library/blob/master/README.md#nanolibrary)**
 * **[Summary](#summary)**
 * **[Registration](#registration)**
 * **[Configuration](#configuration)**
@@ -21,10 +21,10 @@ Data Provider implementation for SqLite data access.
 
 > ⚠️ SqLite does not natively support spatial types, and `mod_spatialite` is not reliable.
 
-> 📖 Learn more about **[Nano Data](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data/README.md#nanodata)**.
+> 📖 Learn more about **[Nano Data](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data/README.md#nanodata)**.
 
-Try it out yourself using the **[Api.Data.SqLite](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.SqLite)**, or 
-**[Console.Data.SqLite](https://github.com/Nano-Core/Nano.Lessons/tree/master/Console.Data.SqLite)** example.  
+Try it out yourself using the **[Api.Data.SqLite](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Data.SqLite)**, or 
+**[Console.Data.SqLite](https://github.com/Nano-Core/Nano.Lessons/blob/master/Console.Data.SqLite)** example.  
 
 ## Registration
 Install the **[Nano.Data.SqLite](https://www.nuget.org/packages/Nano.Data.SqLite)** NuGet package.  
