@@ -13,7 +13,7 @@ namespace Nano.Data.SqLite;
 /// </summary>
 /// <remarks>
 ///     Intended for local development, lightweight deployments, and embedded database scenarios.
-///     Documentation: https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.SqLite/README.md#nanodatasqlite
+///     Documentation: https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data.SqLite/README.md#nanodatasqlite
 /// </remarks>
 public sealed class SqLiteProvider : IDataProvider
 {

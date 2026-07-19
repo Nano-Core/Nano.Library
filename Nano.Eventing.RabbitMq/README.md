@@ -8,21 +8,21 @@
 *** 
 
 ## Table of Contents
-* **[Home](https://github.com/Nano-Core/Nano.Library/tree/master/README.md#nanolibrary)**
+* **[Home](https://github.com/Nano-Core/Nano.Library/blob/master/README.md#nanolibrary)**
 * **[Summary](#summary)**
 * **[Registration](#registration)**
 * **[Configuration](#configuration)**
 * **[Docker Compose](#docker-compose)**
-* **[Kuberentes](#kuberentes)**
+* **[Kubernetes](#kubernetes)**
 
 ## Summary
 Eventing Provider implementation for RabbitMq.  
 
-> 📖 Learn more about **[Nano Eventing](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Eventing/README.md#nanoeventing)**.  
-> 📖 Learn more about **[Nano Kubernetes RabbitMq](https://github.com/Nano-Core/Nano.Kubernetes/tree/master/Nano.Kubernetes.RabbitMq)**.  
+> 📖 Learn more about **[Nano Eventing](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Eventing/README.md#nanoeventing)**.  
+> 📖 Learn more about **[Nano Kubernetes RabbitMq](https://github.com/Nano-Core/Nano.Azure.Kubernetes/blob/master/Nano.Azure.Kubernetes.RabbitMQ/README.md#nanoazurekubernetesrabbitmq)**.  
 
-Try it out yourself using the **[Api.Eventing.RabbitMq](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Eventing.RabbitMq)** or 
-**[Console.Eventing.RabbitMq](https://github.com/Nano-Core/Nano.Lessons/tree/master/Console.Eventing.RabbitMq)** example.  
+Try it out yourself using the **[Api.Eventing.RabbitMq](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Eventing.RabbitMq)** or 
+**[Console.Eventing.RabbitMq](https://github.com/Nano-Core/Nano.Lessons/blob/master/Console.Eventing.RabbitMq)** example.  
 
 ## Registration
 Install the **[Nano.Eventing.RabbitMq](https://www.nuget.org/packages/Nano.Eventing.RabbitMq/README.md#nanoeventingrabbitmq)** NuGet package.  
@@ -123,7 +123,7 @@ spec:
               key: password
 ```
 
-You also need to map the `rabbitmq` secret that is created alongside the **[Nano Azure Kuberenetes Eventing](https://github.com/Nano-Core/Nano.Azure.Kubernetes/tree/master/Nano.Azure.Kubernetes.RabbitMQ/README.md#nanoazurekubernetesrabbitmq)** 
+You also need to map the `rabbitmq` secret that is created alongside the **[Nano Azure Kuberenetes Eventing](https://github.com/Nano-Core/Nano.Azure.Kubernetes/blob/master/Nano.Azure.Kubernetes.RabbitMQ/README.md#nanoazurekubernetesrabbitmq)** 
 in the `deployment.yaml` or `cronjob.yaml` for eventing authentication.
 
 > ⚠️ The `rabbitmq` secret will be reused for all applications using RabbitMQ as eventing provider.  

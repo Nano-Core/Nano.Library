@@ -10,7 +10,7 @@
 ***
 
 ## Table of Contents
-* **[Home](https://github.com/Nano-Core/Nano.Library/tree/master/README.md#nanolibrary#nanolibrary)**
+* **[Home](https://github.com/Nano-Core/Nano.Library/blob/master/README.md#nanolibrary#nanolibrary)**
 * **[Summary](#summary)**
 * **[Registration](#registration)**
 * **[Variables And Secrets](#variables-and-secrets)**
@@ -135,7 +135,7 @@ The `Data` section in the configuration defines the data provider and related se
 }
 ```
 
-> 📖 Learn more about **[Application Configuration](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App/README.md#configuration)** here.  
+> 📖 Learn more about **[Application Configuration](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App/README.md#configuration)** here.  
 
 ## Connection Pool
 Nano supports optional connection pooling for the underlying Entity Framework data provider. When enabled, database contexts are reused from a pool, which can improve performance 
@@ -255,7 +255,7 @@ functionality. See **[Repositories](#repositories)** for more details.
 
 Nano also provides a public `SecurePasswordGenerator` class for creating strong, secure passwords.  
 
-Try it out yourself using the **[Api.Data.Identity](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity)**.  
+Try it out yourself using the **[Api.Data.Identity](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Data.Identity)**.  
 
 ## Health Checks
 When health checks are enabled in the data configuration, Nano automatically registers a health check for the configured data provider.  
@@ -296,11 +296,11 @@ Once implemented, the provider can be added to the application during startup co
 
 The following data providers are currently supported in Nano.  
 
-* **[Nano.Data.InMemory](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.InMemory/README.md#nanodatainmemory)**
-* **[Nano.Data.MySql](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.MySql/README.md#nanodatamysql)**
-* **[Nano.Data.PostgreSQL](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.PostgreSQL/README.md#nanodatapostgresql)**
-* **[Nano.Data.SqLite](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.SqLite/README.md#nanodatasqlite)**
-* **[Nano.Data.SqlServer](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data.SqlServer/README.md#nanodatasqlserver)**
+* **[Nano.Data.InMemory](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data.InMemory/README.md#nanodatainmemory)**
+* **[Nano.Data.MySql](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data.MySql/README.md#nanodatamysql)**
+* **[Nano.Data.PostgreSQL](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data.PostgreSQL/README.md#nanodatapostgresql)**
+* **[Nano.Data.SqLite](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data.SqLite/README.md#nanodatasqlite)**
+* **[Nano.Data.SqlServer](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data.SqlServer/README.md#nanodatasqlserver)**
 
 ## Data Context
 Nano provides built-in management for the `DbContext` while still letting you use it as you normally would.  
@@ -363,8 +363,8 @@ must implement the corresponding interfaces: `IEntityReadOnly`, `IEntityWritable
 > 💡 For simplicity and maintainability, it is recommended to derive entity models from `BaseEntity` or one of the specific base classes rather than 
 implementing the interfaces directly.  
 
-Try it out yourself using the **[Api.Data.Mysql](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Mysql)** or  
-**[Console.Data.Mysql](https://github.com/Nano-Core/Nano.Lessons/tree/master/Console.Data.Mysql)** examples. Similar examples are available for other data providers as well.  
+Try it out yourself using the **[Api.Data.Mysql](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Data.MySql)** or  
+**[Console.Data.Mysql](https://github.com/Nano-Core/Nano.Lessons/blob/master/Console.Data.MySql)** examples. Similar examples are available for other data providers as well.  
 
 Nano also contains another important base entity model. The `BaseEntityUser` and `BaseEntityUser<TIdentity>`. When **[Identity](#identity)** has been configured for an application, 
 the entity user base classes defines the user model of the application and are having `IdentityUser` associated. The base class itself derives from `BaseEntity`, and behaves in the 
@@ -406,7 +406,7 @@ Generally, you do not need to interact with the identity models directly. Use th
 the identity models are available through the **[Data Context](#data-context)** like any other entity. Bypassing the `IIdentityRepository` is not recommended, as it may 
 unintentionally bypass critical identity logic.
 
-Try it out yourself using the **[Api.Data.Identity](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Identity)** example.  
+Try it out yourself using the **[Api.Data.Identity](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Data.Identity)** example.  
 
 Nano also supports defining views in the entity model. The `BaseEntityView` entity class can be used to define a model for a SQL view.  
 
@@ -417,10 +417,10 @@ public class MyEntityView : BaseEntityView
 }
 ```
 
-Try it out yourself using the **[Api.Data.MySql.Views](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.MySql.Views)** example.  
+Try it out yourself using the **[Api.Data.MySql.Views](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Data.MySql.Views)** example.  
 
 Spatial `Geometry` types from `NetToplogySuite` is also supported. Try it out yourself using the 
-**[Api.Data.MySql.Spatial](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.MySql.Spatial)** example.  
+**[Api.Data.MySql.Spatial](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Data.MySql.Spatial)** example.  
 
 ## Data Mappings
 Each data model in your application should have a corresponding non-generic data mapping with a parameterless constructor. Data mappings define how your entities are configured 
@@ -474,14 +474,14 @@ public class MyEntityViewMapping : BaseEntityViewMapping<MyEntity>
 }
 ```
 
-Try it out views yourself using the **[Api.Data.MySql.Views](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.MySql.Views)** example.  
+Try it out views yourself using the **[Api.Data.MySql.Views](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Data.MySql.Views)** example.  
 
 Nano automatically updates all unique index mappings to include the `IsDeleted` property. This ensures that soft-deleted entities can coexist without violating 
 uniqueness constraints.  
 
 Mapping of spatial types varies between data providers. Refer to your provider's spatial documentation for details.  
 
-Explore spatial and other advanced mappings using the **[Api.Data.MySql.Mappings](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.MySql.Mappings)** example.  
+Explore spatial and other advanced mappings using the **[Api.Data.MySql.Mappings](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Data.MySql.Mappings)** example.  
 
 ## Migrations
 Migrations in Nano work the same way as standard Entity Framework migrations.  
@@ -521,8 +521,8 @@ dotnet ef database update `
 
 > ⚠️ Entity Framework does not handle views, stored procedures, or functions in migrations, they must be added or modified manually to migrations. 
 
-To manage views or stored procedures in migrations take a look at the **[Api.Data.MySql.Views](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.MySql.Views)** or 
-**[Api.Data.MySql.StoredProcedures](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.MySql.StoredProcedures)** example for best practices.  
+To manage views or stored procedures in migrations take a look at the **[Api.Data.MySql.Views](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Data.MySql.Views)** or 
+**[Api.Data.MySql.StoredProcedures](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Data.MySql.StoredProcedures)** example for best practices.  
 
 > 📖 Learn more about **[EF Migrations](https://learn.microsoft.com/en-us/ef/core/managing-schemas/migrations/?tabs=dotnet-core-cli)**.
 
@@ -591,8 +591,8 @@ One of the most useful parameters is `includeDepth`, which overrides the globall
 are applied in a query. This allows you to map complex entity models with related entities, while also controlling how much of the entity graph is loaded. Sometimes you may want 
 only the plain entity, while other times you may need the full inclusion tree.  
 
-Try it out yourself using the **[Api.Data.Mysql](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Mysql)** or  
-**[Console.Data.Mysql](https://github.com/Nano-Core/Nano.Lessons/tree/master/Console.Data.Mysql)** examples. Similar examples are available for other data providers as well.  
+Try it out yourself using the **[Api.Data.Mysql](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Data.MySql)** or  
+**[Console.Data.Mysql](https://github.com/Nano-Core/Nano.Lessons/blob/master/Console.Data.MySql)** examples. Similar examples are available for other data providers as well.  
 
 Nano also provides a dedicated repository for managing entity user models, the `IIdentityRepository` and `IIdentityRepository<TIdentity>`. These repositories expose common identity 
 operations such as login, signup, email changes, management of roles and claims, etc. Internally, the repository encapsulates functionality from `UserManager<T>` and 
@@ -679,7 +679,7 @@ identity logic through a single, consistent repository.
 | `AssignOrReplaceRoleClaimAsync`         | Role Claims          | roleId, assignOrReplaceClaim                  | Assigns a claim to a role or replaces it if it already exists.                                                       |
 | `RemoveRoleClaimAsync`                  | Role Claims          | roleId, removeClaim                           | Removes a claim from a role.                                                                                         |
 
-Try it out yourself using the **[Api.Data.Identity](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Mysql)** example.    
+Try it out yourself using the **[Api.Data.Identity](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Data.Identity)** example.    
 
 ## Autosave
 The repository can be configured for autosave. When enabled, all methods that modify data will automatically persist changes to the database. No need to call 
@@ -688,7 +688,7 @@ multiple individual add or update calls.
 
 If you need more fine-grained control over when changes are committed, you can disable `UseAutoSave` in the repository configuration.  
 
-Try it out yourself using the **[Api.Data.Repository.Autosave](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Repository.Autosave)**.  
+Try it out yourself using the **[Api.Data.Repository.Autosave](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Data.Repository.Autosave)**.  
 
 ## Cache
 Currently, Nano does not support data caching.  
@@ -712,7 +712,7 @@ For large collections, `SplitQuery` is recommended. If no `QuerySplitBehavior` i
 This feature is particularly useful because it allows you to build full entity graphs rather than retrieving single entities. When you need only the base entity, the graph inclusion 
 can easily be overridden through the various `IRepository` methods.
 
-Try it out yourself using the **[Api.Data.Repository.Includes](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Repository.Includes)**.  
+Try it out yourself using the **[Api.Data.Repository.Includes](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Data.Repository.Includes)**.  
 
 ## Audit
 Audit logging is enabled by default in Nano. To enable auditing for an entity, the entity model must implement the `IEntityAuditable` interface. When implemented, the entity and all 
@@ -735,7 +735,7 @@ soft-deleted entities, the audit reflects the soft-delete state rather than a re
 
 The audit implementation is based on the **[EntityFramework Plus](https://github.com/zzzprojects/EntityFramework-Plus)** project.  
 
-Try it out yourself using the **[Api.Data.Audit](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Audit)**.  
+Try it out yourself using the **[Api.Data.Audit](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Data.Audit)**.  
 
 ## Soft Delete
 If you want a model to use soft-delete, simply implement the `IEntitySoftDeletable` interface.  
@@ -751,7 +751,7 @@ Unlike regular deletes, soft-deleting entities does not support cascading delete
 When dealing with soft-deleted entities together with unique indexes, conflicts can arise if one or more deleted entities have duplicate unique values. Nano automatically 
 adjusts unique indexes by appending the `IsDeleted` property, with the exception of the primary key.
 
-Try it out yourself using the **[Api.Data.SoftDelete](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.SoftDelete)**.  
+Try it out yourself using the **[Api.Data.SoftDelete](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Data.SoftDelete)**.  
 
 ## Lazy Loading
 Load related data from the database only when it is first accessed, not when the parent entity is retrieved. This can reduce unnecessary queries but may cause extra database 
@@ -763,7 +763,7 @@ When lazy loading is enabled in the configuration, navigation properties will be
 [Include Annotation](#include-annotation). Normally, these properties should already be loaded, but if you retrieve entity models without including them, the serializer 
 will trigger lazy-loading to fetch the missing data.  
 
-Try it out yourself using the **[Api.Data.LazyLoading](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.LazyLoading)**.  
+Try it out yourself using the **[Api.Data.LazyLoading](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Data.LazyLoading)**.  
 
 ## Triggers
 Triggers in Nano are logic-based events that occur before or after an add, update, or delete operation, and are not classic SQL triggers. These triggers are executed at the 
@@ -807,7 +807,7 @@ for tasks other than altering the entity itself.
 Triggers are best used for small, self-contained tasks, such as updating an `UpdatedAt` property in an `OnUpdating` trigger or calculating an aggregate value based on 
 entity properties. More complex logic should be handled in dedicated services within your application.
 
-Try it out yourself using the **[Api.Data.Triggers](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.Triggers)**.  
+Try it out yourself using the **[Api.Data.Triggers](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Data.Triggers)**.  
 
 ## Entity Events
 In Nano, entity events provide a straightforward way to synchronize data changes across applications. They enable automatic propagation of entity state changes based on navigation properties and 
@@ -821,7 +821,7 @@ create, update, or delete operations to the local model.
 
 This approach provides a simple and consistent mechanism for maintaining data synchronization across services, reducing integration complexity while preserving clear ownership boundaries between applications.  
 
-> ⚠️ Entity Events require **[Eventing](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Eventing/README.md#nanoeventing)** to be configured in the application.
+> ⚠️ Entity Events require **[Eventing](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Eventing/README.md#nanoeventing)** to be configured in the application.
 
 Only entities implementing `IEntityIdentity<TIdentity>` are eligible for participation in entity eventing. The attribute allows a configurable list of publish properties, which determines the data included 
 in the generated event payload. For entities deriving from `BaseEntity`, the `CreatedAt` property is automatically included to ensure consistent timestamp synchronization between publishers and subscribers.
@@ -869,4 +869,4 @@ public class MyEntity : DefaultEntity
 publish properties such as `IdentityUser.Email` or `IdentityUser.Phone`, allowing downstream services like email or SMS systems to subscribe and receive all required data upfront. 
 This enables each service to independently fulfill its responsibility without additional lookups or coupling to the source system.
 
-Try it out yourself using the **[Api.Data.EntityEvents](https://github.com/Nano-Core/Nano.Lessons/tree/master/Api.Data.EntityEvents)**.  
+Try it out yourself using the **[Api.Data.EntityEvents](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Data.EntityEvents)**.  

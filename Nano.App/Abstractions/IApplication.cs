@@ -19,7 +19,7 @@ public interface IApplication
 /// Provides a fluent lifecycle for configuring services, building, and running the application.
 /// </summary>
 /// <remarks>
-/// Documentation: <see href="https://github.com/Nano-Core/Nano.Library/tree/master/Nano.App">Nano Application</see>
+/// Documentation: <see href="https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App">Nano Application</see>
 /// </remarks>
 public interface IApplication<out TApp> : IApplication
     where TApp : IApplication<TApp>
