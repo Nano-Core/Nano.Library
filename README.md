@@ -134,7 +134,7 @@ Nano supports multiple distributed architecture styles, depending on the complex
 | Microservice Orchestration (Top-Down)            | API-driven orchestration where a central API coordinates downstream services.    |
 | Microservice Orchestration (Service-to-Service)  | Decentralized communication where services interact directly with each other.    |
 
-![Nano Application Architecture](https://raw.githubusercontent.com/Nano-Core/Nano.Library/10.0.0-rc7/.assets/Nano-Application-Architecture.jpg)
+![Nano Application Architecture](https://raw.githubusercontent.com/Nano-Core/Nano.Library/tree/10.0.0-rc7/.assets/Nano-Application-Architecture.jpg)
 
 ## ⚙️ Required Tools
 Before getting started, make sure you have the following tools installed and configured.  
