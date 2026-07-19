@@ -37,6 +37,7 @@
   * **[Versioning](#versioning)**
   * **[Documentation](#documentation)**
   * **[Health Checks](#health-checks)**
+  * **[Metrics (OpenTelemetry)](#opentelemetry-metrics)**
   * **[Virus Scan](#virus-scan)**
   * **[Content Negotiation](#content-negotiation)**
   * **[Request Tracing](#request-tracing)**
@@ -112,7 +113,7 @@ These variables are required and must be configured for the system to function c
 ## Configuration
 The `App` section in the configuration defines behavior related to the application.  
 
-| Setting                   | Type       | Default    | Description                                                                                                                                                          |
+| Setting                   | Type       | Default    | Description                                                                                                 |
 | ------------------------- | ---------- | ---------- | ----------------------------------------------------------------------------------------------------------- |
 | `Version`                 | string     | 1.0.0.0    | Application version identifier.                                                                             |
 | `ShutdownTimeout`         | int        | 10         | Number of seconds to wait after a SIGTERM signal before shutting down.                                      |
@@ -124,7 +125,8 @@ The `App` section in the configuration defines behavior related to the applicati
 | `TimeZone`                | object     | null       | Timezone configuration options. See **[TimeZone](#timezone)**.                                              |
 | `Localization`            | object     | null       | Localization configuration options. See **[Localization](#localization)**.                                  |
 | `Documentation`           | object     | null       | API documentation options (Swagger). See **[Documentation](#documentation)**.                               |
-| `HealthCheck`             | object     | null       | Health-check configuration options. See **[health Check](#health-check)**.                                  |
+| `HealthCheck`             | object     | null       | Health-check configuration options. See **[Health Check](#health-check)**.                                  |
+| `Metrics`                 | object     | null       | OpenTelemetry metrics configuration options. See **[Metrics](#opentelemetry-metrics)**.                     |
 | `VirusScan`               | object     | null       | Virus scanning options. See **[Virus Scan](#virus-scan)**.                                                  |
 | `ErrorHandling`           | object     | default    | Error handling configuration options. See **[Error Handling](#error-handling)**.                            |
 | `Authentication`          | object     | default    | Authentication configuration options. See **[Authentication](#authentication)**.                            |
@@ -1321,6 +1323,15 @@ Try it out yourself using the **[Api.Documentation](https://github.com/Nano-Core
 ## Health Checks
 When health checks are enabled in the configuration, a `/healthz` endpoint is exposed.  
 
+There are no configuration options required for health checks. You can simply enable health-checks by adding an empty configuration object as shown below.  
+
+```json
+"App": {
+  "HealthCheck": {
+  }
+}
+```
+
 A _self_ startup health check is performed to await the completion of all pending startup tasks before the application is reported as ready. 
 As additional Nano providers and services are added to the application, they will automatically appear in the health checks and report their status, 
 if configured with health-check enabled.  
@@ -1344,15 +1355,6 @@ Dependencies between services are represented as a tree of health checks. If any
 to the configured rules, affecting the overall health status of the application. This makes it easy to monitor the health of all components and dependencies 
 in a consistent and centralized way.  
 
-There are no configuration options required for health checks. You can simply enable health-checks by adding an empty configuration object as shown below.  
-
-```json
-"App": {
-  "HealthCheck": {
-  }
-}
-```
-
 It is also possible to add health checks for custom services. Simply register the health check during application startup in `ConfigureServices(...)`, and it will 
 run alongside the built-in health checks provided by Nano.  
 
@@ -1362,6 +1364,39 @@ Try it out yourself using the **[Api.HealthChecks](https://github.com/Nano-Core/
 
 > 💡 Health Checks can also serve as an availability check mechanism.  
 The health check example also demonstrates how to configure availability monitoring using _Azure Application Insights_.  
+
+## Metrics (OpenTelemetry)
+When health checks are enabled in the configuration, a `/metrics` endpoint is exposed.  
+
+The endpoint provides Prometheus-compatible metrics collected through OpenTelemetry, including ASP.NET Core request metrics, HTTP client metrics, and .NET runtime 
+metrics. These metrics can be scraped by Azure Managed Prometheus and visualized in Grafana dashboards. 
+
+There are no configuration options required for metrics. You can simply enable metrics by adding an empty configuration object as shown below.  
+
+```json
+"App": {
+  "Metrics": {
+  }
+}
+```
+
+A Kubernetes `ServiceMonitor` is required to configure Prometheus scraping for the application metrics endpoint.
+
+```yaml
+apiVersion: azmonitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: %SERVICE_NAME%-monitor
+  namespace: %KUBERNETES_NAMESPACE%
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: %SERVICE_NAME%
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 1m
+```
 
 ## Virus Scan
 Nano provides built-in virus scanning through a connected `ClamAV` service.  

@@ -29,6 +29,7 @@ internal static class WebApplicationExtensions
             .UseStaticFiles()
             .UseCookiePolicy()
             .UseRouting()
+            .UseNanoMetrics(options.Metrics)
             .UseNanoHttpCorsPolicy(options.HttpPolicyHeaders.Cors)
             .UseAuthentication()
             .UseAuthorization()

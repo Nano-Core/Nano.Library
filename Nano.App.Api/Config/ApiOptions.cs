@@ -57,6 +57,11 @@ public class ApiOptions : BaseAppOptions
     public virtual HealthCheckOptions? HealthCheck { get; set; }
 
     /// <summary>
+    /// Metrics configuration options.
+    /// </summary>
+    public virtual MetricsOptions? Metrics { get; set; }
+
+    /// <summary>
     /// API documentation options.
     /// </summary>
     public virtual DocumentationOptions? Documentation { get; set; }
