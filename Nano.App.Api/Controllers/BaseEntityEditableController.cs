@@ -18,12 +18,12 @@ using System.Threading.Tasks;
 namespace Nano.App.Api.Controllers;
 
 /// <inheritdoc />
-public abstract class BaseEntityUpdatableController<TEntity, TCriteria> : BaseEntityUpdatableController<TEntity, Guid, TCriteria>
+public abstract class BaseEntityEditableController<TEntity, TCriteria> : BaseEntityUpdatableController<TEntity, Guid, TCriteria>
     where TEntity : class, IEntityIdentity<Guid>, IEntityUpdatable
     where TCriteria : class, IQueryCriteria, new()
 {
     /// <inheritdoc />
-    protected BaseEntityUpdatableController(ILogger<BaseEntityUpdatableController<TEntity, TCriteria>> logger, IRepository repository, IEventing? eventing = null)
+    protected BaseEntityEditableController(ILogger<BaseEntityEditableController<TEntity, TCriteria>> logger, IRepository repository, IEventing? eventing = null)
         : base(logger, repository, eventing)
     {
     }

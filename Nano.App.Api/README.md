@@ -1941,7 +1941,7 @@ CRUD operations depending on their intended responsibility, as shown below.
 | `BaseEntityReadOnlyController<TEntity, TCriteria>`              | ✔   | ✔   | ❌     | ❌     | ❌     |
 | `BaseEntityCreatableController<TEntity, TCriteria>`             | ✔   | ✔   | ✔      | ❌     | ❌     |
 | `BaseEntityCreatableAndUpdatableController<TEntity, TCriteria>` | ✔   | ✔   | ✔      | ✔     | ❌     |
-| `BaseEntityUpdatableController<TEntity, TCriteria>`             | ✔   | ✔   | ❌     | ✔      | ❌     |
+| `BaseEntityEditableController<TEntity, TCriteria>`              | ✔   | ✔   | ❌     | ✔      | ❌     |
 | `BaseEntityDeletableController<TEntity, TCriteria>`             | ✔   | ✔   | ❌     | ❌     | ✔      |
 | `BaseEntityViewController<TEntity, TCriteria>`                  | ❌  | ✔   | ❌      | ❌    | ❌     |
 
