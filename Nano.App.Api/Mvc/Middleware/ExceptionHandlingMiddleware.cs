@@ -218,7 +218,7 @@ public sealed class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddlew
         var path = httpRequest.Path.Value;
         var queryString = httpRequest.QueryString.HasValue
             ? SanitizeForLog($"{httpRequest.QueryString.Value}")
-            : "";
+            : string.Empty;
 
         var success = httpRequest.Query
             .TryGetValue("access_token", out var accessToken);
@@ -243,11 +243,11 @@ public sealed class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddlew
         }
     }
 
-    private static string? SanitizeForLog(string? value)
+    private static string SanitizeForLog(string? value)
     {
         if (string.IsNullOrEmpty(value))
         {
-            return value;
+            return value ?? string.Empty;
         }
 
         return value
