@@ -29,6 +29,6 @@ public class ProblemDetailsException : Exception
 
         return string.IsNullOrEmpty(problemDetails.Detail)
             ? problemDetails.Title
-            : problemDetails.Detail;
+            : $"{problemDetails.Title}: {problemDetails.Detail}";
     }
 }
