@@ -42,11 +42,13 @@ public sealed class RabbitMqEventing : IEventing
             .GetFriendlyName();
 
         var exchange = await this.bus.Advanced
-            .ExchangeDeclareAsync(name, ExchangeType.Fanout, cancellationToken: cancellationToken);
+            .ExchangeDeclareAsync(name, ExchangeType.Fanout, cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
 
         var message = new Message<TMessage>(body);
         await this.bus.Advanced
-            .PublishAsync(exchange, routing, null, null, message, cancellationToken);
+            .PublishAsync(exchange, routing, null, null, message, cancellationToken)
+            .ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -67,13 +69,16 @@ public sealed class RabbitMqEventing : IEventing
                 x.AsAutoDelete(false);
                 x.AsExclusive(false);
                 x.WithQueueType(QUEUE_TYPE);
-            }, cancellationToken);
+            }, cancellationToken)
+            .ConfigureAwait(false);
 
         var exchange = await this.bus.Advanced
-            .ExchangeDeclareAsync(name, ExchangeType.Fanout, cancellationToken: cancellationToken);
+            .ExchangeDeclareAsync(name, ExchangeType.Fanout, cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
 
         await this.bus.Advanced
-            .BindAsync(exchange, queue, routing, cancellationToken);
+            .BindAsync(exchange, queue, routing, cancellationToken)
+            .ConfigureAwait(false);
 
         await this.bus.Advanced
             .ConsumeAsync<TMessage>(queue, async (message, info, innerCancellatationToken) =>

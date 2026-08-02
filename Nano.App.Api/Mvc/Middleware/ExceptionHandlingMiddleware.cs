@@ -217,15 +217,19 @@ public sealed class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddlew
 
         var path = httpRequest.Path.Value;
         var queryString = httpRequest.QueryString.HasValue
-            ? SanitizeForLog($"{httpRequest.QueryString.Value}")
+            ? SanitizeForLog(httpRequest.QueryString.Value)
             : string.Empty;
+
+        queryString = queryString == "?"
+            ? string.Empty
+            : queryString;
 
         var success = httpRequest.Query
             .TryGetValue("access_token", out var accessToken);
 
         if (success)
         {
-            queryString = queryString?
+            queryString = queryString
                 .Replace(accessToken.ToString(), "***");
         }
 
