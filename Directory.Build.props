@@ -24,10 +24,16 @@
 	    <Summary>Reusable libraries for building .NET microservice applications</Summary>
 	    <Description>This package is part of the Nano Library, a set of reusable .NET libraries for building microservice applications. Nano addresses common non-business concerns such as logging, persistence, messaging, validation, and documentation, while remaining fully configurable and extensible, so applications can stay focused on business logic. See https://github.com/Nano-Core/Nano.Library for details.</Description>
 	    <PackageReleaseNotes>
-			- .NET 10 support.
-			- Comprehensive rewrite with performance optimizations, improvements, and bug fixes.
-			- Not compatible with previous versions of Nano.
-		</PackageReleaseNotes>
+		    - Fixed incorrect links in QUICK_START.md
+		    - Renamed BaseEntityUpdatableController to BaseEntityEditableController to follow the Nano naming convension
+		    - Added parameterless overload for API client entity Index method.
+		    - Fixed querystring "null" value in request logging
+		    - Added missing Nano.Web to Nano.All
+		    - Changed ProblemDetailsException.Message to use both Title and Detail, unless detail is null or empty
+		    - Added entity refresh after sign-up to ensure included references are included in the response
+		    - Cosmetic improvements
+		    - Updated NuGet packages
+	    </PackageReleaseNotes>
 		<RepositoryType>git</RepositoryType>
 	    <RepositoryBranch>master</RepositoryBranch>
 	    <RepositoryUrl>https://github.com/Nano-Core/Nano.Library.git</RepositoryUrl>
