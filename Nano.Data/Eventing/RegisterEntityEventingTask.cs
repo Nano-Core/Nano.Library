@@ -53,7 +53,7 @@ internal sealed class RegisterEntityEventingTask(DbContext dbContext, IEventing?
         var entityTypeNames = this.dbContext.Model
             .GetEntityTypes()
             .Where(x => x.ClrType.GetCustomAttribute<SubscribeAttribute>() != null)
-            .Select(x => x.Name)
+            .Select(x => x.ClrType.Name)
             .ToArray();
 
         foreach (var entityTypeName in entityTypeNames)
