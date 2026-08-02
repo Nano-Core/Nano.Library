@@ -24,6 +24,18 @@ public sealed class EntityApi<TIdentity>(ApiClient api)
     /// Executes <c>index</c> for <typeparamref name="TEntity"/> to retrieve a collection of entities.
     /// </summary>
     /// <typeparam name="TEntity">The entity type.</typeparam>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>A collection of entities.</returns>
+    public async Task<IEnumerable<TEntity>> IndexAsync<TEntity>(CancellationToken cancellationToken = default)
+        where TEntity : class, IEntity
+    {
+        return await this.IndexAsync<TEntity>(new IndexRequest(), cancellationToken);
+    }
+
+    /// <summary>
+    /// Executes <c>index</c> for <typeparamref name="TEntity"/> to retrieve a collection of entities.
+    /// </summary>
+    /// <typeparam name="TEntity">The entity type.</typeparam>
     /// <param name="request">The index request.</param>
     /// <param name="cancellationToken">The cancellation token.</param>
     /// <returns>A collection of entities.</returns>

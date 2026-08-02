@@ -3,6 +3,7 @@
 	<ItemGroup>
 	    <ProjectReference Include="..\Nano.App.Api\Nano.App.Api.csproj" />
 	    <ProjectReference Include="..\Nano.App.Console\Nano.App.Console.csproj" />
+	    <ProjectReference Include="..\Nano.App.Web\Nano.App.Web.csproj" />
 		<ProjectReference Include="..\Nano.App\Nano.App.csproj" />
 		<ProjectReference Include="..\Nano.Common\Nano.Common.csproj" />
 		<ProjectReference Include="..\Nano.Data.Abstractions\Nano.Data.Abstractions.csproj" />

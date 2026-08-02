@@ -7,7 +7,7 @@
 ## Table of Contents
 * **[Home](https://github.com/Nano-Core/Nano.Library/blob/master/README.md#nanolibrary)**
 * **[1. Choosing Application Type](#choosing-application-type)**
-* **[2. Application Configuration](#application-configuration)**
+* **[2. Configuring Your Application](#configuring-your-application)**
 * **[3. Adding Logging Provider](#adding-logging-provider)**
 * **[4. Adding Data Provider](#adding-data-provider)**
 * **[5. Adding Eventing Provider](#adding-eventing-provider)**
@@ -16,8 +16,8 @@
 * **[8. Congratz, Launch](#congratz-launch)**
 
 ## Choosing Application Type
-The first step is to choose the application type that best fits your use case. Nano currently supports three application types: **[Api](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App.Api/README.md#nanoapi)**, 
-**[Web](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App.Web/README.md#nanoweb)**, and **[Console](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App.Console/README.md#nanoconsole)**. Each application 
+The first step is to choose the application type that best fits your use case. Nano currently supports three application types: **[Api](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App.Api/README.md#nanoappapi)**, 
+**[Web](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App.Web/README.md#nanoappweb)**, and **[Console](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App.Console/README.md#nanoappconsole)**. Each application 
 type is provided as a _blank_ solution template. These templates include the essential project structure, configuration, and dependencies required to get started, without 
 adding unnecessary complexity.  
 
@@ -32,7 +32,7 @@ These templates provide a minimal starting point for each application type.
 Then rename the solution and projects to fit your application, updating namespaces and identifiers as needed throughout the files.  
 
 At this point, you have a fully functional Nano baseline solution, capable of running locally and deploying to Kubernetes via GitHub Actions. For a detailed overview of the 
-included projects, files, and overall structure, see **[Solution Composition](https://github.com/Nano-Core/Nano.Library/blob/master/README.md#solution-composition)**.  
+included projects, files, and overall structure, see **[Nano Architectures](https://github.com/Nano-Core/Nano.Library/blob/master/README.md#%EF%B8%8F-nano-architectures)**.  
 
 The `program.cs` looks like this.  
 
@@ -94,7 +94,7 @@ sections are set to `null`. Features are enabled on an opt-in basis by configuri
   }
 ````
 
-> 📖 Learn more about **[Nano Api Configuration](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App.Api/README.md/README.md#configuration)**.
+> 📖 Learn more about **[Nano Api Configuration](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App.Api/README.md#configuration)**.
 
 For Console applications, the configuration is minimal and straightforward.  
 
@@ -148,7 +148,7 @@ The logging configuration is straightforward, with sensible default values provi
 > 📖 Learn more about **[Logging Configuration](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Logging/README.md#configuration)**.
 
 ## Adding Data Provider
-Moving on to the **[Data Provider](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data/README.md)**. This provider is more optional than logging, but still required by 
+Moving on to the **[Data Provider](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data/README.md#nanodata)**. This provider is more optional than logging, but still required by 
 most applications.
 
 Register the Nano Data Provider in the `ConfigureServices(...)` method in `Program.cs`.
@@ -213,7 +213,7 @@ The data configuration is straightforward and allows features to be easily enabl
 ```
 
 Most importantly, the required `ConnectionString` must be configured.  
-Also, configuring **[Data Health Check](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data/README.md#health-check)** is recommended to ensure system observability.  
+Also, configuring **[Data Health Check](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data/README.md#health-checks)** is recommended to ensure system observability.  
 
 > 📖 Learn more about **[Data Configuration](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data/README.md#configuration)**.
 
@@ -247,10 +247,10 @@ public class MyEntityMapping : BaseEntityMapping<MyEntity>
 > ⚠️ Always ensure you call `base.Configure(builder)`, otherwise inherited Nano properties may not function correctly.
 
 More advanced uses of Nano entity models are also available, including support for user entities used with 
-**[Data Identity](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data/README.md#didentity)** features, as well as mapping database views as read-only entities.  
+**[Data Identity](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data/README.md#identity)** features, as well as mapping database views as read-only entities.  
 
 > 📖 Learn more about **[Nano Data Models](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data/README.md#data-models)** and 
-**[Nano Data Mappings](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data#configuration/README.md#data-mappings)**.
+**[Nano Data Mappings](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#data-mappings)**.
 
 For entity models where you want **[Soft Delete](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data/README.md#soft-delete)** instead of the default hard delete behavior, 
 implement the `IEntitySoftDelete` interface on your entity model.
@@ -267,10 +267,10 @@ properties on entity models can be annotated with this attribute to create a gra
 **[Data Repositories](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data/README.md#repositories)**, all included navigation properties are automatically loaded as part 
 of the query.
 
-> 📖 Learn more about the other **[Nano Data](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data/README.md)** features.
+> 📖 Learn more about the other **[Nano Data](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data/README.md#nanodata)** features.
 
 ## Adding Eventing Provider
-Adding an **[Eventing Provider](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Eventing/README.md)** (message queueing) follows the same pattern as the other Nano providers.  
+Adding an **[Eventing Provider](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Eventing/README.md#nanoeventing)** (message queueing) follows the same pattern as the other Nano providers.  
 
 ```csharp
 ...
@@ -308,7 +308,7 @@ And again, the configuration is straightforward.
 ```
 
 Most importantly, the required `Host` and `Credentials` must be configured.  
-Also, configuring **[Data Health Check](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Eventing/README.md#health-check)** is recommended to ensure system observability.  
+Also, configuring **[Data Health Check](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Eventing/README.md#health-checks)** is recommended to ensure system observability.  
 
 > 📖 Learn more about **[Eventing Configuration](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Eventing/README.md#configuration)**.
 
@@ -349,7 +349,7 @@ public class MyEventingHandler() : BaseEventHandler<MyEvent>(routingKey: null, o
 > 📖 Learn more about the other **[Nano Eventing](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Eventing/README.md#nanoeventing)** features.
 
 ## Adding Storage Provider
-The **[Storage Provider](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Storage/README.md/README.md#nanostorage)** can be added by registering 
+The **[Storage Provider](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Storage/README.md#nanostorage)** can be added by registering 
 it in the `ConfigureServices(...)` method in `Program.cs`.  
 
 ```csharp
@@ -383,14 +383,14 @@ And configuration.
 ```
 
 Most importantly, the required `ShareName` and `Credentials` must be configured.  
-Also, configuring **[Storage Health Check](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Storage/README.md#health-check)** is recommended to ensure system observability.  
+Also, configuring **[Storage Health Check](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Storage/README.md#health-checks)** is recommended to ensure system observability.  
 
 > 📖 Learn more about **[Storage Configuration](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Storage/README.md#configuration)**.
 
 Once a storage provider has been registered, it exposes the `IPathProvider` interface. This can be injected anywhere in the application to provide easy access to the configured 
 root path of the file storage location.  
 
-> 📖 Learn more about the other **[Nano Storage](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Storage/README.md)** features.
+> 📖 Learn more about the other **[Nano Storage](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Storage/README.md#nanostorage)** features.
 
 ## 8. Implementing Your Application Domain
 Now it is time to implement the actual domain of your application. At this stage, you start defining the application-specific behavior and structure. Depending on the application 
@@ -436,7 +436,7 @@ public class MyEntityQueryCriteria : BaseQueryCriteria
 }
 ```
 
-Controllers can later be consumed by other applications through the **[Nano Api Client](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App/README.md#api-clients)**. To do this, 
+Controllers can later be consumed by other applications through the **[Nano Api Clients](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App/README.md#api-clients)**. To do this, 
 create an implementation that derives from `BaseApiClient` and include it—along with the relevant entity models—in the consuming application. This provides a simple and consistent 
 way to connect to the service and use its entity functionality.
 

@@ -272,6 +272,9 @@ public abstract class BaseEntityUserController<TEntity, TIdentity, TCriteria> : 
         var user = await this.identityRepository
             .SignUpAsync(signUp, cancellationToken);
 
+        user = await this.Repository
+            .GetAsync<TEntity, TIdentity>(user.Id, cancellationToken);
+
         return this.Created(ActionRoutes.IDENTITY_SIGNUP, user);
     }
 

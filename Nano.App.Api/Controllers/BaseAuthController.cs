@@ -227,19 +227,16 @@ public abstract class BaseAuthController<TIdentity>(ILogger<BaseAuthController<T
         var appId = this.HttpContext
             .GetJwtAppId();
 
-        var userId = this.HttpContext
-            .GetJwtUserId();
-
-        if (appId == null || userId == null)
+        if (appId == null)
         {
             return this.NotFound();
         }
 
-        var userIdConverted = userId
-            .ConvertToIdentity<TIdentity>();
+        var userId = this.HttpContext
+            .GetJwtUserId<TIdentity>();
 
         await this.authRepository.AuthIdentityRepository
-            .LogOutAsync(userIdConverted, appId, cancellationToken);
+            .LogOutAsync(userId!, appId, cancellationToken);
 
         return this.Ok();
     }

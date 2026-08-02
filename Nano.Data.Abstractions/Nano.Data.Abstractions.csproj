@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<ItemGroup>
-		<PackageReference Include="Asp.Versioning.Http" Version="10.0.0" />
+		<PackageReference Include="Asp.Versioning.Http" Version="10.0.1" />
 		<PackageReference Include="DynamicExpression" Version="10.0.2" />
-		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.19.2" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.22.0" />
 	</ItemGroup>
 
 	<ItemGroup>
