@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 namespace Nano.App.Api.Controllers;
 
 /// <inheritdoc />
-public abstract class BaseEntityEditableController<TEntity, TCriteria> : BaseEntityUpdatableController<TEntity, Guid, TCriteria>
+public abstract class BaseEntityEditableController<TEntity, TCriteria> : BaseEntityEditableController<TEntity, Guid, TCriteria>
     where TEntity : class, IEntityIdentity<Guid>, IEntityUpdatable
     where TCriteria : class, IQueryCriteria, new()
 {
@@ -36,13 +36,13 @@ public abstract class BaseEntityEditableController<TEntity, TCriteria> : BaseEnt
 /// <typeparam name="TIdentity">The identifier type of <typeparamref name="TEntity"/>.</typeparam>
 /// <typeparam name="TCriteria">The query criteria type implementing <see cref="IQueryCriteria"/>.</typeparam>
 [Authorize(Policy = AuthorizationPolicies.EDIT)]
-public abstract class BaseEntityUpdatableController<TEntity, TIdentity, TCriteria> : BaseEntityReadOnlyController<TEntity, TIdentity, TCriteria>
+public abstract class BaseEntityEditableController<TEntity, TIdentity, TCriteria> : BaseEntityReadOnlyController<TEntity, TIdentity, TCriteria>
     where TEntity : class, IEntityIdentity<TIdentity>, IEntityUpdatable
     where TCriteria : class, IQueryCriteria, new()
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    protected BaseEntityUpdatableController(ILogger<BaseEntityUpdatableController<TEntity, TIdentity, TCriteria>> logger, IRepository repository, IEventing? eventing = null)
+    protected BaseEntityEditableController(ILogger<BaseEntityEditableController<TEntity, TIdentity, TCriteria>> logger, IRepository repository, IEventing? eventing = null)
         : base(logger, repository, eventing)
     {
     }
