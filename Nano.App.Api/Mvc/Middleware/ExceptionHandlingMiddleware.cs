@@ -172,12 +172,15 @@ public sealed class ExceptionHandlingMiddleware(ILogger<ExceptionHandlingMiddlew
 
                     if (httpContext.Response.StatusCode != (int)HttpStatusCode.InternalServerError || this.ApiOptions.CurrentValue.ErrorHandling.ExposeErrors)
                     {
-                        var errors = exceptions
-                            .Select(x => x.Message)
-                            .ToArray();
+                        if (exception is not ProblemDetailsException)
+                        {
+                            var errors = exceptions
+                                .Select(x => x.Message)
+                                .ToArray();
 
-                        problemDetails.Extensions
-                            .Add(ProblemDetailsExtensionKeys.ERRORS, errors);
+                            problemDetails.Extensions
+                                .Add(ProblemDetailsExtensionKeys.ERRORS, errors);
+                        }
                     }
                     else
                     {
