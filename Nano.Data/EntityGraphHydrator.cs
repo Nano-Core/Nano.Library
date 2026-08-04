@@ -85,9 +85,7 @@ internal class EntityGraphHydrator(DbContext dbContext)
 
                     entityEntry.OriginalValues[property.Name] = dbValue;
 
-                    var isStoreGenerated = property.ValueGenerated == ValueGenerated.OnAdd || property.ValueGenerated == ValueGenerated.OnAddOrUpdate || property.GetAfterSaveBehavior() == PropertySaveBehavior.Ignore;
-
-                    if (isStoreGenerated)
+                    if (property.ValueGenerated == ValueGenerated.OnAddOrUpdate)
                     {
                         entityEntry
                             .Property(property.Name).CurrentValue = dbValue;

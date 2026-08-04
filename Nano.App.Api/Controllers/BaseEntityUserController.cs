@@ -47,7 +47,7 @@ public abstract class BaseEntityUserController<TEntity, TCriteria> : BaseEntityU
 
 /// <inheritdoc />
 [Authorize(Policy = AuthorizationPolicies.IDENTITY)]
-public abstract class BaseEntityUserController<TEntity, TIdentity, TCriteria> : BaseEntityUpdatableController<TEntity, TIdentity, TCriteria>
+public abstract class BaseEntityUserController<TEntity, TIdentity, TCriteria> : BaseEntityEditableController<TEntity, TIdentity, TCriteria>
     where TEntity : class, IEntityUser<TIdentity>, new()
     where TIdentity : IEquatable<TIdentity>
     where TCriteria : class, IQueryCriteria, new()
