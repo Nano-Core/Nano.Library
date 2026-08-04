@@ -24,8 +24,9 @@
 	    <Summary>Reusable libraries for building .NET microservice applications</Summary>
 	    <Description>This package is part of the Nano Library, a set of reusable .NET libraries for building microservice applications. Nano addresses common non-business concerns such as logging, persistence, messaging, validation, and documentation, while remaining fully configurable and extensible, so applications can stay focused on business logic. See https://github.com/Nano-Core/Nano.Library for details.</Description>
 	    <PackageReleaseNotes>
-		    - Removed "?" from querystring logging when no parameters
-		    - Fixed incorrect eventing queue naming, using full type name instead of just type
+		    - Fixed missing rename BaseEntityUpdatableController to BaseEntityEditableController
+		    - Fixed ProblemDetails not carrying over errors through API client.
+		    - Fixed entity properties not being correctly hydrated when having default value
 	    </PackageReleaseNotes>
 		<RepositoryType>git</RepositoryType>
 	    <RepositoryBranch>master</RepositoryBranch>
