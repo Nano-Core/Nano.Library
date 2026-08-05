@@ -1,10 +1,4 @@
-﻿using System;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 using Nano.App.ApiClient.Abstractions;
@@ -22,6 +16,13 @@ using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Nano.Data.Abstractions.Identity.Extensions;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Newtonsoft.Json;
+using System;
+using System.IO;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Threading;
+using System.Threading.Tasks;
 using Vivet.AspNetCore.RequestTimeZone.Providers;
 
 namespace Nano.App.ApiClient;
@@ -282,10 +283,17 @@ public sealed class ApiClient(ApiClientOptions options, HttpClient httpClient, I
                     throw new NullReferenceException(nameof(name));
                 }
 
+                var streamCopy = new MemoryStream();
+
+                await httpResponse.Content
+                    .CopyToAsync(streamCopy, cancellationToken);
+
+                streamCopy.Position = 0;
+
                 return new NamedStream
                 {
                     Name = name,
-                    Stream = stream
+                    Stream = streamCopy
                 } as TResponse;
             }
 
