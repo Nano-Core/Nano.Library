@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Nano.App.Api.Config;
 using Nano.App.Api.Mvc.Conventions;
@@ -7,9 +8,10 @@ using System;
 
 namespace Nano.App.Api.Mvc;
 
-internal sealed class ConfigureMvcOptions(IOptionsMonitor<ApiOptions> apiOptions, MvcEndpointVisibility mvcEndpointVisibility)
+internal sealed class ConfigureMvcOptions(ILogger logger, IOptionsMonitor<ApiOptions> apiOptions, MvcEndpointVisibility mvcEndpointVisibility)
     : IConfigureOptions<MvcOptions>
 {
+    private readonly ILogger logger = logger ?? throw new ArgumentNullException(nameof(logger));
     private readonly IOptionsMonitor<ApiOptions> apiOptions = apiOptions ?? throw new ArgumentNullException(nameof(apiOptions));
     private readonly MvcEndpointVisibility mvcEndpointVisibility = mvcEndpointVisibility ?? throw new ArgumentNullException(nameof(mvcEndpointVisibility));
 
@@ -28,7 +30,7 @@ internal sealed class ConfigureMvcOptions(IOptionsMonitor<ApiOptions> apiOptions
         var routeAttribute = new RouteAttribute(this.apiOptions.CurrentValue.Hosting.Root);
         var routePrefixConvention = new RoutePrefixConvention(routeAttribute);
         var producesJsonConvention = new ProducesJsonConvention();
-        var conditionalActionConvention = new ConditionalActionsConvention(this.mvcEndpointVisibility);
+        var conditionalActionConvention = new ConditionalActionsConvention(logger, this.mvcEndpointVisibility);
 
         options.Conventions
             .Insert(0, routePrefixConvention);

@@ -24,7 +24,8 @@
 	    <Summary>Reusable libraries for building .NET microservice applications</Summary>
 	    <Description>This package is part of the Nano Library, a set of reusable .NET libraries for building microservice applications. Nano addresses common non-business concerns such as logging, persistence, messaging, validation, and documentation, while remaining fully configurable and extensible, so applications can stay focused on business logic. See https://github.com/Nano-Core/Nano.Library for details.</Description>
 	    <PackageReleaseNotes>
-			- Fixed Api client returning disposed stream for file responses
+			- Added startup warning when BaseEntityUserController exposes anonymous password-reset endpoints
+			- Updated NuGets
 		</PackageReleaseNotes>
 		<RepositoryType>git</RepositoryType>
 	    <RepositoryBranch>master</RepositoryBranch>
