@@ -9,10 +9,10 @@ using System.Linq;
 
 namespace Nano.App.Api.Mvc.Conventions;
 
-internal sealed class ConditionalActionsConvention(ILogger logger, MvcEndpointVisibility mvcEndpointVisibility)
+internal sealed class ConditionalActionsConvention(ILogger<ConditionalActionsConvention> logger, MvcEndpointVisibility mvcEndpointVisibility)
     : IControllerModelConvention
 {
-    private readonly ILogger logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    private readonly ILogger<ConditionalActionsConvention> logger = logger ?? throw new ArgumentNullException(nameof(logger));
     private readonly MvcEndpointVisibility mvcEndpointVisibility = mvcEndpointVisibility ?? throw new ArgumentNullException(nameof(mvcEndpointVisibility));
 
     /// <summary>

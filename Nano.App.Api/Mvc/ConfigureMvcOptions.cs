@@ -8,10 +8,10 @@ using System;
 
 namespace Nano.App.Api.Mvc;
 
-internal sealed class ConfigureMvcOptions(ILogger logger, IOptionsMonitor<ApiOptions> apiOptions, MvcEndpointVisibility mvcEndpointVisibility)
+internal sealed class ConfigureMvcOptions(ILoggerFactory loggerFactory, IOptionsMonitor<ApiOptions> apiOptions, MvcEndpointVisibility mvcEndpointVisibility)
     : IConfigureOptions<MvcOptions>
 {
-    private readonly ILogger logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    private readonly ILoggerFactory loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory));
     private readonly IOptionsMonitor<ApiOptions> apiOptions = apiOptions ?? throw new ArgumentNullException(nameof(apiOptions));
     private readonly MvcEndpointVisibility mvcEndpointVisibility = mvcEndpointVisibility ?? throw new ArgumentNullException(nameof(mvcEndpointVisibility));
 
@@ -30,7 +30,11 @@ internal sealed class ConfigureMvcOptions(ILogger logger, IOptionsMonitor<ApiOpt
         var routeAttribute = new RouteAttribute(this.apiOptions.CurrentValue.Hosting.Root);
         var routePrefixConvention = new RoutePrefixConvention(routeAttribute);
         var producesJsonConvention = new ProducesJsonConvention();
-        var conditionalActionConvention = new ConditionalActionsConvention(logger, this.mvcEndpointVisibility);
+
+        var conditionalActionsLogger = this.loggerFactory
+            .CreateLogger<ConditionalActionsConvention>();
+        
+        var conditionalActionConvention = new ConditionalActionsConvention(conditionalActionsLogger, this.mvcEndpointVisibility);
 
         options.Conventions
             .Insert(0, routePrefixConvention);
