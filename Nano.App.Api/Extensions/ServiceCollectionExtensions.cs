@@ -495,8 +495,10 @@ internal static class ServiceCollectionExtensions
                 var authenticationSchemeProvider = x
                     .GetRequiredService<IAuthenticationSchemeProvider>();
 
+                #pragma warning disable AV0027
                 var apiVersionDescriptionProvider = x
                     .GetRequiredService<IApiVersionDescriptionProvider>();
+                #pragma warning restore AV0027
 
                 var apiOptions = x
                     .GetRequiredService<IOptionsMonitor<ApiOptions>>();

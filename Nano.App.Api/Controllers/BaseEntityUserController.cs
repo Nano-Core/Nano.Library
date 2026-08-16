@@ -45,7 +45,20 @@ public abstract class BaseEntityUserController<TEntity, TCriteria> : BaseEntityU
     }
 }
 
-/// <inheritdoc />
+/// <summary>
+/// Base controller providing user identity management: sign-up, password, email/phone verification, roles, claims, refresh tokens, and API keys.
+/// </summary>
+/// <remarks>
+/// <para>
+///     <b>Security:</b> This controller exposes several <c>[AllowAnonymous]</c> endpoints — most notably <see cref="GetResetPasswordTokenAsync"/> and <see cref="ResetPasswordAsync"/> — 
+///     which are intended to be called only by a trusted internal caller (e.g. a public-facing API/gateway that performs out-of-band delivery of the reset token, such as email or SMS).
+/// </para>
+/// <para>
+///     This controller — and any type deriving from it — must never be reachable directly from an untrusted network. If <see cref="GetResetPasswordTokenAsync"/> and <see cref="ResetPasswordAsync"/>
+///     are reachable by an attacker, they allow full account takeover for any known username with no authentication and no user interaction. A startup-time warning is logged if these endpoints 
+///     are detected as active on a derived controller — see <c>ConditionalActionsConvention</c>.
+/// </para>
+/// </remarks>
 [Authorize(Policy = AuthorizationPolicies.IDENTITY)]
 public abstract class BaseEntityUserController<TEntity, TIdentity, TCriteria> : BaseEntityEditableController<TEntity, TIdentity, TCriteria>
     where TEntity : class, IEntityUser<TIdentity>, new()

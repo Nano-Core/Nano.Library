@@ -41,7 +41,6 @@ internal static class WebApplicationExtensions
             .UseNanoRequestTimeZone(options.TimeZone)
             .UseNanoResponseCompression(options.ResponseCompression)
             .UseNanoResponseCaching(options.ResponseCache)
-            .UseNanoDocumentataion(webApplication.Environment, options.Version, options.Documentation)
             .UseNanoHealthChecks(webApplication.Environment, options.HealthCheck);
 
         webApplication
@@ -55,6 +54,9 @@ internal static class WebApplicationExtensions
             .UseEventHandlers(webApplication.Services)
             .UseEntityEventing(webApplication.Services)
             .UseNanoDbMigrations();
+
+        webApplication
+            .UseNanoDocumentataion(webApplication.Environment, options.Version, options.Documentation);
 
         return webApplication;
     }

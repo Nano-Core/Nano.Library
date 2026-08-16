@@ -587,7 +587,7 @@ internal static class ApplicationBuilderExtensions
         return applicationBuilder;
     }
 
-    internal static IApplicationBuilder UseNanoDocumentataion(this IApplicationBuilder applicationBuilder, IWebHostEnvironment webHostEnvironment, string version = "1.0.0.0", DocumentationOptions? options = null)
+    internal static IApplicationBuilder UseNanoDocumentataion(this WebApplication applicationBuilder, IWebHostEnvironment webHostEnvironment, string version = "1.0.0.0", DocumentationOptions? options = null)
     {
         ArgumentNullException.ThrowIfNull(applicationBuilder);
         ArgumentNullException.ThrowIfNull(webHostEnvironment);
@@ -604,10 +604,10 @@ internal static class ApplicationBuilderExtensions
             })
             .UseSwaggerUI(x =>
             {
-                var apiVersionDescriptionProvider = applicationBuilder.ApplicationServices
-                    .GetRequiredService<IApiVersionDescriptionProvider>();
+                var apiVersionDescriptions = applicationBuilder
+                    .DescribeApiVersions();
 
-                foreach (var description in apiVersionDescriptionProvider.ApiVersionDescriptions)
+                foreach (var description in apiVersionDescriptions)
                 {
                     var defaultVersion = version
                         .ParseVersion();

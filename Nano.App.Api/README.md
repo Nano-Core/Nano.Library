@@ -2132,6 +2132,8 @@ controller.
 | `/{entity}s/roles/{roleId}/claims/assign-or-replace`       | PUT           | administrator | Assigns or replaces a claim of a role.                                                                                                    |
 | `/{entity}s/roles/{roleId}/claims/remove`                  | POST / DELETE | administrator | Removes a claim from a role.                                                                                                              |
 
+> ⚠️ **Security:** `/password/reset/token` and `/{id}/password/reset` are anonymous by design, for internal applications only. Never expose this controller directly to clients.
+
 Endpoints for user refresh tokens are only exposed if JWT authentication is configured. Similarly, endpoints for API keys are only exposed when API key authentication is configured.  
 
 > 📖 Learn more about **[Data Identity](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data/README.md#identity)**.

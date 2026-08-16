@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using Microsoft.Extensions.Logging;
 using Nano.App.Api.Controllers;
 using Nano.App.Api.Mvc.Extensions;
 using Nano.Common.Extensions;
@@ -8,9 +9,10 @@ using System.Linq;
 
 namespace Nano.App.Api.Mvc.Conventions;
 
-internal sealed class ConditionalActionsConvention(MvcEndpointVisibility mvcEndpointVisibility)
+internal sealed class ConditionalActionsConvention(ILogger<ConditionalActionsConvention> logger, MvcEndpointVisibility mvcEndpointVisibility)
     : IControllerModelConvention
 {
+    private readonly ILogger<ConditionalActionsConvention> logger = logger ?? throw new ArgumentNullException(nameof(logger));
     private readonly MvcEndpointVisibility mvcEndpointVisibility = mvcEndpointVisibility ?? throw new ArgumentNullException(nameof(mvcEndpointVisibility));
 
     /// <summary>
@@ -23,6 +25,7 @@ internal sealed class ConditionalActionsConvention(MvcEndpointVisibility mvcEndp
 
         this.DisableAuthControllerActions(controller);
         this.DisableEntityUserControllerActions(controller);
+        this.WarnIfAnonymousPasswordResetExposed(controller);
     }
 
 
@@ -213,5 +216,37 @@ internal sealed class ConditionalActionsConvention(MvcEndpointVisibility mvcEndp
             controller.Actions
                 .Remove(action);
         }
+    }
+    private void WarnIfAnonymousPasswordResetExposed(ControllerModel controller)
+    {
+        ArgumentNullException.ThrowIfNull(controller);
+
+        var isIdentityController = controller.ControllerType
+            .IsTypeOf(typeof(BaseEntityUserController<,,>));
+
+        if (!isIdentityController)
+        {
+            return;
+        }
+
+        var exposesResetToken = controller.Actions
+            .Any(x => nameof(BaseEntityUserController<,,>.GetResetPasswordTokenAsync).ReplaceAsync() == x.ActionName);
+
+        var exposesResetPassword = controller.Actions
+            .Any(x => nameof(BaseEntityUserController<,,>.ResetPasswordAsync).ReplaceAsync() == x.ActionName);
+
+        if (!exposesResetToken && !exposesResetPassword)
+        {
+            return;
+        }
+
+        const string MESSAGE =
+            "Controller '{ControllerName}' derives from BaseEntityUserController and exposes anonymous password-reset endpoints " +
+            "(password/reset/token and {{id}}/password/reset). These issue and consume password-reset tokens with no authentication " +
+            "and must never be reachable outside a trusted internal network — exposing them allows full account takeover for any known " +
+            "username. See: https://github.com/Nano-Core/Nano.Library#security";
+
+        this.logger
+            .LogWarning(MESSAGE, controller.ControllerType.FullName);
     }
 }
