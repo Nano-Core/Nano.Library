@@ -74,10 +74,6 @@ public class NanoApiApplication : BaseNanoApplication<IApiApplication, WebApplic
         applicationBuilderAction?
             .Invoke(this.application);
 
-
-        this.application.DescribeApiVersions();
-
-
         return this;
     }
 
