@@ -24,9 +24,7 @@
 	    <Summary>Reusable libraries for building .NET microservice applications</Summary>
 	    <Description>This package is part of the Nano Library, a set of reusable .NET libraries for building microservice applications. Nano addresses common non-business concerns such as logging, persistence, messaging, validation, and documentation, while remaining fully configurable and extensible, so applications can stay focused on business logic. See https://github.com/Nano-Core/Nano.Library for details.</Description>
 	    <PackageReleaseNotes>
-			- Added startup warning when BaseEntityUserController exposes anonymous password-reset endpoints
-			- Update Asp.Versioning.Http to 10.2.2; fix AV0027 by using DescribeApiVersions() and moving Swagger middleware after endpoint mapping
-			- Updated NuGets
+			- Updated Nano.Data.SqlServer README.md with create database step.
 		</PackageReleaseNotes>
 		<RepositoryType>git</RepositoryType>
 	    <RepositoryBranch>master</RepositoryBranch>
