@@ -134,7 +134,116 @@ env:
   SQL_ADMIN_PASSWORD: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_SQL_ADMIN_PASSWORD || secrets.STAGING_SQL_ADMIN_PASSWORD }}
 ```
 
-Additionally, this step has been added to ensure database migrations are applied, and the application database user has been created before the application is deployed.  
+Additionally, two steps have been added: one to create the application's database if it doesn't already exist, and one to ensure database migrations are applied and the application 
+database user has been created before the application is deployed.  
+
+```yaml
+- name: Create Database
+  shell: pwsh
+  run: |
+    $env:SQL_SERVER_NAME = az sql server list -g $env:AZURE_GROUP_DATABASE --query "[0].name" -o tsv;
+    $env:SQL_DB_EXISTS = az sql db show -g $env:AZURE_GROUP_DATABASE -s $env:SQL_SERVER_NAME -n $env:SQL_NAME --query name -o tsv 2>$null;
+
+    if (-not $env:SQL_DB_EXISTS)
+    {
+        az sql db create `
+            -n $env:SQL_NAME `
+            -s $env:SQL_SERVER_NAME `
+            -g $env:AZURE_GROUP_DATABASE `
+            --edition $env:SQL_EDITION `
+            --service-objective $env:SQL_SERVICE_OBJECTIVE `
+            --max-size $env:SQL_MAX_SIZE `
+            --backup-storage-redundancy Geo `
+            --zone-redundant true;
+
+        $env:MAINTENANCE_CONFIG_ID = az maintenance public-configuration list --query "[?name=='SQL_Default_1'].id" -o tsv;
+
+        az sql db update `
+            -n $env:SQL_NAME `
+            -s $env:SQL_SERVER_NAME `
+            -g $env:AZURE_GROUP_DATABASE `
+            --maint-config-id $env:MAINTENANCE_CONFIG_ID;
+
+        $env:DIAGNOSTIC_SETTINGS_NAME = "diagnostics-" + $env:SQL_NAME;
+        $env:WORKSPACE_ID = az monitor log-analytics workspace list -g $env:AZURE_GROUP_LOGS --query [0].[id] -o tsv;
+        $env:SQLDB_ID = az sql db show -g $env:AZURE_GROUP_DATABASE -s $env:SQL_SERVER_NAME -n $env:SQL_NAME --query id -o tsv;
+
+        az monitor diagnostic-settings create `
+            --name $env:DIAGNOSTIC_SETTINGS_NAME `
+            --resource $env:SQLDB_ID `
+            --workspace $env:WORKSPACE_ID `
+            --logs '@.azure/.diagnostic-settings/logs.json' `
+            --metrics '@.azure/.diagnostic-settings/metrics.json';
+
+        $env:ACTION_GROUP = az monitor action-group list -g $env:AZURE_GROUP_LOGS --query [0].[id] -o tsv;
+
+        az monitor metrics alert create `
+            --name "High CPU Usage" `
+            --resource-group $env:AZURE_GROUP_DATABASE `
+            --scopes $env:SQLDB_ID `
+            --condition "avg cpu_percent > 80" `
+            --window-size PT5M `
+            --evaluation-frequency PT1M `
+            --action $env:ACTION_GROUP `
+            --severity 2 `
+            --description "Alert when CPU usage is above 80% for 5 minutes.";
+
+        az monitor metrics alert create `
+            --name "High Memory/Worker Usage" `
+            --resource-group $env:AZURE_GROUP_DATABASE `
+            --scopes $env:SQLDB_ID `
+            --condition "avg workers_percent > 80" `
+            --window-size PT5M `
+            --evaluation-frequency PT1M `
+            --action $env:ACTION_GROUP `
+            --severity 2 `
+            --description "Alert when worker/session usage is above 80% for 5 minutes.";
+
+        az monitor metrics alert create `
+            --name "High Number Of Connections" `
+            --resource-group $env:AZURE_GROUP_DATABASE `
+            --scopes $env:SQLDB_ID `
+            --condition "total connection_successful > 100" `
+            --window-size PT5M `
+            --evaluation-frequency PT1M `
+            --action $env:ACTION_GROUP `
+            --severity 2 `
+            --description "Alert when the number of successful connections exceeds 100 in 5 minutes.";
+
+        az monitor metrics alert create `
+            --name "High Storage IO" `
+            --resource-group $env:AZURE_GROUP_DATABASE `
+            --scopes $env:SQLDB_ID `
+            --condition "avg io_consumption_percent > 80" `
+            --window-size PT5M `
+            --evaluation-frequency PT1M `
+            --action $env:ACTION_GROUP `
+            --severity 2 `
+            --description "Alert when Storage IO consumption is above 80% for 5 minutes.";
+
+        az monitor metrics alert create `
+            --name "High Storage Percent" `
+            --resource-group $env:AZURE_GROUP_DATABASE `
+            --scopes $env:SQLDB_ID `
+            --condition "avg storage_percent > 80" `
+            --window-size PT5M `
+            --evaluation-frequency PT1M `
+            --action $env:ACTION_GROUP `
+            --severity 2 `
+            --description "Alert when Storage usage exceeds 80% for 5 minutes.";
+
+        az sql db str-policy set `
+            -g $env:AZURE_GROUP_DATABASE `
+            -s $env:SQL_SERVER_NAME `
+            -n $env:SQL_NAME `
+            --retention-days $env:SQL_BACKUP_RETENTION;
+
+        if ($LastExitCode -ne 0)
+        { 
+            throw "error";
+        };
+    };
+```
 
 ```yaml
 - name: Database Migration & User

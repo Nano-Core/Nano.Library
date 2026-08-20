@@ -85,11 +85,11 @@ If you want to use a custom identity type, it must be specified during registrat
 Nano abstractions.  
 
 ## Variables And Secrets
-Nano data providers require a set of secrets.  
+Nano data providers require the following secret.  
 
-| Variable                              | Type     | Description                                           |
-| ------------------------------------- | -------- | ----------------------------------------------------- |
-| DATA_{{database-name}}_PASSWORD       | secrets  | This database password for the application sql user.  |
+| Variable                                    | Type     | Description                                                                                |
+| -------------------------------------------- | -------- | ------------------------------------------------------------------------------------------- |
+| {{environment}}_SQL_{{database}}_PASSWORD    | secrets  | The application's database user password, used to connect to the `{{database}}` database.  |
 
 ## Configuration
 The `Data` section in the configuration defines the data provider and related settings used by the application.
