@@ -1,6 +1,7 @@
-using Nano.Data.Abstractions.Config.Enums;
-using System.ComponentModel.DataAnnotations;
 using Nano.Common.Config;
+using Nano.Data.Abstractions.Config.Enums;
+using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Data.Abstractions.Config;
 
@@ -81,6 +82,12 @@ public class DataOptions
     /// </summary>
     [Required]
     public virtual string ConnectionString { get; set; } = null!;
+
+    /// <summary>
+    /// Gets or sets the options for authentication type.
+    /// </summary>
+    [Required]
+    public virtual AuthenticationType AuthenticationType { get; set; } = AuthenticationType.Credentials;
 
     /// <summary>
     /// Gets or sets the repository configuration options.
