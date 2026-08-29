@@ -63,6 +63,7 @@ Add the data configuration to `appsettings.json`.
   "QuerySplittingBehavior": "SingleQuery",
   "DefaultCollation": null,
   "ConnectionString": null,
+  "AuthenticationType": "Credentials",
   "Repository": {
     "UseAutoSave": false,
     "QueryIncludeDepth": 4
@@ -100,11 +101,8 @@ services:
     networks:
       - network
     environment:
-      MYSQL_USER: sa
-      MYSQL_PASSWORD: myPassword_123
-      MYSQL_ROOT_PASSWORD: myPassword_123
-      MYSQL_DATABASE: nanoDb
       MYSQL_ROOT_HOST: '%'
+      MYSQL_ROOT_PASSWORD: myPassword_123
 ```
 
 ## Kubernetes
@@ -123,6 +121,15 @@ spec:
               key: data-connectionstring
 ```
 
+Also add the following variable to the `configmap.yaml`.
+
+```yaml
+data:
+  Data__AuthenticationType: %SQL_AUTH_TYPE%
+```
+
+Last, the secret `auth-sql-secret.yaml` for the connectionstriong must be applied as well.
+
 ## GitHub Actions
 Add the following environment variables to the `buid-and-deply.yml`.  
 
@@ -130,23 +137,63 @@ Add the following environment variables to the `buid-and-deply.yml`.
 env:
   DOTNET_EF_TOOLS_VERSION: "10.0"
   AZURE_GROUP_DATABASE : ${{ vars.AZURE_RESOURCE_GROUP_DATABASE }}
+  SQL_AUTH_TYPE: Azure
   SQL_NAME: nanoDb
-  SQL_USER: api-data-mysql-user
-  SQL_PASSWORD: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_SQL_NANO_DB_PASSWORD || secrets.STAGING_SQL_NANO_DB_PASSWORD }}
-  SQL_ADMIN_PASSWORD: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_SQL_ADMIN_PASSWORD || secrets.STAGING_SQL_ADMIN_PASSWORD }}
 ```
 
-Additionally, this step must be added to ensure database migrations are applied, and the application database user has been created before the application is deployed.  
+Additionally, these steps ensure database migrations are applied and the application database user is created, using the application's managed identity, before the application is deployed.
 
 ```yaml
-- name: Database Migration & User
+- name: Managed Identity
+  shell: pwsh
+  run: |
+    $env:IDENTITY_NAME = $env:SERVICE_NAME + "-identity";
+    $env:IDENTITY_PRINCIPAL_ID = az identity show -g $env:AZURE_GROUP_KUBERNETES -n $env:IDENTITY_NAME --query principalId -o tsv;
+    $env:KUBERNETES_ISSUER_URL = az aks list -g $env:AZURE_GROUP_KUBERNETES --query [0].['oidcIssuerProfile.issuerUrl'] -o tsv;
+
+    if (-not $env:IDENTITY_PRINCIPAL_ID)
+    {
+        az identity create `
+            -g $env:AZURE_GROUP_KUBERNETES `
+            -n $env:IDENTITY_NAME;
+
+        if ($LastExitCode -ne 0)
+        {
+            throw "error";
+        };
+
+        $env:IDENTITY_PRINCIPAL_ID = az identity show -g $env:AZURE_GROUP_KUBERNETES -n $env:IDENTITY_NAME --query principalId -o tsv;
+    }
+          
+    $env:IDENTITY_CLIENT_ID = az identity show -g $env:AZURE_GROUP_KUBERNETES -n $env:IDENTITY_NAME --query clientId -o tsv;
+
+    az identity federated-credential create `
+        --name $env:SERVICE_NAME-credentials `
+        --resource-group $env:AZURE_GROUP_KUBERNETES `
+        --identity-name $env:IDENTITY_NAME `
+        --issuer $env:KUBERNETES_ISSUER_URL `
+        --subject "system:serviceaccount:${env:KUBERNETES_NAMESPACE}:${env:SERVICE_NAME}-service-account" `
+        --audience api://AzureADTokenExchange;
+
+    if ($LastExitCode -ne 0)
+    {
+        throw "error";
+    };
+          
+    echo "IDENTITY_NAME=$env:IDENTITY_NAME" >> $env:GITHUB_ENV;
+    echo "IDENTITY_CLIENT_ID=$env:IDENTITY_CLIENT_ID" >> $env:GITHUB_ENV; 
+    echo "IDENTITY_PRINCIPAL_ID=$env:IDENTITY_PRINCIPAL_ID" >> $env:GITHUB_ENV; 
+
+- name: MySQL Database Migration
   shell: pwsh
   run: |
     $env:SQL_HOST = az mysql flexible-server list -g $env:AZURE_GROUP_DATABASE --query [0].fullyQualifiedDomainName -o tsv;
     $env:SQL_PORT = az mysql flexible-server list -g $env:AZURE_GROUP_DATABASE --query [0].databasePort -o tsv;
-    $env:SQL_ADMIN_USER = az mysql flexible-server list -g $env:AZURE_GROUP_DATABASE --query [0].administratorLogin -o tsv;
+    $env:SQL_SERVER = az mysql flexible-server list -g $env:AZURE_GROUP_DATABASE --query [0].name -o tsv;
+    $env:SQL_USER = az mysql flexible-server ad-admin list -g $env:AZURE_GROUP_DATABASE -s $env:SQL_SERVER --query "[0].login" -o tsv;
+    $env:SQL_TOKEN = az account get-access-token --resource-type oss-rdbms --query accessToken -o tsv;
 
-    $env:DATA__CONNECTIONSTRING = "Server=$env:SQL_HOST;Port=$env:SQL_PORT;Database=$env:SQL_NAME;Uid=$env:SQL_ADMIN_USER;Pwd=$env:SQL_ADMIN_PASSWORD;SslMode=Required";
+    $env:DATA__CONNECTIONSTRING = "Server=$env:SQL_HOST;Port=$env:SQL_PORT;Database=$env:SQL_NAME;Uid=$env:SQL_USER;Pwd=$env:SQL_TOKEN;SslMode=Required";
 
     & "/opt/ef-tools/$env:DOTNET_EF_TOOLS_VERSION/dotnet-ef" database update `
     --no-build `
@@ -159,39 +206,30 @@ Additionally, this step must be added to ensure database migrations are applied,
     { 
         throw "error";
     };
-          
-    $env:MYSQL_PWD = $env:SQL_ADMIN_PASSWORD
 
-    $userExists = mysql `
-        --host $env:SQL_HOST `
-        --port $env:SQL_PORT `
-        --user $env:SQL_ADMIN_USER `
-        --ssl-mode=REQUIRED `
-        -e "SELECT EXISTS(SELECT 1 FROM mysql.user WHERE user = '$env:SQL_USER');";
+    $env:APP_USER_SQL_PATH = Join-Path $env:USERPROFILE "app-database-user.sql";
 
-    if ($userExists -eq 0) 
+    $sql = @"
+      CREATE AADUSER IF NOT EXISTS '$env:IDENTITY_NAME' IDENTIFIED BY '$env:IDENTITY_CLIENT_ID';
+      GRANT SELECT, INSERT, UPDATE, DELETE ON $env:SQL_NAME.* TO '$env:IDENTITY_NAME'@'%';
+      FLUSH PRIVILEGES;
+    "@;
+
+    $sql | Set-Content $env:APP_USER_SQL_PATH;
+
+    az mysql flexible-server execute `
+        -n $env:SQL_SERVER `
+        -u $env:SQL_USER `
+        -p $env:SQL_TOKEN `
+        --file-path $env:APP_USER_SQL_PATH;
+
+    if ($LastExitCode -ne 0)
     {
-        mysql `
-            --host $env:SQL_HOST `
-            --port $env:SQL_PORT `
-            --user $env:SQL_ADMIN_USER `
-            --ssl-mode=REQUIRED `
-            -e "CREATE USER '$env:SQL_USER'@'%' IDENTIFIED BY '$env:SQL_PASSWORD'; GRANT SELECT, INSERT, UPDATE, DELETE ON $env:SQL_NAME.* TO '$env:SQL_USER'@'%'; FLUSH PRIVILEGES;";
+        throw "error";
+    };
 
-        if ($LastExitCode -ne 0)
-        { 
-            throw "error";
-        };
-    }
-
-    echo "SQL_HOST=$env:SQL_HOST" >> $env:GITHUB_ENV;
-    echo "SQL_PORT=$env:SQL_PORT" >> $env:GITHUB_ENV;
-```
-
-Last, before applying the new Kubernetes templates, these environmental variables must be set.
-
-```powershell
-$env:SQL_CONNECTIONSTRING = "Server=$env:SQL_HOST;Port=$env:SQL_PORT;Database=$env:SQL_NAME;Uid=$env:SQL_USER;Pwd=$env:SQL_PASSWORD;SslMode=Required";
+    $env:SQL_CONNECTIONSTRING = "Server=$env:SQL_HOST;Port=$env:SQL_PORT;Database=$env:SQL_NAME;Uid=$env:IDENTITY_NAME;SslMode=Required";
+    echo "SQL_CONNECTIONSTRING=$env:SQL_CONNECTIONSTRING" >> $env:GITHUB_ENV;
 ```
 
 Finally, apply the templates.
