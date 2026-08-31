@@ -207,7 +207,7 @@ Additionally, these steps ensure database migrations are applied and the applica
         throw "error";
     };
 
-    $env:APP_USER_SQL_PATH = Join-Path $env:USERPROFILE "app-database-user.sql";
+    $env:APP_USER_SQL_PATH = "app-database-user.sql";
 
     $sql = @"
       CREATE AADUSER IF NOT EXISTS '$env:IDENTITY_NAME' IDENTIFIED BY '$env:IDENTITY_CLIENT_ID';

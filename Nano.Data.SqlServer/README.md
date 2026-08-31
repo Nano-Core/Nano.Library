@@ -314,7 +314,7 @@ Additionally, these steps ensure the database exists, migrations are applied, an
         throw "error";
     };
 
-    $env:APP_USER_SQL_PATH = Join-Path $env:USERPROFILE "app-database-user.sql";
+    $env:APP_USER_SQL_PATH = "app-database-user.sql";
 
     $sql = @"
       IF NOT EXISTS (SELECT 1 FROM sys.database_principals WHERE name = '$env:IDENTITY_NAME')
