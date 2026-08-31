@@ -241,10 +241,8 @@ internal sealed class ConditionalActionsConvention(ILogger<ConditionalActionsCon
         }
 
         const string MESSAGE =
-            "Controller '{ControllerName}' derives from BaseEntityUserController and exposes anonymous password-reset endpoints " +
-            "(password/reset/token and {{id}}/password/reset). These issue and consume password-reset tokens with no authentication " +
-            "and must never be reachable outside a trusted internal network — exposing them allows full account takeover for any known " +
-            "username. See: https://github.com/Nano-Core/Nano.Library#security";
+            "Controller '{ControllerName}' derives from 'BaseEntityUserController' and exposes unauthenticated password-reset endpoints (password/reset/token and {{id}}/password/reset). " +
+            "These issue and consume reset tokens with no auth, allowing full account takeover for any known username. They are for internal services only and must never be reachable outside a trusted network.";
 
         this.logger
             .LogWarning(MESSAGE, controller.ControllerType.FullName);
