@@ -13,7 +13,6 @@
 * **[Home](https://github.com/Nano-Core/Nano.Library/blob/master/README.md#nanolibrary#nanolibrary)**
 * **[Summary](#summary)**
 * **[Registration](#registration)**
-* **[Variables And Secrets](#variables-and-secrets)**
 * **[Configuration](#configuration)**
   * **[Connection Pool](#connection-pool)**
   * **[Identity](#identity)**
@@ -84,13 +83,6 @@ If you want to use a custom identity type, it must be specified during registrat
 > ⚠️ When using a non-default identity type, `TIdentity` must also be specified on **[Data Models](#data-models)**, **[Data Mappings](#data-mappings)**, and other related 
 Nano abstractions.  
 
-## Variables And Secrets
-Nano data providers require the following secret.  
-
-| Variable                                    | Type     | Description                                                                                |
-| -------------------------------------------- | -------- | ------------------------------------------------------------------------------------------- |
-| {{environment}}_SQL_{{database}}_PASSWORD    | secrets  | The application's database user password, used to connect to the `{{database}}` database.  |
-
 ## Configuration
 The `Data` section in the configuration defines the data provider and related settings used by the application.
 
@@ -106,6 +98,7 @@ The `Data` section in the configuration defines the data provider and related se
 | `QuerySplittingBehavior`       | enum   | SingleQuery | The default query splitting behavior for EF Core queries.                                                                                                               |              
 | `DefaultCollation`             | string | null        | The default collation for the database. ⚠️ Note: Changing this setting affects only new migrations and will not modify existing tables or columns.                      |
 | `ConnectionString`             | string | null        | Required. The connection string for the database.                                                                                                                       |
+| `AuthenticationType`           | enum   | Credentials | The authentication type for the database connectionstring. Allowed values `Credentials` (regular username/password) and `Azure` (Azure Kubernetes Workload Identity)    |
 | `Repository`                   | object | default     | The cache configuration options. See **[Repositories](#repositories)**.                                                                                                 |
 | `Repository.UseAutoSave`       | bool   | true        | A value indicating whether automatic saving of changes in repositories is enabled. See **[Autosave](#autosave)**.                                                       |
 | `Repository.QueryIncludeDepth` | int    | 4           | The maximum depth for query includes. See **[Include Annotation](#include-annotation)**.                                                                                |
@@ -125,6 +118,7 @@ The `Data` section in the configuration defines the data provider and related se
   "QuerySplittingBehavior": "SingleQuery",
   "DefaultCollation": null,
   "ConnectionString": null,
+  "AuthenticationType": "Credentials",
   "Repository": { 
     "UseAutoSave": false,
     "QueryIncludeDepth": 4

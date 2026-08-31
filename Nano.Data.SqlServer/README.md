@@ -63,6 +63,7 @@ Add the data configuration to `appsettings.json`.
   "QuerySplittingBehavior": "SingleQuery",
   "DefaultCollation": null,
   "ConnectionString": null,
+  "AuthenticationType": "Credentials",
   "Repository": {
     "UseAutoSave": false,
     "QueryIncludeDepth": 4
@@ -121,6 +122,15 @@ spec:
               key: data-connectionstring
 ```
 
+Also add the following variable to the `configmap.yaml`.
+
+```yaml
+data:
+  Data__AuthenticationType: %SQL_AUTH_TYPE%
+```
+
+Last, the secret `auth-sql-secret.yaml` for the connectionstriong must be applied as well.
+
 ## GitHub Actions
 Add the following environment variables to the `buid-and-deply.yml`.  
 
@@ -128,16 +138,53 @@ Add the following environment variables to the `buid-and-deply.yml`.
 env:
   DOTNET_EF_TOOLS_VERSION: "10.0"
   AZURE_GROUP_DATABASE : ${{ vars.AZURE_RESOURCE_GROUP_DATABASE }}
+  SQL_AUTH_TYPE: Azure
   SQL_NAME: nanoDb
-  SQL_USER: api-data-sqlserver-user
-  SQL_PASSWORD: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_SQL_NANO_DB_PASSWORD || secrets.STAGING_SQL_NANO_DB_PASSWORD }}
-  SQL_ADMIN_PASSWORD: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_SQL_ADMIN_PASSWORD || secrets.STAGING_SQL_ADMIN_PASSWORD }}
 ```
 
-Additionally, two steps have been added: one to create the application's database if it doesn't already exist, and one to ensure database migrations are applied and the application 
-database user has been created before the application is deployed.  
+Additionally, these steps ensure the database exists, migrations are applied, and the application database user is created (using the application's managed identity) before the application is deployed.
 
 ```yaml
+- name: Managed Identity
+  shell: pwsh
+  run: |
+    $env:IDENTITY_NAME = $env:SERVICE_NAME + "-identity";
+    $env:IDENTITY_PRINCIPAL_ID = az identity show -g $env:AZURE_GROUP_KUBERNETES -n $env:IDENTITY_NAME --query principalId -o tsv;
+    $env:KUBERNETES_ISSUER_URL = az aks list -g $env:AZURE_GROUP_KUBERNETES --query [0].['oidcIssuerProfile.issuerUrl'] -o tsv;
+
+    if (-not $env:IDENTITY_PRINCIPAL_ID)
+    {
+        az identity create `
+            -g $env:AZURE_GROUP_KUBERNETES `
+            -n $env:IDENTITY_NAME;
+
+        if ($LastExitCode -ne 0)
+        {
+            throw "error";
+        };
+
+        $env:IDENTITY_PRINCIPAL_ID = az identity show -g $env:AZURE_GROUP_KUBERNETES -n $env:IDENTITY_NAME --query principalId -o tsv;
+    }
+          
+    $env:IDENTITY_CLIENT_ID = az identity show -g $env:AZURE_GROUP_KUBERNETES -n $env:IDENTITY_NAME --query clientId -o tsv;
+
+    az identity federated-credential create `
+        --name $env:SERVICE_NAME-credentials `
+        --resource-group $env:AZURE_GROUP_KUBERNETES `
+        --identity-name $env:IDENTITY_NAME `
+        --issuer $env:KUBERNETES_ISSUER_URL `
+        --subject "system:serviceaccount:${env:KUBERNETES_NAMESPACE}:${env:SERVICE_NAME}-service-account" `
+        --audience api://AzureADTokenExchange;
+
+    if ($LastExitCode -ne 0)
+    {
+        throw "error";
+    };
+          
+    echo "IDENTITY_NAME=$env:IDENTITY_NAME" >> $env:GITHUB_ENV;
+    echo "IDENTITY_CLIENT_ID=$env:IDENTITY_CLIENT_ID" >> $env:GITHUB_ENV; 
+    echo "IDENTITY_PRINCIPAL_ID=$env:IDENTITY_PRINCIPAL_ID" >> $env:GITHUB_ENV; 
+
 - name: Create Database
   shell: pwsh
   run: |
@@ -243,17 +290,17 @@ database user has been created before the application is deployed.
             throw "error";
         };
     };
-```
 
-```yaml
-- name: Database Migration & User
+- name: SQL Server Database Migration
   shell: pwsh
   run: |
-    $env:SQL_HOST = az sql server list -g $env:AZURE_GROUP_DATABASE --query "[0].fullyQualifiedDomainName" -o tsv;
-    $env:SQL_PORT = "1433"
-    $env:SQL_ADMIN_USER = az sql server list -g $env:AZURE_GROUP_DATABASE --query "[0].administratorLogin" -o tsv;
+    $env:SQL_HOST = az sql server list -g $env:AZURE_GROUP_DATABASE --query [0].fullyQualifiedDomainName -o tsv;
+    $env:SQL_PORT = 1433;
+    $env:SQL_SERVER = az sql server list -g $env:AZURE_GROUP_DATABASE --query [0].name -o tsv;
+    $env:SQL_USER = az sql server ad-admin list -g $env:AZURE_GROUP_DATABASE -s $env:SQL_SERVER --query "[0].login" -o tsv;
+    $env:SQL_TOKEN = az account get-access-token --resource "https://database.windows.net/" --query accessToken -o tsv;
 
-    $env:DATA__CONNECTIONSTRING = "Server=$env:SQL_HOST,$env:SQL_PORT;Database=$env:SQL_NAME;User Id=$env:SQL_ADMIN_USER;Password=$env:SQL_ADMIN_PASSWORD;Encrypt=True;TrustServerCertificate=True;";
+    $env:DATA__CONNECTIONSTRING = "Server=$env:SQL_HOST,$env:SQL_PORT;Database=$env:SQL_NAME;User Id=$env:SQL_USER;Password=$env:SQL_TOKEN;Encrypt=True;TrustServerCertificate=True;";
 
     & "/opt/ef-tools/$env:DOTNET_EF_TOOLS_VERSION/dotnet-ef" database update `
     --no-build `
@@ -266,56 +313,49 @@ database user has been created before the application is deployed.
     { 
         throw "error";
     };
-          
-    apt-get update
-    apt-get install -y mssql-tools unixodbc-dev
 
-    $loginExists = sqlcmd `
-    -S "$env:SQL_HOST,$env:SQL_PORT" `
-    -U $env:SQL_ADMIN_USER `
-    -P $env:SQL_ADMIN_PASSWORD `
-    -d main `
-    -h -1 `
-    -Q "SET NOCOUNT ON; SELECT COUNT(*) FROM sys.server_principals WHERE name = '$env:SQL_USER';"
+    $env:APP_USER_SQL_PATH = "app-database-user.sql";
 
-    if ($loginExists -eq 0)
+    $sql = @"
+      IF NOT EXISTS (SELECT 1 FROM sys.database_principals WHERE name = '$env:IDENTITY_NAME')
+      BEGIN
+          CREATE USER [$env:IDENTITY_NAME] FROM EXTERNAL PROVIDER;
+      END
+
+      IF NOT EXISTS (SELECT 1 FROM sys.database_role_members drm
+          JOIN sys.database_principals r ON drm.role_principal_id = r.principal_id
+          JOIN sys.database_principals m ON drm.member_principal_id = m.principal_id
+          WHERE r.name = 'db_datareader' AND m.name = '$env:IDENTITY_NAME')
+      BEGIN
+          ALTER ROLE db_datareader ADD MEMBER [$env:IDENTITY_NAME];
+      END
+
+      IF NOT EXISTS (SELECT 1 FROM sys.database_role_members drm
+          JOIN sys.database_principals r ON drm.role_principal_id = r.principal_id
+          JOIN sys.database_principals m ON drm.member_principal_id = m.principal_id
+          WHERE r.name = 'db_datawriter' AND m.name = '$env:IDENTITY_NAME')
+      BEGIN
+          ALTER ROLE db_datawriter ADD MEMBER [$env:IDENTITY_NAME];
+      END
+    "@;
+
+    $sql | Set-Content $env:APP_USER_SQL_PATH;
+
+    Install-Module -Name SqlServer -Scope CurrentUser;
+
+    Invoke-Sqlcmd `
+        -ServerInstance $env:SQL_HOST `
+        -Database $env:SQL_NAME `
+        -AccessToken $env:SQL_TOKEN `
+        -InputFile $env:APP_USER_SQL_PATH;
+
+    if ($LastExitCode -ne 0)
     {
-        sqlcmd `
-        -S "$env:SQL_HOST,$env:SQL_PORT" `
-        -U $env:SQL_ADMIN_USER `
-        -P $env:SQL_ADMIN_PASSWORD `
-        -d main `
-        -Q "CREATE LOGIN [$env:SQL_USER] WITH PASSWORD = '$env:SQL_PASSWORD';"
+        throw "error";
     };
 
-    $userExists = sqlcmd `
-    -S "$env:SQL_HOST,$env:SQL_PORT" `
-    -U $env:SQL_ADMIN_USER `
-    -P $env:SQL_ADMIN_PASSWORD `
-    -d $env:SQL_NAME `
-    -h -1 `
-    -Q "SET NOCOUNT ON; SELECT COUNT(*) FROM sys.database_principals WHERE name = '$env:SQL_USER';"
-
-    if ($userExists -eq 0)
-    {
-        sqlcmd `
-        -S "$env:SQL_HOST,$env:SQL_PORT" `
-        -U $env:SQL_ADMIN_USER `
-        -P $env:SQL_ADMIN_PASSWORD `
-        -d $env:SQL_NAME `
-        -Q "CREATE USER [$env:SQL_USER] FOR LOGIN [$env:SQL_USER];
-            ALTER ROLE db_datareader ADD MEMBER [$env:SQL_USER];
-            ALTER ROLE db_datawriter ADD MEMBER [$env:SQL_USER];"
-    };
-
-    echo "SQL_HOST=$env:SQL_HOST" >> $env:GITHUB_ENV;
-    echo "SQL_PORT=$env:SQL_PORT" >> $env:GITHUB_ENV;
-```
-
-Last, before applying the new Kubernetes templates, these environmental variables must be set.
-
-```powershell
-$env:SQL_CONNECTIONSTRING = "Server=$env:SQL_HOST,$env:SQL_PORT;Database=$env:SQL_NAME;User Id=$env:SQL_USER;Password=$env:SQL_PASSWORD;Encrypt=True;TrustServerCertificate=True;";
+    $env:SQL_CONNECTIONSTRING = "Server=$env:SQL_HOST,$env:SQL_PORT;Database=$env:SQL_NAME;User Id=$env:IDENTITY_NAME;Encrypt=True;TrustServerCertificate=True;";
+    echo "SQL_CONNECTIONSTRING=$env:SQL_CONNECTIONSTRING" >> $env:GITHUB_ENV;
 ```
 
 Finally, apply the templates.

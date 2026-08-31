@@ -63,6 +63,7 @@ Add the data configuration to `appsettings.json`.
   "QuerySplittingBehavior": "SingleQuery",
   "DefaultCollation": null,
   "ConnectionString": null,
+  "AuthenticationType": "Credentials",
   "Repository": {
     "UseAutoSave": false,
     "QueryIncludeDepth": 4
@@ -121,6 +122,15 @@ spec:
               key: data-connectionstring
 ```
 
+Also add the following variable to the `configmap.yaml`.
+
+```yaml
+data:
+  Data__AuthenticationType: %SQL_AUTH_TYPE%
+```
+
+Last, the secret `auth-sql-secret.yaml` for the connectionstriong must be applied as well.
+
 ## GitHub Actions
 Add the following environment variables to the `buid-and-deply.yml`.  
 
@@ -128,72 +138,126 @@ Add the following environment variables to the `buid-and-deply.yml`.
 env:
   DOTNET_EF_TOOLS_VERSION: "10.0"
   AZURE_GROUP_DATABASE : ${{ vars.AZURE_RESOURCE_GROUP_DATABASE }}
+  SQL_AUTH_TYPE: Azure
   SQL_NAME: nanoDb
-  SQL_USER: api-data-postgres-user
-  SQL_PASSWORD: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_SQL_NANO_DB_PASSWORD || secrets.STAGING_SQL_NANO_DB_PASSWORD }}
-  SQL_ADMIN_PASSWORD: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_SQL_ADMIN_PASSWORD || secrets.STAGING_SQL_ADMIN_PASSWORD }}
 ```
 
-Additionally, this step has been added to ensure database migrations are applied, and the application database user has been created before the application is deployed.  
+Additionally, these steps ensure database migrations are applied and the application database user is created, using the application's managed identity, before the application is deployed.
 
 ```yaml
-- name: Database Migration & User
+- name: Managed Identity
   shell: pwsh
   run: |
-    $env:SQL_HOST = az postgres flexible-server list -g $env:AZURE_GROUP_DATABASE --query "[0].fullyQualifiedDomainName" -o tsv;
-    $env:SQL_PORT = "5432";
-    $env:SQL_ADMIN_USER = az postgres flexible-server list -g $env:AZURE_GROUP_DATABASE --query "[0].username" -o tsv;
-    $env:SQL_MIGRATION_CONNECTIONSTRING = "Host=$env:SQL_HOST;Port=$env:SQL_PORT;Database=$env:SQL_NAME;Username=$env:SQL_ADMIN_USER;Password=$env:SQL_ADMIN_PASSWORD;SSL Mode=Prefer;Trust Server Certificate=true";
+    $env:IDENTITY_NAME = $env:SERVICE_NAME + "-identity";
+    $env:IDENTITY_PRINCIPAL_ID = az identity show -g $env:AZURE_GROUP_KUBERNETES -n $env:IDENTITY_NAME --query principalId -o tsv;
+    $env:KUBERNETES_ISSUER_URL = az aks list -g $env:AZURE_GROUP_KUBERNETES --query [0].['oidcIssuerProfile.issuerUrl'] -o tsv;
 
-    $env:DATA__CONNECTIONSTRING = $env:SQL_MIGRATION_CONNECTIONSTRING;
+    if (-not $env:IDENTITY_PRINCIPAL_ID)
+    {
+        az identity create `
+            -g $env:AZURE_GROUP_KUBERNETES `
+            -n $env:IDENTITY_NAME;
 
-    & "/opt/ef-tools/$env:DOTNET_EF_TOOLS_VERSION/dotnet-ef" database update `
-    --no-build `
-    --configuration Release `
-    --startup-project $env:APP_NAME `
-    -- `
-    --environment $env:ASPNETCORE_ENVIRONMENT;
+        if ($LastExitCode -ne 0)
+        {
+            throw "error";
+        };
+
+        $env:IDENTITY_PRINCIPAL_ID = az identity show -g $env:AZURE_GROUP_KUBERNETES -n $env:IDENTITY_NAME --query principalId -o tsv;
+    }
+          
+    $env:IDENTITY_CLIENT_ID = az identity show -g $env:AZURE_GROUP_KUBERNETES -n $env:IDENTITY_NAME --query clientId -o tsv;
+
+    az identity federated-credential create `
+        --name $env:SERVICE_NAME-credentials `
+        --resource-group $env:AZURE_GROUP_KUBERNETES `
+        --identity-name $env:IDENTITY_NAME `
+        --issuer $env:KUBERNETES_ISSUER_URL `
+        --subject "system:serviceaccount:${env:KUBERNETES_NAMESPACE}:${env:SERVICE_NAME}-service-account" `
+        --audience api://AzureADTokenExchange;
 
     if ($LastExitCode -ne 0)
-    { 
+    {
+        throw "error";
+    };
+          
+    echo "IDENTITY_NAME=$env:IDENTITY_NAME" >> $env:GITHUB_ENV;
+    echo "IDENTITY_CLIENT_ID=$env:IDENTITY_CLIENT_ID" >> $env:GITHUB_ENV; 
+    echo "IDENTITY_PRINCIPAL_ID=$env:IDENTITY_PRINCIPAL_ID" >> $env:GITHUB_ENV; 
+
+- name: PostgreSQL Database Migration
+  shell: pwsh
+  run: |
+    $env:SQL_HOST = az postgres flexible-server list -g $env:AZURE_GROUP_DATABASE --query [0].fullyQualifiedDomainName -o tsv;
+    $env:SQL_PORT = 5432;
+    $env:SQL_SERVER = az postgres flexible-server list -g $env:AZURE_GROUP_DATABASE --query [0].name -o tsv;
+    $env:SQL_USER = az postgres flexible-server ad-admin list -g $env:AZURE_GROUP_DATABASE -s $env:SQL_SERVER --query "[0].principalName" -o tsv;
+    $env:SQL_TOKEN = az account get-access-token --resource-type oss-rdbms --query accessToken -o tsv;
+
+    $env:DATA__CONNECTIONSTRING = "Host=$env:SQL_HOST;Port=$env:SQL_PORT;Database=$env:SQL_NAME;Username=$env:SQL_USER;Password=$env:SQL_TOKEN;SSL Mode=Require;Trust Server Certificate=true";
+
+    & "/opt/ef-tools/$env:DOTNET_EF_TOOLS_VERSION/dotnet-ef" database update `
+        --no-build `
+        --configuration Release `
+        --startup-project $env:APP_NAME `
+        -- `
+        --environment $env:ASPNETCORE_ENVIRONMENT;
+
+    if ($LastExitCode -ne 0)
+    {
         throw "error";
     };
 
-    $userExists = psql "$env:SQL_MIGRATION_CONNECTIONSTRING" `
-        -tAc "SELECT 1 FROM pg_roles WHERE rolname='$env:SQL_USER';"
+    $env:PRINCIPAL_SQL_PATH = "app-database-principal.sql";
+    $env:GRANTS_SQL_PATH = "app-database-grants.sql";
 
-    if ($userExists -ne "1")
+    $principalSql = @"
+      DO `$`$
+      BEGIN
+          IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '$env:IDENTITY_NAME') THEN
+          PERFORM pgaadauth_create_principal('$env:IDENTITY_NAME', false, false);
+          END IF;
+      END
+      `$`$;
+    "@;
+
+    $principalSql | Set-Content $env:PRINCIPAL_SQL_PATH;
+
+    az postgres flexible-server execute `
+        -n $env:SQL_SERVER `
+        -u $env:SQL_USER `
+        -p $env:SQL_TOKEN `
+        -d postgres `
+        --file-path $env:PRINCIPAL_SQL_PATH;
+
+    if ($LastExitCode -ne 0)
     {
-        psql "$env:SQL_MIGRATION_CONNECTIONSTRING" `
-            -c "CREATE ROLE $env:SQL_USER WITH LOGIN PASSWORD '$env:SQL_PASSWORD';"
-    }
+        throw "error";
+    };
 
-    $userDbExists = psql "$env:SQL_MIGRATION_CONNECTIONSTRING" `
-        -tAc "SELECT 1 FROM pg_roles WHERE rolname='$env:SQL_USER';"
+    $grantsSql = @"
+      GRANT CONNECT ON DATABASE $env:SQL_NAME TO "$env:IDENTITY_NAME";
+      GRANT USAGE ON SCHEMA public TO "$env:IDENTITY_NAME";
+      GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO "$env:IDENTITY_NAME";
+      ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO "$env:IDENTITY_NAME";
+    "@;
 
-    if ($userDbExists -ne "1")
+    $grantsSql | Set-Content $env:GRANTS_SQL_PATH;
+
+    az postgres flexible-server execute `
+        -n $env:SQL_SERVER `
+        -u $env:SQL_USER `
+        -p $env:SQL_TOKEN `
+        -d $env:SQL_NAME `
+        --file-path $env:GRANTS_SQL_PATH;
+
+    if ($LastExitCode -ne 0)
     {
-        psql "$env:SQL_MIGRATION_CONNECTIONSTRING" `
-            -c "GRANT CONNECT ON DATABASE $env:SQL_NAME TO $env:SQL_USER;"
+        throw "error";
+    };
 
-        psql "$env:SQL_MIGRATION_CONNECTIONSTRING" `
-            -c "GRANT USAGE ON SCHEMA public TO $env:SQL_USER;"
-
-        psql "$env:SQL_MIGRATION_CONNECTIONSTRING" `
-            -c "GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO $env:SQL_USER;"
-
-        psql "$env:SQL_MIGRATION_CONNECTIONSTRING" `
-            -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO $env:SQL_USER;"
-    }
-
-    echo "SQL_HOST=$env:SQL_HOST" >> $env:GITHUB_ENV;
-    echo "SQL_PORT=$env:SQL_PORT" >> $env:GITHUB_ENV;
-```
-
-Last, before applying the new Kubernetes templates, these environmental variables must be set.
-
-```powershell
-$env:SQL_CONNECTIONSTRING = "Host=$env:SQL_HOST;Port=$env:SQL_PORT;Database=$env:SQL_NAME;Username=$env:SQL_USER;Password=$env:SQL_PASSWORD;SSL Mode=Require;Trust Server Certificate=true";
+    $env:SQL_CONNECTIONSTRING = "Host=$env:SQL_HOST;Port=$env:SQL_PORT;Database=$env:SQL_NAME;Username=$env:IDENTITY_NAME;SSL Mode=Require;Trust Server Certificate=true";
+    echo "SQL_CONNECTIONSTRING=$env:SQL_CONNECTIONSTRING" >> $env:GITHUB_ENV;
 ```
 
 Finally, apply the templates.

@@ -1,8 +1,10 @@
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.Common.Mvc.HealthChecks.Extensions;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Config;
+using Nano.Data.Abstractions.Config.Enums;
 using Nano.Data.Extensions;
 using System;
 
@@ -46,6 +48,16 @@ public sealed class SqlServerProvider : IDataProvider
         var batchSize = options.BatchSize;
         var retryCount = options.QueryRetryCount;
         var connectionString = options.ConnectionString;
+
+        if (options.AuthenticationType == AuthenticationType.Azure)
+        {
+            var connectionStringBuilder = new SqlConnectionStringBuilder(connectionString)
+            {
+                Authentication = SqlAuthenticationMethod.ActiveDirectoryWorkloadIdentity
+            };
+
+            connectionString = connectionStringBuilder.ConnectionString;
+        }
 
         builder
             .UseSqlServer(connectionString, x =>

@@ -1,8 +1,13 @@
+using Azure.Core;
+using Azure.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using MySqlConnector;
 using Nano.Common.Mvc.HealthChecks.Extensions;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Config;
+using Nano.Data.Abstractions.Config.Enums;
 using Nano.Data.Extensions;
 using System;
 
@@ -31,9 +36,21 @@ public sealed class MySqlProvider : IDataProvider
             var failureStatus = options.HealthCheck.UnhealthyStatus
                 .GetHealthStatus();
 
-            services
-                .AddHealthChecks()
-                .AddMySql(options.ConnectionString, name: "mysql", failureStatus: failureStatus);
+            var healthChecksBuilder = services
+                .AddHealthChecks();
+
+            if (options.AuthenticationType == AuthenticationType.Azure)
+            {
+                var dataSource = CreateEntraDataSource(options.ConnectionString);
+
+                healthChecksBuilder
+                    .AddMySql(_ => dataSource, name: "mysql", failureStatus: failureStatus);
+            }
+            else
+            {
+                healthChecksBuilder
+                    .AddMySql(options.ConnectionString, name: "mysql", failureStatus: failureStatus);
+            }
         }
     }
 
@@ -45,19 +62,76 @@ public sealed class MySqlProvider : IDataProvider
 
         var batchSize = options.BatchSize;
         var retryCount = options.QueryRetryCount;
-        var connectionString = options.ConnectionString;
-        var serverVersion = ServerVersion.AutoDetect(connectionString);
 
-        builder
-            .UseMySql(connectionString, serverVersion, x =>
-            {
-                var querySplittingBehavior = options.QuerySplittingBehavior
-                    .GetQuerySplittingBehavior();
+        var connectionStringBuilder = new MySqlConnectionStringBuilder(options.ConnectionString)
+        {
+            AllowUserVariables = true,
+            UseAffectedRows = false
+        };
 
-                x.MaxBatchSize(batchSize);
-                x.EnableRetryOnFailure(retryCount);
-                x.UseNetTopologySuite();
-                x.UseQuerySplittingBehavior(querySplittingBehavior);
-            });
+        var connectionString = connectionStringBuilder.ConnectionString;
+
+        if (options.AuthenticationType == AuthenticationType.Azure)
+        {
+            var dataSource = CreateEntraDataSource(connectionString);
+
+            using var connection = dataSource.CreateConnection();
+
+            connection
+                .Open();
+
+            var serverVersion = ServerVersion.Parse(connection.ServerVersion);
+
+            connection
+                .Close();
+
+            builder
+                .UseMySql(dataSource, serverVersion, ConfigureMySql);
+        }
+        else
+        {
+            var serverVersion = ServerVersion.AutoDetect(connectionString);
+
+            builder
+                .UseMySql(connectionString, serverVersion, ConfigureMySql);
+        }
+
+        void ConfigureMySql(MySqlDbContextOptionsBuilder mysqlBulder)
+        {
+            var querySplittingBehavior = options.QuerySplittingBehavior
+                .GetQuerySplittingBehavior();
+
+            mysqlBulder
+                .MaxBatchSize(batchSize)
+                .EnableRetryOnFailure(retryCount)
+                .UseNetTopologySuite()
+                .UseQuerySplittingBehavior(querySplittingBehavior);
+        }
+    }
+
+
+    private static MySqlDataSource CreateEntraDataSource(string connectionString)
+    {
+        ArgumentNullException.ThrowIfNull(connectionString);
+
+        const string DEFAULT_URL = "https://ossrdbms-aad.database.windows.net/.default";
+
+        var credential = new WorkloadIdentityCredential();
+        var dataSourceBuilder = new MySqlDataSourceBuilder(connectionString);
+
+        dataSourceBuilder
+            .UsePeriodicPasswordProvider(
+                async (_, cancellationToken) =>
+                {
+                    var request = new TokenRequestContext([DEFAULT_URL]);
+
+                    var token = await credential
+                        .GetTokenAsync(request, cancellationToken);
+
+                    return token.Token;
+                }, TimeSpan.FromMinutes(50), TimeSpan.FromSeconds(10));
+
+        return dataSourceBuilder
+            .Build();
     }
 }

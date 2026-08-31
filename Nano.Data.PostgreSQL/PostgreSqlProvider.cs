@@ -1,9 +1,14 @@
+using Azure.Core;
+using Azure.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.Common.Mvc.HealthChecks.Extensions;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Config;
+using Nano.Data.Abstractions.Config.Enums;
 using Nano.Data.Extensions;
+using Npgsql;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
 using System;
 
 namespace Nano.Data.PostgreSQL;
@@ -47,16 +52,43 @@ public sealed class PostgresSqlProvider : IDataProvider
         var retryCount = options.QueryRetryCount;
         var connectionString = options.ConnectionString;
 
-        builder
-            .UseNpgsql(connectionString, x =>
-            {
-                var querySplittingBehavior = options.QuerySplittingBehavior
-                    .GetQuerySplittingBehavior();
+        void ConfigureNpgsql(NpgsqlDbContextOptionsBuilder x)
+        {
+            var querySplittingBehavior = options.QuerySplittingBehavior
+                .GetQuerySplittingBehavior();
 
-                x.MaxBatchSize(batchSize);
-                x.EnableRetryOnFailure(retryCount);
-                x.UseNetTopologySuite();
-                x.UseQuerySplittingBehavior(querySplittingBehavior);
-            });
+            x.MaxBatchSize(batchSize);
+            x.EnableRetryOnFailure(retryCount);
+            x.UseNetTopologySuite();
+            x.UseQuerySplittingBehavior(querySplittingBehavior);
+        }
+
+        if (options.AuthenticationType == AuthenticationType.Azure)
+        {
+            const string DEFAULT_URL = "https://ossrdbms-aad.database.windows.net/.default";
+
+            var credential = new WorkloadIdentityCredential();
+            var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+
+            dataSourceBuilder
+                .UsePeriodicPasswordProvider(
+                    async (_, cancellationToken) =>
+                    {
+                        var request = new TokenRequestContext([DEFAULT_URL]);
+
+                        var token = await credential
+                            .GetTokenAsync(request, cancellationToken);
+
+                        return token.Token;
+                    }, TimeSpan.FromMinutes(50), TimeSpan.FromSeconds(10));
+
+            builder
+                .UseNpgsql(dataSourceBuilder.Build(), ConfigureNpgsql);
+        }
+        else
+        {
+            builder
+                .UseNpgsql(connectionString, ConfigureNpgsql);
+        }
     }
 }
