@@ -42,7 +42,6 @@ public sealed class PostgresSqlProvider : IDataProvider
         }
     }
 
-
     /// <inheritdoc />
     public static void Configure(DbContextOptionsBuilder builder, DataOptions options)
     {

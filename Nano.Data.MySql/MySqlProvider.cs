@@ -36,9 +36,21 @@ public sealed class MySqlProvider : IDataProvider
             var failureStatus = options.HealthCheck.UnhealthyStatus
                 .GetHealthStatus();
 
-            services
-                .AddHealthChecks()
-                .AddMySql(options.ConnectionString, name: "mysql", failureStatus: failureStatus);
+            var healthChecksBuilder = services
+                .AddHealthChecks();
+
+            if (options.AuthenticationType == AuthenticationType.Azure)
+            {
+                var dataSource = CreateEntraDataSource(options.ConnectionString);
+
+                healthChecksBuilder
+                    .AddMySql(_ => dataSource, name: "mysql", failureStatus: failureStatus);
+            }
+            else
+            {
+                healthChecksBuilder
+                    .AddMySql(options.ConnectionString, name: "mysql", failureStatus: failureStatus);
+            }
         }
     }
 
@@ -50,36 +62,36 @@ public sealed class MySqlProvider : IDataProvider
 
         var batchSize = options.BatchSize;
         var retryCount = options.QueryRetryCount;
-        var connectionString = options.ConnectionString;
-        var serverVersion = ServerVersion.AutoDetect(connectionString);
+
+        var connectionStringBuilder = new MySqlConnectionStringBuilder(options.ConnectionString)
+        {
+            AllowUserVariables = true,
+            UseAffectedRows = false
+        };
+
+        var connectionString = connectionStringBuilder.ConnectionString;
 
         if (options.AuthenticationType == AuthenticationType.Azure)
         {
-            const string DEFAULT_URL = "https://ossrdbms-aad.database.windows.net/.default";
+            var dataSource = CreateEntraDataSource(connectionString);
 
-            var credential = new WorkloadIdentityCredential();
-            var dataSourceBuilder = new MySqlDataSourceBuilder(connectionString);
+            using var connection = dataSource.CreateConnection();
 
-            dataSourceBuilder
-                .UsePeriodicPasswordProvider(
-                    async (_, cancellationToken) =>
-                    {
-                        var request = new TokenRequestContext([DEFAULT_URL]);
+            connection
+                .Open();
 
-                        var token = await credential
-                            .GetTokenAsync(request, cancellationToken);
+            var serverVersion = ServerVersion.Parse(connection.ServerVersion);
 
-                        return token.Token;
-                    }, TimeSpan.FromMinutes(50), TimeSpan.FromSeconds(10));
-
-            var dataSource = dataSourceBuilder
-                .Build();
+            connection
+                .Close();
 
             builder
                 .UseMySql(dataSource, serverVersion, ConfigureMySql);
         }
         else
         {
+            var serverVersion = ServerVersion.AutoDetect(connectionString);
+
             builder
                 .UseMySql(connectionString, serverVersion, ConfigureMySql);
         }
@@ -95,5 +107,31 @@ public sealed class MySqlProvider : IDataProvider
                 .UseNetTopologySuite()
                 .UseQuerySplittingBehavior(querySplittingBehavior);
         }
+    }
+
+
+    private static MySqlDataSource CreateEntraDataSource(string connectionString)
+    {
+        ArgumentNullException.ThrowIfNull(connectionString);
+
+        const string DEFAULT_URL = "https://ossrdbms-aad.database.windows.net/.default";
+
+        var credential = new WorkloadIdentityCredential();
+        var dataSourceBuilder = new MySqlDataSourceBuilder(connectionString);
+
+        dataSourceBuilder
+            .UsePeriodicPasswordProvider(
+                async (_, cancellationToken) =>
+                {
+                    var request = new TokenRequestContext([DEFAULT_URL]);
+
+                    var token = await credential
+                        .GetTokenAsync(request, cancellationToken);
+
+                    return token.Token;
+                }, TimeSpan.FromMinutes(50), TimeSpan.FromSeconds(10));
+
+        return dataSourceBuilder
+            .Build();
     }
 }
