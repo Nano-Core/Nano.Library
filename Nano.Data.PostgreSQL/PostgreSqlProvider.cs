@@ -10,6 +10,7 @@ using Nano.Data.Extensions;
 using Npgsql;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;
 using System;
+using System.Collections.Concurrent;
 
 namespace Nano.Data.PostgreSQL;
 
@@ -17,11 +18,13 @@ namespace Nano.Data.PostgreSQL;
 /// PostgreSQL data provider using Npgsql.
 /// </summary>
 /// <remarks>
-///     Supports retry policies, batching, spatial data via NetTopologySuite, query splitting behavior, and optional health checks.
+///     Supports retry policies, batching, spatial data via NetTopologySuite, vector similarity search via Pgvector, query splitting behavior, and optional health checks.
 ///     Documentation: https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data.PostgreSQL/README.md#nanodatapostgresql.
 /// </remarks>
 public sealed class PostgresSqlProvider : IDataProvider
 {
+    private static readonly ConcurrentDictionary<string, NpgsqlDataSource> _dataSources = new();
+
     /// <inheritdoc />
     public static void Configure(IServiceCollection services, DataOptions options)
     {
@@ -36,9 +39,20 @@ public sealed class PostgresSqlProvider : IDataProvider
             var failureStatus = options.HealthCheck.UnhealthyStatus
                 .GetHealthStatus();
 
-            services
-                .AddHealthChecks()
-                .AddNpgSql(options.ConnectionString, name: "postgres", failureStatus: failureStatus);
+            if (options.AuthenticationType == AuthenticationType.Azure)
+            {
+                var dataSource = GetOrCreateEntraDataSource(options.ConnectionString);
+
+                services
+                    .AddHealthChecks()
+                    .AddNpgSql(_ => dataSource, name: "postgres", failureStatus: failureStatus);
+            }
+            else
+            {
+                services
+                    .AddHealthChecks()
+                    .AddNpgSql(options.ConnectionString, name: "postgres", failureStatus: failureStatus);
+            }
         }
     }
 
@@ -52,37 +66,6 @@ public sealed class PostgresSqlProvider : IDataProvider
         var retryCount = options.QueryRetryCount;
         var connectionString = options.ConnectionString;
 
-        if (options.AuthenticationType == AuthenticationType.Azure)
-        {
-            const string DEFAULT_URL = "https://ossrdbms-aad.database.windows.net/.default";
-
-            var credential = new WorkloadIdentityCredential();
-            var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
-
-            dataSourceBuilder
-                .UseVector();
-
-            dataSourceBuilder
-                .UsePeriodicPasswordProvider(
-                    async (_, cancellationToken) =>
-                    {
-                        var request = new TokenRequestContext([DEFAULT_URL]);
-
-                        var token = await credential
-                            .GetTokenAsync(request, cancellationToken);
-
-                        return token.Token;
-                    }, TimeSpan.FromMinutes(50), TimeSpan.FromSeconds(10));
-
-            builder
-                .UseNpgsql(dataSourceBuilder.Build(), ConfigureNpgsql);
-        }
-        else
-        {
-            builder
-                .UseNpgsql(connectionString, ConfigureNpgsql);
-        }
-
         void ConfigureNpgsql(NpgsqlDbContextOptionsBuilder x)
         {
             var querySplittingBehavior = options.QuerySplittingBehavior
@@ -94,5 +77,37 @@ public sealed class PostgresSqlProvider : IDataProvider
             x.UseVector();
             x.UseQuerySplittingBehavior(querySplittingBehavior);
         }
+
+        if (options.AuthenticationType == AuthenticationType.Azure)
+        {
+            builder
+                .UseNpgsql(GetOrCreateEntraDataSource(connectionString), ConfigureNpgsql);
+        }
+        else
+        {
+            builder
+                .UseNpgsql(connectionString, ConfigureNpgsql);
+        }
+    }
+
+
+    private static NpgsqlDataSource GetOrCreateEntraDataSource(string connectionString)
+    {
+        ArgumentNullException.ThrowIfNull(connectionString);
+
+        return _dataSources
+            .GetOrAdd(connectionString, cs =>
+            {
+                var dataSourceBuilder = new NpgsqlDataSourceBuilder(cs);
+
+                dataSourceBuilder
+                    .UseVector();
+
+                dataSourceBuilder
+                    .UsePeriodicPasswordProvider((_, cancellationToken) => AzureEntraRdbmsTokenProvider.GetTokenAsync(cancellationToken), TimeSpan.FromMinutes(50), TimeSpan.FromSeconds(10));
+
+                return dataSourceBuilder
+                    .Build();
+            });
     }
 }
