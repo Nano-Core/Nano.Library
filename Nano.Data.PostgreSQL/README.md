@@ -10,6 +10,7 @@
 ## Table of Contents
 * **[Home](https://github.com/Nano-Core/Nano.Library/blob/master/README.md#nanolibrary)**
 * **[Summary](#summary)**
+* **[Extensions](#Extensions)**
 * **[Registration](#registration)**
 * **[Configuration](#configuration)**
 * **[Docker-compose](#docker-compose)**
@@ -47,6 +48,12 @@ A `BaseDbContext` and `BaseDbContextFactory` must also be implemented and used a
 ```powershell
 dotnet ef migrations add Initial --project {project-name}
 ```
+
+## Extensions
+Supports spatial data via NetTopologySuite (`postgis`) and vector similarity search via Pgvector (`vector`).  Both are registered in `PostgresSqlProvider`: `UseNetTopologySuite()` and 
+`UseVector()` are called on the `NpgsqlDbContextOptionsBuilder` used for connections.  
+
+> ⚠️ The extensions must be installed and allow-listed on the server or migrations that use them will fail.
 
 ## Configuration
 Add the data configuration to `appsettings.json`.  
@@ -191,7 +198,7 @@ Additionally, these steps ensure database migrations are applied and the applica
     $env:SQL_HOST = az postgres flexible-server list -g $env:AZURE_GROUP_DATABASE --query [0].fullyQualifiedDomainName -o tsv;
     $env:SQL_PORT = 5432;
     $env:SQL_SERVER = az postgres flexible-server list -g $env:AZURE_GROUP_DATABASE --query [0].name -o tsv;
-    $env:SQL_USER = az postgres flexible-server ad-admin list -g $env:AZURE_GROUP_DATABASE -s $env:SQL_SERVER --query "[0].principalName" -o tsv;
+    $env:SQL_USER = az postgres flexible-server microsoft-entra-admin list -g $env:AZURE_GROUP_DATABASE -s $env:SQL_SERVER --query "[0].principalName" -o tsv;
     $env:SQL_TOKEN = az account get-access-token --resource-type oss-rdbms --query accessToken -o tsv;
 
     $env:DATA__CONNECTIONSTRING = "Host=$env:SQL_HOST;Port=$env:SQL_PORT;Database=$env:SQL_NAME;Username=$env:SQL_USER;Password=$env:SQL_TOKEN;SSL Mode=Require;Trust Server Certificate=true";

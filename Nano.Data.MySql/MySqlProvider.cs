@@ -10,6 +10,9 @@ using Nano.Data.Abstractions.Config;
 using Nano.Data.Abstractions.Config.Enums;
 using Nano.Data.Extensions;
 using System;
+using System.Collections.Concurrent;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Nano.Data.MySql;
 
@@ -22,6 +25,8 @@ namespace Nano.Data.MySql;
 /// </remarks>
 public sealed class MySqlProvider : IDataProvider
 {
+    private static readonly ConcurrentDictionary<string, MySqlDataSource> _dataSources = new();
+
     /// <inheritdoc />
     public static void Configure(IServiceCollection services, DataOptions options)
     {
@@ -41,7 +46,7 @@ public sealed class MySqlProvider : IDataProvider
 
             if (options.AuthenticationType == AuthenticationType.Azure)
             {
-                var dataSource = CreateEntraDataSource(options.ConnectionString);
+                var dataSource = GetOrCreateEntraDataSource(options.ConnectionString);
 
                 healthChecksBuilder
                     .AddMySql(_ => dataSource, name: "mysql", failureStatus: failureStatus);
@@ -73,7 +78,7 @@ public sealed class MySqlProvider : IDataProvider
 
         if (options.AuthenticationType == AuthenticationType.Azure)
         {
-            var dataSource = CreateEntraDataSource(connectionString);
+            var dataSource = GetOrCreateEntraDataSource(connectionString);
 
             using var connection = dataSource.CreateConnection();
 
@@ -110,28 +115,22 @@ public sealed class MySqlProvider : IDataProvider
     }
 
 
-    private static MySqlDataSource CreateEntraDataSource(string connectionString)
+    private static MySqlDataSource GetOrCreateEntraDataSource(string connectionString)
     {
         ArgumentNullException.ThrowIfNull(connectionString);
 
-        const string DEFAULT_URL = "https://ossrdbms-aad.database.windows.net/.default";
+        return _dataSources
+            .GetOrAdd(connectionString, cs =>
+            {
+                var dataSourceBuilder = new MySqlDataSourceBuilder(cs);
 
-        var credential = new WorkloadIdentityCredential();
-        var dataSourceBuilder = new MySqlDataSourceBuilder(connectionString);
+                dataSourceBuilder
+                    .UsePeriodicPasswordProvider(
+                        (_, cancellationToken) => AzureEntraRdbmsTokenProvider.GetTokenAsync(cancellationToken),
+                        TimeSpan.FromMinutes(50), TimeSpan.FromSeconds(10));
 
-        dataSourceBuilder
-            .UsePeriodicPasswordProvider(
-                async (_, cancellationToken) =>
-                {
-                    var request = new TokenRequestContext([DEFAULT_URL]);
-
-                    var token = await credential
-                        .GetTokenAsync(request, cancellationToken);
-
-                    return token.Token;
-                }, TimeSpan.FromMinutes(50), TimeSpan.FromSeconds(10));
-
-        return dataSourceBuilder
-            .Build();
+                return dataSourceBuilder
+                    .Build();
+            });
     }
 }

@@ -33,9 +33,11 @@ public sealed class SqlServerProvider : IDataProvider
             var failureStatus = options.HealthCheck.UnhealthyStatus
                 .GetHealthStatus();
 
+            var connectionString = GetConnectionString(options);
+
             services
                 .AddHealthChecks()
-                .AddSqlServer(options.ConnectionString, name: "sqlserver", failureStatus: failureStatus);
+                .AddSqlServer(connectionString, name: "sqlserver", failureStatus: failureStatus);
         }
     }
 
@@ -47,17 +49,7 @@ public sealed class SqlServerProvider : IDataProvider
 
         var batchSize = options.BatchSize;
         var retryCount = options.QueryRetryCount;
-        var connectionString = options.ConnectionString;
-
-        if (options.AuthenticationType == AuthenticationType.Azure)
-        {
-            var connectionStringBuilder = new SqlConnectionStringBuilder(connectionString)
-            {
-                Authentication = SqlAuthenticationMethod.ActiveDirectoryWorkloadIdentity
-            };
-
-            connectionString = connectionStringBuilder.ConnectionString;
-        }
+        var connectionString = GetConnectionString(options);
 
         builder
             .UseSqlServer(connectionString, x =>
@@ -70,5 +62,21 @@ public sealed class SqlServerProvider : IDataProvider
                 x.UseNetTopologySuite();
                 x.UseQuerySplittingBehavior(querySplittingBehavior);
             });
+    }
+
+
+    private static string GetConnectionString(DataOptions options)
+    {
+        if (options.AuthenticationType != AuthenticationType.Azure)
+        {
+            return options.ConnectionString;
+        }
+
+        var connectionStringBuilder = new SqlConnectionStringBuilder(options.ConnectionString)
+        {
+            Authentication = SqlAuthenticationMethod.ActiveDirectoryWorkloadIdentity
+        };
+
+        return connectionStringBuilder.ConnectionString;
     }
 }
