@@ -24,9 +24,8 @@
 	    <Summary>Reusable libraries for building .NET microservice applications</Summary>
 	    <Description>This package is part of the Nano Library, a set of reusable .NET libraries for building microservice applications. Nano addresses common non-business concerns such as logging, persistence, messaging, validation, and documentation, while remaining fully configurable and extensible, so applications can stay focused on business logic. See https://github.com/Nano-Core/Nano.Library for details.</Description>
 	    <PackageReleaseNotes>
-			- Added DataOptions.AuthenticationType - Credentials (default) or Azure.
-			- Added Azure Entra authentication to MySQL, PostgreSQL and SQL Server data providers.
-			- Shortened log message (warn) for exposing password reset endpoints.
+			- Added pgvector support for PostgreSQL data provider
+			- Fix PostgreSQL and SQL Server database health-check missing token (password)
 		</PackageReleaseNotes>
 		<RepositoryType>git</RepositoryType>
 	    <RepositoryBranch>master</RepositoryBranch>
