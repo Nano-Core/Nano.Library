@@ -52,23 +52,15 @@ public sealed class PostgresSqlProvider : IDataProvider
         var retryCount = options.QueryRetryCount;
         var connectionString = options.ConnectionString;
 
-        void ConfigureNpgsql(NpgsqlDbContextOptionsBuilder x)
-        {
-            var querySplittingBehavior = options.QuerySplittingBehavior
-                .GetQuerySplittingBehavior();
-
-            x.MaxBatchSize(batchSize);
-            x.EnableRetryOnFailure(retryCount);
-            x.UseNetTopologySuite();
-            x.UseQuerySplittingBehavior(querySplittingBehavior);
-        }
-
         if (options.AuthenticationType == AuthenticationType.Azure)
         {
             const string DEFAULT_URL = "https://ossrdbms-aad.database.windows.net/.default";
 
             var credential = new WorkloadIdentityCredential();
             var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+
+            dataSourceBuilder
+                .UseVector();
 
             dataSourceBuilder
                 .UsePeriodicPasswordProvider(
@@ -89,6 +81,18 @@ public sealed class PostgresSqlProvider : IDataProvider
         {
             builder
                 .UseNpgsql(connectionString, ConfigureNpgsql);
+        }
+
+        void ConfigureNpgsql(NpgsqlDbContextOptionsBuilder x)
+        {
+            var querySplittingBehavior = options.QuerySplittingBehavior
+                .GetQuerySplittingBehavior();
+
+            x.MaxBatchSize(batchSize);
+            x.EnableRetryOnFailure(retryCount);
+            x.UseNetTopologySuite();
+            x.UseVector();
+            x.UseQuerySplittingBehavior(querySplittingBehavior);
         }
     }
 }

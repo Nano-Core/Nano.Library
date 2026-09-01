@@ -8,7 +8,7 @@ on:
       - master 
 env:
   APP_NAME: Nano.Library
-  VERSION: 10.0.8
+  VERSION: 10.0.9
 jobs:
   build-and-deploy:
     runs-on: windows-latest
