@@ -10,6 +10,7 @@
 ## Table of Contents
 * **[Home](https://github.com/Nano-Core/Nano.Library/blob/master/README.md#nanolibrary)**
 * **[Summary](#summary)**
+* **[Extensions](#Extensions)**
 * **[Registration](#registration)**
 * **[Configuration](#configuration)**
 * **[Docker-compose](#docker-compose)**
@@ -49,18 +50,10 @@ dotnet ef migrations add Initial --project {project-name}
 ```
 
 ## Extensions
-Supports spatial data via NetTopologySuite (`postgis`) and vector similarity search via Pgvector (`vector`).  
+Supports spatial data via NetTopologySuite (`postgis`) and vector similarity search via Pgvector (`vector`).  Both are registered in `PostgresSqlProvider`: `UseNetTopologySuite()` and 
+`UseVector()` are called on the `NpgsqlDbContextOptionsBuilder` used for connections.  
 
-Both are registered in `PostgresSqlProvider`: `UseNetTopologySuite()` and `UseVector()` are called on the `NpgsqlDbContextOptionsBuilder` used for connections.  
-
-> ⚠️ The extensions must be allow-listed on the server or migrations that use them will fail.
-
-## Extensions
-Supports spatial data via NetTopologySuite (`postgis`) and vector similarity search via Pgvector (`vector`). Both are registered in `PostgresSqlProvider`.
-
-> **Warning**
-> The extensions must be allow-listed on the server before migrations that create them will succeed.
-
+> ⚠️ The extensions must be installed and allow-listed on the server or migrations that use them will fail.
 
 ## Configuration
 Add the data configuration to `appsettings.json`.  
