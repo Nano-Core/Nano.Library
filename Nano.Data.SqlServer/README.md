@@ -136,10 +136,15 @@ Add the following environment variables to the `buid-and-deply.yml`.
 
 ```yaml
 env:
+  AZURE_GROUP_LOGS : ${{ vars.AZURE_RESOURCE_GROUP_LOGS }}
   DOTNET_EF_TOOLS_VERSION: "10.0"
   AZURE_GROUP_DATABASE : ${{ vars.AZURE_RESOURCE_GROUP_DATABASE }}
   SQL_AUTH_TYPE: Azure
   SQL_NAME: nanoDb
+  SQL_SERVICE_OBJECTIVE: GP_Gen5_2
+  SQL_EDITION: GeneralPurpose
+  SQL_MAX_SIZE: 64GB
+  SQL_BACKUP_RETENTION: 35
 ```
 
 Additionally, these steps ensure the database exists, migrations are applied, and the application database user is created (using the application's managed identity) before the application is deployed.
