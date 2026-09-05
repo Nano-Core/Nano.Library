@@ -50,7 +50,7 @@ dotnet ef migrations add Initial --project {project-name}
 ```
 
 ## Extensions
-Supports spatial data via NetTopologySuite (`postgis`) and vector similarity search via Pgvector (`vector`).  Both are registered in `PostgresSqlProvider`: `UseNetTopologySuite()` and 
+Supports spatial data via NetTopologySuite (`postgis`) and vector similarity search via Pgvector (`vector`).  Both are registered in `PostgreSqlProvider`: `UseNetTopologySuite()` and 
 `UseVector()` are called on the `NpgsqlDbContextOptionsBuilder` used for connections.  
 
 > ⚠️ The extensions must be installed and allow-listed on the server or migrations that use them will fail.
