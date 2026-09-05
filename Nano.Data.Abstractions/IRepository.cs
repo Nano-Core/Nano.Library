@@ -478,7 +478,7 @@ public interface IRepository : IDisposable
     /// <param name="orderDirection">The <see cref="OrderingDirection"/> (ascending or descending).</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The instances matching the specified parameters.</returns>
-    Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Func<TEntity, TKey> orderBy, OrderingDirection orderDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default)
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Expression<Func<TEntity, TKey>> orderBy, OrderingDirection orderDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity;
 
     /// <summary>
@@ -492,7 +492,7 @@ public interface IRepository : IDisposable
     /// <param name="orderingDirection">The <see cref="OrderingDirection"/> (ascending or descending).</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The instances matching the specified parameters.</returns>
-    Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Func<TEntity, TKey> orderBy, int? includeDepth, OrderingDirection orderingDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default)
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Expression<Func<TEntity, TKey>> orderBy, int? includeDepth, OrderingDirection orderingDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity;
 
     /// <summary>
@@ -506,7 +506,7 @@ public interface IRepository : IDisposable
     /// <param name="orderingDirection">The <see cref="OrderingDirection"/> (ascending or descending).</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The instances matching the specified parameters.</returns>
-    Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Func<TEntity, TKey> orderBy, Pagination? pagination, OrderingDirection orderingDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default)
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Expression<Func<TEntity, TKey>> orderBy, Pagination? pagination, OrderingDirection orderingDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity;
 
     /// <summary>
@@ -521,7 +521,7 @@ public interface IRepository : IDisposable
     /// <param name="orderingDirection">The <see cref="OrderingDirection"/> (ascending or descending).</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/> (optional).</param>
     /// <returns>The instances matching the specified parameters.</returns>
-    Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Func<TEntity, TKey> orderBy, Pagination? pagination, int? includeDepth, OrderingDirection orderingDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default)
+    Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Expression<Func<TEntity, TKey>> orderBy, Pagination? pagination, int? includeDepth, OrderingDirection orderingDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity;
 
     /// <summary>
