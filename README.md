@@ -24,6 +24,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;✨ **[Highlighted Features](#-highlighted-features)**  
 &nbsp;&nbsp;&nbsp;&nbsp;🏛️ **[Nano Architectures](#%EF%B8%8F-nano-architectures)**  
 &nbsp;&nbsp;&nbsp;&nbsp;⚙️ **[Required Tools](#-required-tools)**  
+&nbsp;&nbsp;&nbsp;&nbsp;🤖 **[AI Agent Reference](#-ai-agent-reference)**  
 &nbsp;&nbsp;&nbsp;&nbsp;🧩 **[Solution Composition](#-solution-composition)**  
 &nbsp;&nbsp;&nbsp;&nbsp;📦 **[NuGet Packages](#-nuget-packages)**  
 &nbsp;&nbsp;&nbsp;&nbsp;⚖️ **[Licenses](#-licenses)**  
@@ -151,6 +152,15 @@ And optional, but recommended, tools.
 | Tool                     | Description                                                                  |
 | ------------------------ | ---------------------------------------------------------------------------- |
 | Postman (or similar)     | Helps test and explore API endpoints during development.                     |
+
+## 🤖 AI Agent Reference
+This repository includes an **[AGENTS.md](AGENTS.md)** — an implementation-focused reference for AI coding agents (e.g. Claude Code) building applications with Nano. It documents 
+providers, base controllers, `IRepository`, entity eventing, the API client, `IncludeAttribute`, and more, grounded in real code from this repository and [Nano.Templates](https://github.com/Nano-Core/Nano.Templates).  
+
+Using it makes developing with Nano significantly faster and easier, letting an AI agent implement features correctly the first time instead of guessing at conventions.  
+
+The `AGENTS.md` is discovered by AI tools in the root of the project they're working in. It isn't inherited from a NuGet dependency. To make use of it, copy `AGENTS.md` into the root 
+of your own Nano-based application's repository.
 
 ## 🧩 Solution Composition
 All Nano applications follow a consistent and predictable solution structure.  
