@@ -4,9 +4,9 @@
     Nano.Lessons repos, overwriting.
 
 .DESCRIPTION
-    Run this from the parent folder that contains Nano.Library, Nano.Templates, and Nano.Lessons as
-    sibling directories (e.g. C:\Development\Nano-Core). Re-run any time AGENTS.md changes in Nano.Library
-    to propagate the update.
+    Run this from within Nano.Library itself. It expects Nano.Templates and Nano.Lessons to be sibling
+    directories one level up (e.g. Nano.Library, Nano.Templates, and Nano.Lessons all under
+    C:\Development\Nano-Core). Re-run any time AGENTS.md changes in Nano.Library to propagate the update.
 
     - Nano.Templates: copied into every top-level folder that is an actual Nano application (contains a
       Program.cs anywhere under it, excluding bin/obj) - this excludes shared library folders like
@@ -15,17 +15,18 @@
       reserved/placeholder lesson folders that don't have any content yet.
 
 .EXAMPLE
-    cd C:\Development\Nano-Core
-    .\Nano.Library\sync-agents-md.ps1
+    cd C:\Development\Nano-Core\Nano.Library
+    .\sync-agents-md.ps1
 #>
 
 $ErrorActionPreference = "Stop"
 
-$root = Get-Location
-$sourcePath = Join-Path $root "Nano.Library\AGENTS.md"
+$libraryRoot = $PSScriptRoot
+$root = Split-Path $libraryRoot -Parent
+$sourcePath = Join-Path $libraryRoot "AGENTS.md"
 
 if (-not (Test-Path $sourcePath)) {
-    Write-Error "Source file not found: $sourcePath. Run this script from the parent folder containing Nano.Library, Nano.Templates, and Nano.Lessons."
+    Write-Error "Source file not found: $sourcePath. Run this script from within the Nano.Library folder."
     exit 1
 }
 
