@@ -1,12 +1,13 @@
 <#
 .SYNOPSIS
-    Copies Nano.Library's AGENTS.md into the relevant subfolders of the sibling Nano.Templates and
-    Nano.Lessons repos, overwriting.
+    Copies Nano.Library's AGENTS.md and .claude folder (skills) into the relevant subfolders of the
+    sibling Nano.Templates and Nano.Lessons repos, overwriting.
 
 .DESCRIPTION
     Run this from within Nano.Library itself. It expects Nano.Templates and Nano.Lessons to be sibling
     directories one level up (e.g. Nano.Library, Nano.Templates, and Nano.Lessons all under
-    C:\Development\Nano-Core). Re-run any time AGENTS.md changes in Nano.Library to propagate the update.
+    C:\Development\Nano-Core). Re-run any time AGENTS.md or .claude/ changes in Nano.Library to propagate
+    the update.
 
     - Nano.Templates: copied into every top-level folder that is an actual Nano application (contains a
       Program.cs anywhere under it, excluding bin/obj) - this excludes shared library folders like
@@ -24,6 +25,7 @@ $ErrorActionPreference = "Stop"
 $libraryRoot = $PSScriptRoot
 $root = Split-Path $libraryRoot -Parent
 $sourcePath = Join-Path $libraryRoot "AGENTS.md"
+$claudeSourcePath = Join-Path $libraryRoot ".claude"
 
 if (-not (Test-Path $sourcePath)) {
     Write-Error "Source file not found: $sourcePath. Run this script from within the Nano.Library folder."
@@ -50,6 +52,12 @@ function Copy-ToQualifyingFolders {
             $destinationPath = Join-Path $folder.FullName "AGENTS.md"
             Copy-Item -Path $sourcePath -Destination $destinationPath -Force
             Write-Output ("Copied AGENTS.md to " + $destinationPath)
+
+            if (Test-Path $claudeSourcePath) {
+                $claudeDestinationPath = Join-Path $folder.FullName ".claude"
+                Copy-Item -Path $claudeSourcePath -Destination $claudeDestinationPath -Recurse -Force
+                Write-Output ("Copied .claude to " + $claudeDestinationPath)
+            }
         }
     }
 }
