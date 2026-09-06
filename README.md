@@ -162,6 +162,11 @@ Using it makes developing with Nano significantly faster and easier, letting an 
 The `AGENTS.md` is discovered by AI tools in the root of the project they're working in. It isn't inherited from a NuGet dependency. To make use of it, copy `AGENTS.md` into the root 
 of your own Nano-based application's repository.
 
+Alongside `AGENTS.md`, this repository also includes a **`.claude`** folder with reusable [Agent Skills](https://code.claude.com/docs/en/skills) for common, repeatable Nano development 
+tasks — where `AGENTS.md` is reference knowledge an agent reads, a skill is a runnable capability an agent invokes to actually perform a task the same way every time. More skills may be 
+added over time as new repeatable workflows are identified. Like `AGENTS.md`, skills are discovered locally and aren't inherited from a NuGet dependency — copy the `.claude` folder into 
+the root of your own Nano-based application's repository to use them.
+
 ## 🧩 Solution Composition
 All Nano applications follow a consistent and predictable solution structure.  
 
