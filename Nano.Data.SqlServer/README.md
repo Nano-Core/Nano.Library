@@ -80,7 +80,7 @@ Add the data configuration to `appsettings.json`.
 
 ```json
 "Data": {
-  "UseMigrateDatabase": true,
+  "StartupAction": "Migrate",
   "ConnectionString": "Server=host.docker.internal,1433;Database=nanoDb;User Id=sa;Password=myPassword_123;Encrypt=False;"
 }
 ```

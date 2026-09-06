@@ -1,6 +1,6 @@
 # Quick Start Guide
 
-> Quick Start guide for Nano applications._
+> Quick Start guide for Nano applications.
 
 ***
 
@@ -31,13 +31,15 @@ These templates provide a minimal starting point for each application type.
 
 Then rename the solution and projects to fit your application, updating namespaces and identifiers as needed throughout the files.  
 
+Add the **NanoCore** NuGet package to your Models project for a quick start; add more specific packages (e.g. a single data provider) as needed later.  
+
 At this point, you have a fully functional Nano baseline solution, capable of running locally and deploying to Kubernetes via GitHub Actions. For a detailed overview of the 
 included projects, files, and overall structure, see **[Nano Architectures](https://github.com/Nano-Core/Nano.Library/blob/master/README.md#%EF%B8%8F-nano-architectures)**.  
 
 The `program.cs` looks like this.  
 
 ```csharp
-NanoApiApplication      // NanoWebpplication, NanoConsoleApplication 
+NanoApiApplication      // NanoWebApplication, NanoConsoleApplication 
     .ConfigureApp()
     .ConfigureServices(services =>
     {
@@ -92,7 +94,7 @@ sections are set to `null`. Features are enabled on an opt-in basis by configuri
     "Apis": {
     }
   }
-````
+```
 
 > 📖 Learn more about **[Nano Api Configuration](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App.Api/README.md#configuration)**.
 
@@ -101,7 +103,7 @@ For Console applications, the configuration is minimal and straightforward.
 ```json
 "App": {
   "Version": "1.0.0.0",
-  "LocalizationOptions": null,
+  "Localization": null,
   "Apis": { }
 }
 
@@ -132,7 +134,7 @@ format. The choice of provider is primarily a matter of preference and existing 
 | ------------------------------------------------------------------------------------------------------------------------------ | --------------------- | --------------------------------------------------------------------------------------- |
 | **[Log4Net](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Logging.Log4Net/README.md#nanologginglog4net)**         | `Log4NetProvider`     | Console logging using a log4net-based implementation.                                   |
 | **[Microsoft](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Logging.Microsoft/README.md#nanologgingmicrosoft)**   | `MicrosoftProvider`   | Console logging using the built-in Microsoft.Extensions.Logging abstractions.           |
-| **[NLog](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Logging.NLog/README.md#nanologgingnlog)**                  | `NLog`                | Console logging using an NLog-based implementation.                                     |
+| **[NLog](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Logging.NLog/README.md#nanologgingnlog)**                  | `NLogProvider`        | Console logging using an NLog-based implementation.                                     |
 | **[Serilog](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Logging.Serilog/README.md#nanologgingserilog)**         | `SerilogProvider`     | Console logging using a Serilog-based implementation with structured logging support.   |
 
 The logging configuration is straightforward, with sensible default values provided, as shown below.
@@ -158,7 +160,7 @@ Register the Nano Data Provider in the `ConfigureServices(...)` method in `Progr
 .ConfigureServices(services =>
 {
     services
-        .AddDataContext<TProvider, TContext>();
+        .AddNanoData<TProvider, TContext>();
 })
 ...
 ```
@@ -185,7 +187,7 @@ For most providers, database migrations are also required. To support this, you 
 example below shows a factory using the `MySqlProvider`.
 
 ```csharp
-public class MyDbContextFactory : BaseDbContextFactory<MySqlProvider, MySqlDbContext>;
+public class MyDbContextFactory : BaseDbContextFactory<MySqlProvider, MyDbContext>;
 ```
 
 The data configuration is straightforward and allows features to be easily enabled or disabled. Below is the default Nano data configuration.
@@ -253,7 +255,7 @@ More advanced uses of Nano entity models are also available, including support f
 **[Nano Data Mappings](https://github.com/Nano-Core/Nano.Library/tree/master/Nano.Data#data-mappings)**.
 
 For entity models where you want **[Soft Delete](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data/README.md#soft-delete)** instead of the default hard delete behavior, 
-implement the `IEntitySoftDelete` interface on your entity model.
+implement the `IEntitySoftDeletable` interface on your entity model.
 
 Nano also supports **[Entity Events](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data/README.md#entity-events)**, enabling asynchronous synchronization of entity models 
 between applications. To publish changes for an entity, add the `[Publish]` attribute to the entity model class definition. In the consuming application, create a corresponding 
@@ -302,7 +304,7 @@ And again, the configuration is straightforward.
   "Credentials": {
     "Id": null,
     "Secret": null
-  }
+  },
   "HealthCheck": null
 }
 ```
@@ -312,7 +314,8 @@ Also, configuring **[Data Health Check](https://github.com/Nano-Core/Nano.Librar
 
 > 📖 Learn more about **[Eventing Configuration](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Eventing/README.md#configuration)**.
 
-When an eventing provider has been registered, it exposes the `IEventing` interface, which can be injected to publish custom event contracts from anywhere in the application.  
+When an eventing provider has been registered, it exposes the `IEventing` interface, which can be injected to publish custom event contracts from anywhere in the application. 
+Entity controllers already have it available via the protected `Eventing` property.  
 
 Start by defining an event contract.  
 
@@ -337,7 +340,7 @@ In another application, create a handler by deriving from `BaseEventHandler<TEve
 type `TEvent` is received.  
 
 ```csharp
-public class MyEventingHandler() : BaseEventHandler<MyEvent>(routingKey: null, overridePrefetchCount: null)
+public class MyEventHandler : BaseEventHandler<MyEvent>
 {
     public override Task CallbackAsync(MyEvent @event, bool isRedelivered, CancellationToken cancellationToken = default)
     {
@@ -392,7 +395,7 @@ root path of the file storage location.
 
 > 📖 Learn more about the other **[Nano Storage](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Storage/README.md#nanostorage)** features.
 
-## 8. Implementing Your Application Domain
+## Implementing Your Application Domain
 Now it is time to implement the actual domain of your application. At this stage, you start defining the application-specific behavior and structure. Depending on the application 
 type, different building blocks are available. For web-based applications, you typically define **[Controllers](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App.Api/README.md#controllers)**,  
 while for console-based applications, you implement **[Console Workers](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App.Console/README.md#console-workers)**.
@@ -407,6 +410,7 @@ public class MyEntitysController(ILogger<MyEntitysController> logger,IRepository
     // Custom Actions
 }
 ```
+> ⚠️ The controller name must be the **pluralized entity name** (`MyEntity` → `MyEntitysController`) — the route segment is derived from it.
 
 The `MyEntityQueryCriteria` defines the criteria used for the query action contract of the entity controller. It specifies how entities can be filtered, sorted, and retrieved, 
 and is defined as follows.
@@ -444,7 +448,7 @@ way to connect to the service and use its entity functionality.
 Create a worker by deriving from `BaseWorker`, as shown below.  
 
 ```csharp
-public class MyWorker(ILogger logger) 
+public class MyWorker(ILogger<MyWorker> logger) 
     : BaseWorker(logger)
 {
     public override async Task OnStartAsync(CancellationToken cancellationToken = default)
@@ -461,5 +465,5 @@ public class MyWorker(ILogger logger)
 ```
 All workers are automatically executed when the application starts and reports ready.
 
-### Launch
+## Congratz, Launch
 🚀 Congratulations your Nano application is ready!  

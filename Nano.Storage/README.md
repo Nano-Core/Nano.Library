@@ -97,13 +97,11 @@ health check system and can be used by monitoring tools, load balancers, or cont
 
 | Setting             | Type   | Default     | Description                                                                                                                              |
 | ------------------- | ------ | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-|  `AccountName`      | string | null        | The storage account name used by health checks for some storage providers.                                                               |
 |  `UnhealthyStatus`  | enum   | Unhealthy   | The health status reported when the storage provider is unavailable. _Only relevant for `NanoApiApplication` and `NanoWebApplication`_.  |
 
 ```json
 "Storage": {
   "HealthCheck": {
-    "AccountName": null,
     "UnhealthyStatus": "Unhealthy"
   }
 }

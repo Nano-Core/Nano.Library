@@ -1,7 +1,7 @@
 ﻿# Nano.App.Web
 [![Build and Deploy](https://github.com/Nano-Core/Nano.Library/actions/workflows/build-and-deploy.yml/badge.svg)](https://github.com/Nano-Core/Nano.Library/actions/workflows/build-and-deploy.yml)
 [![NuGet](https://img.shields.io/nuget/dt/Nano.App.Web.svg)](https://www.nuget.org/packages/Nano.App.Web/)
-[![NuGet](https://img.shields.io/nuget/v/Nano.App.Web.svg)](https://www.nuget.org/packages/Nano.App.ConsWebole/)
+[![NuGet](https://img.shields.io/nuget/v/Nano.App.Web.svg)](https://www.nuget.org/packages/Nano.App.Web/)
 
 > _Nano Web application._
 
@@ -32,13 +32,13 @@ dotnet add package Nano.App.Web;
 Then, to create a `NanoWebApplication` simply add the following code to `program.cs`.  
 
 ```csharp
-NanoWebApplication<TRoot>
+NanoWebApplication
     .ConfigureApp()
     .ConfigureServices(x =>
     {
         // Your services...
     })
-    .Build()
+    .Build<TRoot>()
     .Run();
 ```
 

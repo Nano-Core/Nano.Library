@@ -174,7 +174,7 @@ Available as properties on the client instance — no implementation needed, jus
 
 | Group        | Available on                          | Covers                                                                          |
 | -------------- | ---------------------------------------- | ------------------------------------------------------------------------------------ |
-| `.Entity`         | `BaseApiClient`                             | Full CRUD against any entity of the target app: `GetAsync`, `GetManyAsync`, `QueryAsync`, `QueryFirstAsync`, `QueryCountAsync`, `CreateAsync`/`CreateOrEditAsync`/`CreateOrGetAsync`/`CreateAndGetAsync`/`CreateManyAsync`(`Bulk`), `EditAsync`/`EditAndGetAsync`/`EditManyAsync`(`Bulk`)/`EditQueryAsync`(`Bulk`), `DeleteAsync`/`DeleteManyAsync`(`Bulk`)/`DeleteQueryAsync`(`Bulk`). Mirrors the entity controller route table 1:1 — see [Controllers § Full CRUD route table](#controllers). |
+| `.Entity`         | `BaseApiClient`                             | Full CRUD against any entity of the target app: `GetAsync`, `GetManyAsync`, `QueryAsync`, `QueryFirstAsync`, `QueryCountAsync`, `CreateAsync`/`CreateOrEditAsync`/`CreateOrGetAsync`/`CreateAndGetAsync`/`CreateManyAsync`(`Bulk`), `EditAsync`/`EditAndGetAsync`/`EditManyAsync`(`Bulk`)/`EditQueryAsync`(`Bulk`), `DeleteAsync`/`DeleteManyAsync`(`Bulk`)/`DeleteQueryAsync`(`Bulk`). Mirrors the entity controller route table 1:1 — see [Controllers § Full CRUD route table](#full-crud-route-table). |
 | `.Auth`           | `BaseApiClient`                             | `LogInAsync`, `LogInRootAsync`, `LogInApiKeyAsync`, `LogInExternalAsync`, `LogInRefreshAsync`, `LogOutAsync`, `GetExternalSchemesAsync`. |
 | `.Audit`          | `BaseApiClient`                             | Read-only access to the target's `AuditEntry<TIdentity>` log: `GetAsync`/`GetManyAsync`/`QueryAsync`/`QueryFirstAsync`/`QueryCountAsync`. |
 | `.Identity`       | `BaseIdentityApiClient<TUser[,TIdentity]>`  | Sign-up, password set/change/reset (+ token generation), email/phone change/confirm (+ token generation), roles, claims, external logins, refresh tokens, API keys. |
@@ -664,12 +664,12 @@ Sets the `X-Content-Type-Options` response header to prevent MIME type sniffing.
 
 | Setting     | Type | Default | Description                             |
 | ------------- | ---- | ------- | ---------------------------------------- |
-| `NoSniff`     | bool | false   | If true, prevents MIME type sniffing. ⭐ recommended: `true`. |
+| `NoSniff`     | bool | true    | If true, prevents MIME type sniffing. ⭐ recommended: `true`. |
 
 ```json
 "App": {
   "HttpPolicyHeaders": {
-    "ContentType": { "NoSniff": false }
+    "ContentType": { "NoSniff": true }
   }
 }
 ```
@@ -732,14 +732,14 @@ Sets `X-XSS-Protection` (legacy — only honored by older browsers; a strong CSP
 
 | Setting                      | Type   | Default | Description                    |
 | -------------------------------- | ------ | ------- | --------------------------------- |
-| `XssProtectionPolicyHeader`        | enum   | null    | See values below.                 |
+| `XssProtectionPolicyHeader`        | enum   | FilterDisabled | See values below.           |
 | `ReportingUrl`                     | string | null    | URL to report XSS attempts.       |
 
 ```json
 "App": {
   "HttpPolicyHeaders": {
     "XssProtection": {
-      "XssProtectionPolicyHeader": "Disabled",
+      "XssProtectionPolicyHeader": "FilterDisabled",
       "ReportingUrl": null
     }
   }
@@ -972,7 +972,7 @@ Forces browsers to only interact with the site over HTTPS.
 
 | Setting              | Type     | Default      | Description                                                        |
 | ------------------------ | -------- | ------------ | ---------------------------------------------------------------------- |
-| `MaxAge`                   | TimeSpan | 182:00:00:00 | Max age (default 182 days).                                            |
+| `MaxAge`                   | TimeSpan | 180:00:00:00 | Max age (default 180 days).                                            |
 | `UsePreload`                | bool     | false        | Enable the preload directive (only used if `MaxAge` > 7 weeks).        |
 | `IncludeSubdomains`         | bool     | false        | Include subdomains in the policy.                                      |
 
@@ -980,7 +980,7 @@ Forces browsers to only interact with the site over HTTPS.
 "App": {
   "HttpPolicyHeaders": {
     "Hsts": {
-      "MaxAge": "182:00:00:00",
+      "MaxAge": "180:00:00:00",
       "UsePreload": false,
       "IncludeSubdomains": false
     }
@@ -1024,7 +1024,7 @@ Recovers the original client IP/host/protocol when the app runs behind a proxy o
 
 | Setting                    | Type   | Default | Description                                                                          |
 | ------------------------------ | ------ | ------- | ------------------------------------------------------------------------------------------ |
-| `Headers`                        | enum   | All     | Which headers to process: `None`, `XForwardedFor`, `XForwardedHost`, `XForwardedPort`, `XForwardedProto`, `XForwardedPrefix`, `All`. |
+| `Headers`                        | enum   | All     | Which headers to process: `None`, `XForwardedFor`, `XForwardedHost`, `XForwardedProto`, `XForwardedPrefix`, `All`. |
 | `RequireHeaderSymmetry`          | bool   | false   | Only process forwarded headers if the full set is present for that hop.                    |
 
 ```json
@@ -1042,7 +1042,6 @@ Recovers the original client IP/host/protocol when the app runs behind a proxy o
 | ---------------------- | -------------------------------------------------- |
 | `X-Forwarded-Proto`      | Sets `HttpContext.Request.Scheme`.                  |
 | `X-Forwarded-Host`       | Sets `HttpContext.Request.Host`.                    |
-| `X-Forwarded-Port`       | Sets `HttpContext.Request.Host.Port`.               |
 | `X-Forwarded-For`        | Sets `HttpContext.Connection.RemoteIpAddress`.      |
 | `X-Forwarded-Prefix`     | Ignored — not transferred to `HttpContext`.         |
 
@@ -1190,7 +1189,7 @@ public class MyController(ILogger<MyController> logger) : BaseController(logger)
 }
 ```
 
-The version is resolved, in this order: route segment (`v{version}`) → `Api-Version` HTTP header → `api-version`
+The version is resolved, in this order: route segment (`v{v:apiVersion}`) → `Api-Version` HTTP header → `api-version`
 query parameter. Every response carries `Api-Version` (the version actually served) and
 `Api-Supported-Versions` (everything the endpoint supports) automatically.
 
@@ -1370,7 +1369,7 @@ controller action under transient auth, the `administrator` role must be include
 | `creator`             | Create.                                          |
 | `editor`              | Update.                                          |
 | `deleter`             | Delete.                                          |
-| `identity`            | Identity actions (see [Controllers § Identity user controller](#controllers)). |
+| `identity`            | Identity actions (see [Controllers § Identity user controller](#identity-user-controller)). |
 | `administrator`       | Everything.                                      |
 
 Transient roles/claims can also be layered on top of persistent auth for per-login data that shouldn't be
@@ -1602,7 +1601,7 @@ the controller level yourself, only on actions.
 ```csharp
 [ApiController]
 [Route("[controller]")]
-[Route("{version}/[controller]")]
+[Route("v{v:apiVersion}/[controller]")]
 [Authorize]
 public abstract class BaseController : Controller
 ```
@@ -1791,7 +1790,8 @@ deriving `BaseEntityUser`/`BaseEntityUser<TIdentity>`. It takes a second constru
 | `{id}/email/change[/token]`, `{id}/email/confirm[/token]` | POST     | identity      |
 | `{id}/phone/change[/token]`, `{id}/phone/confirm[/token]` | POST     | identity      |
 | `{id}/custom-purpose/confirm[/token]`               | POST          | identity      |
-| `{id}/activate`, `{id}/deactivate`                   | POST/DELETE   | identity      |
+| `{id}/activate`                                     | POST          | identity      |
+| `{id}/deactivate`                                   | POST/DELETE   | administrator, writer, deleter |
 | `{id}/roles`, `{id}/roles/assign`, `{id}/roles/remove` | GET/POST/DELETE | identity   |
 | `{id}/claims[/assign\|replace\|assign-or-replace\|remove]` | GET/POST/PUT/DELETE | identity |
 | `{id}/external-logins[/add\|remove/{providerName}]` | GET/POST/DELETE | identity    |
@@ -3045,7 +3045,6 @@ temporary (`tmp`) directory.
 | Setting        | Type   | Default | Description                                          |
 | ---------------- | ------ | ------- | ---------------------------------------------------------- |
 | `ShareName`         | string | null    | Logical container/share/bucket name.                        |
-| `Credentials`       | object | null    | Optional. Provider-specific account/credentials.            |
 | `HealthCheck`       | object | null    | See [Health Checks](#health-checks-3). API/Web apps only.    |
 
 ```json
@@ -3059,12 +3058,11 @@ temporary (`tmp`) directory.
 
 | Setting              | Type   | Default   | Description                                                                          |
 | ------------------------ | ------ | --------- | ------------------------------------------------------------------------------------------ |
-| `HealthCheck.AccountName`    | string | null      | Storage account name, used by some providers' health checks.                               |
 | `HealthCheck.UnhealthyStatus`| enum   | Unhealthy | Status reported when storage is unavailable. API/Web apps only.                            |
 
 ```json
 "Storage": {
-  "HealthCheck": { "AccountName": null, "UnhealthyStatus": "Unhealthy" }
+  "HealthCheck": { "UnhealthyStatus": "Unhealthy" }
 }
 ```
 

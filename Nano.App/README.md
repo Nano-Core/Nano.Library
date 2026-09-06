@@ -458,7 +458,7 @@ During the `Build(...)` step in `Program.cs`, add your middleware to the `IAppli
 ## Custom Configuration Section
 Extending Nano with custom configuration sections is straightforward and integrates seamlessly with existing Nano configuration.
 
-Use the `IServiceCollection` extension `AddConfigOptions<TOption>(...)` to register your custom configuration section. The generic type TOption defines 
+Use the `IServiceCollection` extension `AddNanoConfigSection<TSection>(...)` to register your custom configuration section. The generic type TSection defines 
 the object model into which the section will be deserialized. You may register as many custom sections as you like, as long as they don't conflict with the 
 built-in sections in Nano, `App`, `Logging`, `Data`, `Eventing`, and `Storage`.  
 
