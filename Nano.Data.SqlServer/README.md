@@ -80,7 +80,7 @@ Add the data configuration to `appsettings.json`.
 
 ```json
 "Data": {
-  "UseMigrateDatabase": true,
+  "StartupAction": "Migrate",
   "ConnectionString": "Server=host.docker.internal,1433;Database=nanoDb;User Id=sa;Password=myPassword_123;Encrypt=False;"
 }
 ```
@@ -136,10 +136,15 @@ Add the following environment variables to the `buid-and-deply.yml`.
 
 ```yaml
 env:
+  AZURE_GROUP_LOGS : ${{ vars.AZURE_RESOURCE_GROUP_LOGS }}
   DOTNET_EF_TOOLS_VERSION: "10.0"
   AZURE_GROUP_DATABASE : ${{ vars.AZURE_RESOURCE_GROUP_DATABASE }}
   SQL_AUTH_TYPE: Azure
   SQL_NAME: nanoDb
+  SQL_SERVICE_OBJECTIVE: GP_Gen5_2
+  SQL_EDITION: GeneralPurpose
+  SQL_MAX_SIZE: 64GB
+  SQL_BACKUP_RETENTION: 35
 ```
 
 Additionally, these steps ensure the database exists, migrations are applied, and the application database user is created (using the application's managed identity) before the application is deployed.
@@ -185,9 +190,13 @@ Additionally, these steps ensure the database exists, migrations are applied, an
     echo "IDENTITY_CLIENT_ID=$env:IDENTITY_CLIENT_ID" >> $env:GITHUB_ENV; 
     echo "IDENTITY_PRINCIPAL_ID=$env:IDENTITY_PRINCIPAL_ID" >> $env:GITHUB_ENV; 
 
-- name: Create Database
+- name: SQL Server Create Database
   shell: pwsh
   run: |
+    $env:SQL_SERVICE_OBJECTIVE = "GP_Gen5_2";
+    $env:SQL_EDITION = "GeneralPurpose";
+    $env:SQL_MAX_SIZE = "64GB";
+    $env:SQL_BACKUP_RETENTION = "35"
     $env:SQL_SERVER_NAME = az sql server list -g $env:AZURE_GROUP_DATABASE --query "[0].name" -o tsv;
     $env:SQL_DB_EXISTS = az sql db show -g $env:AZURE_GROUP_DATABASE -s $env:SQL_SERVER_NAME -n $env:SQL_NAME --query name -o tsv 2>$null;
 
@@ -202,8 +211,8 @@ Additionally, these steps ensure the database exists, migrations are applied, an
             --max-size $env:SQL_MAX_SIZE `
             --backup-storage-redundancy Geo `
             --zone-redundant true;
-
-        $env:MAINTENANCE_CONFIG_ID = az maintenance public-configuration list --query "[?name=='SQL_Default_1'].id" -o tsv;
+                  
+        $env:MAINTENANCE_CONFIG_ID = "/subscriptions/$env:AZURE_SUBSCRIPTION_ID/providers/Microsoft.Maintenance/publicMaintenanceConfigurations/SQL_Default";
 
         az sql db update `
             -n $env:SQL_NAME `
@@ -212,15 +221,36 @@ Additionally, these steps ensure the database exists, migrations are applied, an
             --maint-config-id $env:MAINTENANCE_CONFIG_ID;
 
         $env:DIAGNOSTIC_SETTINGS_NAME = "diagnostics-" + $env:SQL_NAME;
+        $env:SQL_LOGS_PATH = "sql-diagnostic-logs.json";
+        $env:SQL_METRICS_PATH = "sql-diagnostic-metrics.json";
         $env:WORKSPACE_ID = az monitor log-analytics workspace list -g $env:AZURE_GROUP_LOGS --query [0].[id] -o tsv;
         $env:SQLDB_ID = az sql db show -g $env:AZURE_GROUP_DATABASE -s $env:SQL_SERVER_NAME -n $env:SQL_NAME --query id -o tsv;
+
+        $logsJson = @"
+        [
+          { "category": "QueryStoreRuntimeStatistics", "enabled": true },
+          { "category": "SQLSecurityAuditEvents", "enabled": true }
+        ]
+    "@;
+
+        $logsJson | Set-Content $env:SQL_LOGS_PATH;
+
+        $metricsJson = @"
+        [
+          { "category": "Basic", "enabled": true },
+          { "category": "InstanceAndAppAdvanced", "enabled": true },
+          { "category": "WorkloadManagement", "enabled": true }
+        ]
+    "@;
+
+        $metricsJson | Set-Content $env:SQL_METRICS_PATH;
 
         az monitor diagnostic-settings create `
             --name $env:DIAGNOSTIC_SETTINGS_NAME `
             --resource $env:SQLDB_ID `
             --workspace $env:WORKSPACE_ID `
-            --logs '@.azure/.diagnostic-settings/logs.json' `
-            --metrics '@.azure/.diagnostic-settings/metrics.json';
+            --logs "@$env:SQL_LOGS_PATH" `
+            --metrics "@$env:SQL_METRICS_PATH";
 
         $env:ACTION_GROUP = az monitor action-group list -g $env:AZURE_GROUP_LOGS --query [0].[id] -o tsv;
 
@@ -236,7 +266,7 @@ Additionally, these steps ensure the database exists, migrations are applied, an
             --description "Alert when CPU usage is above 80% for 5 minutes.";
 
         az monitor metrics alert create `
-            --name "High Memory/Worker Usage" `
+            --name "High Memory And Worker Usage" `
             --resource-group $env:AZURE_GROUP_DATABASE `
             --scopes $env:SQLDB_ID `
             --condition "avg workers_percent > 80" `
@@ -261,12 +291,12 @@ Additionally, these steps ensure the database exists, migrations are applied, an
             --name "High Storage IO" `
             --resource-group $env:AZURE_GROUP_DATABASE `
             --scopes $env:SQLDB_ID `
-            --condition "avg io_consumption_percent > 80" `
+            --condition "avg physical_data_read_percent > 80" `
             --window-size PT5M `
             --evaluation-frequency PT1M `
             --action $env:ACTION_GROUP `
             --severity 2 `
-            --description "Alert when Storage IO consumption is above 80% for 5 minutes.";
+            --description "Alert when data IO usage is above 80% for 5 minutes.";
 
         az monitor metrics alert create `
             --name "High Storage Percent" `
@@ -297,17 +327,15 @@ Additionally, these steps ensure the database exists, migrations are applied, an
     $env:SQL_HOST = az sql server list -g $env:AZURE_GROUP_DATABASE --query [0].fullyQualifiedDomainName -o tsv;
     $env:SQL_PORT = 1433;
     $env:SQL_SERVER = az sql server list -g $env:AZURE_GROUP_DATABASE --query [0].name -o tsv;
-    $env:SQL_USER = az sql server ad-admin list -g $env:AZURE_GROUP_DATABASE -s $env:SQL_SERVER --query "[0].login" -o tsv;
-    $env:SQL_TOKEN = az account get-access-token --resource "https://database.windows.net/" --query accessToken -o tsv;
 
-    $env:DATA__CONNECTIONSTRING = "Server=$env:SQL_HOST,$env:SQL_PORT;Database=$env:SQL_NAME;User Id=$env:SQL_USER;Password=$env:SQL_TOKEN;Encrypt=True;TrustServerCertificate=True;";
+    $env:DATA__CONNECTIONSTRING = "Server=$env:SQL_HOST,$env:SQL_PORT;Database=$env:SQL_NAME;Authentication=Active Directory Service Principal;User Id=$env:AZURE_CLIENT_ID;Password=$env:AZURE_CLIENT_SECRET;Encrypt=True;TrustServerCertificate=True;";
 
     & "/opt/ef-tools/$env:DOTNET_EF_TOOLS_VERSION/dotnet-ef" database update `
-    --no-build `
-    --configuration Release `
-    --startup-project $env:APP_NAME `
-    -- `
-    --environment $env:ASPNETCORE_ENVIRONMENT;
+        --no-build `
+        --configuration Release `
+        --startup-project $env:APP_NAME `
+        -- `
+        --environment $env:ASPNETCORE_ENVIRONMENT;
 
     if ($LastExitCode -ne 0)
     { 
@@ -341,7 +369,7 @@ Additionally, these steps ensure the database exists, migrations are applied, an
 
     $sql | Set-Content $env:APP_USER_SQL_PATH;
 
-    Install-Module -Name SqlServer -Scope CurrentUser;
+    $env:SQL_TOKEN = az account get-access-token --resource "https://database.windows.net/" --query accessToken -o tsv;
 
     Invoke-Sqlcmd `
         -ServerInstance $env:SQL_HOST `
@@ -354,7 +382,7 @@ Additionally, these steps ensure the database exists, migrations are applied, an
         throw "error";
     };
 
-    $env:SQL_CONNECTIONSTRING = "Server=$env:SQL_HOST,$env:SQL_PORT;Database=$env:SQL_NAME;User Id=$env:IDENTITY_NAME;Encrypt=True;TrustServerCertificate=True;";
+    $env:SQL_CONNECTIONSTRING = "Server=$env:SQL_HOST,$env:SQL_PORT;Database=$env:SQL_NAME;User Id=$env:IDENTITY_CLIENT_ID;Encrypt=True;TrustServerCertificate=True;";
     echo "SQL_CONNECTIONSTRING=$env:SQL_CONNECTIONSTRING" >> $env:GITHUB_ENV;
 ```
 

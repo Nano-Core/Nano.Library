@@ -29,7 +29,7 @@
     * **[Robots](#robots)**
     * **[Forwarded Headers](#forwarded-headers)**
   * **[Response Cache](#response-cache)**
-  * **[Response Compression](#response-cache)**
+  * **[Response Compression](#response-compression)**
   * **[Session](#session)**
   * **[Cookies](#cookies)**
   * **[TimeZone](#timezone)**
@@ -37,7 +37,7 @@
   * **[Versioning](#versioning)**
   * **[Documentation](#documentation)**
   * **[Health Checks](#health-checks)**
-  * **[Metrics (OpenTelemetry)](#opentelemetry-metrics)**
+  * **[Metrics (OpenTelemetry)](#metrics-opentelemetry)**
   * **[Virus Scan](#virus-scan)**
   * **[Content Negotiation](#content-negotiation)**
   * **[Request Tracing](#request-tracing)**
@@ -454,7 +454,7 @@ implement a strong Content-Security-Policy that disables the use of inline JavaS
 "App": {
   "HttpPolicyHeaders": {
     "XssProtection": {
-      "XssProtectionPolicyHeader": "Disabled",
+      "XssProtectionPolicyHeader": "FilterDisabled",
       "ReportingUrl": null
     }
   }
@@ -982,7 +982,7 @@ HTTP Strict Transport Security (HSTS) is a web security policy mechanism that fo
 
 | Setting              | Type     | Default       | Description                                                                                           |
 | -------------------- | -------- | ------------- | ----------------------------------------------------------------------------------------------------- |
-| `MaxAge`             | TimeSpan | 182:00:00:00  | Maximum age for HSTS. Default 182 days.                                                               |
+| `MaxAge`             | TimeSpan | 180:00:00:00  | Maximum age for HSTS. Default 180 days.                                                               |
 | `UsePreload`         | bool     | false         | Enable or disable the preload directive. Preload will only used if `MaxAge` is greater than 7 weeks.  |
 | `IncludeSubdomains`  | bool     | false         | Include subdomains in HSTS policy.                                                                    |
 
@@ -990,7 +990,7 @@ HTTP Strict Transport Security (HSTS) is a web security policy mechanism that fo
 "App": {
   "HttpPolicyHeaders": {
     "Hsts": {
-      "MaxAge": "182:00:00:00",
+      "MaxAge": "180:00:00:00",
       "UsePreload": false,
       "IncludeSubdomains": false
     }
@@ -1467,7 +1467,7 @@ This configuration section is required and will automatically be populated if om
 
 ```json
 "App": {
-  "ErrorHandlong": {
+  "ErrorHandling": {
     "ExposeErrors": false
   }
 }

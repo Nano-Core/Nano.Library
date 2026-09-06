@@ -25,7 +25,7 @@ Try it out yourself using the **[Api.Eventing.RabbitMq](https://github.com/Nano-
 **[Console.Eventing.RabbitMq](https://github.com/Nano-Core/Nano.Lessons/blob/master/Console.Eventing.RabbitMq)** example.  
 
 ## Registration
-Install the **[Nano.Eventing.RabbitMq](https://www.nuget.org/packages/Nano.Eventing.RabbitMq/README.md#nanoeventingrabbitmq)** NuGet package.  
+Install the **[Nano.Eventing.RabbitMq](https://www.nuget.org/packages/Nano.Eventing.RabbitMq/)** NuGet package.  
 
 ```powershell
 dotnet add package Nano.Eventing.RabbitMq;
@@ -58,7 +58,7 @@ Add the eventing configuration.
   "Credentials": {
     "Id": null,
     "Secret": null
-  }
+  },
   "HealthCheck": {
     "UnhealthyStatus": "Unhealthy"
   }
@@ -101,12 +101,12 @@ spec:
     spec:
       containers:
         env:
-        - name: Eventing__Credentials__Host
+        - name: Eventing__Host
           valueFrom:
             secretKeyRef:
               name: rabbitmq-default-user
               key: host
-        - name: Eventing__Credentials__Port
+        - name: Eventing__Port
           valueFrom:
             secretKeyRef:
               name: rabbitmq-default-user

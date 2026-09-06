@@ -78,7 +78,7 @@ The ```Eventing``` section in the configuration defines the eventing provider an
   "Credentials": {
     "Id": null,
     "Secret": null
-  }
+  },
   "HealthCheck": null
 }
 ```
@@ -144,7 +144,7 @@ public class MyEvent
 }
 ```
 
-The event model may by any type derived from Nano types, as well as all `Geometry` types from `NetTopologySuite`. Keep it simple though. See **[Serialization](#Serialization)**
+The event model may by any type derived from Nano types, as well as all `Geometry` types from `NetTopologySuite`. Keep it simple though. See **[Serialization](#serialization)**
 for details.    
 
 > ⚠️ Share the event model as a NuGet package to ensure a consistent contract between publishers and subscribers. Exchange and queue names are derived automatically 
@@ -168,7 +168,7 @@ To consume events in another application, implement an eventing handler for the 
 ```csharp
 public class MyEventingHandler : BaseEventHandler<MyEvent>
 {
-    public override async Task CallbackAsync(MyEvent myEvent, bool isRedelivered)
+    public override async Task CallbackAsync(MyEvent myEvent, bool isRedelivered, CancellationToken cancellationToken = default)
     {
         await Task.CompletedTask;
 
@@ -187,7 +187,7 @@ public class MyEventingHandler : BaseEventHandler<MyEvent>
 {
     public static string RoutingKey => "my-routing-key";
 
-    public static string OverridePrefetchCount => 10;
+    public static ushort OverridePrefetchCount => 10;
 }
 ```
 

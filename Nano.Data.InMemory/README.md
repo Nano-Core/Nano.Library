@@ -53,7 +53,6 @@ Configured the application with the necessary data setup.
   "QueryRetryCount": 0,
   "UseLazyLoading": false,
   "StartupAction": "None",
-  "UseSoftDeletetion": false,
   "UseSensitiveDataLogging": false,
   "QuerySplittingBehavior": "SingleQuery",
   "DefaultCollation": null,

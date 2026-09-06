@@ -24,6 +24,7 @@
 &nbsp;&nbsp;&nbsp;&nbsp;✨ **[Highlighted Features](#-highlighted-features)**  
 &nbsp;&nbsp;&nbsp;&nbsp;🏛️ **[Nano Architectures](#%EF%B8%8F-nano-architectures)**  
 &nbsp;&nbsp;&nbsp;&nbsp;⚙️ **[Required Tools](#-required-tools)**  
+&nbsp;&nbsp;&nbsp;&nbsp;🤖 **[AI Agent Reference](#-ai-agent-reference)**  
 &nbsp;&nbsp;&nbsp;&nbsp;🧩 **[Solution Composition](#-solution-composition)**  
 &nbsp;&nbsp;&nbsp;&nbsp;📦 **[NuGet Packages](#-nuget-packages)**  
 &nbsp;&nbsp;&nbsp;&nbsp;⚖️ **[Licenses](#-licenses)**  
@@ -152,6 +153,15 @@ And optional, but recommended, tools.
 | ------------------------ | ---------------------------------------------------------------------------- |
 | Postman (or similar)     | Helps test and explore API endpoints during development.                     |
 
+## 🤖 AI Agent Reference
+This repository includes an **[AGENTS.md](AGENTS.md)** — an implementation-focused reference for AI coding agents (e.g. Claude Code) building applications with Nano. It documents 
+providers, base controllers, `IRepository`, entity eventing, the API client, `IncludeAttribute`, and more, grounded in real code from this repository and [Nano.Templates](https://github.com/Nano-Core/Nano.Templates).  
+
+Using it makes developing with Nano significantly faster and easier, letting an AI agent implement features correctly the first time instead of guessing at conventions.  
+
+The `AGENTS.md` is discovered by AI tools in the root of the project they're working in. It isn't inherited from a NuGet dependency. To make use of it, copy `AGENTS.md` into the root 
+of your own Nano-based application's repository.
+
 ## 🧩 Solution Composition
 All Nano applications follow a consistent and predictable solution structure.  
 
@@ -176,8 +186,8 @@ In the following table shows the different files and folder strucutre.
 | `.kubernetes/service.yaml`                          | ✓   | ✓   | ✗  | [Service](https://kubernetes.io/docs/concepts/services-networking/service/) exposure specification.                                                                                                                                             |
 | `.kubernetes/httproute.yaml`                        | (✓) | (✓) | ✗  | [HTTPRoute](https://kubernetes.io/docs/concepts/services-networking/gateway/#api-kind-httproute) specification _(Optional)_.                                                                                                                    |
 | `.kubernetes/cronjob.yaml`                          | ✗  | ✗   | ✓   | [CronJob](https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/) specification.                                                                                                                                                  |
-| `.tests/Tests.{name}.csproj`                        | ✓   | ✓   | ✓   | Test project, which is empty by default and included to demonstrate the structure and where unit or integration tests should be added.                                                                                                          |
-| `.tests/Properties/DoNotParallelize.cs`             | ✓   | ✓   | ✓   | Ensures tests are not Parallelized.                                                                                                                                                                                                             |
+| `.tests/Tests.{name}/Tests.{name}.csproj`           | ✓   | ✓   | ✓   | Test project, which is empty by default and included to demonstrate the structure and where unit or integration tests should be added.                                                                                                          |
+| `.tests/Tests.{name}/Properties/DoNotParallelize.cs`| ✓   | ✓   | ✓   | Ensures tests are not Parallelized.                                                                                                                                                                                                             |
 | `{name}/{name}.csproj`                              | ✓   | ✓   | ✓   | The application project file.                                                                                                                                                                                                                   |
 | `{name}/Properties/InternalsVisibleTo.cs`           | ✓   | ✓   | ✓   | Exposes internal types to the test project.                                                                                                                                                                                                     |
 | `{name}/wwwroot`                                    | ✓   | ✓   | ✗   | Root folder for static and dnyamic web content.                                                                                                                                                                                                |
@@ -185,7 +195,7 @@ In the following table shows the different files and folder strucutre.
 | `{name}/appsettings.{environment}.json`             | ✓   | ✓   | ✓   | Overrides application configuration files for for environments: `Development`, `Staging` and `Production`.                                                                                                                                      |
 | `{name}/Dockerfile.Local`                           | ✓   | ✓   | ✓   | Used by Docker Compose in `Development` environment; must remain in the application project folder.                                                                                                                                             |
 | `{name}/Program.cs`                                 | ✓   | ✓   | ✓   | The main entry point to the Nano application, and where the application is configured, build and run.                                                                                                                                           |
-| `{name}/{name}.Models.csproj`                       | ✓   | ✓   | ✗  | The application models project file. The project is configured to publish a NuGet for sharing models and api-client. Nano Nugets should be included here, as a minimum the [Nano.App](https://www.nuget.org/packages/Nano.App) NuGet package.   |
+| `{name}.Models/{name}.Models.csproj`                | ✓   | ✓   | ✗  | The application models project file. The project is configured to publish a NuGet for sharing models and api-client. Nano Nugets should be included here, as a minimum the [Nano.App](https://www.nuget.org/packages/Nano.App) NuGet package.   |
 | `.dockerignore`                                     | ✓   | ✓   | ✓   | Lists files and folders to ignore when building Docker images.                                                                                                                                                                                  |
 | `.gitignore`                                        | ✓   | ✓   | ✓   | Lists files and folders to ignore in Git version control.                                                                                                                                                                                       |
 | `Dockerfile`                                        | ✓   | ✓   | ✓   | The `Dockerfile` used to build the container image for `Staging` and `Production` deployments.                                                                                                                                                  |

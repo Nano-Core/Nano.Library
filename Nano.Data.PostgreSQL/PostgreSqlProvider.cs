@@ -21,7 +21,7 @@ namespace Nano.Data.PostgreSQL;
 ///     Supports retry policies, batching, spatial data via NetTopologySuite, vector similarity search via Pgvector, query splitting behavior, and optional health checks.
 ///     Documentation: https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data.PostgreSQL/README.md#nanodatapostgresql.
 /// </remarks>
-public sealed class PostgresSqlProvider : IDataProvider
+public sealed class PostgreSqlProvider : IDataProvider
 {
     private static readonly ConcurrentDictionary<string, NpgsqlDataSource> _dataSources = new();
 

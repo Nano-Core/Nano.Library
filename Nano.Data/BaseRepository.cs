@@ -487,7 +487,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Func<TEntity, TKey> orderBy, OrderingDirection orderDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default)
+    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Expression<Func<TEntity, TKey>> orderBy, OrderingDirection orderDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
     {
         ArgumentNullException.ThrowIfNull(where);
@@ -499,7 +499,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Func<TEntity, TKey> orderBy, int? includeDepth, OrderingDirection orderingDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default)
+    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Expression<Func<TEntity, TKey>> orderBy, int? includeDepth, OrderingDirection orderingDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
     {
         ArgumentNullException.ThrowIfNull(where);
@@ -509,7 +509,7 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Func<TEntity, TKey> orderBy, Pagination? pagination, OrderingDirection orderingDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default)
+    public virtual Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Expression<Func<TEntity, TKey>> orderBy, Pagination? pagination, OrderingDirection orderingDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
     {
         ArgumentNullException.ThrowIfNull(where);
@@ -522,33 +522,29 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
-    public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Func<TEntity, TKey> orderBy, Pagination? pagination, int? includeDepth, OrderingDirection orderingDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default)
+    public virtual async Task<IEnumerable<TEntity>> GetManyAsync<TEntity, TKey>(Expression<Func<TEntity, bool>> where, Expression<Func<TEntity, TKey>> orderBy, Pagination? pagination, int? includeDepth, OrderingDirection orderingDirection = OrderingDirection.Asc, CancellationToken cancellationToken = default)
         where TEntity : class, IEntity
     {
         ArgumentNullException.ThrowIfNull(where);
         ArgumentNullException.ThrowIfNull(orderBy);
 
-        await Task.CompletedTask;
-
         includeDepth ??= this.options.CurrentValue.Repository.QueryIncludeDepth;
 
-        var entities = this.dbContext
+        var query = this.dbContext
             .Set<TEntity>()
             .IncludeAnnotations(includeDepth.Value)
-            .Where(where)
-            .Limit(pagination)
-            .AsEnumerable();
+            .Where(where);
 
-        return orderingDirection switch
+        query = orderingDirection switch
         {
-            OrderingDirection.Asc => entities
-                .OrderBy(orderBy)
-                .ToArray(),
-            OrderingDirection.Desc => entities
-                .OrderBy(orderBy)
-                .ToArray(),
-            _ => entities
+            OrderingDirection.Asc => query.OrderBy(orderBy),
+            OrderingDirection.Desc => query.OrderByDescending(orderBy),
+            _ => query
         };
+
+        return await query
+            .Limit(pagination)
+            .ToArrayAsync(cancellationToken);
     }
 
     /// <inheritdoc />

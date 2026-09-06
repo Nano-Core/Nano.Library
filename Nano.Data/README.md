@@ -10,7 +10,7 @@
 ***
 
 ## Table of Contents
-* **[Home](https://github.com/Nano-Core/Nano.Library/blob/master/README.md#nanolibrary#nanolibrary)**
+* **[Home](https://github.com/Nano-Core/Nano.Library/blob/master/README.md#nanolibrary)**
 * **[Summary](#summary)**
 * **[Registration](#registration)**
 * **[Configuration](#configuration)**
@@ -39,7 +39,7 @@ databases in a consistent and structured way.
 To enable data support in a Nano application, a few core components must be implemented and registered. First, a **[Data Providers](#data-providers)** must be selected. Next, 
 the application must define a database context by deriving implementations from `BaseDbContext` and `BaseDbContextFactory`.  
 
-Once the context has been implemented, the data provider and the data context must be registered during application startup by invoking `AddDataContext<TProvider, TContext>()` 
+Once the context has been implemented, the data provider and the data context must be registered during application startup by invoking `AddNanoData<TProvider, TContext>()` 
 in `program.cs`.  
 
 After registration, the application can define entity models derived from `BaseEntity`, along with their corresponding mappings derived from `BaseEntityMapping<TEntity>`.  
@@ -47,12 +47,12 @@ After registration, the application can define entity models derived from `BaseE
 When Nano data is registered, the `IRepository` interface becomes available for interacting with the database. This abstraction uses the unit-of-work pattern, providing 
 a consistent and safe approach for working with persistent data.
 
-The following sections describe how to configure and register Nano data in your application in more detail.## Summary
+The following sections describe how to configure and register Nano data in your application in more detail.
 
 Also, explore it yourself by trying the various **[Nano Lessons](https://github.com/Nano-Core/Nano.Lessons)** for different data providers.  
 
 ## Registration
-To enable Nano data support, register the data provider and data context using `AddDataContext<TProvider, TContext>()`. The generic parameters represent the data provider 
+To enable Nano data support, register the data provider and data context using `AddNanoData<TProvider, TContext>()`. The generic parameters represent the data provider 
 implementation and the application's data context.  
 
 When registering the data provider, a **[Data Context](#data-context)** must always be specified as part of the generic type signature.  
@@ -62,7 +62,7 @@ When registering the data provider, a **[Data Context](#data-context)** must alw
 .ConfigureServices(services =>
 {
     services
-        .AddDataContext<TProvider, TContext>();
+        .AddNanoData<TProvider, TContext>();
 })
 ...
 ```
@@ -75,7 +75,7 @@ If you want to use a custom identity type, it must be specified during registrat
 .ConfigureServices(services =>
 {
     services
-        .AddDataContext<TProvider, TContext, TIdentity>();
+        .AddNanoData<TProvider, TContext, TIdentity>();
 })
 ...
 ```
@@ -113,7 +113,7 @@ The `Data` section in the configuration defines the data provider and related se
   "BulkBatchDelay": 1000,
   "QueryRetryCount": 0,
   "UseLazyLoading": false,
-  "StartupAction": None,
+  "StartupAction": "None",
   "UseSensitiveDataLogging": false,
   "QuerySplittingBehavior": "SingleQuery",
   "DefaultCollation": null,
@@ -145,7 +145,7 @@ access control.
 
 | Setting                               | Type     | Default         | Description                                                                                                              |
 | ------------------------------------- | -------- | --------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `TokensExpirationInHours`             | TimeSpan | 24:00:00        | The expiration time for tokens in hours.                                                                                 |
+| `TokensExpiration`                    | TimeSpan | 24:00:00        | The expiration time for tokens.                                                                                          |
 | `UseAudit`                            | enum     | None            | Defines which identity models to to audit. Allows multiple values. See possible values below.                            |
 | `User`                                | object   | default         | Options for user-specific settings.                                                                                      |
 | `User.IsUniqueEmailAddressRequired`   | bool     | true            | A value indicating whether each user must have a unique email address.                                                   |
@@ -163,7 +163,7 @@ access control.
 | `Password.RequireDigit`               | bool     | true            | A value indicating whether the password must contain at least one digit.                                                 |
 | `Password.RequireNonAlphanumeric`     | bool     | true            | A value indicating whether the password must contain at least one non-alphanumeric character.                            |
 | `Password.RequireLowercase`           | bool     | true            | A value indicating whether the password must contain at least one lowercase letter.                                      |
-| `Password.RequirUppercase`            | bool     | true            | A value indicating whether the password must contain at least one uppercase letter.                                      |
+| `Password.RequireUppercase`            | bool     | true            | A value indicating whether the password must contain at least one uppercase letter.                                      |
 | `Password.RequiredLength`             | int      | 12              | The minimum required length of the password.                                                                             |
 | `Password.RequiredUniqueCharacters`   | int      | 3               | The number of unique characters required in the password.                                                                |
 | `ApiKey`                              | object   | default         | Optional. Options for API keys.                                                                                          |
@@ -195,7 +195,7 @@ access control.
       "RequireDigit": false,
       "RequireNonAlphanumeric": false,
       "RequireLowercase": false,
-      "RequirUppercase": false,
+      "RequireUppercase": false,
       "RequiredLength": 5,
       "RequiredUniqueCharacters": 5
     },
@@ -264,7 +264,7 @@ and can be used by monitoring tools, load balancers, or container orchestrators 
 ```json
 "Data": {
   "HealthCheck": {
-    "UnhealthyStatus": Unhealthy
+    "UnhealthyStatus": "Unhealthy"
   }
 }
 ```
@@ -317,7 +317,7 @@ cover your needs, you can always inject the data context directly.
 In addition, you must derive a concrete implementation from `BaseDbContextFactory`.  
 
 ```csharp
-public class MySqlDbContextFactory : BaseDbContextFactory<MySqlProvider, MySqlDb**Context>;
+public class MySqlDbContextFactory : BaseDbContextFactory<MySqlProvider, MySqlDbContext>;
 ```
 
 No further implementation is required. The factory class simply needs to exist in your application project alongside `program.cs`, similar to the `BaseDbContext` implementation.
@@ -332,7 +332,7 @@ your model automatically includes several built-in properties.
 | ------------- | --------------- | ----------------------------------------------------------------------------------------------- |
 | `Id`          | TIdentity       | The primary key of the model. _Automatically assigned for new instances._                       |
 | `CreatedAt`   | DateTimeOffset  | The timestamp when the model was created. _Automatically set to `UtcNow` for new instances._    |
-| `IsDeleted`   | int             | Used only when **[Soft Delete](#soft-delete)** is enabled. _Defaults to 0._                     |
+| `IsDeleted`   | long            | Used only when **[Soft Delete](#soft-delete)** is enabled. _Defaults to 0._                     |
 
 ```csharp
 public class MyEntity : BaseEntity
@@ -352,7 +352,7 @@ Alternatively, you can derive your entity model from one of the specialized CRUD
 For more advanced scenarios, if you do not want the built-in properties provided by Nano, you can derive your entity model from `BaseEntityIdentity` or 
 `BaseEntityIdentity<TIdentity>`. This gives your entity only the `Id` property, but limits most built-in `IRepository` operations. To restore specific operations, your entity 
 must implement the corresponding interfaces: `IEntityReadOnly`, `IEntityWritable`, `IEntityCreatable`, `IEntityCreatableAndUpdatable`, `IEntityUpdatable`, or `IEntityDeletable` 
-(`IEntityDeletableSoft`). These interfaces mirror the functionality of the CRUD base entity classes.  
+(`IEntitySoftDeletable`). These interfaces mirror the functionality of the CRUD base entity classes.  
 
 > 💡 For simplicity and maintainability, it is recommended to derive entity models from `BaseEntity` or one of the specific base classes rather than 
 implementing the interfaces directly.  
@@ -544,10 +544,10 @@ The following table lists the methods available in `IRepository` along with thei
 | `GetManyAsync<TEntity>`                     | query, includeDepth                                       | `IEntity`                             | Gets entities matching the specified query.                                               |
 | `GetManyAsync<TEntity, TCriteria>`          | criteria, includeDepth                                    | `IEntity`                             | Gets entities matching the specified criteria.                                            |
 | `GetManyAsync<TEntity>`                     | where, pagination, ordering, includeDepth                 | `IEntity`                             | Gets entities matching a predicate with pagination and ordering.                          |
-| `GetManyAsync<TEntity, TKey>`               | where, pagination, includeDepth, orderBy, orderDirection  | `IEntityIdentity`                     | Gets entities matching a predicate ordered by a key selector with pagination.             |
+| `GetManyAsync<TEntity, TKey>`               | where, pagination, includeDepth, orderBy, orderDirection  | `IEntity`                              | Gets entities matching a predicate ordered by a key selector with pagination.             |
 | `AddAsync<TEntity>`                         | entity                                                    | `IEntityCreatable`                    | Adds a single entity.                                                                     |
-| `AddOrGetAsync<TEntity, TKey>`              | entity                                                    | `IEntityCreatable`, `IEntityIdentity` | Adds an entity and reloads it including related entities. ⚠️ _Always uses autosave._      |
-| `AddAndGetAsync<TEntity, TKey>`             | entity                                                    | `IEntityCreatable`, `IEntityIdentity` | Adds or retreives an entity including related entities. ⚠️ _Always uses autosave._        |
+| `AddOrGetAsync<TEntity, TKey>`              | entity                                                    | `IEntityCreatable`, `IEntityIdentity` | Adds an entity, or retrieves it if it already exists. ⚠️ _Always uses autosave._          |
+| `AddAndGetAsync<TEntity, TKey>`             | entity                                                    | `IEntityCreatable`, `IEntityIdentity` | Adds an entity and reloads it including related entities. ⚠️ _Always uses autosave._      |
 | `AddManyAsync<TEntity>`                     | entities                                                  | `IEntityCreatable`                    | Adds multiple entities.                                                                   |
 | `AddManyBulkAsync<TEntity>`                 | entities                                                  | `IEntityCreatable`                    | Bulk adds multiple entities using EF Plus Enterprise.                                     |
 | `UpdateAsync<TEntity>`                      | entity                                                    | `IEntityUpdatable`                    | Updates a single entity.                                                                  |

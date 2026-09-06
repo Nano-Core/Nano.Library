@@ -52,8 +52,8 @@ The ```Logging``` section in the configuration defines the logging provider and 
 | ------------------------------- | ------ | ------------ | ------------------------------------------------------------------------------------------------------------------------------- |
 |  `LogLevel`                     | enum   | Information  | The default minimum LogLevel used by the logging provider. Values: Debug, Information, Warning, Error, Fatal.                   |
 |  `LogLevelOverrides`            | array  | []           | Optional overrides for specific namespaces, allowing different log levels for different parts of the application.               |
-|  `LogLevelOverrides.Namespace`  | string | null         | The log level to apply for a specific namespace. You may prepend an asterisk (`*`) as a wildcard to match multiple namespaces.  |
-|  `LogLevelOverrides.LogLevel`   | enum   | Warning      | The namespace for which this log level override applies. Values: Debug, Information, Warning, Error, Fatal.                     |
+|  `LogLevelOverrides.Namespace`  | string | null         | The namespace for which this log level override applies. You may prepend an asterisk (`*`) as a wildcard to match multiple namespaces.  |
+|  `LogLevelOverrides.LogLevel`   | enum   | Warning      | The log level to apply for the specific namespace. Values: Debug, Information, Warning, Error, Fatal.                     |
 
 ```json
 "Logging": {
