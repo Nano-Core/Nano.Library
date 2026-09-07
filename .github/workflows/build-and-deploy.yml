@@ -11,7 +11,7 @@ env:
   VERSION: 10.0.11
 jobs:
   build-and-deploy:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     permissions:
       contents: write
       packages: write
@@ -24,7 +24,7 @@ jobs:
       - name: Build
         shell: pwsh
         run: |
-          dotnet build -c Release .\$env:APP_NAME.sln;
+          dotnet build -c Release ./$env:APP_NAME.sln;
 
           if ($LastExitCode -ne 0)
           { 
@@ -34,7 +34,7 @@ jobs:
       - name: Test
         shell: pwsh
         run: |
-          dotnet test -c Release --no-build .\.tests\Tests.$env:APP_NAME\Tests.$env:APP_NAME.csproj;
+          dotnet test -c Release --no-build ./.tests/Tests.$env:APP_NAME/Tests.$env:APP_NAME.csproj;
 
           if ($LastExitCode -ne 0)
           { 
@@ -43,15 +43,16 @@ jobs:
 
       - name: Pack and Push (NuGet.org)
         if: github.ref == 'refs/heads/master'
+        shell: pwsh
         run: |
           dotnet pack -c Release --no-build -o nupkgs /p:Version=$env:VERSION;
 
           if ($LastExitCode -ne 0)
-          { 
+          {
               throw "NuGet Pack Failed";
           };
 
-          dotnet nuget push "**/nupkgs/*.nupkg" `
+          dotnet nuget push "nupkgs/*.nupkg" `
               --source https://api.nuget.org/v3/index.json `
               --api-key ${{ secrets.NUGET_APIKEY }} `
               --skip-duplicate;
@@ -63,15 +64,16 @@ jobs:
 
       - name: Pack and Push (GitHub Packages)
         if: github.ref != 'refs/heads/master'
+        shell: pwsh
         run: |
           dotnet pack -c Release --no-build -o nupkgs /p:Version="$env:VERSION.$env:GITHUB_RUN_NUMBER";
 
           if ($LastExitCode -ne 0)
-          { 
+          {
               throw "NuGet Pack Failed";
           };
 
-          dotnet nuget push "**/nupkgs/*.nupkg" `
+          dotnet nuget push "nupkgs/*.nupkg" `
               --source https://nuget.pkg.github.com/Nano-Core/index.json `
               --api-key ${{ secrets.GITHUB_TOKEN }} `
               --skip-duplicate;
@@ -90,7 +92,7 @@ jobs:
           body: |
             Version: ${{ env.VERSION }}
             Commit: ${{ github.sha }}
-          artifacts: "**/nupkgs/*"
+          artifacts: "nupkgs/*"
           token: ${{ secrets.GITHUB_TOKEN }}
           draft: false
           prerelease: ${{ contains(env.VERSION, '-') }}
