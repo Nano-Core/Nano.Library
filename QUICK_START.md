@@ -17,21 +17,34 @@
 
 ## Choosing Application Type
 The first step is to choose the application type that best fits your use case. Nano currently supports three application types: **[Api](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App.Api/README.md#nanoappapi)**, 
-**[Web](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App.Web/README.md#nanoappweb)**, and **[Console](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App.Console/README.md#nanoappconsole)**. Each application 
-type is provided as a _blank_ solution template. These templates include the essential project structure, configuration, and dependencies required to get started, without 
-adding unnecessary complexity.  
+**[Web](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App.Web/README.md#nanoappweb)**, and **[Console](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App.Console/README.md#nanoappconsole)**.
 
-To begin, copy or clone the solution that matches your chosen application type.  
+The fastest way to start any of them is the **[NanoCore.Templates](https://github.com/Nano-Core/.vsTemplates)** `dotnet new` template set: each template scaffolds an
+already-configured, ready-to-deploy solution in one command, with Docker/Kubernetes deployment and CI/CD already wired up, so there's no manual copy-and-rename step.
+
+```powershell
+dotnet new install NanoCore.Templates
+```
+
+This guide continues with an **Api** application, since it's the most commonly used application type, using the minimal flavor.
+
+```powershell
+dotnet new nanocore-api-minimal -n MyCompany.MyApi -o .\MyCompany.MyApi
+```
+
+Two other pre-configured Api flavors are also available: one for a publicly-exposed Api, one for an internal service. See 
+**[Nano.App.Api](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App.Api/README.md#registration)** for the full list and their `dotnet new` commands. 
+**Web** and **Console** applications follow the exact same pattern, each with their own minimal template. See 
+**[Nano.App.Web](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App.Web/README.md#registration)** and 
+**[Nano.App.Console](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App.Console/README.md#registration)**.
+
+If you'd rather not use a template (for example, to learn the underlying solution structure, or to build on a non-standard layout), each application type is also available
+as a _blank_ solution you can copy or clone directly, then rename the solution and projects to fit your application, updating namespaces and identifiers as needed throughout
+the files, and add the **NanoCore** NuGet package to your Models project for a quick start; add more specific packages (e.g. a single data provider) as needed later.  
 
 - **[Api._Blank](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api._Blank)**
 - **[Console._Blank](https://github.com/Nano-Core/Nano.Lessons/blob/master/Console._Blank)**
 - **[Web._Blank](https://github.com/Nano-Core/Nano.Lessons/blob/master/Web._Blank)**
-
-These templates provide a minimal starting point for each application type.
-
-Then rename the solution and projects to fit your application, updating namespaces and identifiers as needed throughout the files.  
-
-Add the **NanoCore** NuGet package to your Models project for a quick start; add more specific packages (e.g. a single data provider) as needed later.  
 
 At this point, you have a fully functional Nano baseline solution, capable of running locally and deploying to Kubernetes via GitHub Actions. For a detailed overview of the 
 included projects, files, and overall structure, see **[Nano Architectures](https://github.com/Nano-Core/Nano.Library/blob/master/README.md#%EF%B8%8F-nano-architectures)**.  

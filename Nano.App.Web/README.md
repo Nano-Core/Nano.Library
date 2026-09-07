@@ -44,6 +44,18 @@ NanoWebApplication
 
 Register your custom services in the `ConfigureServices(x => { })` method to extend Nano with additional functionality or integrations.  
 
+Rather than wiring this up by hand, you can scaffold an already-configured, ready-to-deploy Web application in one command using the **[NanoCore.Templates](https://github.com/Nano-Core/.vsTemplates)** 
+`dotnet new` template set.
+
+| Template     | Short Name               | Description                                                                                        |
+| ------------ | ------------------------ | -------------------------------------------------------------------------------------------------- |
+| Web Minimal  | `nanocore-web-minimal`   | The Nano Web host (Razor/Blazor), Docker/Kubernetes deployment, and CI/CD - minimal configuration. |
+
+```powershell
+dotnet new install NanoCore.Templates
+dotnet new nanocore-web-minimal -n MyCompany.MyWeb -o .\MyCompany.MyWeb
+```
+
 ## Configuration
 The `App` section in the configuration controls application-level behavior, similar to the API application.  
 Currently, the web application does not add any additional configuration options beyond those available in the API application.  

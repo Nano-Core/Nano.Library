@@ -39,7 +39,6 @@ inside `{name}/`.
 | `.kubernetes/service.yaml`                                  | ✓   | ✓   | ✗   | Kubernetes Service.                                                                                                          |
 | `.kubernetes/httproute.yaml`                                | (✓) | (✓) | ✗   | Kubernetes HTTPRoute _(optional, public-facing apps only)_.                                                                  |
 | `.kubernetes/cronjob.yaml`                                  | ✗   | ✗   | ✓   | Kubernetes CronJob (Console apps run as scheduled jobs, not long-running Deployments).                                       |
-| `.github/config/slack.yml`                                  | ✓   | ✓   | ✓   | Build/deploy Slack notifications _(optional)_.                                                                              |
 | `.github/workflows/build-and-deploy.yml`                    | ✓   | ✓   | ✓   | CI/CD workflow — build, test, publish, deploy.                                                                              |
 | `Dockerfile`                                                | ✓   | ✓   | ✓   | Container image build for `Staging`/`Production`, at the solution root.                                                     |
 | `.dockerignore` / `.gitignore`                              | ✓   | ✓   | ✓   | Solution root.                                                                                                               |

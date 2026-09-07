@@ -96,6 +96,20 @@ NanoApiApplication
 
 Register your custom services in the `ConfigureServices(x => { })` method to extend Nano with additional functionality or integrations.  
 
+Rather than wiring this up by hand, you can scaffold an already-configured, ready-to-deploy Api application in one command using the **[NanoCore.Templates](https://github.com/Nano-Core/.vsTemplates)** 
+`dotnet new` template set.
+
+| Template      | Short Name               | Description                                                                                           |
+| ------------- | ------------------------ | ----------------------------------------------------------------------------------------------------- |
+| Api Minimal   | `nanocore-api-minimal`   | The Nano Api host, Docker/Kubernetes deployment, and CI/CD - minimal configuration.                   |
+| Api Public    | `nanocore-api-public`    | Pre-configured for a publicly-exposed Api - the entry point handling external traffic.                |
+| Api Internal  | `nanocore-api-internal`  | Pre-configured for an internal service - handling requests from other applications within the system. |
+
+```powershell
+dotnet new install NanoCore.Templates
+dotnet new nanocore-api-minimal -n MyCompany.MyApi -o .\MyCompany.MyApi
+```
+
 ## Variables And Secrets
 Nano API applications require a set of organization-level variables and secrets. In addition, certain features may require extra configuration when enabled. Any feature-specific 
 requirements will be clearly documented in the relevant sections.  
