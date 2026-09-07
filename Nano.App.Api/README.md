@@ -1378,7 +1378,7 @@ Try it out yourself using the **[Api.HealthChecks](https://github.com/Nano-Core/
 The health check example also demonstrates how to configure availability monitoring using _Azure Application Insights_.  
 
 ## Metrics (OpenTelemetry)
-When health checks are enabled in the configuration, a `/metrics` endpoint is exposed.  
+When metrics are enabled in the configuration, a `/metrics` endpoint is exposed.  
 
 The endpoint provides Prometheus-compatible metrics collected through OpenTelemetry, including ASP.NET Core request metrics, HTTP client metrics, and .NET runtime 
 metrics. These metrics can be scraped by Azure Managed Prometheus and visualized in Grafana dashboards. 
@@ -1403,7 +1403,7 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: %SERVICE_NAME%
+      app: %SERVICE_NAME%
   endpoints:
     - port: http
       path: /metrics
