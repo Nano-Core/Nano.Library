@@ -84,7 +84,7 @@ metadata:
   name: %SERVICE_NAME%-azurefile-pv-%VOLUME_NAME_SUFFIX%
 spec:
   capacity:
-    storage: %STORAGE_SIZE%
+    storage: %STORAGE_SIZE%Gi
   accessModes:
     - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
@@ -120,7 +120,7 @@ spec:
   storageClassName: azurefile-static
   resources:
     requests:
-      storage: %STORAGE_SIZE%
+      storage: %STORAGE_SIZE%Gi
   volumeName: %SERVICE_NAME%-azurefile-pv-%VOLUME_NAME_SUFFIX%
 ```
 
@@ -264,7 +264,7 @@ Also, the Azure fileshare needs to be created during deployment if it does not a
     echo "IDENTITY_NAME=$env:IDENTITY_NAME" >> $env:GITHUB_ENV;
 ```
 
-Last, during the Kubernetes deployment step, before any resources are applied, environmental variables required for the new `stoerage-pv.yaml` and `stoerage-pvc.yaml` must be set.
+Last, during the Kubernetes deployment step, before any resources are applied, environmental variables required for the new `storage-pv.yaml` and `storage-pvc.yaml` must be set.
 
 ```powershell
 $env:IDENTITY_CLIENT_ID = az identity show -g $env:AZURE_GROUP_KUBERNETES -n $env:IDENTITY_NAME --query clientId -o tsv;

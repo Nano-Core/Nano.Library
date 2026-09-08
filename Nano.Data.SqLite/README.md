@@ -63,7 +63,7 @@ Add the data configuration to `appsettings.json`.
   "UseSensitiveDataLogging": false,
   "QuerySplittingBehavior": "SingleQuery",
   "DefaultCollation": null,
-  "ConnectionString": "Data Source=/data/nanoDb.sqlite",
+  "ConnectionString": "Data Source=/mnt/data/nanoDb.sqlite",
   "Repository": {
     "UseAutoSave": false,
     "QueryIncludeDepth": 4
@@ -91,13 +91,16 @@ Add SqLite as a service dependency in `docker-compose.yml`.
 services:
   {service-name}:
     volumes:
-      - ./bin/data:/data
+      - ./bin/data:/mnt/data
 ```
 
 ## Kubernetes
-Add two additional kubernetes templates, `storageclass.yaml` and `pvc.yaml`, for dynamically manage and creating the disk for the SqLite database.
+Add an additional Kubernetes template, `data-storageclass.yaml`, for dynamically provisioning the disk backing the SqLite database file.
 
-Also, update `deployment.yaml` adding the volumes and volume mounts.  
+> ⚠️ Single-attach (`ReadWriteOnce`) — fine for a `CronJob`, but a multi-replica API/Web app needs `stateful-set.yaml` (`StatefulSet` + `volumeClaimTemplates`), not `deployment.yaml`, so 
+each replica gets its own (unshared) database file. For one shared database, use a network provider such as **[Nano.Data.MySql](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data.MySql/README.md#nanodatamysql)**.
+
+For a `CronJob`, or a single-replica Deployment, mount the disk via a static `data-pvc.yaml` `PersistentVolumeClaim` as before.
 
 ```json
 spec:
@@ -110,15 +113,63 @@ spec:
       volumes:
       - name: %SERVICE_NAME%-volume
         persistentVolumeClaim:
-          claimName: %SERVICE_NAME%-pvc
+          claimName: %SERVICE_NAME%-data-pvc
+```
+
+For a multi-replica application, use `stateful-set.yaml` instead, `volumeClaimTemplates` replaces the static `PersistentVolumeClaim` file entirely, and a governing headless service 
+(`service-headless.yaml`, `clusterIP: None`) is required for the `StatefulSet`'s `serviceName` field.
+
+```yaml
+spec:
+  serviceName: %SERVICE_NAME%-stateful-headless
+  template:
+    spec:
+      containers:
+        volumeMounts:
+        - name: %SERVICE_NAME%-volume
+          mountPath: /mnt/data
+  volumeClaimTemplates:
+  - metadata:
+      name: %SERVICE_NAME%-volume
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      storageClassName: %SERVICE_NAME%-data-storage-class
+      resources:
+        requests:
+          storage: %SQL_SIZE%Gi
+```
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: %SERVICE_NAME%-stateful-headless
+  namespace: %KUBERNETES_NAMESPACE%
+spec:
+  clusterIP: None
+  ports:
+  - name: http
+    port: 8080
+  selector:
+    app: %SERVICE_NAME%
+```
+
+The application's `autoscaler.yaml` (`HorizontalPodAutoscaler`, always present on `NanoApiApplication`/`NanoWebApplication`) must also have its `scaleTargetRef.kind` changed from 
+`Deployment` to `StatefulSet`.
+
+```yaml
+spec:
+  scaleTargetRef:
+    kind: StatefulSet
 ```
 
 ## GitHub Actions
-Add the following environment variables to the `buid-and-deply.yml`.  
+Add the following environment variables to the `build-and-deploy.yml`.  
 
 ```yaml
 env:
-  SQL_SIZE: 10Gi
+  SQL_SIZE: 10
 ```
 
 Deployment commands must also be updated to apply each of the new Kubernetes templates.  

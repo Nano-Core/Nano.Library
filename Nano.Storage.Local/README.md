@@ -68,10 +68,12 @@ services:
 ```
 
 ## Kubernetes
-Next, two additional Kubernetes templates have been added to create and manage the storage, `storage-storageclass.yaml` and `storage-pvc.yaml`.  
+Next, an additional Kubernetes template has been added to create and manage the storage class, `storage-storageclass.yaml`.  
 
-Also, as the container in Kubernetes is read-only, the following must also be added to your Kubernetes `deployment.yaml` or `cronjob.yaml` (depending on application type) 
-to ensure the file share is writable.  
+> ⚠️ Single-attach (`ReadWriteOnce`) is fine for a `CronJob`, but a multi-replica API/Web app needs `stateful-set.yaml` (`StatefulSet` + `volumeClaimTemplates`), not `deployment.yaml`, so
+each replica gets its own (unshared) disk. For a shared volume, use **[Nano.Storage.Azure](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Storage.Azure/README.md#nanostorageazure)** instead.
+
+For a `CronJob`, or a single-replica Deployment, mount the volume via a static `storage-pvc.yaml` `PersistentVolumeClaim` as before.
 
 ```json
 spec:
@@ -91,12 +93,65 @@ spec:
         emptyDir: {}
 ```
 
+For a multi-replica `NanoApiApplication`/`NanoWebApplication`, use `stateful-set.yaml` instead, `volumeClaimTemplates` replaces the static `PersistentVolumeClaim` file entirely, and a 
+governing headless service (`service-headless.yaml`, `clusterIP: None`) is required for the `StatefulSet`'s `serviceName` field.
+
+```yaml
+spec:
+  serviceName: %SERVICE_NAME%-stateful-headless
+  template:
+    spec:
+      containers:
+        volumeMounts:
+        - name: %SERVICE_NAME%-volume
+          mountPath: /mnt/%STORAGE_SHARE_NAME%
+        - name: tmp
+          mountPath: /tmp
+      volumes:
+      - name: tmp
+        emptyDir: {}
+  volumeClaimTemplates:
+  - metadata:
+      name: %SERVICE_NAME%-volume
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      storageClassName: %SERVICE_NAME%-storage-class
+      resources:
+        requests:
+          storage: %STORAGE_SIZE%Gi
+```
+
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: %SERVICE_NAME%-stateful-headless
+  namespace: %KUBERNETES_NAMESPACE%
+spec:
+  clusterIP: None
+  ports:
+  - name: http
+    port: 8080
+  selector:
+    app: %SERVICE_NAME%
+```
+
+The application's `autoscaler.yaml` (`HorizontalPodAutoscaler`, always present on `NanoApiApplication`/`NanoWebApplication`) must also have its `scaleTargetRef.kind` changed 
+from `Deployment` to `StatefulSet`.
+
+```yaml
+spec:
+  scaleTargetRef:
+    kind: StatefulSet
+```
+
 ## GitHub Actions
 Last, The `build-and-deploy.yaml` needs additional environmental variables related to local storage provder.  
 
 ```yaml
 env:
-  STORAGE_SIZE: {size}
+  STORAGE_SIZE: {size-in-gb}
   STORAGE_SHARE_NAME: {share-name}
 ```
 

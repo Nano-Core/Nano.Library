@@ -139,7 +139,7 @@ data:
 Last, the secret `auth-sql-secret.yaml` for the connectionstriong must be applied as well.
 
 ## GitHub Actions
-Add the following environment variables to the `buid-and-deply.yml`.  
+Add the following environment variables to the `build-and-deploy.yml`.  
 
 ```yaml
 env:
