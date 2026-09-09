@@ -35,9 +35,14 @@ inside `{name}/`.
 | `.docker/docker-compose.yml`                                | ✓   | ✓   | ✓   | Docker Compose spec for local (`Development`) orchestration.                                                                |
 | `.kubernetes/configmap.yaml`                                | ✓   | ✓   | ✓   | Kubernetes ConfigMap.                                                                                                        |
 | `.kubernetes/autoscaler.yaml`                               | ✓   | ✓   | ✗   | Kubernetes Horizontal Pod Autoscaler.                                                                                        |
-| `.kubernetes/deployment.yaml`                               | ✓   | ✓   | ✗   | Kubernetes Deployment.                                                                                                       |
+| `.kubernetes/deployment.yaml`                               | ✓   | ✓   | ✗   | Kubernetes Deployment. Mutually exclusive with `stateful-set.yaml` below — an app has one or the other, never both.          |
+| `.kubernetes/stateful-set.yaml`                             | (✓) | (✓) | ✗   | Kubernetes StatefulSet, replacing `deployment.yaml` _(only when the app needs one persistent volume per pod, not one shared — e.g. a `Local` storage provider backed by a single-attach (`ReadWriteOnce`) disk; a plain `Deployment` would have every replica race to attach the same volume. Uses `volumeClaimTemplates` instead of a static `PersistentVolumeClaim` file. Requires `service-headless.yaml` below for its `serviceName` field)_.                                                                                                       |
 | `.kubernetes/service.yaml`                                  | ✓   | ✓   | ✗   | Kubernetes Service.                                                                                                          |
-| `.kubernetes/httproute.yaml`                                | (✓) | (✓) | ✗   | Kubernetes HTTPRoute _(optional, public-facing apps only)_.                                                                  |
+| `.kubernetes/service-headless.yaml`                         | (✓) | (✓) | ✗   | Governing headless Service (`clusterIP: None`) — only present alongside `stateful-set.yaml`, which requires one for its `serviceName` field. Not a substitute for `service.yaml`, which still handles normal traffic routing.        |
+| `.kubernetes/httproute-80.yaml`                             | (✓) | (✓) | ✗   | Kubernetes HTTPRoute redirecting HTTP → HTTPS _(optional, public-facing apps only — always paired with `httproute-443.yaml` below, never present alone)_. |
+| `.kubernetes/httproute-443.yaml`                            | (✓) | (✓) | ✗   | Kubernetes HTTPRoute routing HTTPS traffic to the app _(optional, public-facing apps only)_.                                 |
+| `.kubernetes/service-account.yaml`                          | (✓) | (✓) | (✓) | Kubernetes ServiceAccount annotated for Azure Workload Identity _(optional, only when the app uses Azure Managed Identity)_. |
+| `.kubernetes/service-monitor.yaml`                          | (✓) | (✓) | ✗   | Prometheus `ServiceMonitor` scraping `/metrics` _(optional, only when Metrics is enabled — API/Web only, no HTTP surface on Console)_. |
 | `.kubernetes/cronjob.yaml`                                  | ✗   | ✗   | ✓   | Kubernetes CronJob (Console apps run as scheduled jobs, not long-running Deployments).                                       |
 | `.github/workflows/build-and-deploy.yml`                    | ✓   | ✓   | ✓   | CI/CD workflow — build, test, publish, deploy.                                                                              |
 | `Dockerfile`                                                | ✓   | ✓   | ✓   | Container image build for `Staging`/`Production`, at the solution root.                                                     |
@@ -49,12 +54,17 @@ framework requirement — Nano discovers controllers, mappings, and data provide
 location. As each feature section below is filled in, it will also note where new files of that kind
 conventionally belong.
 
-**NuGet packages**: for a quick start, add `NanoCore` (all-inclusive) to `{name}.Models` only — since `{name}`
-references `{name}.Models` via `ProjectReference`, every Nano package flows into the app project transitively, so
-no Nano package reference is needed there directly. This is what Nano.Templates itself does. Once you know which
-providers you're actually using, switch to referencing only the specific packages you need (e.g.
-`Nano.Data.PostgreSQL` instead of the whole graph) — smaller dependency footprint, and it makes provider choices
-explicit in the `.csproj` rather than implicit via a meta-package.
+**NuGet packages**: for a quick start, add `NanoCore` (all-inclusive; `Nano.All` is the identical, differently-named
+package underneath it — either one works the same way) to `{name}.Models` only — since `{name}` references
+`{name}.Models` via `ProjectReference`, every Nano package flows into the app project transitively, so no Nano
+package reference is needed there directly. This is what Nano.Templates itself does. Once you know which providers
+you're actually using, switch to referencing only the specific packages you need — smaller dependency footprint,
+and it makes provider choices explicit in the `.csproj` rather than implicit via a meta-package:
+- `Nano.App` goes on `{name}.Models` — it's the only Nano package that project needs (entity/query-criteria base
+  types).
+- The application-type package (`Nano.App.Api`, `Nano.App.Console`, or `Nano.App.Web`) and every provider package
+  (e.g. `Nano.Data.PostgreSQL`, `Nano.Logging.Serilog`) go on `{name}` (the app project) — `{name}` gets `Nano.App`
+  transitively through the application-type package, so it never needs `Nano.App` directly too.
 
 **Non-`Guid` identity**: Nano defaults every generic surface to `Guid` via a non-generic shorthand
 (`BaseEntity` = `BaseEntity<Guid>`, `IRepository` = `Repository<TContext, Guid>`, etc.). ⭐ It's highly
@@ -1239,6 +1249,12 @@ Exposes `/healthz`. No configuration options — enable with an empty object.
 "App": { "HealthCheck": { } }
 ```
 
+⚠ **Kubernetes probes must be added together with this config, never separately.** `/healthz` genuinely doesn't
+exist until `App:HealthCheck` is configured — so a fresh app ships with **no** `livenessProbe`/`readinessProbe`
+at all in `deployment.yaml`/`stateful-set.yaml` (probing a path that returns `404` would crash-loop the pod).
+Enabling health checks means adding both this config and the probes in the same change; removing health checks
+means removing both together, or Kubernetes keeps probing a path that's gone.
+
 A built-in *self* startup health check waits for all startup tasks to complete before reporting ready. Every
 other registered Nano provider/service with health-check support (Data, Eventing, Storage, custom API clients)
 appears automatically once its own `HealthCheck` config is enabled.
@@ -1260,7 +1276,8 @@ alongside the built-in ones in `ConfigureServices(...)`.
 #### Metrics (OpenTelemetry)
 
 Exposes `/metrics` (Prometheus-compatible, via OpenTelemetry — ASP.NET Core, HTTP client, and .NET runtime
-metrics). No configuration options — enable with an empty object. Requires `HealthCheck` to also be enabled.
+metrics). No configuration options — enable with an empty object. Independent of `HealthCheck` — neither
+requires the other.
 
 ```json
 "App": { "Metrics": { } }
@@ -1421,6 +1438,13 @@ var privateKey = rsa.ExportRSAPrivateKeyPem().Replace("-----BEGIN RSA PRIVATE KE
 **Root login** is a statically-configured, transient JWT login — no identity store involved. Useful in
 `Development` when testing a service in isolation, or for console apps authenticating via the API client with no
 specific user account. Logging in as root auto-assigns the `administrator` role.
+
+Primarily a `Development` convenience, but also usable in `Staging`/`Production` — doing so means
+`RootLogin.Username`/`Password` must come from a secret, not a config file, same as the JWT keys above: a
+`auth-root-login-secret` Kubernetes secret (`root-login-username`/`root-login-password` keys), sourced from
+`{{environment}}_AUTH_ROOT_LOGIN_USERNAME`/`_PASSWORD` GitHub secrets, mapped to
+`App__Authentication__Jwt__RootLogin__Username`/`Password` in `deployment.yaml`/`cronjob.yaml`. See
+`Nano.App.Api`'s README `## Authentication` section for the full secret/workflow YAML.
 
 ⚠ Don't confuse this with `App:Apis:{ClientClassName}:LogInRoot` in [Api Clients](#api-clients) — same idea,
 different direction. `Jwt.RootLogin` here lets **callers of this app** log in as root against `/auth/login/root`.
@@ -2212,7 +2236,7 @@ provider is chosen:
 | InMemory                | `Nano.Data.InMemory`         | `AddNanoData<InMemoryProvider, TContext>()`                        | No migrations, no `BaseDbContextFactory` needed.     |
 | MySql                   | `Nano.Data.MySql`            | `AddNanoData<MySqlProvider, TContext>()`                            | Needs `BaseDbContextFactory` + initial migration.    |
 | PostgreSQL              | `Nano.Data.PostgreSQL`       | `AddNanoData<PostgreSqlProvider, TContext>()`                        | Spatial via NetTopologySuite (`postgis`), vector search via Pgvector (`vector`) — both must be installed/allow-listed on the server. |
-| SqLite                  | `Nano.Data.SqLite`           | `AddNanoData<SqLiteProvider, TContext>()`                            | ⚠ No native spatial support; `mod_spatialite` unreliable. |
+| SqLite                  | `Nano.Data.SqLite`           | `AddNanoData<SqLiteProvider, TContext>()`                            | ⚠ No native spatial support; `mod_spatialite` unreliable. Kubernetes: file lives on a single-attach (`ReadWriteOnce`) disk — see [Solution Structure](#solution-structure)'s `stateful-set.yaml` row; needs `StatefulSet` + `volumeClaimTemplates`, not a plain `Deployment`, if the app runs more than one replica. |
 | SqlServer               | `Nano.Data.SqlServer`        | `AddNanoData<SqlServerProvider, TContext>()`                         | Needs `BaseDbContextFactory` + initial migration.    |
 
 ```json
@@ -3082,6 +3106,15 @@ All storage providers implement `IStorageProvider`.
   "HealthCheck": { "UnhealthyStatus": "Unhealthy" }
 }
 ```
+
+⚠ **Kubernetes deployment shape differs by provider, not just by config.** `Local` storage is backed by a
+single-attach (`ReadWriteOnce`) disk — see [Solution Structure](#solution-structure)'s `stateful-set.yaml` row.
+If the app runs more than one replica, a plain `Deployment` with a static `PersistentVolumeClaim` is wrong: every
+replica shares the same pod template and would race to attach the same disk, and only the first pod to schedule
+would ever become ready. Use a `StatefulSet` with `volumeClaimTemplates` instead, so each replica gets its own
+disk (note: that also means each replica's files are isolated from the others, not shared). `Azure` storage is
+backed by an Azure Files share (`ReadWriteMany`), which genuinely supports concurrent multi-pod access — a plain
+`Deployment` with one shared `PersistentVolumeClaim` is correct for it, no `StatefulSet` needed.
 
 #### Custom storage provider
 
