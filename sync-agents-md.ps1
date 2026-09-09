@@ -61,7 +61,8 @@ function Copy-ToQualifyingFolders {
 
             if (Test-Path $claudeSourcePath) {
                 $claudeDestinationPath = Join-Path $folder.FullName ".claude"
-                Copy-Item -Path $claudeSourcePath -Destination $claudeDestinationPath -Recurse -Force
+                New-Item -Path $claudeDestinationPath -ItemType Directory -Force | Out-Null
+                Copy-Item -Path (Join-Path $claudeSourcePath "*") -Destination $claudeDestinationPath -Recurse -Force
                 Write-Output ("Copied .claude to " + $claudeDestinationPath)
             }
 

@@ -42,8 +42,12 @@ by location.
   that entity, not also touching `Program.cs`, adding NuGet packages, or running EF migrations,
   unless asked.
 
-## Scaffolding a new entity
+## Prompts
 
-To scaffold a new CRUD entity (data model + EF Core mapping + query criteria + controller), follow
-`.github/prompts/nano-scaffold-entity.prompt.md` in this repo (also invokable directly as
-`/nano-scaffold-entity` in Copilot Chat).
+`.github/prompts/` holds one `.prompt.md` per Nano task - scaffolding an entity, adding/removing a
+provider (data, storage, eventing, logging), identity, authentication (JWT and API-key), Azure
+Managed Identity, an API client, a console worker, a startup task, health checks, metrics, public
+exposure, and availability checks. Each is invokable directly in Copilot Chat as `/<filename
+without .prompt.md>`, e.g. `/nano-add-identity` or `/nano-remove-storage-provider`. Prefer the
+matching prompt over improvising when a request matches one of these tasks - they encode the
+project-specific sequencing and gotchas AGENTS.md alone doesn't spell out step-by-step.

@@ -2,7 +2,6 @@
 mode: agent
 description: Scaffold a new Nano.Library entity end-to-end - data model, EF Core mapping, query criteria, and CRUD controller - following Nano framework conventions.
 ---
-
 # Nano entity scaffold
 
 Generate the four files Nano needs for a new CRUD-capable entity: data model, EF Core
