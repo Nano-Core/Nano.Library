@@ -1702,9 +1702,59 @@ The `RootLogin` configuration is defined as follows.
       "RootLogin": {
         "Username": null,
         "Password": null
+      }
     }
   }
 }
+```
+
+`RootLogin` is primarily a `Development` convenience, but it can also be enabled in `Staging` and `Production`, for example to give a Console application a simple way to authenticate through the Nano API client when no specific user account is available. Doing so means the credentials must come from a secret, not a config file, the same as the JWT keys above.
+
+| Variable                                    | Type     | Description                        |
+| -------------------------------------------- | -------- | ----------------------------------------- |
+| {{environment}}_AUTH_ROOT_LOGIN_USERNAME    | secrets  | The root login username.                 |
+| {{environment}}_AUTH_ROOT_LOGIN_PASSWORD    | secrets  | The root login password.                 |
+
+Configure the GitHub Actions workflow for the application by adding the following environment variables.
+
+```yaml
+env:
+  AUTH_ROOT_LOGIN_USERNAME: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_AUTH_ROOT_LOGIN_USERNAME || secrets.STAGING_AUTH_ROOT_LOGIN_USERNAME }}
+  AUTH_ROOT_LOGIN_PASSWORD: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_AUTH_ROOT_LOGIN_PASSWORD || secrets.STAGING_AUTH_ROOT_LOGIN_PASSWORD }}
+```
+
+Create a Kubernetes secret that stores the root login credentials, allowing them to be securely consumed by the application.
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: auth-root-login-secret
+  namespace: %KUBERNETES_NAMESPACE%
+type: Opaque
+stringData:
+  root-login-username: %AUTH_ROOT_LOGIN_USERNAME%
+  root-login-password: %AUTH_ROOT_LOGIN_PASSWORD%
+```
+
+Finally, reference the secret in the application `deployment.yaml` or `cronjob.yaml`.
+
+```yaml
+spec:
+  template:
+    spec:
+      containers:
+        env:
+        - name: App__Authentication__Jwt__RootLogin__Username
+          valueFrom:
+            secretKeyRef:
+              name: auth-root-login-secret
+              key: root-login-username
+        - name: App__Authentication__Jwt__RootLogin__Password
+          valueFrom:
+            secretKeyRef:
+              name: auth-root-login-secret
+              key: root-login-password
 ```
 
 When logged in as root, the administrator role is automatically assigned, providing full permissions across the application.  
