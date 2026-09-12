@@ -61,7 +61,11 @@ Currently, the web application does not add any additional configuration options
 > 📖 Learn more about **[Nano API Configuration](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App.Api/README.md#configuration)**.
 
 ## Razor
-Coming...
+Registers ASP.NET Core Razor Pages (`AddRazorPages()`/`MapRazorPages()`) and Razor Components (`AddRazorComponents()`/`MapRazorComponents<TRoot>()`) with interactive server-side rendering
+(`AddInteractiveServerComponents()`/`AddInteractiveServerRenderMode()`) enabled by default. `TRoot` is the root component type passed to `Build<TRoot>()` when building the application.
 
 ## Blazor
-Coming...
+Registers server-side Blazor (`AddServerSideBlazor()`) and maps its SignalR hub (`MapBlazorHub()`), so Blazor Server components run alongside Razor Pages/Components in the same application.
+
+Both Razor and Blazor share the API application's existing `ErrorHandling.ExposeErrors` option to control whether detailed error information is surfaced (`DetailedErrors`), no additional
+configuration is needed beyond what's already documented in **[Nano API Configuration](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App.Api/README.md#configuration)**.
