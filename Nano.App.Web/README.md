@@ -5,8 +5,6 @@
 
 > _Nano Web application._
 
-> ⚠️ Experimental — proceed with caution.
-
 ***
 
 ## Table of Contents
