@@ -4,7 +4,7 @@ using DynamicExpression;
 using Nano.Data.Abstractions.Models;
 using Nano.Data.Abstractions.Models.Enums;
 
-namespace Nano.App.Api.Controllers.Criteria;
+namespace Nano.App.Criteria;
 
 /// <summary>
 /// Query criteria specifically for audit entries, extending <see cref="BaseQueryCriteria"/>.

@@ -4,7 +4,7 @@ using Nano.Data.Abstractions.Models;
 using System;
 using System.Collections.Generic;
 
-namespace Nano.App.Api.Controllers.Criteria;
+namespace Nano.App.Criteria;
 
 /// <summary>
 /// Base implementation of <see cref="IQueryCriteria"/> with time-based filtering options.
