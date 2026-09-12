@@ -78,6 +78,24 @@ which contains **100+** focused examples that demonstrate individual features in
 
 > 💡 Explore API requests for all lessons in our **[Public Nano Workspace on Postman](https://www.postman.com/nanocore)**.
 
+The fastest way to start is the **[NanoCore.Templates](https://github.com/Nano-Core/.vsTemplates)** `dotnet new` template set: each template scaffolds an already-configured, 
+ready-to-deploy solution in one command, with Docker/Kubernetes deployment and CI/CD already wired up. It also appears directly in **Visual Studio's "Create a new project" dialog** 
+once installed.
+
+```powershell
+dotnet new install NanoCore.Templates
+dotnet new nanocore-api-minimal -n MyCompany.MyApi -o .\MyCompany.MyApi
+```
+
+Three Api flavors are available (minimal, publicly-exposed, and internal-service), plus a minimal Web and a minimal Console template. See 
+**[Nano.App.Api](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App.Api/README.md#registration)**, 
+**[Nano.App.Web](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App.Web/README.md#registration)**, and 
+**[Nano.App.Console](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App.Console/README.md#registration)** for the full list and their `dotnet new` commands.
+
+> 🤖 Once scaffolded, hand it to your AI coding assistant (Claude Code, Copilot, etc.) and just describe what you need next: add a logging or data provider, define your first 
+> entity, wire up an eventing subscription. The same steps as the Quick Start Guide, just conversational, since the generated repository already ships `AGENTS.md`, Claude Code 
+> skills, and Copilot instructions so the assistant knows Nano's conventions from the first prompt. See **[AI Agent Reference](#-ai-agent-reference)**.
+
 ## ✨ Highlighted features
 
 ### ✨ Api Clients
@@ -154,13 +172,23 @@ And optional, but recommended, tools.
 | Postman (or similar)     | Helps test and explore API endpoints during development.                     |
 
 ## 🤖 AI Agent Reference
-This repository includes an **[AGENTS.md](AGENTS.md)** — an implementation-focused reference for AI coding agents (e.g. Claude Code) building applications with Nano. It documents 
-providers, base controllers, `IRepository`, entity eventing, the API client, `IncludeAttribute`, and more, grounded in real code from this repository and [Nano.Templates](https://github.com/Nano-Core/Nano.Templates).  
+This repository includes an **[AGENTS.md](AGENTS.md)**: an implementation-focused reference for AI coding agents (e.g. Claude Code) building applications with Nano. It documents 
+providers, base controllers, `IRepository`, entity eventing, the API client, `IncludeAttribute`, and more, grounded in real code from this repository and **[Nano.Templates](https://github.com/Nano-Core/Nano.Templates)**.  
 
 Using it makes developing with Nano significantly faster and easier, letting an AI agent implement features correctly the first time instead of guessing at conventions.  
 
 The `AGENTS.md` is discovered by AI tools in the root of the project they're working in. It isn't inherited from a NuGet dependency. To make use of it, copy `AGENTS.md` into the root 
 of your own Nano-based application's repository.
+
+Alongside `AGENTS.md`, this repository also includes a **`.claude`** folder with reusable **[Agent Skills](https://code.claude.com/docs/en/skills)** for common, repeatable Nano development 
+tasks: `AGENTS.md` is reference knowledge an agent reads, a skill is a runnable capability an agent invokes to actually perform a task the same way every time. More skills may be 
+added over time as new repeatable workflows are identified. Like `AGENTS.md`, skills are discovered locally and aren't inherited from a NuGet dependency; copy the `.claude` folder into 
+the root of your own Nano-based application's repository to use them.
+
+GitHub Copilot is supported the same way: a **`.github/copilot-instructions.md`** provides always-on repository context (read automatically by Copilot in VS Code, Visual Studio, JetBrains, 
+and github.com, no setup needed), and a **`.github/prompts`** folder provides the Copilot equivalent of the entity-scaffolding skill, invokable as `/nano-scaffold-entity` in Copilot Chat. 
+A **`.vscode/settings.json`** enables prompt-file discovery in VS Code out of the box. Like `AGENTS.md` and `.claude`, these are discovered locally: copy `.github/copilot-instructions.md`, 
+`.github/prompts`, and `.vscode/settings.json` into the root of your own Nano-based application's repository to use them.
 
 ## 🧩 Solution Composition
 All Nano applications follow a consistent and predictable solution structure.  
@@ -178,7 +206,6 @@ In the following table shows the different files and folder strucutre.
 | --------------------------------------------------- | --- | --- | --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `.docker/docker-compose.dcproj`                     | ✓   | ✓   | ✓   | The Docker Compose project used by Visual Studio for local orchestration.                                                                                                                                                                       |
 | `.docker/docker-compose.yml`                        | ✓   | ✓   | ✓   | The Docker Compose specification for orchestrating the application locally in the `Development` environment.                                                                                                                                    |
-| `.github/config/slack.yml`                          | ✓   | ✓   | ✓   | Configuration for posting build and deploy notifications to Slack _(optional)_.                                                                                                                                                                 |
 | `.github/workflows/build-and-deploy.yml`            | ✓   | ✓   | ✓   | GitHub Actions workflow that builds, tests, publishes artifacts, and deploys a Nano application.                                                                                                                                                |
 | `.kubernetes/configmap.yaml`                        | ✓   | ✓   | ✓   | [ConfigMap](https://kubernetes.io/docs/concepts/configuration/configmap/) specification for Kubernetes.                                                                                                                                         |
 | `.kubernetes/autoscaler.yaml`                       | ✓   | ✓   | ✗  | [Horizontal Pod Autoscaler (HPA)](https://kubernetes.io/docs/concepts/workloads/autoscaling/horizontal-pod-autoscale/) specification.                                                                                                           |

@@ -55,6 +55,18 @@ NanoConsoleApplication
 
 Register your custom services in the `ConfigureServices(x => { })` method to extend Nano with additional functionality or integrations.  
 
+Rather than wiring this up by hand, you can scaffold an already-configured, ready-to-deploy Console application in one command using the **[NanoCore.Templates](https://github.com/Nano-Core/.vsTemplates)** 
+`dotnet new` template set.
+
+| Template         | Short Name                  | Description                                                                                       |
+| ---------------- | --------------------------- | ------------------------------------------------------------------------------------------------- |
+| Console Minimal  | `nanocore-console-minimal`  | The Nano Console host, Docker/Kubernetes CronJob deployment, and CI/CD - minimal configuration.   |
+
+```powershell
+dotnet new install NanoCore.Templates
+dotnet new nanocore-console-minimal -n MyCompany.MyWorker -o .\MyCompany.MyWorker
+```
+
 ## Variables And Secrets
 Nano console applications require a set of organization-level variables and secrets.  
 

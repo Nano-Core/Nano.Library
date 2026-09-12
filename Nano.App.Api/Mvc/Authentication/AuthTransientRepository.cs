@@ -1,8 +1,12 @@
+using Microsoft.AspNetCore.Identity;
 using Nano.App.Api.Mvc.Authentication.Abstractions;
 using Nano.Data.Abstractions.Extensions;
 using Nano.Data.Abstractions.Identity.Authentication;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
+using Nano.Data.Abstractions.Identity.Consts;
+using Nano.Data.Abstractions.Identity.Extensions;
 using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading;
@@ -78,5 +82,51 @@ public class AuthTransientRepository(IAuthJwtRepository authJwtRepository, IAuth
             TransientRoles = logInExternal.TransientRoles,
             TransientClaims = claims
         }, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public virtual async Task<AccessToken> LogInExternalRefreshAsync(string providerName, LogInRefresh logInRefresh, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(providerName);
+        ArgumentNullException.ThrowIfNull(logInRefresh);
+
+        if (this.authExternalRepository == null)
+        {
+            throw new NullReferenceException(nameof(this.authExternalRepository));
+        }
+
+        this.authJwtRepository
+            .ValidateTokenForRefresh(logInRefresh.Token);
+
+        var externalAuthenticationToken = await this.authExternalRepository
+            .AuthenticateRefreshAsync(providerName, logInRefresh.RefreshToken, cancellationToken);
+
+        var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+
+        var appId = jwtSecurityTokenHandler
+            .GetJwtAppId(logInRefresh.Token) ?? IdentityDefaults.DEFAULT_APP_ID;
+
+        var userId = jwtSecurityTokenHandler
+            .GetJwtUserId(logInRefresh.Token);
+
+        var userName = jwtSecurityTokenHandler
+            .GetJwtUserName(logInRefresh.Token);
+
+        var email = jwtSecurityTokenHandler
+            .GetJwtUserEmail(logInRefresh.Token);
+
+        var accessToken = this.authJwtRepository
+            .GenerateJwtToken(new GenerateJwtToken
+            {
+                AppId = appId,
+                UserId = userId,
+                UserName = userName,
+                UserEmail = email,
+                ExternalToken = externalAuthenticationToken,
+                Claims = logInRefresh.TransientClaims
+                .Select(x => new Claim(x.Key, x.Value))
+            });
+
+        return accessToken;
     }
 }

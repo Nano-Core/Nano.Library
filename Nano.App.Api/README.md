@@ -96,6 +96,20 @@ NanoApiApplication
 
 Register your custom services in the `ConfigureServices(x => { })` method to extend Nano with additional functionality or integrations.  
 
+Rather than wiring this up by hand, you can scaffold an already-configured, ready-to-deploy Api application in one command using the **[NanoCore.Templates](https://github.com/Nano-Core/.vsTemplates)** 
+`dotnet new` template set.
+
+| Template      | Short Name               | Description                                                                                           |
+| ------------- | ------------------------ | ----------------------------------------------------------------------------------------------------- |
+| Api Minimal   | `nanocore-api-minimal`   | The Nano Api host, Docker/Kubernetes deployment, and CI/CD - minimal configuration.                   |
+| Api Public    | `nanocore-api-public`    | Pre-configured for a publicly-exposed Api - the entry point handling external traffic.                |
+| Api Internal  | `nanocore-api-internal`  | Pre-configured for an internal service - handling requests from other applications within the system. |
+
+```powershell
+dotnet new install NanoCore.Templates
+dotnet new nanocore-api-minimal -n MyCompany.MyApi -o .\MyCompany.MyApi
+```
+
 ## Variables And Secrets
 Nano API applications require a set of organization-level variables and secrets. In addition, certain features may require extra configuration when enabled. Any feature-specific 
 requirements will be clearly documented in the relevant sections.  
@@ -1364,7 +1378,7 @@ Try it out yourself using the **[Api.HealthChecks](https://github.com/Nano-Core/
 The health check example also demonstrates how to configure availability monitoring using _Azure Application Insights_.  
 
 ## Metrics (OpenTelemetry)
-When health checks are enabled in the configuration, a `/metrics` endpoint is exposed.  
+When metrics are enabled in the configuration, a `/metrics` endpoint is exposed.  
 
 The endpoint provides Prometheus-compatible metrics collected through OpenTelemetry, including ASP.NET Core request metrics, HTTP client metrics, and .NET runtime 
 metrics. These metrics can be scraped by Azure Managed Prometheus and visualized in Grafana dashboards. 
@@ -1389,7 +1403,7 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: %SERVICE_NAME%
+      app: %SERVICE_NAME%
   endpoints:
     - port: http
       path: /metrics
@@ -1688,9 +1702,59 @@ The `RootLogin` configuration is defined as follows.
       "RootLogin": {
         "Username": null,
         "Password": null
+      }
     }
   }
 }
+```
+
+`RootLogin` is primarily a `Development` convenience, but it can also be enabled in `Staging` and `Production`, for example to give a Console application a simple way to authenticate through the Nano API client when no specific user account is available. Doing so means the credentials must come from a secret, not a config file, the same as the JWT keys above.
+
+| Variable                                    | Type     | Description                        |
+| -------------------------------------------- | -------- | ----------------------------------------- |
+| {{environment}}_AUTH_ROOT_LOGIN_USERNAME    | secrets  | The root login username.                 |
+| {{environment}}_AUTH_ROOT_LOGIN_PASSWORD    | secrets  | The root login password.                 |
+
+Configure the GitHub Actions workflow for the application by adding the following environment variables.
+
+```yaml
+env:
+  AUTH_ROOT_LOGIN_USERNAME: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_AUTH_ROOT_LOGIN_USERNAME || secrets.STAGING_AUTH_ROOT_LOGIN_USERNAME }}
+  AUTH_ROOT_LOGIN_PASSWORD: ${{ github.ref == 'refs/heads/master' && secrets.PRODUCTION_AUTH_ROOT_LOGIN_PASSWORD || secrets.STAGING_AUTH_ROOT_LOGIN_PASSWORD }}
+```
+
+Create a Kubernetes secret that stores the root login credentials, allowing them to be securely consumed by the application.
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: auth-root-login-secret
+  namespace: %KUBERNETES_NAMESPACE%
+type: Opaque
+stringData:
+  root-login-username: %AUTH_ROOT_LOGIN_USERNAME%
+  root-login-password: %AUTH_ROOT_LOGIN_PASSWORD%
+```
+
+Finally, reference the secret in the application `deployment.yaml` or `cronjob.yaml`.
+
+```yaml
+spec:
+  template:
+    spec:
+      containers:
+        env:
+        - name: App__Authentication__Jwt__RootLogin__Username
+          valueFrom:
+            secretKeyRef:
+              name: auth-root-login-secret
+              key: root-login-username
+        - name: App__Authentication__Jwt__RootLogin__Password
+          valueFrom:
+            secretKeyRef:
+              name: auth-root-login-secret
+              key: root-login-password
 ```
 
 When logged in as root, the administrator role is automatically assigned, providing full permissions across the application.  

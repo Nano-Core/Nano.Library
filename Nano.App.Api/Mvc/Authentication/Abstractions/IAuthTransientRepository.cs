@@ -45,4 +45,16 @@ public interface IAuthTransientRepository
     /// <exception cref="UnauthorizedException">Thrown if the external login fails or no user is returned.</exception>
     Task<AccessToken> LogInExternalAsync<TFlow>(string providerName, LogInExternal<TFlow> logInExternal, CancellationToken cancellationToken = default)
         where TFlow : BaseAuthFlow;
+
+    /// <summary>
+    /// Refreshes an external login using the provider's refresh token and generates a new corresponding JWT access token.
+    /// </summary>
+    /// <param name="providerName">The name of the provider.</param>
+    /// <param name="logInRefresh">The refresh information, including the expired access token, the provider's refresh token, and transient claims/roles to apply to the new token.</param>
+    /// <param name="cancellationToken">A <see cref="CancellationToken"/> to cancel the operation.</param>
+    /// <returns>A task that represents the asynchronous operation. The task result contains a new <see cref="AccessToken"/> for the authenticated external user.</returns>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="logInRefresh"/> is null.</exception>
+    /// <exception cref="NullReferenceException">Thrown if the underlying external repository is not configured.</exception>
+    /// <exception cref="UnauthorizedException">Thrown if <paramref name="logInRefresh"/>'s token fails validation, or if the refresh fails with the external provider.</exception>
+    Task<AccessToken> LogInExternalRefreshAsync(string providerName, LogInRefresh logInRefresh, CancellationToken cancellationToken = default);
 }

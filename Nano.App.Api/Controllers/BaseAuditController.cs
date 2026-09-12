@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Nano.App.Api.Controllers.Criteria;
 using Nano.App.Api.Mvc.Authorization.Consts;
+using Nano.App.Criteria;
 using Nano.Common.Consts;
 using Nano.Data.Abstractions;
 using Nano.Data.Abstractions.Models;
