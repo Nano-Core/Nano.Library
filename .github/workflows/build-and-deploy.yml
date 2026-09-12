@@ -8,7 +8,7 @@ on:
       - master 
 env:
   APP_NAME: Nano.Library
-  VERSION: 10.0.11
+  VERSION: 10.0.12
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
