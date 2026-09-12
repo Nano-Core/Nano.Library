@@ -24,11 +24,13 @@
 	    <Summary>Reusable libraries for building .NET microservice applications</Summary>
 	    <Description>This package is part of the Nano Library, a set of reusable .NET libraries for building microservice applications. Nano addresses common non-business concerns such as logging, persistence, messaging, validation, and documentation, while remaining fully configurable and extensible, so applications can stay focused on business logic. See https://github.com/Nano-Core/Nano.Library for details.</Description>
 	    <PackageReleaseNotes>
-			- Fix GetManyAsync ordering to run in SQL instead of client-side, and correct stale IRepository docs
-			- Added AGENTS.md
-			- Added script to copy AGENTS.md to Lessons and Templates
-			- Fixed misspelled PostgresSqlProvider
-			- Fixed issues in reaadme's
+			- Added Claude skills
+			- Added Copilot instructions and prompts
+			- Added IAuthTransientRepository.LogInExternalRefreshAsync(...) to refresh login for transient external login
+			- Moved Query Criterias from Nano.App.Api to Nano.App
+			- Updated all NuGet's
+			- Updated documentation in README.md.
+			- Removed experimental from Nano.App.Web
 		</PackageReleaseNotes>
 		<RepositoryType>git</RepositoryType>
 	    <RepositoryBranch>master</RepositoryBranch>

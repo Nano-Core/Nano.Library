@@ -246,7 +246,7 @@ in the project. The body is always a stub:
 
 ```csharp
 public virtual Task<IActionResult> DoTheThingAsync(/* params matching the request */, CancellationToken cancellationToken = default)
-    // TODO: Implement. See <ClientName>Api.DoTheThingAsync's doc comment for the full contract.
+    // Implement. See <ClientName>Api.DoTheThingAsync's doc comment for the full contract.
     => throw new NotImplementedException();
 ```
 
