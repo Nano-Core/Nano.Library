@@ -53,6 +53,52 @@ public static class JwtSecurityTokenHandlerExtensions
     }
 
     /// <summary>
+    /// Retrieves the user's name ("name") claim from a JWT token.
+    /// </summary>
+    /// <param name="jwtSecurityTokenHandler">The JWT security token handler.</param>
+    /// <param name="jwtToken">The JWT token string.</param>
+    /// <returns>The user name.</returns>
+    /// <exception cref="NullReferenceException">Thrown if the claim value is missing.</exception>
+    public static string GetJwtUserName(this JwtSecurityTokenHandler jwtSecurityTokenHandler, string jwtToken)
+    {
+        ArgumentNullException.ThrowIfNull(jwtSecurityTokenHandler);
+        ArgumentNullException.ThrowIfNull(jwtToken);
+
+        var value = jwtSecurityTokenHandler
+            .GetClaimValue(jwtToken, JwtRegisteredClaimNames.Name);
+
+        if (value == null)
+        {
+            throw new NullReferenceException(nameof(value));
+        }
+
+        return value;
+    }
+
+    /// <summary>
+    /// Retrieves the user's email ("email") claim from a JWT token.
+    /// </summary>
+    /// <param name="jwtSecurityTokenHandler">The JWT security token handler.</param>
+    /// <param name="jwtToken">The JWT token string.</param>
+    /// <returns>The email.</returns>
+    /// <exception cref="NullReferenceException">Thrown if the claim value is missing.</exception>
+    public static string GetJwtUserEmail(this JwtSecurityTokenHandler jwtSecurityTokenHandler, string jwtToken)
+    {
+        ArgumentNullException.ThrowIfNull(jwtSecurityTokenHandler);
+        ArgumentNullException.ThrowIfNull(jwtToken);
+
+        var value = jwtSecurityTokenHandler
+            .GetClaimValue(jwtToken, JwtRegisteredClaimNames.Email);
+
+        if (value == null)
+        {
+            throw new NullReferenceException(nameof(value));
+        }
+
+        return value;
+    }
+
+    /// <summary>
     /// Retrieves the App Id claim from a JWT token as a string.
     /// </summary>
     /// <param name="jwtSecurityTokenHandler">The JWT security token handler.</param>
