@@ -63,33 +63,42 @@ override, per `nano-add-data-provider`'s SqLite section) — remove it from ther
 
 ## docker-compose.yml
 
-Comment out the `database` service block (don't delete it) — matching the established
-convention of keeping all providers' blocks available for future reference, just inactive. Also
-remove `depends_on: [database]` from the app's own service entry, since nothing is left to
-depend on. Skip this step entirely for `InMemory` and `SqLite` — neither ever had a `database`
-service.
+Delete the `database` service block entirely (don't comment it out — `nano-add-data-provider`
+adds only the one block for the chosen provider, with no dormant alternatives for the others, so
+there's nothing to preserve here either). Also remove `depends_on: [database]` from the app's
+own service entry, since nothing is left to depend on. Skip this step entirely for `InMemory` and
+`SqLite` — neither ever had a `database` service.
 
 ## SqLite-specific cleanup
 
 If the provider was `SqLite`, additionally:
-- Delete `.kubernetes/data-storageclass.yaml` and `.kubernetes/data-pvc.yaml`.
-- Remove their `Get-Content | ExpandEnvironmentVariables | kubectl apply` block from the
+- Delete `.kubernetes/data-storageclass.yaml` and `.kubernetes/service-headless.yaml` (there's no
+  separate PVC file to delete — `nano-add-data-provider` never creates one; the `StatefulSet`'s
+  `volumeClaimTemplates` provisions one per pod automatically, and is removed as part of reverting
+  `stateful-set.yaml` back to a plain `Deployment` below).
+- Remove their `Get-Content | ExpandEnvironmentVariables | kubectl apply` blocks from the
   `Kubernetes Deploy` workflow step.
-- Remove the `volumeMounts`/`volumes` entries referencing `%SERVICE_NAME%-volume` from
-  `.kubernetes/deployment.yaml`.
+- Revert `.kubernetes/stateful-set.yaml` back to a plain `deployment.yaml` (`kind: Deployment`,
+  drop `serviceName` and `volumeClaimTemplates`) unless another SqLite-needing reason for a
+  `StatefulSet` remains — and change `.kubernetes/autoscaler.yaml`'s `scaleTargetRef.kind` back
+  from `StatefulSet` to `Deployment` alongside it.
+- Remove the `volumeMounts` entry referencing `%SERVICE_NAME%-volume` from the container spec.
 - Remove the `SQL_SIZE` workflow env var, if nothing else uses it.
 
 ## Staging/Production cleanup (MySql, PostgreSQL, SqlServer only)
 
 Skip entirely for `SqLite`/`InMemory` (covered above / never applicable).
 
-1. **Workflow steps** — remove `<Provider> Database Migration`. For `SqlServer` specifically,
-   also remove `SQL Server Create Database` (the two steps `nano-add-data-provider` always adds
-   together for that provider).
-2. **Workflow env vars** — remove `SQL_TYPE`, `SQL_AUTH_TYPE`, `SQL_NAME`. Only remove
+1. **Workflow steps** — remove `<Provider> Database Migration` (this is the only migration step
+   present — `nano-add-data-provider` no longer adds the other two providers' steps as dormant
+   `if:`-guarded alternatives, so there's nothing else to find here). For `SqlServer`
+   specifically, also remove `SQL Server Create Database` (the two steps `nano-add-data-provider`
+   always adds together for that provider).
+2. **Workflow env vars** — remove `SQL_AUTH_TYPE`, `SQL_NAME` (there is no `SQL_TYPE` to remove —
+   `nano-add-data-provider` no longer adds one). Only remove
    `AZURE_GROUP_DATABASE`/`AZURE_GROUP_LOGS`/`DOTNET_EF_TOOLS_VERSION` if nothing else in the
-   workflow still references them (`AZURE_GROUP_LOGS` in particular is also used by an
-   Availability Check step, if one exists — check before removing).
+   workflow still references them (`AZURE_GROUP_LOGS` is only added for `SqlServer` in the first
+   place, and is also used by an Availability Check step, if one exists — check before removing).
 3. **Kubernetes secret** — delete `.kubernetes/auth-sql-secret.yaml` and remove its apply block
    from the `Kubernetes Deploy` step.
 4. **ConfigMap** — remove `Data__AuthenticationType: %SQL_AUTH_TYPE%` from

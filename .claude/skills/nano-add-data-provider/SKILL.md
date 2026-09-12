@@ -88,10 +88,13 @@ In `appsettings.Development.json`, add:
 Use `host.docker.internal` as the host in the local connection string, not the docker-compose
 service name — `BaseDbContextFactory` specifically rewrites `host.docker.internal` → `localhost`
 in `Development` so `dotnet ef` commands from a local shell still work; the docker-compose
-service name wouldn't resolve outside the compose network at all. If the project's
-`appsettings.Development.json` already has other providers' connection strings commented out,
-add the new one active and leave/add the others commented alongside it, matching that structure
-rather than replacing it.
+service name wouldn't resolve outside the compose network at all.
+
+⚠ Add only the chosen provider's connection string, active. Don't add the other providers'
+connection strings as commented-out alternatives — a project commits to exactly one provider, and
+commented dead alternatives for providers it doesn't use are clutter, not documentation. If a
+prior, different provider's `ConnectionString` is already present (replacing an existing
+provider), remove it rather than commenting it out.
 
 ## Initial migration
 
@@ -108,9 +111,11 @@ entity-scaffold skill's same rule).
 ## docker-compose.yml (local Development)
 
 Add a `database` service to `.docker/docker-compose.yml`, and add `depends_on: [database]` to
-the app's own service if not already present. Use the image/env matching the chosen provider —
-if the file already has other providers' `database` blocks commented out, activate the matching
-one and leave the others commented rather than deleting them:
+the app's own service if not already present. Add only the one block matching the chosen
+provider — not the other two as commented-out alternatives; a project uses one data provider, and
+dead blocks for providers it doesn't use are clutter to maintain, not documentation. If a prior,
+different provider's `database` block is already present (replacing an existing provider), remove
+it rather than commenting it out.
 
 ```yaml
 # MySql
@@ -154,9 +159,9 @@ server container.
 
 ## SqLite (Kubernetes persistent volume, not a migration CI step)
 
-`SqLite` needs no `SQL_TYPE`-style migration step and no Managed Identity — it's a local file,
-not a network database — but unlike `InMemory` it does need K8s storage so the file survives pod
-restarts, and it deviates from the base-vs-Development split used elsewhere in this skill:
+`SqLite` needs no migration CI step and no Managed Identity — it's a local file, not a network
+database — but unlike `InMemory` it does need K8s storage so the file survives pod restarts, and
+it deviates from the base-vs-Development split used elsewhere in this skill:
 
 - **`appsettings.json` (base, not just Development)**: `"StartupAction": "Migrate"` and
   `"ConnectionString": "Data Source=/mnt/data/nanoDb.sqlite"` go directly in the base file, the
@@ -252,21 +257,28 @@ Provisioning that server is out of this skill's scope.
 
 1. **Workflow env vars** — add alongside the existing ones:
    ```yaml
-   SQL_TYPE: <mysql|postgresql|sqlserver>
    SQL_AUTH_TYPE: Azure
    SQL_NAME: <database name>
    AZURE_GROUP_DATABASE: ${{ vars.AZURE_RESOURCE_GROUP_DATABASE }}
    DOTNET_EF_TOOLS_VERSION: "10.0"
    ```
-2. **Migration step** — add one of the three provider-specific steps below, placed after
-   `Managed Identity` and before `Kubernetes Deploy` in the workflow. Each: resolves the Azure
+   ⚠ No `SQL_TYPE` variable, and no `if:` guard on the migration step below. A `SQL_TYPE`-style
+   runtime switch only earns its keep when an app genuinely needs to pick its provider at deploy
+   time — that's not this skill's job; the app has exactly one data provider, chosen once, here.
+   Add only the one migration step matching that provider, unconditionally. Don't add the other
+   two providers' steps as dormant `if:`-guarded alternatives — unreachable steps (and the
+   `AZURE_GROUP_LOGS` env var the SQL Server one alone needs) are clutter to maintain, not
+   documentation, and a workflow file is not the place to leave every road not taken. If this is
+   *replacing* an existing provider, remove that provider's migration step (and any env vars only
+   it needed) rather than leaving it disabled alongside the new one.
+2. **Migration step** — add the one step below matching the chosen provider, placed after
+   `Managed Identity` and before `Kubernetes Deploy` in the workflow. It resolves the Azure
    server, runs `dotnet ef database update` using an elevated/admin credential, then grants the
    app's own Managed Identity minimal (`SELECT, INSERT, UPDATE, DELETE`) permissions and builds
    the final passwordless `SQL_CONNECTIONSTRING` the app itself will use at runtime:
 
    ```yaml
    - name: MySQL Database Migration
-     if: env.SQL_TYPE == 'mysql'
      shell: pwsh
      run: |
        $env:SQL_HOST = az mysql flexible-server list -g $env:AZURE_GROUP_DATABASE --query [0].fullyQualifiedDomainName -o tsv;
@@ -303,7 +315,6 @@ Provisioning that server is out of this skill's scope.
 
    ```yaml
    - name: PostgreSQL Database Migration
-     if: env.SQL_TYPE == 'postgresql'
      shell: pwsh
      run: |
        $env:SQL_HOST = az postgres flexible-server list -g $env:AZURE_GROUP_DATABASE --query [0].fullyQualifiedDomainName -o tsv;
@@ -359,7 +370,6 @@ Provisioning that server is out of this skill's scope.
 
    ```yaml
    - name: SQL Server Create Database
-     if: env.SQL_TYPE == 'sqlserver'
      shell: pwsh
      run: |
        $env:SQL_SERVICE_OBJECTIVE = "GP_Gen5_2";
@@ -435,12 +445,11 @@ Provisioning that server is out of this skill's scope.
 
    This step is idempotent (`if (-not $env:SQL_DB_EXISTS)`) — safe to always include, it only
    acts the first time. It needs `AZURE_GROUP_LOGS: ${{ vars.AZURE_RESOURCE_GROUP_LOGS }}` added
-   to the workflow env block alongside `AZURE_GROUP_DATABASE` if not already present (diagnostics
-   and alerts attach to the Log Analytics workspace/action group there).
+   to the workflow env block alongside `AZURE_GROUP_DATABASE` — but only when `SqlServer` is the
+   chosen provider; no other provider's step uses `AZURE_GROUP_LOGS`, so don't add it otherwise.
 
    ```yaml
    - name: SQL Server Database Migration
-     if: env.SQL_TYPE == 'sqlserver'
      shell: pwsh
      run: |
        $env:SQL_HOST = az sql server list -g $env:AZURE_GROUP_DATABASE --query [0].fullyQualifiedDomainName -o tsv;

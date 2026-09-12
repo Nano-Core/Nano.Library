@@ -4,6 +4,23 @@ Implementation reference for building applications with Nano. Structured to mirr
 repository (`Nano.App`, `Nano.App.Api`, `Nano.App.Console`, `Nano.App.Web`, `Nano.Logging`, `Nano.Data`,
 `Nano.Eventing`, `Nano.Storage`), so a section here maps 1:1 to a section there.
 
+## Core Principle — Built-In Before Custom
+
+Every extension point documented below (a custom data/eventing/logging provider, a custom Api Client method, a
+custom query criteria operation, a hand-rolled controller action) exists for when the built-in surface genuinely
+can't express what's needed — not as a default starting point. Before reaching for any custom implementation,
+check whether the generic/built-in path already covers it:
+- Generic entity CRUD (`.Entity`) + `[Include]`-driven eager loading + `DynamicExpression` query criteria, before
+  a custom Api Client method or controller action.
+- A built-in data/eventing/logging/storage provider, before a custom `IDataProvider`/`IEventingProvider`/
+  `ILoggingProvider`/custom storage implementation.
+- The built-in `.Auth`/`.Audit`/`.Identity` method groups, before reimplementing that behavior by hand.
+
+A custom implementation is the last resort once the built-in path is confirmed insufficient, not a shortcut past
+learning how the built-in one works. Every skill that scaffolds something Nano already has a built-in way to do
+applies this same check before generating anything — see each skill's own "is this actually needed" determination
+step.
+
 ---
 
 ## Solution Structure
@@ -325,6 +342,14 @@ automatically from the inbound `HttpContext`, so locale/tenant/tracing context s
 Console workers (which have no inbound `HttpContext`) typically call only anonymous/unauthenticated endpoints to
 avoid needing `LogInRoot` credentials — a worker with no `LogInRoot` configured at all can still call target
 endpoints that are `[AllowAnonymous]`.
+
+⚠ **Don't have the target service re-derive caller-context claim values (tenant id, user id, etc.) from its own
+copy of the forwarded JWT for a custom endpoint's business logic.** The JWT is forwarded automatically (above),
+but a custom action's logic should receive that data as an explicit field on the request, read by the *calling*
+application from its own already-validated JWT and passed down — not re-extracted downstream from the token
+Nano happens to forward alongside it. This keeps claim-parsing logic in one place, and avoids needing the exact
+same tenant to exist and match on both sides in `Development` just to exercise a downstream custom endpoint —
+pass the value explicitly and the target doesn't need a real, matching tenant behind the token to use it.
 
 #### Gotchas
 
@@ -1800,6 +1825,12 @@ When [Identity](#identity) is configured, `BaseEntityUserController<TEntity, TCr
 deriving `BaseEntityUser`/`BaseEntityUser<TIdentity>`. It takes a second constructor dependency,
 `IIdentityRepository<TIdentity>`, alongside `IRepository`. Endpoints not matching the current configuration
 (e.g. API keys when API-key auth isn't enabled) aren't registered at all.
+
+⚠ Unlike the plain entity controllers' single `IEventing? eventing = null` parameter (see [Entity controller
+hierarchy](#entity-controller-hierarchy) above), `BaseEntityUserController` exposes **two separate constructor
+overloads** instead — one with no eventing parameter at all, one with a **required, non-nullable**
+`IEventing eventing`. There is no single-optional-parameter form here; pick whichever overload matches whether
+an eventing provider is actually registered, don't pass `IEventing?` into the `eventing` slot.
 
 | Endpoint (relative to `/{entity}s`)         | Method        | Role          |
 | ------------------------------------------------- | ------------- | ------------- |

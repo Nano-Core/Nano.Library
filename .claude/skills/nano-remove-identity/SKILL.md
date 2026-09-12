@@ -36,7 +36,30 @@ exactly what it adds.
    If either applies, tell the user exactly what removing Identity will do (crash vs. silent
    endpoint loss) and confirm before proceeding — don't remove out from under them without saying
    so.
-3. **No package reference to remove.** Matches `nano-add-identity`: Identity was never a separate
+3. **Does this app's own Api Client derive from `BaseIdentityApiClient<TUser[,TIdentity]>`?**
+   Check `{ThisApp}.Models/Api/` for a client using the identity-backed base class with this
+   app's `User` entity as `TUser`. If so, it must be reverted to the plain
+   `BaseApiClient`/`BaseApiClient<TIdentity>` base as part of this same change, not left for
+   later — either as a **guaranteed compile break** (if step 5 below deletes the entity, `TUser`
+   stops existing) or as a client that compiles but lies about what the target app actually
+   serves (if step 5 converts the entity back to a plain one instead — the `.Identity` method
+   group it still exposes has nothing left to call either way).
+4. **Does the entity carry anything beyond what `nano-add-identity` itself would have
+   generated?** This determines whether step 5 below deletes the entity outright or converts it
+   back to a plain one — check before touching any file:
+   - Custom scalar properties on the entity beyond what `BaseEntityUser` provides.
+   - Custom controller actions beyond the standard CRUD + identity-management set
+     `nano-add-identity` added.
+   - Any other code in the project that depends on this entity for a reason that has nothing to
+     do with Identity (e.g. it's referenced by other entities' navigations, or it's genuinely this
+     app's core business entity and Identity was layered onto it after the fact, per
+     `nano-add-identity`'s own "convert an existing plain entity" case).
+   If none of these apply, the entity is pure boilerplate from `nano-add-identity` with nothing
+   else depending on it — full deletion (step 5's first option) is safe. If any apply, **don't
+   default to deleting it** — ask the user whether they want full deletion anyway (only correct
+   if the entity truly has no remaining purpose once Identity is gone) or an in-place conversion
+   back to a plain entity that keeps everything custom intact.
+5. **No package reference to remove.** Matches `nano-add-identity`: Identity was never a separate
    NuGet package, so there's nothing to remove from the `.csproj` here either.
 
 ## appsettings.json
@@ -47,24 +70,53 @@ section lives in the base file only.
 
 ## User entity, mapping, and controller
 
-Delete the full file set `nano-add-identity` created for whichever entity derives
-`BaseEntityUser`/`BaseEntityUser<TIdentity>` (conventionally, but not always, named `User` — find
-it by searching for that base class if the name isn't obvious):
+Find the entity by searching for whichever one derives `BaseEntityUser`/`BaseEntityUser<TIdentity>`
+(conventionally, but not always, named `User`). What happens to it depends on step 4's answer:
 
+**Pure boilerplate (no custom content, or the user chose full deletion anyway):** delete the
+whole file set:
 - `Data/<Entity>.cs` (or the `.Models` project in a split layout).
 - `Data/Mappings/<Entity>Mapping.cs`.
 - `Criterias/<Entity>QueryCriteria.cs` (API/Web only — never existed for Console).
 - `Controllers/<Entity>sController.cs` (API/Web only).
 
-Don't leave the mapping behind even temporarily — `BaseEntityUserMapping<TEntity>` configures a
-required relationship to the underlying `IdentityUser` row (AGENTS.md's Data Mappings table),
-which stops being mapped the instant `Data:Identity` is gone; leaving the entity/mapping in place
-without the config breaks EF model building at startup, not just at the controller level covered
-in step 2.
+**Has custom content the user wants kept:** convert in place instead of deleting — the mirror
+image of `nano-add-identity`'s "convert an existing plain entity" case:
+- **Data model**: change the base class from `BaseEntityUser`/`BaseEntityUser<TIdentity>` back to
+  `BaseEntity`/`BaseEntity<TIdentity>` — nothing else about the class changes; every custom
+  property stays.
+- **Mapping**: change the base class from `BaseEntityUserMapping<TEntity>`/`<TEntity,TIdentity>`
+  back to `BaseEntityMapping<TEntity>`/`<TEntity,TIdentity>` — this is what actually matters here,
+  not optional cleanup: `BaseEntityUserMapping<TEntity>` configures a required relationship to the
+  underlying `IdentityUser` row (AGENTS.md's Data Mappings table), which stops being mapped the
+  instant `Data:Identity` is gone. Leaving the old base class in place breaks EF model building at
+  startup, not just the controller-level crash covered in step 2 — converting the mapping is not
+  something to skip even when keeping the entity.
+- **Query criteria**: untouched — nothing identity-specific lives here either way.
+- **Controller**: change the base class from `BaseEntityUserController<...>` back to
+  `BaseEntityController<...>` (or whichever narrower capability base fits), drop the
+  `IIdentityRepository` constructor parameter, and remove only the identity-management actions
+  `nano-add-identity` added — keep every other custom action as-is.
+
+Either way, don't leave a `BaseEntityUserMapping`/`BaseEntityUserController` behind pointed at a
+`Data:Identity` section that no longer exists — that's the one part of this that's never safe to
+defer, in either branch.
+
+## Api Client side
+
+If step 3 found a client on `BaseIdentityApiClient<TUser[,TIdentity]>`, **revert it to
+`BaseApiClient`/`BaseApiClient<TIdentity>`** now, as part of this same change, regardless of
+which branch the section above took: the `.Identity` method group it exposed has nothing left to
+call either way — the identity-management actions are gone from the controller whether the
+entity itself was deleted or just converted back to a plain one. If the entity was deleted
+outright, this is also a guaranteed compile break (`TUser` stops existing), not just a dangling
+capability. Don't leave this as a follow-up for the user to remember separately.
 
 ## After making the change
 
-- Show the user every file touched/deleted.
+- Show the user every file touched/deleted/converted, including any Api Client reverted to its
+  plain base class, and say explicitly which branch step 4 took (full deletion vs. converted back
+  to a plain entity) and why.
 - Restate anything flagged in step 2 — the guaranteed controller crash, plus the specific
   Authentication endpoints that silently disappear if Jwt/API-key auth was configured — one more
   time here, even if the user already confirmed it.

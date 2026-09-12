@@ -1,79 +1,59 @@
 ---
 name: nano-add-api-client
-description: Wire a Nano Api Client into an application - defines a BaseApiClient subclass for calling another Nano application over HTTP, and its App:Apis configuration entry. Use when the user asks to call another Nano service/API, add an API client, or compose a gateway from internal services in a Nano API, Web, or Console application.
+description: Wire an existing Nano Api Client into this application - adds the App:Apis configuration entry and injects the client into a controller/worker so it can call another Nano service. Use when the user asks to call another Nano service/API from this app, add an API client to a gateway, or compose internal services together in a Nano API, Web, or Console application.
 ---
 
 # Nano add API client
 
-Wires a typed HTTP client for calling another Nano application into an existing Nano API, Web, or
-Console application. Read `AGENTS.md`'s `### Api Clients` section first — it documents the built-in
-method groups (`.Entity`/`.Auth`/`.Audit`/`.Identity`), the custom-request attribute shapes, and
-authentication forwarding in full; this skill does not repeat that, only how to wire a new client
-into this specific app.
+Wires an *already-defined* Api Client — a `BaseApiClient` subclass living in the target
+service's `{Name}.Models` project — into this consuming application: the `App:Apis` config entry
+and the injection site that actually makes it callable. Read AGENTS.md's `### Api Clients`
+section first — it documents the built-in method groups (`.Entity`/`.Auth`/`.Audit`/`.Identity`)
+and authentication forwarding in full; this skill does not repeat that, only how to consume a
+client from this app.
+
+If the client class doesn't exist yet, don't treat that as a choice to offer — treat it as a sign
+something may be wrong. Either the user is pointed at the wrong application (the client is
+expected to already exist, defined on the *owning* service's side — check this isn't simply the
+wrong project before going further), or the owning service genuinely hasn't defined it yet, in
+which case that's `nano-define-api-client`'s job, in that other application's own project, not
+this skill's. Either way: stop, warn the user plainly that the client doesn't exist where expected,
+and ask which is true — don't invoke the other skill automatically, and don't proceed on the
+assumption a missing class is just an item to create in passing.
 
 **No registration call.** Every `BaseApiClient` subclass in the entry assembly whose class name
 matches a key under `App:Apis` is auto-wired — but per AGENTS.md's own gotcha, a client that's
-never actually injected anywhere doesn't get registered at all. Define the class, add the config,
-then make sure something actually consumes it (a controller or worker constructor parameter) or
-none of this takes effect.
+never actually injected anywhere doesn't get registered at all. Add the config, then make sure
+something actually consumes it (a controller or worker constructor parameter), or none of this
+takes effect.
 
 ## Before making any change, determine
 
-1. **Which target application**, and where its `{TargetName}.Models` project (or published NuGet)
-   lives — that's where the client class and any custom request types belong (AGENTS.md: "the
-   client class and its custom request types live in the *owning* service's `{name}.Models/Api/`
-   project"). If the target is in the same solution, check how any other Api Client in this
-   project already references its target's `.Models` project (`ProjectReference` for a same-
-   solution/monorepo target, or a NuGet reference for a separate-repo target) and match that
-   convention — AGENTS.md explicitly allows either for this case, unlike Nano.Library itself.
-2. **Does the target have persistent Identity?** Determines the base class: `BaseApiClient`/
-   `BaseApiClient<TIdentity>` (no Identity, or identity type doesn't matter to this client), or
-   `BaseIdentityApiClient<TUser[,TIdentity]>` (target has Identity — unlocks the `.Identity`
-   method group). Check the target's own `Data:Identity` config / `BaseEntityUser`-derived entity
-   if you have access to its source; ask the user if not.
-3. **Is a client with this class name already registered?** Check for an existing class matching
-   the intended name (the `App:Apis` key must exactly match it — AGENTS.md: "the only link between
-   config and DI"). Pick a name that doesn't collide.
+1. **Does the client class already exist?** Check the target service's `{TargetName}.Models/Api/`
+   project (or its published NuGet) for the `BaseApiClient`/`BaseIdentityApiClient` subclass the
+   user means. If it doesn't exist yet, stop — don't create it inline, and don't invoke
+   `nano-define-api-client` automatically. Warn the user explicitly that the client isn't defined
+   where expected, and ask two things: is this actually the right target/application to be
+   wiring into right now, and if so, did they mean to define the client first (on the owning
+   service's own project, a separate task from this one)? Let them answer both before doing
+   anything else.
+2. **How does this app reference the target's `.Models` project?** Check how any other Api
+   Client in this project already references its target (`ProjectReference` for a
+   same-solution/monorepo target, or a NuGet reference for a separate-repo target) and match that
+   convention — AGENTS.md explicitly allows either here. If this is the first Api Client in the
+   project, ask which applies.
+3. **Is a client with this class name already registered?** Check for an existing `App:Apis` key
+   matching the class name — if one's already there pointing at a different host/target, confirm
+   with the user before overwriting it.
 4. **Console app?** Per AGENTS.md's `#### Authentication forwarding`: Console workers have no
    inbound `HttpContext`, so they can't transparently forward a caller's JWT — a Console-hosted
    client typically only calls `[AllowAnonymous]` endpoints on the target, or needs `LogInRoot`
    configured if it must call authenticated ones. Ask which applies before adding `LogInRoot`.
-5. **Custom endpoints needed beyond `.Entity`/`.Auth`/`.Audit`/`.Identity`?** If so, this also
-   means defining request types (see below) — confirm which endpoints on the target before
-   guessing at routes.
 
-## Client class
-
-`{TargetName}.Models/Api/{ClientName}.cs` (owning service's Models project, not this consuming
-app):
-
-```csharp
-// Bare pass-through
-public class MyApi(ApiClient apiClient) : BaseApiClient(apiClient);
-```
-```csharp
-// Identity-backed target
-public class MyApi(ApiClient apiClient) : BaseIdentityApiClient<MyUser>(apiClient);
-```
-
-Add custom methods only if step 5 applies — one method per custom request, calling
-`this.InvokeAsync(request, cancellationToken)` (no response) or
-`this.InvokeAsync<TRequest, TResponse>(request, cancellationToken)` (typed response).
-
-## Custom requests (only if step 5 applies)
-
-`{TargetName}.Models/Api/Requests/{Name}Request.cs`, one action attribute
-(`[GetAction]`/`[PostAction]`/etc.) naming the HTTP verb + relative route, per AGENTS.md's four
-request shapes. Set `this.Controller` explicitly in the constructor unless the route naturally
-matches the pluralized response type. **Define the route segment as a constant** in a `Consts`
-class inside `{TargetName}.Models` and reference it from both this request's action attribute and
-the target controller's `[Route(...)]` — per AGENTS.md, nothing else keeps the two sides in sync,
-and Nano's own built-in requests avoid drift exactly this way.
-
-## appsettings.json (consuming app)
+## appsettings.json (this app)
 
 Add the `App:Apis:{ClientClassName}` section to the base `appsettings.json` — the dictionary key
-must be the exact class name from above:
+must be the exact class name from step 1:
 
 ```json
 "App": {
@@ -112,8 +92,7 @@ must be the exact class name from above:
   `root-login-password`), mapped into `App__Apis__{ClientName}__LogInRoot__Username`/`Password`
   in `deployment.yaml` — never re-create or duplicate it with a new name. Don't confuse this with
   `Jwt.RootLogin` — see AGENTS.md's explicit warning distinguishing the two; they're on different
-  apps, in different
-  directions.
+  apps, in different directions.
 
 ## Injecting the client
 
@@ -132,8 +111,9 @@ gotcha above, nothing gets registered even though the config exists.
 
 ## After making the change
 
-- Show the user every file touched, noting which project each lives in (owning service's
-  `.Models` vs. this consuming app).
+- Show the user every file touched in *this* app — the `appsettings.json` addition and the
+  injection site. Note that the client class itself lives in the target service's `.Models`
+  project, not here.
 - Confirm the client is actually injected somewhere — if the request was just "add the client" with
   no specified consumer yet, say explicitly that nothing is wired up until it's referenced.
 - If `LogInRoot` was added, restate the Staging/Production secret-handling requirement — don't let
