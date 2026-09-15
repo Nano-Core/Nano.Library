@@ -3,7 +3,10 @@
     Copies Nano.Library's AGENTS.md, .claude folder (Claude Code skills), .github/prompts folder
     (Copilot prompt files), .github/copilot-instructions.md (Copilot always-on context), and
     .vscode/settings.json (enables prompt file discovery in VS Code) into the relevant subfolders of
-    the sibling Nano.Templates, Nano.Lessons, and .vsTemplates repos, overwriting.
+    the sibling Nano.Templates, Nano.Lessons, and .vsTemplates repos, overwriting. The destination
+    .claude and .github/prompts folders are deleted and recreated from source on every run, so a
+    skill or prompt renamed/removed in Nano.Library is also removed from every synced folder, not
+    just left stale alongside the new ones.
 
 .DESCRIPTION
     Run this from within Nano.Library itself. It expects Nano.Templates, Nano.Lessons, and .vsTemplates
@@ -66,6 +69,9 @@ function Copy-ToQualifyingFolders {
 
             if (Test-Path $claudeSourcePath) {
                 $claudeDestinationPath = Join-Path $folder.FullName ".claude"
+                if (Test-Path $claudeDestinationPath) {
+                    Remove-Item -Path $claudeDestinationPath -Recurse -Force
+                }
                 New-Item -Path $claudeDestinationPath -ItemType Directory -Force | Out-Null
                 Copy-Item -Path (Join-Path $claudeSourcePath "*") -Destination $claudeDestinationPath -Recurse -Force
                 Write-Output ("Copied .claude to " + $claudeDestinationPath)
@@ -73,6 +79,9 @@ function Copy-ToQualifyingFolders {
 
             if (Test-Path $promptsSourcePath) {
                 $promptsDestinationPath = Join-Path $folder.FullName ".github\prompts"
+                if (Test-Path $promptsDestinationPath) {
+                    Remove-Item -Path $promptsDestinationPath -Recurse -Force
+                }
                 New-Item -Path $promptsDestinationPath -ItemType Directory -Force | Out-Null
                 Copy-Item -Path (Join-Path $promptsSourcePath "*") -Destination $promptsDestinationPath -Recurse -Force
                 Write-Output ("Copied .github/prompts to " + $promptsDestinationPath)
