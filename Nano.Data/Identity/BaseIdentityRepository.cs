@@ -892,12 +892,12 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
     #region User Claims
 
     /// <inheritdoc />
-    public virtual async Task<IList<Claim>> GetAllUserClaims(IdentityUserEx<TIdentity> identityUser, IEnumerable<string>? transientRoles = null, IDictionary<string, string>? transientClaims = null, CancellationToken cancellationToken = default)
+    public virtual async Task<IList<Claim>> GetAllUserClaims(IdentityUserEx<TIdentity> identityUser, IEnumerable<string>? transientRoles = null, IEnumerable<KeyValuePair<string, string>>? transientClaims = null, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(identityUser);
 
-        transientRoles ??= new List<string>();
-        transientClaims ??= new Dictionary<string, string>();
+        transientRoles ??= [];
+        transientClaims ??= [];
 
         var userClaims = await this.userManager
             .GetClaimsAsync(identityUser);
@@ -1588,7 +1588,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
     #region Api Keys Claims
 
     /// <inheritdoc />
-    public virtual async Task<IList<Claim>> GetAllApiKeyClaims(IdentityApiKey<TIdentity> identityApiKey, IEnumerable<string>? transientRoles = null, IDictionary<string, string>? transientClaims = null, CancellationToken cancellationToken = default)
+    public virtual async Task<IList<Claim>> GetAllApiKeyClaims(IdentityApiKey<TIdentity> identityApiKey, IEnumerable<string>? transientRoles = null, IEnumerable<KeyValuePair<string, string>>? transientClaims = null, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(identityApiKey);
 
@@ -2107,7 +2107,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
         await this.dbContext
             .SaveChangesAsync(cancellationToken);
     }
-    private async Task AssignSignUpRolesAndClaims(IdentityUserEx<TIdentity> identityUser, IEnumerable<string>? roles = null, IDictionary<string, string>? claims = null)
+    private async Task AssignSignUpRolesAndClaims(IdentityUserEx<TIdentity> identityUser, IEnumerable<string>? roles = null, IEnumerable<KeyValuePair<string, string>>? claims = null)
     {
         ArgumentNullException.ThrowIfNull(identityUser);
 

@@ -20,7 +20,7 @@ public abstract class BaseSignUp
     /// Additional claims to assign to the user.
     /// </summary>
     [Required]
-    public virtual IDictionary<string, string> Claims { get; set; } = new Dictionary<string, string>();
+    public virtual IEnumerable<KeyValuePair<string, string>> Claims { get; set; } = [];
 }
 
 /// <summary>

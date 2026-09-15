@@ -52,5 +52,5 @@ public class ExternalAuthenticationData
     /// Non-persisted claims added to the issued JWT during login.
     /// </summary>
     [Required]
-    public virtual IDictionary<string, string> TransientClaims { get; set; } = new Dictionary<string, string>();
+    public virtual IEnumerable<KeyValuePair<string, string>> TransientClaims { get; set; } = [];
 }

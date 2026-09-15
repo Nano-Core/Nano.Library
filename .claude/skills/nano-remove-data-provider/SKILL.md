@@ -22,12 +22,26 @@ than re-deriving them.
    parameter fails DI resolution the instant the provider is gone:
    - **`IRepository` or the `DbContext` injected directly.** Search the project for both,
      anywhere — controllers, services, workers. A scaffolded controller
-     (`nano-scaffold-entity`'s own template) always takes `IRepository` as a required parameter,
+     (`nano-add-entity`'s own template) always takes `IRepository` as a required parameter,
      so any existing entity's controller is a guaranteed hit — the app won't start at all with
      it left in place and the provider gone.
-   - **Entities.** Beyond the controller-crash risk above, `BaseEntity`-derived classes and their
-     mappings/query criteria become dead weight with nothing to persist them — not a crash by
-     themselves, but still worth surfacing.
+   - **Data Mappings — a build break, not just dead code, if the package is actually being
+     removed.** Every `Data/Mappings/<Entity>Mapping.cs` file (`BaseEntityMapping<T>`/
+     `BaseMapping<T>`) references `EntityTypeBuilder<T>`
+     (`Microsoft.EntityFrameworkCore.Metadata.Builders`) — a type that only reaches this project
+     transitively through `Nano.Data.<Provider>`, not through `Nano.App`/`Nano.Data.Abstractions`.
+     If step 3 below actually removes that package (i.e. the project isn't on `NanoCore`/
+     `Nano.All`), every mapping file fails to compile the instant it's gone — deleting them is
+     required to keep the build green, not optional cleanup, but **list every mapping file this
+     would delete and get explicit confirmation before deleting any of them** — same rule as
+     deleting any other file the user didn't directly ask you to remove; don't fold it silently
+     into "removing the provider." If `NanoCore`/`Nano.All` stays in place instead, they still
+     compile fine, just with nothing left to ever apply them (`OnModelCreating`'s auto-discovery
+     has no `DbContext` to run from) — dead code, not a break, and there's no deletion to confirm.
+   - **Entities and query criteria.** Beyond the mapping risk above, `BaseEntity`-derived classes
+     and their query criteria become dead weight with nothing to persist them — not a crash or
+     build break by themselves (they don't reference EF Core types directly), but still worth
+     surfacing.
    - **Identity/Master auth.** If `Data:Identity` is configured (see AGENTS.md's `#### Identity`)
      or a JWT auth setup depends on the Identity store this context provides, removing the
      provider breaks authentication entirely.
@@ -51,6 +65,14 @@ blank-app placeholder and the `_` discard parameter.
 - `Data/<Name>DbContextFactory.cs` (if present — `InMemory` never had one)
 - `Migrations/` folder (if present — dead without the factory that constructs the context for
   `dotnet ef`; keeping stale migration files around with no way to run them is just clutter)
+- **`Data/Mappings/*.cs` (every entity's mapping) — required, not optional, whenever step 3 is
+  actually removing the `Nano.Data.<Provider>` package, but only after step 2's confirmation.**
+  Per step 2's Data Mappings risk, leaving these behind breaks the build, not just clutters it —
+  so deletion is the correct end state once confirmed, but list the files and get that
+  confirmation first rather than deleting them as an unannounced side effect of removing the
+  provider. If `NanoCore`/`Nano.All` covers the project instead (package step skipped), they're
+  safe to leave — flag them as dead code per step
+  2 rather than deleting, since the entities/query criteria they map are also staying.
 
 ## appsettings.json
 
@@ -112,7 +134,9 @@ Skip entirely for `SqLite`/`InMemory` (covered above / never applicable).
   Staging/Production CI + K8s) — same reasoning as the add skill: too many files for a flat list
   to be easy to sanity-check.
 - Restate anything flagged in step 2 — required `IRepository`/`DbContext` injections that will
-  now crash the app, plus orphaned entities or broken Identity/auth — one more time here, even
-  if the user already confirmed it; worth a second visible reminder once the removal is done.
+  now crash the app, whether mapping files were deleted (build break avoided) or left as dead
+  code (`NanoCore`/`Nano.All` case), plus orphaned entities/query criteria or broken
+  Identity/auth — one more time here, even if the user already confirmed it; worth a second
+  visible reminder once the removal is done.
 - If a step was skipped because the project uses `NanoCore`/`Nano.All`, or because a Staging/
   Production section never existed to begin with, say so explicitly.

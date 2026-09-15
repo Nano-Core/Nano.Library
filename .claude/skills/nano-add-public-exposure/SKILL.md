@@ -121,15 +121,21 @@ spec:
           port: 8080
 ```
 
+Also add `.kubernetes\httproute-80.yaml = .kubernetes\httproute-80.yaml` and
+`.kubernetes\httproute-443.yaml = .kubernetes\httproute-443.yaml` to `{name}.sln`'s `.kubernetes`
+`SolutionItems` block (see AGENTS.md's Solution Structure note) — new files under `.kubernetes/`
+don't show up in Visual Studio's Solution Explorer otherwise.
+
 `%ROUTE_HOST_NAMES%` and `%GATEWAY_NAME%` are **not** static env vars — they're derived at
 deploy time (see below), one hostname line per DNS zone found in the target Azure resource
 group, so an app can be reachable under multiple domains without per-domain config.
 
 ## GitHub Actions
 
-1. **Workflow env vars**:
+1. **Workflow env vars** — `SUB_DOMAIN_NAME` is whatever the user answered in step 4 above; never
+   invent or guess a value for it:
    ```yaml
-   SUB_DOMAIN_NAME: papi
+   SUB_DOMAIN_NAME: <sub-domain name the user gave in step 4>
    AZURE_GROUP_DNS: ${{ vars.AZURE_RESOURCE_GROUP_DNS }}
    ```
 2. **Derive the hostnames and gateway**, in the `Kubernetes Deploy` step, before any manifest is

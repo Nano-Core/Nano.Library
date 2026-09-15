@@ -40,9 +40,13 @@ it correctly to an existing project without breaking what's already there.
 
 ## Program.cs
 
-Add the `using`s and registration call AGENTS.md's `### Registration` section shows, inside the
-**existing** `.ConfigureServices(...)` lambda — don't create a second `.ConfigureServices` call
-if one already exists.
+Add the registration call AGENTS.md's `### Registration` section shows, inside the **existing**
+`.ConfigureServices(...)` lambda — don't create a second `.ConfigureServices` call if one already
+exists. This needs **two** `using`s, not one — `AddNanoLogging<TProvider>()` itself lives in
+`Nano.Logging.Extensions`, a different namespace than `TProvider`, which lives in the specific
+provider package's own namespace (e.g. `Nano.Logging.Serilog` for `SerilogProvider`). Add both;
+forgetting `Nano.Logging.Extensions` is an easy miss since AGENTS.md's registration snippet
+doesn't spell out `using`s at all.
 
 - If the existing lambda parameter is the discard placeholder `_` (e.g. `.ConfigureServices(_
   => { // Add your services here. })`, the standard blank-app boilerplate), rename it to `x` and

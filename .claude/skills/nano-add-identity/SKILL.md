@@ -125,7 +125,7 @@ convert, in which case its existing properties carry over as-is; don't ask for t
 
 ## Api Client side
 
-If this application exposes an Api Client for other apps to consume (`nano-define-api-client`),
+If this application exposes an Api Client for other apps to consume (`nano-add-api-client`),
 and it was previously a plain `BaseApiClient`/`BaseApiClient<TIdentity>`, **it must now be
 changed to derive from `BaseIdentityApiClient<TUser[,TIdentity]>`** (`TUser` = this `User` entity)
 — that's what unlocks the `.Identity` method group (sign-up, password, roles, claims, API keys,
