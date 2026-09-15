@@ -44,10 +44,12 @@ by location.
 
 ## Prompts
 
-`.github/prompts/` holds one `.prompt.md` per Nano task - scaffolding an entity, adding/removing a
-provider (data, storage, eventing, logging), identity, authentication (JWT and API-key), Azure
-Managed Identity, an API client, a console worker, a startup task, health checks, metrics, public
-exposure, and availability checks. Each is invokable directly in Copilot Chat as `/<filename
-without .prompt.md>`, e.g. `/nano-add-identity` or `/nano-remove-storage-provider`. Prefer the
-matching prompt over improvising when a request matches one of these tasks - they encode the
-project-specific sequencing and gotchas AGENTS.md alone doesn't spell out step-by-step.
+`.github/prompts/` holds one `.prompt.md` per Nano task - scaffolding an entity, a custom (non-CRUD)
+endpoint, or a custom Api Client method; adding/removing a provider (data, storage, eventing,
+logging), identity, authentication (JWT and API-key), Azure Managed Identity, an API client (as a
+consumer) or its definition (as the owning service), a console worker, a startup task, health
+checks, metrics, public exposure, and availability checks. Each is invokable directly in Copilot
+Chat as `/<filename without .prompt.md>`, e.g. `/nano-add-identity` or
+`/nano-remove-storage-provider`. Prefer the matching prompt over improvising when a request matches
+one of these tasks - they encode the project-specific sequencing and gotchas AGENTS.md alone
+doesn't spell out step-by-step.

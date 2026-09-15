@@ -102,7 +102,7 @@ pair locally:
   "useful in Development when testing a service in isolation"). Root login self-issues a JWT,
   which needs a private key regardless of the app's Staging/Production role. Only omit
   `PrivateKey` in Development for an app that genuinely never self-issues locally (e.g. a
-  pure public-facing gateway with no isolated-testing story of its own).
+  pure Public API with no isolated-testing story of its own).
 - `Expiration: "24:00:00"` (vs. the base file's `01:00:00`) is the established convention for
   Development - longer-lived tokens are less annoying to work with locally. Not required, but
   match it unless the user asks otherwise.

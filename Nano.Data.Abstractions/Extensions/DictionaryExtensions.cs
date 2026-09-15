@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Nano.Data.Abstractions.Extensions;
 
@@ -9,28 +10,22 @@ namespace Nano.Data.Abstractions.Extensions;
 public static class DictionaryExtensions
 {
     /// <summary>
-    /// Merges two dictionaries into a new <see cref="Dictionary{TKey, TValue}"/> instance.
-    /// Entries from the second dictionary will overwrite values from the first dictionary if duplicate keys are encountered.
+    /// Merges two sequences into a new <see cref="IEnumerable{T}"/> of key/value pairs.
+    /// Entries from the second sequence are appended after the first - duplicate keys are kept, not overwritten.
     /// </summary>
-    /// <typeparam name="TKey">The type of the keys in the dictionary.</typeparam>
-    /// <typeparam name="TValue">The type of the values in the dictionary.</typeparam>
-    /// <param name="first">The first dictionary to merge.</param>
-    /// <param name="second">The second dictionary whose values will overwrite duplicates from the first.</param>
-    /// <returns>A new <see cref="Dictionary{TKey, TValue}"/> containing all entries from both dictionaries.</returns>
+    /// <typeparam name="TKey">The type of the keys in the pairs.</typeparam>
+    /// <typeparam name="TValue">The type of the values in the pairs.</typeparam>
+    /// <param name="first">The first sequence to merge.</param>
+    /// <param name="second">The second sequence, appended after the first.</param>
+    /// <returns>A new <see cref="IEnumerable{T}"/> containing all entries from both sequences.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="first"/> or <paramref name="second"/> is <c>null</c>.</exception>
-    public static Dictionary<TKey, TValue> Merge<TKey, TValue>(this IDictionary<TKey, TValue> first, IDictionary<TKey, TValue> second)
+    public static IEnumerable<KeyValuePair<TKey, TValue>> Merge<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> first, IEnumerable<KeyValuePair<TKey, TValue>> second)
         where TKey : notnull
     {
         ArgumentNullException.ThrowIfNull(first);
         ArgumentNullException.ThrowIfNull(second);
 
-        var result = new Dictionary<TKey, TValue>(first);
-
-        foreach (var kvp in second)
-        {
-            result[kvp.Key] = kvp.Value;
-        }
-
-        return result;
+        return first
+            .Concat(second);
     }
 }

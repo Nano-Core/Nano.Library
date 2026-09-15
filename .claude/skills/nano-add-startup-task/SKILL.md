@@ -15,10 +15,11 @@ task — this is for your own one-time initialization work.
 1. **Name and job.** Ask if not already given — what needs to happen once before the app is
    considered ready (cache warm-up, an external dependency check, etc.).
 2. **Must it be allowed to fail the whole app?** Per AGENTS.md: if `OnStartAsync` throws, **the
-   exception propagates and the application fails to start** — a startup task cannot fail
-   silently, unlike a Console Worker. If the user actually wants best-effort/non-fatal behavior
-   instead, a [Console Worker](nano-add-console-worker) (Console apps only) or a plain
-   `IHostedService` might be the better fit — confirm before assuming a hard failure is wanted.
+   exception propagates and the application fails to start** — confirm that's actually wanted for
+   this task before assuming it. If the user wants best-effort/non-fatal behavior instead, wrap
+   the task's own logic in a `try`/`catch` inside `OnStartAsync` (log and swallow, or record a
+   flag another part of the app can check) rather than letting it propagate — the task itself
+   still runs at the same point in startup either way, only the failure handling changes.
 3. **Does `OnStopAsync` need to do real cleanup?** Read the timing note below before relying on
    it for anything tied to actual application shutdown.
 

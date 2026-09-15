@@ -110,9 +110,9 @@ nullable, so it doesn't change behavior for a controller that never ends up usin
 ## Staging/Production (Kubernetes)
 
 No CI step and no per-app secret to create — RabbitMQ is a **pre-existing, shared, cluster-wide**
-broker, referenced by a secret (`rabbitmq-default-user`) that already exists in the cluster
-before this app is ever deployed. Don't create a new secret or add a provisioning workflow step;
-just wire the reference:
+broker, referenced by a secret (`rabbitmq-default-user`) provisioned cluster-wide by the
+infrastructure repo, not by this skill or this app. Don't create a new secret or add a
+provisioning workflow step; just wire the reference:
 
 Add to `.kubernetes/deployment.yaml`'s container `env`:
 
@@ -138,10 +138,6 @@ Add to `.kubernetes/deployment.yaml`'s container `env`:
       name: rabbitmq-default-user
       key: password
 ```
-
-If `rabbitmq-default-user` doesn't exist in the target cluster yet, that's a one-time,
-cluster-level provisioning concern — tell the user rather than inventing a new secret name or a
-provisioning step for it.
 
 ## After making the change
 

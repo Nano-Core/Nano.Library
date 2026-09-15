@@ -28,6 +28,11 @@ Figure out which one applies before touching anything — steps 1–5 below are 
 layered with API-key auth by running `nano-add-authentication-apikey` before or after this skill — see
 step 6.
 
+These two aren't the only combination — `Jwt.ExternalLogins` can also layer on top of already-configured
+Identity (e.g. "sign in with Google" but the account is still persistent, not transient). See
+AGENTS.md's sub-repository table for exactly how `AuthExternalRepositoryAggregator` resolves which
+repository backs a given external login in that case — not repeated here.
+
 ## Before making any change, determine
 
 1. **Does this app issue tokens, or only validate them?** Ask if the request doesn't say.
@@ -45,8 +50,8 @@ step 6.
      `/auth/login`, `/auth/login/refresh`, `/auth/logout` — nothing further to wire beyond the
      `Jwt` config and controller below.
    - **Transient** (no Identity): needs `Jwt.ExternalLogins` configured (built-in Facebook/
-     Google/Microsoft, or a custom provider per AGENTS.md's `##### Custom external provider`) —
-     ask which, and whether a custom provider implementation is needed, before proceeding.
+     Google/Microsoft, or a custom provider — see "External Login" below) — ask which, and
+     whether a custom provider implementation is needed, before proceeding.
    - If the user wants persistent auth but Identity isn't registered yet, stop and point them at
      `nano-add-identity` first.
 3. **Is Authentication already configured?** Check the base `appsettings.json` for
@@ -102,7 +107,7 @@ pair locally:
   "useful in Development when testing a service in isolation"). Root login self-issues a JWT,
   which needs a private key regardless of the app's Staging/Production role. Only omit
   `PrivateKey` in Development for an app that genuinely never self-issues locally (e.g. a
-  pure public-facing gateway with no isolated-testing story of its own).
+  pure Public API with no isolated-testing story of its own).
 - `Expiration: "24:00:00"` (vs. the base file's `01:00:00`) is the established convention for
   Development — longer-lived tokens are less annoying to work with locally. Not required, but
   match it unless the user asks otherwise.
@@ -133,6 +138,69 @@ Nothing to implement — every endpoint the current config enables (per AGENTS.m
 table) is provided. For a non-`Guid` identity type, use `BaseAuthController<TIdentity>` and
 `IAuthRepository<TIdentity>` to match (same rule as every other controller in this ecosystem).
 
+## External Login (`Jwt.ExternalLogins`)
+
+Only relevant if step 2 found external login in play — either the transient case, or the hybrid
+persistent-plus-external-login case noted above. Two genuinely different kinds of work, not one:
+
+**Built-in provider (Facebook / Google / Microsoft) — pure config, no code.** Add the matching
+block under `Jwt.ExternalLogins` in the base `appsettings.json`, per AGENTS.md's `##### Configuration`
+table (`Facebook.AppId`/`.AppSecret`/`.Scopes`, `Google.ClientId`/`.ClientSecret`/`.Scopes`,
+`Microsoft.TenantId`/`.ClientId`/`.ClientSecret`/`.Scopes`). Treat `AppSecret`/`ClientSecret` as
+real secrets, the same class of value as the JWT keys above — `null` in the base file, a real
+value only where it's actually safe to have one. AGENTS.md doesn't document an established
+Kubernetes-secret/GitHub-secret convention for these specifically (unlike `auth-jwt-secret`/
+`auth-api-key-secret`/`auth-sql-secret`) — don't invent one; ask the user how they want it stored
+for Staging/Production rather than assuming a pattern that doesn't exist yet in this codebase.
+
+**Custom provider — real code, no config entry.** Per AGENTS.md's `##### Custom external provider`,
+this is auto-discovered by type, not registered via `Jwt.ExternalLogins` config the way built-in
+providers are — there's no appsettings.json entry for it at all.
+
+1. **`TFlow`.** `ImplicitFlow` or `AuthCodeFlow` (both derive `BaseAuthFlow`) — pick whichever
+   matches the provider's actual OAuth flow; ask if unclear rather than guessing. Derive a custom
+   `BaseAuthFlow` subclass instead only if the provider's flow doesn't fit either built-in shape.
+2. **The class**, conventionally `Auth/{Provider}ExternalRepository.cs` in the application
+   project (discovery is by type, so the location isn't enforced):
+   ```csharp
+   public class MyExternalRepository() : BaseAuthExternalRepository<ImplicitFlow>("MyProvider")
+   {
+       public override async Task<ExternalAuthenticationData> AuthenticateAsync(ImplicitFlow flow, CancellationToken cancellationToken = default)
+       {
+           // call the external provider, map its response to ExternalAuthenticationData
+           return new ExternalAuthenticationData
+           {
+               Id = "external-id",
+               Username = "MyUser",
+               EmailAddress = "user@domain.com",
+               Name = "My User",
+               ExternalToken = new ExternalAuthenticationToken { Name = this.ProviderName, Token = "token", RefreshToken = "refresh-token" }
+           };
+       }
+
+       public override async Task<ExternalAuthenticationToken> AuthenticateRefreshAsync(string refreshToken, CancellationToken cancellationToken = default)
+       {
+           // refresh against the external provider
+           return new ExternalAuthenticationToken { Name = this.ProviderName, Token = "token", RefreshToken = "refresh-token" };
+       }
+   }
+   ```
+   The constructor's string argument (`"MyProvider"` above) is `ProviderName` — this is what
+   `AuthExternalRepositoryAggregator` resolves against, and what appears in the
+   `/auth/login/external/{providerName}/...` route, so ask the user what they want it called
+   rather than defaulting to the class name.
+3. **Whatever credentials/endpoint the provider itself needs** (API key, base URL, etc.) — these
+   are this custom repository's own concern, not `Jwt.ExternalLogins`'s. Add them as an options
+   class bound from whatever config section makes sense for this provider (same pattern as any
+   other custom service in this codebase), then inject it into the repository's constructor. Don't
+   try to route them through `Jwt.ExternalLogins` — that section is exclusively for the three
+   built-in providers.
+
+Either way, the actual login endpoint this exposes is
+`/auth/login/external/{providerName}/transient` when Identity isn't configured, or the
+persistent equivalent per AGENTS.md's sub-repository table when it is — this skill doesn't scaffold
+that call site, only the repository/config that backs it.
+
 ## Kubernetes / GitHub Actions (Staging/Production) — issuer app only
 
 Only the app that **issues** tokens does this. A validator-only app does **not** create or
@@ -158,13 +226,17 @@ it for any app but the issuer.
      jwt-public-key: %AUTH_JWT_PUBLIC_KEY%
      jwt-private-key: %AUTH_JWT_PRIVATE_KEY%
    ```
-   Apply it in the `Kubernetes Deploy` step, before `deployment.yaml`/`stateful-set.yaml`.
+   Apply it in the `Kubernetes Deploy` step, before `deployment.yaml`/`stateful-set.yaml`. Also
+   add `.kubernetes\auth-jwt-secret.yaml = .kubernetes\auth-jwt-secret.yaml` to `{name}.sln`'s
+   `.kubernetes` `SolutionItems` block (see AGENTS.md's Solution Structure note) — new files
+   under `.kubernetes/` don't show up in Visual Studio's Solution Explorer otherwise.
 
-## Kubernetes — every app (issuer and validator)
+## Kubernetes — deployment.yaml
 
-Reference the secret in `.kubernetes/deployment.yaml`'s container `env` — issuer apps map both
-keys, validator-only apps map `PublicKey` only:
+Reference the secret in `.kubernetes/deployment.yaml`'s container `env` — **the two app types get
+different entries here, not the same block with one line dropped**:
 
+Issuer app (both keys):
 ```yaml
 - name: App__Authentication__Jwt__PublicKey
   valueFrom:
@@ -178,7 +250,14 @@ keys, validator-only apps map `PublicKey` only:
       key: jwt-private-key
 ```
 
-Drop the `PrivateKey` entry entirely for a validator-only app.
+Validator-only app (`PublicKey` only — no `PrivateKey` entry at all):
+```yaml
+- name: App__Authentication__Jwt__PublicKey
+  valueFrom:
+    secretKeyRef:
+      name: auth-jwt-secret
+      key: jwt-public-key
+```
 
 ## API-key authentication
 
@@ -222,7 +301,8 @@ Console.Read();
 ## After making the change
 
 - Show the user every file touched, grouped by concern (appsettings per environment, the
-  controller, and — for the issuer app — Staging/Production CI + K8s).
+  controller, and — for the issuer app — Staging/Production CI + K8s), plus the external-login
+  repository class if one was scaffolded.
 - Point them at the snippet above for generating real Staging/Production keys — never the
   hardcoded Development pair.
 - If they want to change the Development key pair from the shared default, warn explicitly: it

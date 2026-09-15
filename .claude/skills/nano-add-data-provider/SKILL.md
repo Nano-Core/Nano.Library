@@ -233,7 +233,10 @@ it deviates from the base-vs-Development split used elsewhere in this skill:
   by name from `volumeClaimTemplates`) and `service-headless.yaml` (same `Get-Content |
   ExpandEnvironmentVariables | Set-Content .tmp.yaml` + `kubectl apply` pattern), before
   `stateful-set.yaml`. There's no separate PVC file to apply — `volumeClaimTemplates` creates one
-  per pod automatically.
+  per pod automatically. Also add `.kubernetes\data-storageclass.yaml = .kubernetes\data-storageclass.yaml`
+  and `.kubernetes\service-headless.yaml = .kubernetes\service-headless.yaml` to `{name}.sln`'s
+  `.kubernetes` `SolutionItems` block (see AGENTS.md's Solution Structure note) — new files under
+  `.kubernetes/` don't show up in Visual Studio's Solution Explorer otherwise.
 - No `docker-compose.yml` `database` service, no `auth-sql-secret.yaml`, no `configmap.yaml`
   change — none of the Staging/Production section below applies to SqLite.
 
@@ -488,7 +491,10 @@ Provisioning that server is out of this skill's scope.
    ```
    Apply it in the `Kubernetes Deploy` step (same `Get-Content | ExpandEnvironmentVariables |
    Set-Content .tmp.yaml` + `kubectl apply` pattern every other manifest in the workflow uses),
-   before the app's own `deployment.yaml` is applied.
+   before the app's own `deployment.yaml` is applied. Also add `.kubernetes\auth-sql-secret.yaml
+   = .kubernetes\auth-sql-secret.yaml` to `{name}.sln`'s `.kubernetes` `SolutionItems` block (see
+   AGENTS.md's Solution Structure note) — new files under `.kubernetes/` don't show up in Visual
+   Studio's Solution Explorer otherwise.
 4. **ConfigMap** — add `Data__AuthenticationType: %SQL_AUTH_TYPE%` to `.kubernetes/configmap.yaml`.
    This is what actually makes the live environment use `Azure` auth — the base
    `appsettings.json` stays `Credentials` always (see above); this env var overrides it at

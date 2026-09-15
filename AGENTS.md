@@ -71,6 +71,12 @@ framework requirement — Nano discovers controllers, mappings, and data provide
 location. As each feature section below is filled in, it will also note where new files of that kind
 conventionally belong.
 
+⚠ `{name}.sln` lists every file under `.kubernetes/` (and `.github/workflows/`) explicitly, one line per file,
+inside that folder's `ProjectSection(SolutionItems) = preProject` block — Visual Studio doesn't pick these up
+automatically the way it does `.csproj`-owned source files. Adding a new `.kubernetes/*.yaml` manifest (a new
+Kubernetes secret, storage class, HTTPRoute, etc.) means also adding a `.kubernetes\<file>.yaml = .kubernetes\<file>.yaml`
+line to that block, or it exists on disk but never shows up in the solution.
+
 **NuGet packages**: for a quick start, add `NanoCore` (all-inclusive; `Nano.All` is the identical, differently-named
 package underneath it — either one works the same way) to `{name}.Models` only — since `{name}` references
 `{name}.Models` via `ProjectReference`, every Nano package flows into the app project transitively, so no Nano
@@ -151,7 +157,8 @@ This is the mechanism for one Nano application to call another over HTTP with a 
 full CRUD against the target's entities, authentication, and identity management, without hand-building HTTP
 requests. It's how internal services expose their models/entities to other applications (typically via a NuGet
 built from their `{name}.Models` project — see [Solution Structure](#solution-structure)), and how a
-publicly-exposed gateway API composes several internal services into one façade.
+publicly-exposed Public API composes several internal services into one façade (see
+[Controllers § Public API vs internal service](#public-api-vs-internal-service)).
 
 **Where the code lives**: the client class and its custom request types live in the *owning* service's
 `{name}.Models/Api/` project (e.g. `MyService.Models/Api/MyApi.cs`, with custom requests under
@@ -209,7 +216,7 @@ An endpoint not enabled on the target application (e.g. `.Auth` when the target 
 returns `404` — surfaced as `null`, not an exception (see Gotchas below).
 
 Real usage — a controller composing multiple clients (an identity-backed `MyApi` plus a custom-methods-only
-`MyOtherApi`) into one gateway endpoint:
+`MyOtherApi`) into one Public API endpoint:
 
 ```csharp
 public class MyUserController(ILogger<MyUserController> logger, MyApi myApi, MyOtherApi myOtherApi)
@@ -334,7 +341,7 @@ link between config and DI; there's no other place to declare which config entry
 
 Outbound JWT is resolved in this order: `request.JwtTokenOverride` (explicit per-request override) → the
 current inbound request's own JWT (so a call made from inside a controller/worker action transparently forwards
-the caller's identity — this is how a gateway application's controllers stay authenticated end-to-end into an
+the caller's identity — this is how a Public API's controllers stay authenticated end-to-end into an
 internal service) → if `LogInRoot` is configured, an automatic root login (cached for the process lifetime). A
 set of headers (`X-Api-Key`, `X-Forwarded-*`, request id, `Accept-Language`, timezone) is also forwarded
 automatically from the inbound `HttpContext`, so locale/tenant/tracing context survives across service calls.
@@ -1394,7 +1401,7 @@ possible but not the intended extension point — external identity providers ar
 token — any other app configured with the same `Issuer`/`Audience`/`PublicKey` can validate it, with no shared
 session or database involved. The [Api Client](#api-clients)'s automatic JWT forwarding is what actually carries
 a caller's identity through a chain of internal service calls: an inbound request's JWT is forwarded unchanged
-to every downstream call made through it, so a user who authenticated once against a gateway stays authenticated
+to every downstream call made through it, so a user who authenticated once against a Public API stays authenticated
 all the way down into whichever internal service ultimately handles the request — see [Api Clients §
 Authentication forwarding](#authentication-forwarding).
 
@@ -1480,7 +1487,7 @@ to forward.
 **API key auth** (`X-Api-Key` header) requires [Data Identity](#identity) with `Data:Identity:ApiKey:Secret`
 configured — it's an identity-store feature, not a standalone scheme. JWT and API key can be enabled
 side-by-side; Nano picks the handler based on which header is present, defaulting to JWT if both could apply.
-In a layered architecture, a gateway in front of your services must exchange an API key for a JWT itself (via the
+In a layered architecture, a Public API in front of your services must exchange an API key for a JWT itself (via the
 built-in `/auth/login/apikey` endpoint) before forwarding — services behind it don't accept raw API keys directly
 over the wire from end users, they still expect a JWT.
 
@@ -1656,6 +1663,22 @@ public abstract class BaseController : Controller
 
 `BaseController` itself requires **auth by default** (bare `[Authorize]`) and exposes `Logger` and `RequestId`
 (the `X-Request-Id` header value — see [Request Tracing](#request-tracing)).
+
+#### Public API vs internal service
+
+Two genuinely different roles a controller plays in a layered Nano solution — not a base-class distinction
+(both are ordinary `BaseController`/`BaseEntityController<...>` subclasses), but a naming/design one worth being
+explicit about, since it changes what an action's body actually does:
+
+- **Public API controller** — the customer/end-user-facing application (e.g. `Api.Platform`/`Api.Admin` in this
+  solution). Its actions compose one or more injected [Api Clients](#api-clients) into a response; it has no
+  `IRepository` of its own. Called "Public API," not "gateway," specifically to avoid colliding with the
+  unrelated Kubernetes Gateway API resource (`nano-add-public-exposure`'s `HTTPRoute`/`Gateway`) — "gateway" in
+  this codebase otherwise means that Kubernetes resource, or the network-edge/cert-manager TLS-terminating layer
+  in front of a cluster, never this application-level role.
+- **Internal service controller** — implements real logic directly against its own `IRepository`/`IEventing`,
+  either as a custom method on an entity controller or a bare `BaseController` action. Only ever called by a
+  Public API (or another internal service) via its Api Client — never exposed directly to untrusted clients.
 
 #### Entity controller hierarchy
 
@@ -1856,7 +1879,7 @@ an eventing provider is actually registered, don't pass `IEventing?` into the `e
 | `roles/{id}/claims[/assign\|replace\|assign-or-replace\|remove]` | various | **administrator** |
 
 ⚠ **Security**: `password/reset/token` and `{id}/password/reset` are anonymous by design, for internal use.
-Never expose this controller directly to untrusted clients without a gateway in front.
+Never expose this controller directly to untrusted clients without a Public API in front.
 
 #### Auth and audit controllers
 
@@ -2080,6 +2103,10 @@ letting the collector own routing rather than configuring it per app.
     services.AddNanoLogging<TProvider>();
 })
 ```
+
+`AddNanoLogging<TProvider>()` itself lives in `Nano.Logging.Extensions` — a different namespace than `TProvider`
+(each provider type lives in its own package's namespace, e.g. `Nano.Logging.Serilog`). Both `using`s are required
+regardless of which provider you register.
 
 ### Configuration
 

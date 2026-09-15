@@ -405,7 +405,7 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A list of <see cref="Claim"/> objects for the user.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="identityUser"/> is <c>null</c>.</exception>
-    Task<IList<Claim>> GetAllUserClaims(IdentityUserEx<TIdentity> identityUser, IEnumerable<string>? transientRoles = null, IDictionary<string, string>? transientClaims = null, CancellationToken cancellationToken = default);
+    Task<IList<Claim>> GetAllUserClaims(IdentityUserEx<TIdentity> identityUser, IEnumerable<string>? transientRoles = null, IEnumerable<KeyValuePair<string, string>>? transientClaims = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Retrieves a specific claim of a user by claim type.
@@ -718,7 +718,7 @@ public interface IIdentityRepository<TIdentity>
     /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     /// <returns>A list of <see cref="Claim"/> objects for the api key.</returns>
     /// <exception cref="ArgumentNullException">Thrown if <paramref name="identityApiKey"/> is <c>null</c>.</exception>
-    Task<IList<Claim>> GetAllApiKeyClaims(IdentityApiKey<TIdentity> identityApiKey, IEnumerable<string>? transientRoles = null, IDictionary<string, string>? transientClaims = null, CancellationToken cancellationToken = default);
+    Task<IList<Claim>> GetAllApiKeyClaims(IdentityApiKey<TIdentity> identityApiKey, IEnumerable<string>? transientRoles = null, IEnumerable<KeyValuePair<string, string>>? transientClaims = null, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Retrieves a specific claim of a api key by claim type.

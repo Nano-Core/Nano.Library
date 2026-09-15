@@ -71,7 +71,10 @@ testing convenience, set one in `appsettings.Development.json` instead of the ba
    Apply it in the `Kubernetes Deploy` step, same `Get-Content | ExpandEnvironmentVariables |
    kubectl apply` pattern as every other secret — before `deployment.yaml`/`stateful-set.yaml`.
    Unlike `auth-jwt-secret.yaml`, this one is per-app, not shared across services — every app
-   with API-key auth creates and applies its own.
+   with API-key auth creates and applies its own. Also add `.kubernetes\auth-api-key-secret.yaml
+   = .kubernetes\auth-api-key-secret.yaml` to `{name}.sln`'s `.kubernetes` `SolutionItems` block
+   (see AGENTS.md's Solution Structure note) — new files under `.kubernetes/` don't show up in
+   Visual Studio's Solution Explorer otherwise.
 3. **`.kubernetes/deployment.yaml`** env entry:
    ```yaml
    - name: Data__Identity__ApiKey__Secret

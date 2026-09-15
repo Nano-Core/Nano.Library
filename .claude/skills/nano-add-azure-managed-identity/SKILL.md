@@ -38,6 +38,9 @@ wired before their Staging/Production sections apply — this skill is what make
      annotations:
        azure.workload.identity/client-id: %IDENTITY_CLIENT_ID%
    ```
+   Also add `.kubernetes\service-account.yaml = .kubernetes\service-account.yaml` to `{name}.sln`'s
+   `.kubernetes` `SolutionItems` block (see AGENTS.md's Solution Structure note) — new files under
+   `.kubernetes/` don't show up in Visual Studio's Solution Explorer otherwise.
 2. **`.kubernetes/deployment.yaml`/`cronjob.yaml`**: add the workload-identity label to the pod
    template's metadata and reference the service account in the pod spec:
    ```yaml

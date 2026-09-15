@@ -23,10 +23,14 @@ direction. Enable it on its own; don't add Health Checks "because Metrics needs 
    whether `.kubernetes/service-monitor.yaml` already exists — same "don't leave it half-wired"
    concern as Health Checks, though less severe here since nothing actively breaks without the
    `ServiceMonitor` (Prometheus just won't discover the endpoint to scrape it).
-3. **Cluster has the Prometheus Operator / `ServiceMonitor` CRD available?** The K8s manifest
-   below uses `apiVersion: azmonitoring.coreos.com/v1` — if the target cluster doesn't have that
-   CRD installed, applying it will fail. This is a cluster-level prerequisite outside this skill's
-   scope; ask if unsure rather than assuming it's there.
+3. **`azmonitoring.coreos.com/v1`, not `monitoring.coreos.com/v1`.** The K8s manifest below
+   deliberately targets **Azure Managed Prometheus**'s `ServiceMonitor` CRD group — the AKS add-on
+   Nano's own `Nano.App.Api` README documents this against ("these metrics can be scraped by
+   Azure Managed Prometheus and visualized in Grafana dashboards") — not the community Prometheus
+   Operator's CRD (`monitoring.coreos.com/v1`) that generic Kubernetes/Prometheus docs assume.
+   Every app in this solution targets AKS, so this isn't a cluster-dependent uncertainty to flag —
+   it's the correct, fixed `apiVersion` for this ecosystem. Don't "correct" it to
+   `monitoring.coreos.com/v1` even if that's what's more commonly seen elsewhere.
 
 ## appsettings.json
 
@@ -59,10 +63,11 @@ spec:
 ```
 
 Apply it in the `Kubernetes Deploy` workflow step, same `Get-Content | ExpandEnvironmentVariables
-| kubectl apply` pattern as every other manifest.
+| kubectl apply` pattern as every other manifest. Also add `.kubernetes\service-monitor.yaml =
+.kubernetes\service-monitor.yaml` to `{name}.sln`'s `.kubernetes` `SolutionItems` block (see
+AGENTS.md's Solution Structure note) — new files under `.kubernetes/` don't show up in Visual
+Studio's Solution Explorer otherwise.
 
 ## After making the change
 
 - Show the user every file touched.
-- If step 3's CRD availability is uncertain, say so explicitly rather than silently assuming the
-  `ServiceMonitor` will apply cleanly.

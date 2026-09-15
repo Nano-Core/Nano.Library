@@ -29,5 +29,5 @@ public class LogInRefresh
     /// Non-persisted claims added to the issued JWT during refresh.
     /// </summary>
     [Required]
-    public virtual IDictionary<string, string> TransientClaims { get; set; } = new Dictionary<string, string>();
+    public virtual IEnumerable<KeyValuePair<string, string>> TransientClaims { get; set; } = [];
 }
