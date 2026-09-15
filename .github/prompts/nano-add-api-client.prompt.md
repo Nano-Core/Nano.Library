@@ -1,6 +1,6 @@
 ---
 mode: agent
-description: Wire a Nano Api Client into an application - defines a BaseApiClient subclass for calling another Nano application over HTTP, and its App:Apis configuration entry. Use when the user asks to call another Nano service/API, add an API client, or compose a gateway from internal services in a Nano API, Web, or Console application.
+description: Wire a Nano Api Client into an application - defines a BaseApiClient subclass for calling another Nano application over HTTP, and its App:Apis configuration entry. Use when the user asks to call another Nano service/API, add an API client, or compose a Public API from internal services in a Nano API, Web, or Console application.
 ---
 
 # Nano add API client

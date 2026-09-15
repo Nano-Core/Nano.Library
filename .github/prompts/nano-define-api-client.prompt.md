@@ -80,7 +80,7 @@ explicitly in the constructor only in the two cases where that inference can't l
   controller than the one the response type's name would imply (a custom action piggy-backing on
   an existing controller rather than getting its own).
 
-In this solution specifically, most custom requests so far have hit the second case - gateway
+In this solution specifically, most custom requests so far have hit the second case - Public API
 and cross-service custom endpoints tend to return bespoke response shapes, or attach to a
 controller that doesn't match the response's name (see `GetTenantDomainRequest`: its response is
 the `TenantDomain` entity, but the action lives on `TenantsController`, not a dedicated
