@@ -1,7 +1,9 @@
-using System;
-using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Http;
 using Nano.Data.Abstractions.Identity.Consts;
+using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 
 namespace Nano.Data.Abstractions.Identity.Extensions;
 
@@ -139,5 +141,35 @@ public static class HttpContextExtensions
 
         return jwtSecurityTokenHandler
             .GetClaimValue(jwtToken, claimType);
+    }
+
+    /// <summary>
+    /// Get Jwt Claim Values.
+    /// </summary>
+    /// <param name="httpContext">The <see cref="HttpContext"/>.</param>
+    /// <param name="claimType">The claim type.</param>
+    /// <returns>The claim values, or an empty collection if the token or claim isn't present.</returns>
+    public static IEnumerable<string> GetJwtClaimValues(this HttpContext httpContext, string claimType)
+    {
+        if (httpContext == null)
+            throw new ArgumentNullException(nameof(httpContext));
+
+        var jwtToken = httpContext.GetJwtToken();
+        if (jwtToken == null)
+        {
+            return [];
+        }
+
+        var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
+        if (!jwtSecurityTokenHandler.CanReadToken(jwtToken))
+        {
+            return [];
+        }
+
+        return [.. jwtSecurityTokenHandler
+            .ReadJwtToken(jwtToken)
+            .Claims
+            .Where(claim => claim.Type == claimType)
+            .Select(claim => claim.Value)];
     }
 }
