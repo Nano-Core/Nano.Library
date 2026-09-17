@@ -135,7 +135,9 @@ The target must actually run locally alongside this app, or `Host` in the config
 nothing when you `docker compose up`. Read AGENTS.md's `#### Local Development (docker-compose)`
 section under Api Clients first - this is not an optional follow-up step, it's part of what
 "add an Api Client configuration" means; do it in the same change as the config/injection above,
-without being asked separately.
+without being asked separately. **Applies to Console apps too** - a worker consuming an Api Client
+needs its target runnable locally the same way an API/Web consumer does; the only difference is a
+Console app's own compose service has no `ports` of its own to worry about colliding with.
 
 1. **Is the target already nested in this app's `.docker/docker-compose.yml`?** (Check for a
    service block whose `hostname`/`image` matches the target - e.g. `svc-mytarget`.) If yes,

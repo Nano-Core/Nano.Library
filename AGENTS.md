@@ -377,6 +377,13 @@ app locally, or `docker compose up` only starts this app while every downstream 
 `nano-add-api-client-configuration` adds a new `App:Apis` entry, it also nests the target service into this app's
 own `.docker/docker-compose.yml` — not just the config.
 
+**Applies equally to Console applications.** This isn't a Public/Admin-API-only concern — a Console app (a
+run-to-completion job or worker) consuming an Api Client needs its target runnable locally exactly the same way
+(e.g. a sign-up job calling `Svc.Accounts`/`Svc.Emailing`). The only difference is a Console app's own compose
+service has no `ports` of its own to collide with (no HTTP surface — see [Authentication forwarding](#authentication-forwarding)'s
+note that Console workers typically call only anonymous endpoints, or need `LogInRoot`); the nested dependency
+services still need their own unique host ports, same as for an API/Web consumer.
+
 **Why the target isn't built with a normal multi-stage `Dockerfile`**: this app's own `Dockerfile.Local` has no
 `COPY`/build stage at all — Visual Studio's Container Tools injects that step automatically, but only for the
 *primary* project being debugged (the one the `.dcproj` names via `DockerServiceName`). A dependency's own service
@@ -392,7 +399,7 @@ svc.mytarget:
   hostname: svc-mytarget
   restart: on-failure
   ports:
-    - 8181:8080          # unique per nested service - avoid colliding with this app's own 8080/4443
+    - 8181:8080          # unique per nested service - avoid colliding with this app's own ports (if any; Console apps have none) or any other nested service's
   build:
     context: ../../Svc.MyTarget/Svc.MyTarget
     dockerfile_inline: |
