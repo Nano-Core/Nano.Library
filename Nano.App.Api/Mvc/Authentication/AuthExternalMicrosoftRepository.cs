@@ -5,6 +5,7 @@ using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Net.Http;
@@ -28,25 +29,21 @@ public class AuthExternalMicrosoftRepository(MicrosoftOptions options, HttpClien
 
         var tokenHandler = new JwtSecurityTokenHandler();
 
-        //string accessToken;
-        //string? refreshToken;
-
         using var httpRequestMessage = new HttpRequestMessage();
 
         httpRequestMessage.Method = HttpMethod.Post;
         httpRequestMessage.RequestUri = new Uri($"https://login.microsoftonline.com/{this.options.TenantId}/oauth2/v2.0/token");
 
-        using var formContent = new MultipartFormDataContent();
-
-        formContent.Add(new StringContent(this.options.ClientId), "client_id");
-        formContent.Add(new StringContent(this.options.ClientSecret), "client_secret");
-        formContent.Add(new StringContent("authorization_code"), "grant_type");
-        formContent.Add(new StringContent(flow.Code), "code");
-        formContent.Add(new StringContent(flow.CodeVerifier), "code_verifier");
-        formContent.Add(new StringContent(flow.RedirectUri), "redirect_uri");
-        formContent.Add(new StringContent(this.options.Scopes.Aggregate(string.Empty, (current, x) => current + $"{x} ")), "scope");
-
-        httpRequestMessage.Content = formContent;
+        httpRequestMessage.Content = new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["client_id"] = this.options.ClientId,
+            ["client_secret"] = this.options.ClientSecret,
+            ["grant_type"] = "authorization_code",
+            ["code"] = flow.Code,
+            ["code_verifier"] = flow.CodeVerifier,
+            ["redirect_uri"] = flow.RedirectUri,
+            ["scope"] = string.Join(" ", this.options.Scopes)
+        });
 
         var httpResponse = await httpClient
             .SendAsync(httpRequestMessage, cancellationToken);
@@ -78,10 +75,17 @@ public class AuthExternalMicrosoftRepository(MicrosoftOptions options, HttpClien
 
         var refreshToken = content["refresh_token"]?.ToString();
 
-        var jwtToken = tokenHandler
-            .ReadJwtToken(accessToken);
+        var idToken = content["id_token"]?.ToString();
 
-        var id = jwtToken?.Payload
+        if (idToken == null)
+        {
+            throw new NullReferenceException(nameof(idToken));
+        }
+
+        var jwtToken = tokenHandler
+            .ReadJwtToken(idToken);
+
+        var id = jwtToken.Payload
             .Where(x => x.Key == "oid")
             .Select(x => x.Value?.ToString())
             .FirstOrDefault();
@@ -91,24 +95,24 @@ public class AuthExternalMicrosoftRepository(MicrosoftOptions options, HttpClien
             throw new NullReferenceException(nameof(id));
         }
 
-        var name = jwtToken?.Payload
+        var name = jwtToken.Payload
             .Where(x => x.Key == "name")
             .Select(x => x.Value?.ToString())
             .FirstOrDefault();
 
         if (name == null)
         {
-            throw new NullReferenceException(nameof(id));
+            throw new NullReferenceException(nameof(name));
         }
 
-        var email = jwtToken?.Payload
-            .Where(x => x.Key == "upn")
+        var email = jwtToken.Payload
+            .Where(x => x.Key is "email" or "preferred_username")
             .Select(x => x.Value?.ToString())
             .FirstOrDefault();
 
         if (email == null)
         {
-            throw new NullReferenceException(nameof(id));
+            throw new NullReferenceException(nameof(email));
         }
 
         return new ExternalAuthenticationData
@@ -136,15 +140,14 @@ public class AuthExternalMicrosoftRepository(MicrosoftOptions options, HttpClien
         httpRequestMessage.Method = HttpMethod.Post;
         httpRequestMessage.RequestUri = new Uri($"https://login.microsoftonline.com/{this.options.TenantId}/oauth2/v2.0/token");
 
-        using var formContent = new MultipartFormDataContent();
-
-        formContent.Add(new StringContent(this.options.ClientId), "client_id");
-        formContent.Add(new StringContent(this.options.ClientSecret), "client_secret");
-        formContent.Add(new StringContent("refresh_token"), "grant_type");
-        formContent.Add(new StringContent(refreshToken), "refresh_token");
-        formContent.Add(new StringContent(this.options.Scopes.Aggregate(string.Empty, (current, x) => current + $"{x} ")), "scope");
-
-        httpRequestMessage.Content = formContent;
+        httpRequestMessage.Content = new FormUrlEncodedContent(new Dictionary<string, string>
+        {
+            ["client_id"] = this.options.ClientId,
+            ["client_secret"] = this.options.ClientSecret,
+            ["grant_type"] = "refresh_token",
+            ["refresh_token"] = refreshToken,
+            ["scope"] = string.Join(" ", this.options.Scopes)
+        });
 
         var httpResponse = await this.httpClient
             .SendAsync(httpRequestMessage, cancellationToken);
@@ -155,7 +158,7 @@ public class AuthExternalMicrosoftRepository(MicrosoftOptions options, HttpClien
         var content = JsonConvert.DeserializeObject<JObject>(stringContent);
 
         var error = content?["error"]?.ToString();
-        var errorDescription = content?["error"]?.ToString() ?? "Unknown";
+        var errorDescription = content?["error_description"]?.ToString() ?? "Unknown";
 
         if (error != null)
         {

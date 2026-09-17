@@ -1809,12 +1809,17 @@ For a built-in provider, the following configuration can be added.
         "Facebook": {
             "AppId": null,
             "AppSecret": null,
-            "Scopes": [ ]
+            "Scopes": [ "public_profile", "email", "user_birthday" ]
         }
     }
   }
 }
 ```
+
+`Scopes` must include `email` (`public_profile` is granted by default but listing it explicitly is harmless) so Nano can read the `id`/`name`/`email` fields it 
+requests from the Facebook Graph API; add `user_birthday` too if the `birthday` field is needed. The Facebook App Id/Secret must be created manually through 
+[Meta for Developers](https://developers.facebook.com) - there is no API/CLI path to script this the way there is for Microsoft (see below).  
+
 **Google**
 
 | Setting                    | Type   | Default  | Description                         |
@@ -1831,12 +1836,16 @@ For a built-in provider, the following configuration can be added.
         "Google": {
           "ClientId": null,
           "ClientSecret": null,
-          "Scopes": [ ]
+          "Scopes": [ "openid", "profile", "email" ]
         }
     }
   }
 }
 ```
+
+`Scopes` must include `openid` (and should include `profile`/`email`) - Nano validates the value passed in as a Google ID token and reads its `name`/`email` claims 
+from it. The Google Client Id/Secret must be created manually through the [Google Cloud Console](https://console.cloud.google.com)'s OAuth client setup - there is 
+no API/CLI path to script this the way there is for Microsoft (see below).  
 
 **Microsoft**
 
@@ -1856,14 +1865,117 @@ For a built-in provider, the following configuration can be added.
             "TenantId": null,
             "ClientId": null,
             "ClientSecret": null,
-            "Scopes": [ ]
+            "Scopes": [ "openid", "profile", "email" ]
         }
     }
   }
 }
 ```
 
-> ⚠️ The external provider application must be configured with at least the following scopes: `id`, `email`, and `username`.
+`Scopes` must include `openid` (and should include `profile`/`email`) - Nano reads the login's identity claims (`oid`/`name`/`email`) from the token response's `id_token`, 
+which is only returned when `openid` is requested.  
+
+Unlike Facebook/Google above, and unlike the JWT keys and `RootLogin` elsewhere on this page, Microsoft's Entra ID app registration can be created and rotated 
+entirely through the Azure CLI - so instead of a one-time manual setup stored as a static secret, its credentials are provisioned and rotated by the GitHub Actions 
+workflow itself, in a `Setup App Registration` step. `TenantId` is simply the workflow's own `AZURE_TENANT_ID` (no separate value needed), `ClientId` is looked up 
+fresh every run, and `ClientSecret` is reissued every run and never persisted as a GitHub secret.  
+
+```yaml
+env:
+  AUTH_MICROSOFT_REDIRECT_URI: ${{ vars.AUTH_MICROSOFT_REDIRECT_URI }}
+```
+
+```yaml
+- name: Setup App Registration
+  shell: pwsh
+  run: |
+    $env:APP_DISPLAY_NAME = $env:SERVICE_NAME + "-app";
+    $env:SECRET_DISPLAY_NAME = $env:APP_DISPLAY_NAME + "-secret-" + (Get-Date -Format "yyyyMMddHHmmss");
+    $env:AUTH_MICROSOFT_CLIENT_ID = az ad app list --display-name $env:APP_DISPLAY_NAME --query "[0].appId" -o tsv;
+
+    if (-not $env:AUTH_MICROSOFT_CLIENT_ID) 
+    {
+        az ad app create `
+            --display-name $env:APP_DISPLAY_NAME `
+            --sign-in-audience AzureADMyOrg `
+            --web-redirect-uris $env:AUTH_MICROSOFT_REDIRECT_URI;
+
+        $env:AUTH_MICROSOFT_CLIENT_ID = az ad app list --display-name $env:APP_DISPLAY_NAME --query "[0].appId" -o tsv;
+    }
+    else 
+    {
+        az ad app update `
+            --id $env:AUTH_MICROSOFT_CLIENT_ID `
+            --web-redirect-uris $env:AUTH_MICROSOFT_REDIRECT_URI;
+    }
+
+    $env:AUTH_MICROSOFT_CLIENT_SECRET = az ad app credential reset `
+        --id $env:AUTH_MICROSOFT_CLIENT_ID `
+        --append `
+        --display-name $env:SECRET_DISPLAY_NAME `
+        --years 1 `
+        --query "password" -o tsv;
+
+    echo "::add-mask::$env:AUTH_MICROSOFT_CLIENT_SECRET";
+
+    $staleCredentialIds = az ad app credential list --id $env:AUTH_MICROSOFT_CLIENT_ID --query "sort_by(@, &startDateTime)[:-3].keyId" -o tsv;
+
+    foreach ($keyId in ($staleCredentialIds -split "`n" | Where-Object { $_ })) 
+    {
+        az ad app credential delete `
+            --id $env:AUTH_MICROSOFT_CLIENT_ID `
+            --key-id $keyId;
+    }
+
+    echo "AUTH_MICROSOFT_CLIENT_ID=$env:AUTH_MICROSOFT_CLIENT_ID" >> $env:GITHUB_ENV;
+    echo "AUTH_MICROSOFT_CLIENT_SECRET=$env:AUTH_MICROSOFT_CLIENT_SECRET" >> $env:GITHUB_ENV;
+```
+
+`--append` adds the new client secret alongside any existing ones instead of invalidating them immediately, so pods still running the previous deployment's secret keep 
+working through a rolling update. Credentials are then pruned down to the newest 3, giving an older secret roughly 3 deploys of grace before it actually stops working.  
+
+Create a Kubernetes secret that stores the Microsoft app registration's credentials, allowing them to be securely consumed by the application.  
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: auth-microsoft-secret
+  namespace: %KUBERNETES_NAMESPACE%
+type: Opaque
+stringData:
+  tenant-id: %AZURE_TENANT_ID%
+  client-id: %AUTH_MICROSOFT_CLIENT_ID%
+  client-secret: %AUTH_MICROSOFT_CLIENT_SECRET%
+```
+
+Finally, reference the secret in the application `deployment.yaml` or `cronjob.yaml`.  
+
+```yaml
+spec:
+  template:
+    spec:
+      containers:
+        env:
+        - name: App__Authentication__Jwt__ExternalLogins__Microsoft__TenantId
+          valueFrom:
+            secretKeyRef:
+              name: auth-microsoft-secret
+              key: tenant-id
+        - name: App__Authentication__Jwt__ExternalLogins__Microsoft__ClientId
+          valueFrom:
+            secretKeyRef:
+              name: auth-microsoft-secret
+              key: client-id
+        - name: App__Authentication__Jwt__ExternalLogins__Microsoft__ClientSecret
+          valueFrom:
+            secretKeyRef:
+              name: auth-microsoft-secret
+              key: client-secret
+```
+
+Try it out yourself using the **[Api.Auth.External.Microsoft](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Auth.External.Microsoft)** example, which has this 
+wiring end-to-end.  
 
 Implementing a custom external authentication provider in Nano is straightforward. Create a class that derives from `BaseAuthExternalRepository<TFlow>` and provide a provider name via the 
 constructor. The base class implements the `IAuthExternalRepository<TFlow>` interface, which requires you to implement the abstract methods `AuthenticateAsync` and `AuthenticateRefreshAsync`. 
