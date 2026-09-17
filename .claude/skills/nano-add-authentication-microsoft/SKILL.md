@@ -39,6 +39,23 @@ convention for those the way this skill does for Microsoft.
 4. **Is a redirect URI known?** Needed for the Azure AD app registration either way (manual for
    Development, scripted for Staging/Production). Ask if the request doesn't name a client — don't
    guess a port/path.
+5. **Which accounts should be able to sign in?** Ask — don't assume. This is the app registration's
+   `--sign-in-audience`, and it also changes what `TenantId` must hold at runtime, since
+   `AuthExternalMicrosoftRepository` interpolates it straight into the token endpoint URL
+   (`https://login.microsoftonline.com/{TenantId}/oauth2/v2.0/token`):
+
+   | Who can sign in | `--sign-in-audience` | Runtime `TenantId` |
+   | --- | --- | --- |
+   | Only users in your own tenant (default, most common) | `AzureADMyOrg` | the real tenant GUID |
+   | Users in any Azure AD/Entra org | `AzureADMultipleOrgs` | literal `organizations` |
+   | Any org + personal Microsoft accounts | `AzureADandPersonalMicrosoftAccount` | literal `common` |
+   | Personal Microsoft accounts only | `PersonalMicrosoftAccount` | literal `consumers` |
+
+   Default to `AzureADMyOrg` if the user has no specific need — it's the least-privilege choice and
+   what `Nano.Lessons/Api.Auth.External.Microsoft` and `Nano.Templates/Api.Admin` both use. Whatever
+   is chosen, remind the user that the client-side code that starts the sign-in (MSAL.js or
+   equivalent) must be configured with the matching authority, or Azure rejects the sign-in before a
+   code is ever issued — that part lives outside Nano and this skill can't set it.
 
 ## appsettings.json — Jwt.ExternalLogins.Microsoft
 
@@ -59,11 +76,15 @@ Base `appsettings.json`, nested under the existing `Jwt` block:
 unlike the shared JWT Development key pair — a Microsoft app registration is tied to a real Azure
 tenant, not a throwaway pair everyone in the codebase can share. The developer fills these in
 locally themselves, after creating their own Entra ID app registration (Azure Portal → Microsoft
-Entra ID → App registrations → New registration → Web redirect URI matching whatever client will
-call this → Certificates & secrets → new client secret, copied immediately since it's shown once →
-note the Application (client) ID and Directory (tenant) ID). No Graph API permission is needed
-beyond the default — `openid`/`profile`/`email` only affect what lands in the `id_token`, not access
-to any resource.
+Entra ID → App registrations → New registration → choose the sign-in audience decided above → Web
+redirect URI matching whatever client will call this → Certificates & secrets → new client secret,
+copied immediately since it's shown once → note the Application (client) ID). No Graph API
+permission is needed beyond the default — `openid`/`profile`/`email` only affect what lands in the
+`id_token`, not access to any resource.
+
+For `TenantId`, use the table above: the real Directory (tenant) ID from the app registration only
+if it's `AzureADMyOrg`; otherwise the literal `organizations`/`common`/`consumers` string, which is
+the same for every developer regardless of which tenant they created the registration in.
 
 `appsettings.Staging.json`/`appsettings.Production.json` — **nothing**. Per the Kubernetes section
 below, `TenantId`/`ClientId`/`ClientSecret` are injected as environment variables from a Kubernetes
@@ -72,15 +93,18 @@ environments.
 
 ## Staging/Production — self-provisioning, self-rotating CI step
 
-This is the part that's actually scriptable, unlike Facebook/Google. Add one workflow-level env var:
+This is the part that's actually scriptable, unlike Facebook/Google. Add two workflow-level env vars:
 
 ```yaml
 env:
   AUTH_MICROSOFT_REDIRECT_URI: ${{ vars.AUTH_MICROSOFT_REDIRECT_URI }}
+  AUTH_MICROSOFT_SIGN_IN_AUDIENCE: ${{ vars.AUTH_MICROSOFT_SIGN_IN_AUDIENCE }}
 ```
 
-`vars`, not `secrets` — it's just a URL, not sensitive. Ask the user for its value (the real
-deployed client's callback URL) rather than defaulting to a placeholder.
+`vars`, not `secrets` — neither is sensitive. Ask the user for `AUTH_MICROSOFT_REDIRECT_URI`'s value
+(the real deployed client's callback URL) rather than defaulting to a placeholder, and set
+`AUTH_MICROSOFT_SIGN_IN_AUDIENCE` to whichever `--sign-in-audience` value was decided in step 5 above
+(e.g. `AzureADMyOrg`).
 
 Add a **"Setup App Registration"** step, after `Build & Push Image` and before `Kubernetes Deploy`
 (needs `AZURE_TENANT_ID`/an authenticated `az` session from `Azure Login`, and its output feeds the
@@ -98,7 +122,7 @@ Kubernetes step):
     {
         az ad app create `
             --display-name $env:APP_DISPLAY_NAME `
-            --sign-in-audience AzureADMyOrg `
+            --sign-in-audience $env:AUTH_MICROSOFT_SIGN_IN_AUDIENCE `
             --web-redirect-uris $env:AUTH_MICROSOFT_REDIRECT_URI;
 
         $env:AUTH_MICROSOFT_CLIENT_ID = az ad app list --display-name $env:APP_DISPLAY_NAME --query "[0].appId" -o tsv;
@@ -107,8 +131,17 @@ Kubernetes step):
     {
         az ad app update `
             --id $env:AUTH_MICROSOFT_CLIENT_ID `
+            --sign-in-audience $env:AUTH_MICROSOFT_SIGN_IN_AUDIENCE `
             --web-redirect-uris $env:AUTH_MICROSOFT_REDIRECT_URI;
     }
+
+    $env:AUTH_MICROSOFT_TENANT_ID = switch ($env:AUTH_MICROSOFT_SIGN_IN_AUDIENCE)
+    {
+        "AzureADMyOrg" { $env:AZURE_TENANT_ID }
+        "AzureADMultipleOrgs" { "organizations" }
+        "AzureADandPersonalMicrosoftAccount" { "common" }
+        "PersonalMicrosoftAccount" { "consumers" }
+    };
 
     $env:AUTH_MICROSOFT_CLIENT_SECRET = az ad app credential reset `
         --id $env:AUTH_MICROSOFT_CLIENT_ID `
@@ -130,14 +163,19 @@ Kubernetes step):
 
     echo "AUTH_MICROSOFT_CLIENT_ID=$env:AUTH_MICROSOFT_CLIENT_ID" >> $env:GITHUB_ENV;
     echo "AUTH_MICROSOFT_CLIENT_SECRET=$env:AUTH_MICROSOFT_CLIENT_SECRET" >> $env:GITHUB_ENV;
+    echo "AUTH_MICROSOFT_TENANT_ID=$env:AUTH_MICROSOFT_TENANT_ID" >> $env:GITHUB_ENV;
 ```
 
 What this does, and why it's shaped this way:
 
 - **Idempotent app registration.** Looks the app up by display name first; creates it only if
-  missing, otherwise just keeps its redirect URI in sync. `TenantId` needs no separate handling at
-  all — it's already the workflow's own `$env:AZURE_TENANT_ID` (used for `az login`), so the
-  Kubernetes secret below reads that directly rather than a Microsoft-specific copy of it.
+  missing, otherwise just keeps its redirect URI/audience in sync.
+- **`AUTH_MICROSOFT_TENANT_ID` is derived from the audience, not reused from `$env:AZURE_TENANT_ID`
+  directly.** Only `AzureADMyOrg` uses the real tenant GUID at runtime — the other three audiences
+  need the literal `organizations`/`common`/`consumers` string instead, per the table in "Before
+  making any change, determine" above. If the app is `AzureADMyOrg`, this still resolves to
+  `$env:AZURE_TENANT_ID` (the workflow's own tenant, used for `az login`), so nothing changes for
+  the common case.
 - **`--append`, not a bare `az ad app credential reset`.** A bare reset atomically replaces every
   existing secret — any pod still running the previous deployment's env vars would find its
   `ClientSecret` invalid mid-rollout. `--append` adds a new one alongside, so the old secret keeps
@@ -168,7 +206,7 @@ metadata:
   namespace: %KUBERNETES_NAMESPACE%
 type: Opaque
 stringData:
-  tenant-id: %AZURE_TENANT_ID%
+  tenant-id: %AUTH_MICROSOFT_TENANT_ID%
   client-id: %AUTH_MICROSOFT_CLIENT_ID%
   client-secret: %AUTH_MICROSOFT_CLIENT_SECRET%
 ```
@@ -205,6 +243,13 @@ Apply it in the `Kubernetes Deploy` step alongside `auth-jwt-secret.yaml`, befor
 Identity) — its `.github/workflows/build-and-deploy.yml`, `.kubernetes/auth-microsoft-secret.yaml`,
 and `.kubernetes/deployment.yaml` are the working, tested version of everything above. When in
 doubt about exact formatting or step ordering, diff against that lesson rather than guessing.
+
+One difference: the lesson (and `Nano.Templates/Api.Admin`) hardcode `AzureADMyOrg` directly rather
+than reading `$env:AUTH_MICROSOFT_SIGN_IN_AUDIENCE`, and their Kubernetes secret still reads
+`%AZURE_TENANT_ID%` rather than `%AUTH_MICROSOFT_TENANT_ID%` — both are intentionally left as the
+simpler, single-tenant-only version, since neither needs broader sign-in. Don't "fix" them to match
+this skill unless asked; treat this skill's parameterized version as what to scaffold for a *new*
+app whose audience was actually asked about in step 5.
 
 ## After making the change
 

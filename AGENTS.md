@@ -1474,8 +1474,8 @@ what the client sends:
 
 | Provider    | Flow          | Client sends                              | Credentials come from                                                                    |
 | ----------- | ------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------ |
-| `Facebook`  | `ImplicitFlow`  | `AccessToken` — obtained client-side via Facebook's own SDK/login flow, then passed straight through. | Meta for Developers app (developers.facebook.com), `AppId`/`AppSecret`. |
-| `Google`    | `ImplicitFlow`  | `AccessToken` — same shape as Facebook, obtained via Google's own client-side sign-in.        | Google Cloud Console OAuth client (`ClientId`/`ClientSecret`).           |
+| `Facebook`  | `ImplicitFlow`  | `AccessToken` — the user access token from Facebook's client-side Login SDK, passed straight through and validated server-side via the Graph API's `debug_token` endpoint. | Meta for Developers app (developers.facebook.com), `AppId`/`AppSecret`. |
+| `Google`    | `ImplicitFlow`  | `AccessToken` — despite the name, this must be the **ID token** (JWT) from Google Identity Services' client-side sign-in, not an OAuth access token; it's validated locally via `GoogleJsonWebSignature.ValidateAsync`. The older `gapi.auth2` library (retired by Google in 2023) issued real OAuth access tokens here, which will fail validation. | Google Cloud Console OAuth client (`ClientId`/`ClientSecret`).           |
 | `Microsoft` | `AuthCodeFlow`  | `Code`/`CodeVerifier`/`RedirectUri` — the server exchanges the authorization code for tokens itself (see `AuthExternalMicrosoftRepository`). `Scopes` must include `openid` (and should include `profile`/`email`) so the token response's `id_token` carries the `oid`/`name`/`email` claims Nano reads — the `access_token` is not used for identity, only as the stored `ExternalToken`. | A Microsoft Entra ID (Azure AD) app registration (`TenantId`/`ClientId`/`ClientSecret`). |
 
 Facebook and Google credentials are created by hand through each provider's own developer console — there's no
