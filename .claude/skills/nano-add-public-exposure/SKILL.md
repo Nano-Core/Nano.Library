@@ -165,3 +165,9 @@ group, so an app can be reachable under multiple domains without per-domain conf
 - Mention `AGENTS.md`'s `#### Http Policy Headers` (CORS, HSTS, CSP, security headers) as a
   related but separate concern worth considering for a publicly-reachable app — this skill
   doesn't configure it, only the routing/TLS/DNS layer.
+- A publicly-exposed Public API is the most common case of an app aggregating several Api Clients
+  (see AGENTS.md's `#### Local Development (docker-compose)` under Api Clients) — if this app
+  already consumes any, or gains one later via `nano-add-api-client-configuration`, each target
+  needs to be runnable locally too. This skill doesn't set that up itself (it's orthogonal to
+  public exposure), but it's worth checking it's not missing if the app has Api Clients configured
+  with no matching nested service in `.docker/docker-compose.yml`.

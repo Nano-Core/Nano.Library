@@ -58,10 +58,32 @@ If step 3 found nothing else in this app uses the target's `.Models` project, re
 `ProjectReference`/`PackageReference` too. If step 3 found something else still uses it, leave it
 and say so.
 
+## docker-compose.yml (local Development)
+
+Mirror of `nano-add-api-client-configuration`'s docker-compose step - remove the target's nested
+service *only* if nothing else in this app's compose file still needs it:
+
+1. **Is anything else in this app still consuming the target?** If step 3 found another client
+   still using the target's `.Models` project (or any other reason the target is still called),
+   leave the nested service block, its `DependentServiceSources` entry, and its line in
+   `publish-dependencies.ps1` alone - say so explicitly.
+2. Otherwise, remove: the target's service block from `.docker/docker-compose.yml`, its key from
+   this app's own primary service's `depends_on`, its `DependentServiceSources` `ItemGroup` entry
+   from `.docker/docker-compose.dcproj`, and its `dotnet publish` line from
+   `publish-dependencies.ps1`.
+3. **Don't remove the shared `database`/`eventing` services** just because this one dependency is
+   gone - they're shared across every nested dependency in the compose file; only remove one if
+   step 2 removes the *last* dependency that needed it (check every remaining nested service's
+   `depends_on` first).
+4. If this was the *only* dependency this app ever nested, remove `publish-dependencies.ps1`
+   entirely, and the `PublishDependentServices` target and `DependentServiceSources` `ItemGroup` from
+   `.docker/docker-compose.dcproj`.
+
 ## After making the change
 
 - Show the user every file touched in this app, including the `.csproj` reference if it was
-  removed (or why it was kept, per step 3).
+  removed (or why it was kept, per step 3), and every docker-compose/dcproj file touched (or left
+  alone, and why) by the section above.
 - Note explicitly that the client's own definition in the owning service's `.Models` project was
   **not** touched - other applications may still consume it. If the user's actual intent was to
   delete the definition entirely, point them at `nano-remove-api-client` next.

@@ -1,6 +1,6 @@
 ---
 name: nano-add-api-client-configuration
-description: Wire an existing Nano Api Client into this application - adds the App:Apis configuration entry and injects the client into a controller/worker so it can call another Nano service. Use when the user asks to call another Nano service/API from this app, add an API client to a Public API, or compose internal services together in a Nano API, Web, or Console application.
+description: Wire an existing Nano Api Client into this application - adds the App:Apis configuration entry, injects the client into a controller/worker, and nests the target service into this app's local docker-compose (with its own incremental publish step) so it's actually runnable end-to-end. Use when the user asks to call another Nano service/API from this app, add an API client to a Public API, or compose internal services together in a Nano API, Web, or Console application.
 ---
 
 # Nano add API client configuration
@@ -129,13 +129,48 @@ public class MyController(ILogger<MyController> logger, MyApi myApi) : BaseContr
 This is the step that actually makes the `App:Apis` entry take effect — without it, per the
 gotcha above, nothing gets registered even though the config exists.
 
+## docker-compose.yml (local Development) — do this automatically, every time
+
+The target must actually run locally alongside this app, or `Host` in the config above resolves to
+nothing when you `docker compose up`. Read AGENTS.md's `#### Local Development (docker-compose)`
+section under Api Clients first — this is not an optional follow-up step, it's part of what
+"add an Api Client configuration" means; do it in the same change as the config/injection above,
+without being asked separately.
+
+1. **Is the target already nested in this app's `.docker/docker-compose.yml`?** (Check for a
+   service block whose `hostname`/`image` matches the target — e.g. `svc-mytarget`.) If yes,
+   nothing to do here.
+2. **Does the target have a Data and/or Eventing provider configured?** Check the target's own
+   `Program.cs`/`appsettings.json` (or its own standalone `.docker/docker-compose.yml`, which
+   already reflects this) — determines whether the nested block gets `depends_on: [database,
+   eventing]` or neither. Add a shared `database`/`eventing` service to *this* app's compose file
+   only if not already present — one instance serves every nested dependency, never one per
+   dependency.
+3. **Add the nested service block**, per AGENTS.md's template — `dockerfile_inline` copying from
+   `./bin/publish/.`, a host port that doesn't collide with this app's own or any other nested
+   service's port, and `depends_on` wired both onto this app's own primary service (add the new
+   `svc.*` key there) and, per step 2, onto `database`/`eventing` if applicable.
+4. **Wire the publish step into `.docker/docker-compose.dcproj`**:
+   - If `publish-dependencies.ps1` doesn't exist yet in `.docker/`, create it (per AGENTS.md's
+     template) and add the `PublishDependentServices` MSBuild target with `Inputs`/`Outputs`
+     incremental-build wiring.
+   - If it already exists (this app already consumes at least one other Api Client), add the new
+     target's `.csproj` publish line to the existing script, and add a new `DependentServiceSources`
+     `ItemGroup` entry for the target (its main project + its `.Models` project, `.cs`/`.csproj`
+     globs, excluding `bin`/`obj`) — don't create a second script or a second target.
+5. No `.gitignore` entry is needed for the stamp file the script writes — it lives under
+   `.docker/bin/`, already covered by the solution's standard `**/bin` ignore rule.
+
 ## After making the change
 
 - Show the user every file touched in *this* app — the `.csproj` reference (if one was added),
-  the `appsettings.json` addition, and the injection site. Note that the client class itself
-  lives in the target service's `.Models` project, not here.
+  the `appsettings.json` addition, the injection site, and every docker-compose/dcproj/gitignore
+  file touched by the section above.
 - Confirm the client is actually injected somewhere — if the request was just "add the client" with
   no specified consumer yet, say explicitly that nothing is wired up until it's referenced.
+- Confirm the target is runnable locally: nested in `docker-compose.yml`, and covered by
+  `publish-dependencies.ps1`/the incremental MSBuild target — don't leave `docker compose up`
+  producing an unreachable host for the new client.
 - If `LogInRoot` was added, restate the Staging/Production secret-handling requirement — don't let
   a real credential sit in the base file — and whether the target's `auth-root-login-secret` was
   confirmed to actually exist or is still an open prerequisite on that other app.

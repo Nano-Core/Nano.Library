@@ -50,6 +50,7 @@ inside `{name}/`.
 | `.tests/Tests.{name}/Properties/DoNotParallelize.cs`        | ✓   | ✓   | ✓   | Ensures tests are not parallelized.                                                                                          |
 | `.docker/docker-compose.dcproj`                             | ✓   | ✓   | ✓   | Docker Compose project used by Visual Studio for local orchestration.                                                       |
 | `.docker/docker-compose.yml`                                | ✓   | ✓   | ✓   | Docker Compose spec for local (`Development`) orchestration.                                                                |
+| `.docker/publish-dependencies.ps1`                          | (✓) | (✓) | (✓) | Publishes every nested Api Client dependency to `bin/publish` locally _(only present once this app consumes at least one Api Client — see [Api Clients § Local Development](#local-development-docker-compose))_. |
 | `.kubernetes/configmap.yaml`                                | ✓   | ✓   | ✓   | Kubernetes ConfigMap.                                                                                                        |
 | `.kubernetes/autoscaler.yaml`                               | ✓   | ✓   | ✗   | Kubernetes Horizontal Pod Autoscaler.                                                                                        |
 | `.kubernetes/deployment.yaml`                               | ✓   | ✓   | ✗   | Kubernetes Deployment. Mutually exclusive with `stateful-set.yaml` below — an app has one or the other, never both.          |
@@ -368,6 +369,86 @@ pass the value explicitly and the target doesn't need a real, matching tenant be
 - Every generic `.Entity` read method accepts an `includeDepth` parameter — thread your own controller's
   `[FromQuery] int? includeDepth` through to it for end-to-end include-depth control, see [Include
   Annotation](#include-annotation).
+
+#### Local Development (docker-compose)
+
+Every application an Api Client points at (per its `Host` in `App:Apis`) must actually be runnable alongside this
+app locally, or `docker compose up` only starts this app while every downstream call fails to connect. Whenever
+`nano-add-api-client-configuration` adds a new `App:Apis` entry, it also nests the target service into this app's
+own `.docker/docker-compose.yml` — not just the config.
+
+**Why the target isn't built with a normal multi-stage `Dockerfile`**: this app's own `Dockerfile.Local` has no
+`COPY`/build stage at all — Visual Studio's Container Tools injects that step automatically, but only for the
+*primary* project being debugged (the one the `.dcproj` names via `DockerServiceName`). A dependency's own service
+block gets no such treatment, and building it from source with the SDK image inside Docker would need this
+solution's private NuGet feed credentials available *inside the container* — not something to solve by baking
+credentials into an image. Instead, each dependency is published **locally** (where the developer's own NuGet
+credentials already work) into a `bin/publish` folder, and the compose service just `COPY`s that output into a
+bare runtime image:
+
+```yaml
+svc.mytarget:
+  image: svc-mytarget
+  hostname: svc-mytarget
+  restart: on-failure
+  ports:
+    - 8181:8080          # unique per nested service - avoid colliding with this app's own 8080/4443
+  build:
+    context: ../../Svc.MyTarget/Svc.MyTarget
+    dockerfile_inline: |
+      FROM mcr.microsoft.com/dotnet/aspnet:10.0
+      WORKDIR /app
+      COPY ./bin/publish/. .
+      ENTRYPOINT ["dotnet", "Svc.MyTarget.dll"]
+  environment:
+    ASPNETCORE_HTTP_PORTS: ""
+  depends_on:               # only if the target actually has a Data/Eventing provider configured
+    - database
+    - eventing
+  networks:
+    - network
+```
+
+A single shared `database` (MySql) and `eventing` (RabbitMq) service serves every nested dependency in the
+compose file (one container each, not one per service) — add them only if not already present, and only wire a
+dependency's `depends_on` to them if that dependency actually has a data/eventing provider configured (check its
+own `Program.cs`; a dependency with neither gets no `depends_on` at all, matching its own standalone
+`docker-compose.yml`).
+
+**Publishing happens automatically on every build, incrementally.** The `.docker/docker-compose.dcproj` gets:
+
+1. A `publish-dependencies.ps1` script (next to the `.yml`) that `dotnet publish`es every nested dependency to its
+   own `bin/publish` folder.
+2. A `PublishDependentServices` MSBuild target, hooked to `BeforeTargets="DockerPrepareForBuild"`, with `Inputs`
+   set to a glob of every dependency's (and its `.Models` project's) `.cs`/`.csproj` files and `Outputs` pointing
+   at a `bin\publish-dependencies.stamp` file the script touches on success — so MSBuild's normal incremental-build
+   comparison skips the whole publish pass when nothing actually changed, instead of republishing on every single
+   `docker compose up`. The stamp lives under `.docker\bin\`, not the `.docker` root, purely so it falls under the
+   solution's existing `**/bin` ignore rule instead of needing its own `.gitignore` entry.
+
+```xml
+<ItemGroup>
+  <DependentServiceSources Include="..\..\Svc.MyTarget\Svc.MyTarget\**\*.cs;..\..\Svc.MyTarget\Svc.MyTarget\Svc.MyTarget.csproj;..\..\Svc.MyTarget\Svc.MyTarget.Models\**\*.cs;..\..\Svc.MyTarget\Svc.MyTarget.Models\Svc.MyTarget.Models.csproj"
+                            Exclude="..\..\Svc.MyTarget\Svc.MyTarget\bin\**;..\..\Svc.MyTarget\Svc.MyTarget\obj\**;..\..\Svc.MyTarget\Svc.MyTarget.Models\bin\**;..\..\Svc.MyTarget\Svc.MyTarget.Models\obj\**" />
+</ItemGroup>
+
+<Target Name="PublishDependentServices"
+        BeforeTargets="DockerPrepareForBuild"
+        Inputs="@(DependentServiceSources)"
+        Outputs="$(MSBuildProjectDirectory)\bin\publish-dependencies.stamp">
+  <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\publish-dependencies.ps1&quot; -Configuration $(Configuration)" />
+</Target>
+```
+
+This means hitting F5 is the only step a developer needs — VS builds the `docker-compose` project before
+launching it, which runs this target, which republishes only the dependencies whose source actually changed,
+before `docker compose up` ever touches the network. No `.gitignore` entry is needed for the stamp file itself —
+it lives under `.docker\bin\`, already covered by the solution's standard `**/bin` ignore rule (the script creates
+that `bin` folder if it doesn't exist yet).
+
+⚠ This whole mechanism exists for *local* `Development` orchestration only. `Staging`/`Production` never build
+this way — each service has its own real `Dockerfile` (multi-stage, built from source in CI, where the pipeline's
+own NuGet credentials are already available) and its own Kubernetes deployment; nothing here changes that.
 
 ### Start-Up Tasks
 
