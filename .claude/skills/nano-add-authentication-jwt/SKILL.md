@@ -148,10 +148,16 @@ block under `Jwt.ExternalLogins` in the base `appsettings.json`, per AGENTS.md's
 table (`Facebook.AppId`/`.AppSecret`/`.Scopes`, `Google.ClientId`/`.ClientSecret`/`.Scopes`,
 `Microsoft.TenantId`/`.ClientId`/`.ClientSecret`/`.Scopes`). Treat `AppSecret`/`ClientSecret` as
 real secrets, the same class of value as the JWT keys above — `null` in the base file, a real
-value only where it's actually safe to have one. AGENTS.md doesn't document an established
-Kubernetes-secret/GitHub-secret convention for these specifically (unlike `auth-jwt-secret`/
-`auth-api-key-secret`/`auth-sql-secret`) — don't invent one; ask the user how they want it stored
-for Staging/Production rather than assuming a pattern that doesn't exist yet in this codebase.
+value only where it's actually safe to have one.
+
+- **Microsoft has its own skill, `nano-add-authentication-microsoft`** — it's the one built-in
+  provider whose credentials can be scripted (an Entra ID app registration via the Azure CLI), so
+  it has an established, self-rotating Kubernetes-secret/GitHub-Actions convention (see
+  `Nano.Lessons/Api.Auth.External.Microsoft`). If the request names Microsoft specifically, use
+  that skill instead of configuring `Jwt.ExternalLogins.Microsoft` by hand here.
+- **Facebook/Google have no such convention.** Their credentials are created by hand through each
+  provider's own developer console — don't invent a Kubernetes/GitHub-secret pattern for them; ask
+  the user how they want it stored for Staging/Production rather than assuming one exists.
 
 **Custom provider — real code, no config entry.** Per AGENTS.md's `##### Custom external provider`,
 this is auto-discovered by type, not registered via `Jwt.ExternalLogins` config the way built-in

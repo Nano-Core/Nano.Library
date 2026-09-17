@@ -1467,6 +1467,23 @@ var publicKey = rsa.ExportRSAPublicKeyPem().Replace("-----BEGIN RSA PUBLIC KEY--
 var privateKey = rsa.ExportRSAPrivateKeyPem().Replace("-----BEGIN RSA PRIVATE KEY-----", "").Replace("-----END RSA PRIVATE KEY-----", "").Replace("\n", "");
 ```
 
+**External login providers** (`Jwt.ExternalLogins`) are built-in and config-only — no `BaseAuthExternalRepository<TFlow>`
+implementation needed for Facebook/Google/Microsoft, only the settings from the table above. Each uses a different
+`TFlow` (see [Custom external provider](#custom-external-provider) below for what that means), which determines
+what the client sends:
+
+| Provider    | Flow          | Client sends                              | Credentials come from                                                                    |
+| ----------- | ------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| `Facebook`  | `ImplicitFlow`  | `AccessToken` — obtained client-side via Facebook's own SDK/login flow, then passed straight through. | Meta for Developers app (developers.facebook.com), `AppId`/`AppSecret`. |
+| `Google`    | `ImplicitFlow`  | `AccessToken` — same shape as Facebook, obtained via Google's own client-side sign-in.        | Google Cloud Console OAuth client (`ClientId`/`ClientSecret`).           |
+| `Microsoft` | `AuthCodeFlow`  | `Code`/`CodeVerifier`/`RedirectUri` — the server exchanges the authorization code for tokens itself (see `AuthExternalMicrosoftRepository`). `Scopes` must include `openid` (and should include `profile`/`email`) so the token response's `id_token` carries the `oid`/`name`/`email` claims Nano reads — the `access_token` is not used for identity, only as the stored `ExternalToken`. | A Microsoft Entra ID (Azure AD) app registration (`TenantId`/`ClientId`/`ClientSecret`). |
+
+Facebook and Google credentials are created by hand through each provider's own developer console — there's no
+CLI/API path worth scripting for either. Microsoft is the exception: an Entra ID app registration (and its client
+secret, which needs periodic rotation) can be fully scripted with the Azure CLI, so use the `nano-add-authentication-microsoft`
+skill for that provider instead of configuring it by hand — it wires up the app registration and a self-rotating
+client secret as a CI step, following the pattern in `Nano.Lessons/Api.Auth.External.Microsoft`.
+
 **Root login** is a statically-configured, transient JWT login — no identity store involved. Useful in
 `Development` when testing a service in isolation, or for console apps authenticating via the API client with no
 specific user account. Logging in as root auto-assigns the `administrator` role.
