@@ -48,10 +48,20 @@ repository backs a given external login in that case — not repeated here.
    is already configured.
    - **Persistent** (Identity present): `AuthIdentityRepository` auto-populates and backs
      `/auth/login`, `/auth/login/refresh`, `/auth/logout` — nothing further to wire beyond the
-     `Jwt` config and controller below.
+     `Jwt` config and controller below. **This combination (persistent auth + `AuthController`)
+     is an internal-service-only pattern** — per AGENTS.md's [Controllers § Public API vs
+     internal service](#public-api-vs-internal-service), a genuine Public API has no `IRepository`
+     of its own, so it can't have Identity configured in the first place. If this app is meant to
+     be a Public API, stop: it shouldn't have Identity here at all — see `nano-add-identity`'s own
+     warning on this, and point the user at composing through the owning internal service's Api
+     Client instead.
    - **Transient** (no Identity): needs `Jwt.ExternalLogins` configured (built-in Facebook/
      Google/Microsoft, or a custom provider — see "External Login" below) — ask which, and
-     whether a custom provider implementation is needed, before proceeding.
+     whether a custom provider implementation is needed, before proceeding. **Also ask whether
+     this app needs to assert its own server-computed claims/roles on top of the external login**
+     (e.g. an `IsAdmin` flag) — if so, see the "AuthController" section's warning below before
+     scaffolding a generic `AuthController`; adding one unconditionally here can open a
+     caller-controlled claim-injection endpoint.
    - If the user wants persistent auth but Identity isn't registered yet, stop and point them at
      `nano-add-identity` first.
 3. **Is Authentication already configured?** Check the base `appsettings.json` for
@@ -126,6 +136,39 @@ overrides, no keys (those come from the Kubernetes secret, never a static file):
 ```
 
 ## AuthController (API/Web only)
+
+**Stop and check this before scaffolding it — it's not always safe to add.** Nano auto-maps the
+built-in transient external-login endpoint (`/auth/login/external/{provider}/transient`) whenever
+*any* `BaseAuthController`-derived class exists in the app **and** no Identity is configured —
+see `ServiceScopeExtensions.UseNanoEndpoints`'s `!hasIdentity && hasAuthController` gate, checked
+by type scan, not by whether this specific controller is the one deriving it. That endpoint binds
+the request body straight into `LogInExternal<TFlow>` and merges its `TransientClaims`/
+`TransientRoles` **verbatim, with no server-side filtering,** into the minted JWT
+(`AuthTransientRepository.LogInExternalAsync`). Concretely: once this app is in transient auth
+(step 2) with any external login provider configured, adding this controller means **any
+anonymous caller can post `{"transientClaims": {"IsAdmin": "true"}}` to that endpoint and receive
+back a validly-signed token carrying that claim** — nothing here validates or restricts which
+claims/roles a caller may assert about themselves.
+
+- **If this app needs to compute its own claims server-side** (an `IsAdmin` flag, an internal
+  role, anything not meant to be caller-assignable) **on top of transient external login, don't
+  add this controller at all.** Write a custom controller instead (derive it from this app's own
+  base controller, *not* `BaseAuthController`) that calls `IAuthExternalRepositoryAggregator`/
+  `IAuthTransientRepository` directly and builds the claims/roles itself from trusted data — never
+  from caller input. This is exactly what shields the app: `hasAuthController` stays `false`, so
+  Nano's own claim-forging endpoint is never mapped in the first place. This is a real, load-bearing
+  pattern in this codebase, not a hypothetical — see `Api.Admin`'s `AccountsController` (deriving
+  its own `BaseAdminController`), which implements `login/microsoft`/`login/refresh`/`me` by hand
+  for exactly this reason.
+- **This risk is sharpest on a publicly-exposed app** (anyone on the internet can reach the
+  endpoint), but don't treat an internal-only app as automatically safe either — anything that lets
+  a caller assign its own JWT claims is worth a deliberate decision, not a default.
+- **Persistent auth (Identity present) does not have this problem** — `!hasIdentity` in the gate
+  above means the transient endpoint is never mapped once Identity is configured, regardless of
+  `AuthController`/external login. This warning is specific to the transient-auth shape.
+- If none of the above applies — persistent auth, or transient auth with no need for
+  server-computed claims beyond what the external provider itself asserts — the generic controller
+  below is fine as-is.
 
 `Controllers/AuthController.cs`, main app project:
 
@@ -309,6 +352,11 @@ Console.Read();
 - Show the user every file touched, grouped by concern (appsettings per environment, the
   controller, and — for the issuer app — Staging/Production CI + K8s), plus the external-login
   repository class if one was scaffolded.
+- If this is transient auth with external login and a generic `AuthController` was added, restate
+  explicitly that `/auth/login/external/{provider}/transient` is now live and accepts
+  caller-supplied `TransientClaims`/`TransientRoles` verbatim — confirm that's actually acceptable
+  for this app before considering the task done. If a custom controller was used instead specifically
+  to avoid this, say so, and confirm it does **not** derive `BaseAuthController` anywhere in the app.
 - Point them at the snippet above for generating real Staging/Production keys — never the
   hardcoded Development pair.
 - If they want to change the Development key pair from the shared default, warn explicitly: it

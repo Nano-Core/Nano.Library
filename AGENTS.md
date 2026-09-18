@@ -1617,6 +1617,18 @@ are all nullable — each is populated only if the matching config exists, and t
 | `AuthTransientRepository`             | `Jwt.ExternalLogins` configured, Identity **not** configured | `/auth/login/external/{providerName}/transient`       |
 | `AuthExternalRepositoryAggregator`    | Always available                                        | `/auth/external/schemes`, external login resolution for both identity and transient repositories |
 
+⚠ **`AuthTransientRepository`'s endpoint trusts the caller.** `/auth/login/external/{providerName}/transient`
+binds `TransientClaims`/`TransientRoles` straight from the request body and mints them into the JWT with no
+server-side filtering — any anonymous caller can assert `{"transientClaims": {"IsAdmin": "true"}}` and receive
+back a validly-signed token carrying it. Per the table above, this endpoint is only auto-mapped when a
+`BaseAuthController`-derived class exists **and** [Identity](#identity) is **not** configured
+(`ServiceScopeExtensions.UseNanoEndpoints`'s `!hasIdentity && hasAuthController` gate, checked by type scan
+across the whole app, not by which controller you meant to use it for). A transient-auth app that needs its own
+server-computed claims on top of external login (an admin flag, an internal role) must **not** derive a
+generic `BaseAuthController`-based controller — implement a custom controller instead (deriving this app's own
+base controller), calling `IAuthExternalRepositoryAggregator`/`IAuthTransientRepository` directly and computing
+claims/roles only from trusted server-side data, never from caller input.
+
 ##### Custom external provider
 
 Derive from `BaseAuthExternalRepository<TFlow>`, implement the two abstract methods, and give it a provider
@@ -1777,13 +1789,37 @@ explicit about, since it changes what an action's body actually does:
 
 - **Public API controller** — the customer/end-user-facing application (e.g. `Api.Platform`/`Api.Admin` in this
   solution). Its actions compose one or more injected [Api Clients](#api-clients) into a response; it has no
-  `IRepository` of its own. Called "Public API," not "gateway," specifically to avoid colliding with the
+  `IRepository` of its own. This is the intended shape, not an absolute rule enforced anywhere — a Data,
+  Storage, or Eventing provider *can* be added directly to a Public API if genuinely needed (`nano-add-data-provider`/
+  `nano-add-storage-provider`/`nano-add-eventing-provider` all allow it), but doing so pulls the app away from
+  being a thin façade and should be a deliberate exception, confirmed with whoever's asking, not the default
+  when scaffolding one of these. Called "Public API," not "gateway," specifically to avoid colliding with the
   unrelated Kubernetes Gateway API resource (`nano-add-public-exposure`'s `HTTPRoute`/`Gateway`) — "gateway" in
   this codebase otherwise means that Kubernetes resource, or the network-edge/cert-manager TLS-terminating layer
   in front of a cluster, never this application-level role.
 - **Internal service controller** — implements real logic directly against its own `IRepository`/`IEventing`,
   either as a custom method on an entity controller or a bare `BaseController` action. Only ever called by a
   Public API (or another internal service) via its Api Client — never exposed directly to untrusted clients.
+
+⚠ **`BaseEntityUserController` and `BaseAuthController` (persistent auth) are internal-service-only features —
+never add them to an app playing the Public API role, even though nothing technically stops it.** Unlike a
+plain Data/Storage/Eventing provider (above, allowed as a deliberate exception), this combination is never an
+acceptable exception — a Public API that adds Identity for its own login/signup needs should compose through
+the owning internal service's Api Client instead (see [Api Clients § Built-in method groups](#built-in-method-groups))
+or use transient auth with server-computed claims, not host either controller itself. Two concrete reasons this
+is actively dangerous, not just architecturally unusual:
+- `BaseEntityUserController` exposes `password/reset/token`/`{id}/password/reset` **anonymously by design**, for
+  internal-network use only — see [Identity user controller](#identity-user-controller)'s own ⚠ Security note.
+- `BaseAuthController` in transient mode (no Identity, external login configured) auto-maps an endpoint that
+  trusts caller-supplied JWT claims verbatim — see [Authentication](#authentication)'s own ⚠ note on
+  `AuthTransientRepository`.
+
+A Public API that needs to offer login/signup/password-management to end users does so by **composing calls to
+the internal service that actually owns Identity**, through that service's Api Client (its `.Identity`/`.Auth`
+method groups — see [Api Clients § Built-in method groups](#built-in-method-groups)), or by implementing its
+own transient auth with server-computed claims (see `Api.Admin`'s `AccountsController` in this codebase for a
+working example) — never by hosting `BaseEntityUserController`/persistent `BaseAuthController` on the
+Public API itself.
 
 #### Entity controller hierarchy
 
@@ -1984,7 +2020,8 @@ an eventing provider is actually registered, don't pass `IEventing?` into the `e
 | `roles/{id}/claims[/assign\|replace\|assign-or-replace\|remove]` | various | **administrator** |
 
 ⚠ **Security**: `password/reset/token` and `{id}/password/reset` are anonymous by design, for internal use.
-Never expose this controller directly to untrusted clients without a Public API in front.
+Never expose this controller directly to untrusted clients — it belongs on an internal service only, reached
+through its Api Client, never added to an app playing the [Public API role](#public-api-vs-internal-service).
 
 #### Auth and audit controllers
 

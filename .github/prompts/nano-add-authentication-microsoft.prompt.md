@@ -1,8 +1,7 @@
 ---
 mode: agent
-description: Configure Nano's built-in Microsoft external login provider (App:Authentication:Jwt:ExternalLogins:Microsoft) on a Nano.Library-based API/Web application - adds the config, and (for Staging/Production) a self-provisioning, self-rotating Azure AD app registration wired into the GitHub Actions workflow plus a Kubernetes secret. Use when the user asks to add "Sign in with Microsoft", Entra ID, or Azure AD external login to a Nano API or Web application - requires nano-add-authentication-jwt already configured (Jwt.ExternalLogins lives under that same config), and does not apply to Google/Facebook, which have no CLI-scriptable credential setup and stay manually configured (see AGENTS.md's Authentication section).
+description: Configure Nano's built-in Microsoft external login provider (App:Authentication:Jwt:ExternalLogins:Microsoft) on a Nano.Library-based API/Web application — adds the config, and (for Staging/Production) a self-provisioning, self-rotating Azure AD app registration wired into the GitHub Actions workflow plus a Kubernetes secret. Use when the user asks to add "Sign in with Microsoft", Entra ID, or Azure AD external login to a Nano API or Web application — requires nano-add-authentication-jwt already configured (Jwt.ExternalLogins lives under that same config), and does not apply to Google/Facebook, which have no CLI-scriptable credential setup and stay manually configured (see AGENTS.md's Authentication section).
 ---
-
 
 # Nano add Microsoft authentication
 

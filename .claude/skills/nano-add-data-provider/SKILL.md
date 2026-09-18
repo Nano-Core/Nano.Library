@@ -14,20 +14,26 @@ without breaking what's already there.
 
 ## Before making any change, determine
 
-1. **Which provider.** One of `MySql`, `PostgreSQL`, `SqlServer`, `SqLite`, `InMemory` (see
+1. **Is this app meant to be a Public API?** Per AGENTS.md's [Controllers § Public API vs
+   internal service](#public-api-vs-internal-service), a Public API composes Api Clients into
+   responses and has no `IRepository` of its own — a Data provider is *allowed* there (not the
+   hard block Identity/Auth are), but it's a deviation from that lean-façade design, not the
+   default. If this app is a Public API, confirm with the user that persistence genuinely belongs
+   on this app rather than on an internal service reached via Api Client, before proceeding.
+2. **Which provider.** One of `MySql`, `PostgreSQL`, `SqlServer`, `SqLite`, `InMemory` (see
    AGENTS.md's provider table for package/type names). Ask the user if not already given.
-2. **Is a data provider already registered?** Check `Program.cs` for an existing
+3. **Is a data provider already registered?** Check `Program.cs` for an existing
    `.AddNanoData<...>()` call. Unlike logging, a second data provider isn't automatically
    wrong (multi-context setups exist), but it's unusual — if one is already registered, confirm
    with the user whether they want to *replace* it (single-context swap) or genuinely add a
    second `DbContext` before proceeding either way.
-3. **Is a package reference even needed?** Same check as the logging skill: look for a
+4. **Is a package reference even needed?** Same check as the logging skill: look for a
    `PackageReference` to `NanoCore` or `Nano.All` (identical, see AGENTS.md) on the application
    project or a `.Models` project it reaches via `ProjectReference`. If found, skip the package
    step. Otherwise add `<PackageReference Include="Nano.Data.<Provider>" Version="X.Y.Z" />` to
    the **application project** (never `.Models`), matching the version of the project's existing
    Nano application-type package. Never add a `ProjectReference` to Nano.Library source.
-4. **Entity identity type.** If entities already exist in the project, match their `TIdentity`
+5. **Entity identity type.** If entities already exist in the project, match their `TIdentity`
    (see the entity-scaffold skill's identity-type step) — the `DbContext`/`AddNanoData<...>`
    generic arguments must agree with it.
 

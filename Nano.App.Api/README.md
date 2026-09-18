@@ -63,12 +63,16 @@ and simplifying the setup of new API applications.
 
 > ⚠️ Before proceeding, it is highly recommended to familiarize yourself generally with **[Nano Applications](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App#nanoapp)**.  
 
-The `NanoApiApplication` can operate as either an internal service or an externally accessible API.
+The `NanoApiApplication` can operate as either an internal service or an externally accessible **Public API**.
 As an internal service, it can run behind your network boundary, handling requests from other applications within the system, 
 using the built-in **[Nano Api Client](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App#api-clients)**.
-When exposed as an external API, it sits behind an entry point that manages incoming traffic, providing controlled access to clients while keeping 
-the internal implementation consistent. This design allows the same application to function in both roles without changing its core configuration or service logic, 
-supporting flexible deployment scenarios.  
+As a Public API, it sits behind an entry point that manages incoming traffic, composing calls to one or more internal services into a response rather 
+than implementing business logic directly. The `NanoApiApplication` mechanism itself is identical either way, and switching a given application between 
+the two is a configuration change, not a rewrite - but the two roles are not interchangeable at the feature level. Some features (Identity, JWT/API-key 
+authentication) are internal-service-only and should never be added to a Public API, while others (a Data, Storage, or Eventing provider) are supported 
+but discouraged there, since a Public API is meant to stay a thin façade over the services it composes. See AGENTS.md's 
+**[Public API vs internal service](https://github.com/Nano-Core/Nano.Library/blob/master/AGENTS.md#public-api-vs-internal-service)** section for the 
+full breakdown of which features apply to which role.  
 
 > 📖 Learn more about the overall Nano architecture here: **[Nano Architectures](https://github.com/Nano-Core/Nano.Library#%EF%B8%8F-nano-architectures)**.  
 

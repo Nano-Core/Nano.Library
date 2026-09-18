@@ -17,15 +17,21 @@ Identity pairing, and no per-app secret to create - RabbitMQ credentials come fr
 
 ## Before making any change, determine
 
-1. **Which provider.** Currently only `RabbitMq` (see AGENTS.md's provider table - if the user
+1. **Is this app meant to be a Public API?** Per AGENTS.md's [Controllers § Public API vs
+   internal service](#public-api-vs-internal-service), a Public API composes Api Clients into
+   responses and has no `IRepository` of its own - an Eventing provider is *allowed* there (not a
+   hard block), but it's a deviation from that lean-façade design, not the default. If this app is
+   a Public API, confirm with the user that publishing/subscribing to events genuinely belongs on
+   this app rather than on an internal service reached via Api Client, before proceeding.
+2. **Which provider.** Currently only `RabbitMq` (see AGENTS.md's provider table - if the user
    names something else, check whether a custom provider already exists in the project first,
    per AGENTS.md's `#### Custom eventing provider` section).
-2. **Is an eventing provider already registered?** Check `Program.cs` for an existing
+3. **Is an eventing provider already registered?** Check `Program.cs` for an existing
    `.AddNanoEventing<...>()` call - unlike Data, there's no supported multi-provider case here
    (AGENTS.md: a provider's `Configure` must itself register the single `IEventing`
    implementation). If one is already registered, treat this as a replace and say so, the same
    as the logging skill.
-3. **Is a package reference even needed?** Same check as the other add-provider skills: look for
+4. **Is a package reference even needed?** Same check as the other add-provider skills: look for
    `NanoCore`/`Nano.All` (directly, or transitively via a `.Models` project). If found, skip the
    package step. Otherwise add `<PackageReference Include="Nano.Eventing.RabbitMq" Version="X.Y.Z" />`
    to the **application project**, matching the version of the project's existing Nano
@@ -110,9 +116,9 @@ nullable, so it doesn't change behavior for a controller that never ends up usin
 ## Staging/Production (Kubernetes)
 
 No CI step and no per-app secret to create - RabbitMQ is a **pre-existing, shared, cluster-wide**
-broker, referenced by a secret (`rabbitmq-default-user`) that already exists in the cluster
-before this app is ever deployed. Don't create a new secret or add a provisioning workflow step;
-just wire the reference:
+broker, referenced by a secret (`rabbitmq-default-user`) provisioned cluster-wide by the
+infrastructure repo, not by this skill or this app. Don't create a new secret or add a
+provisioning workflow step; just wire the reference:
 
 Add to `.kubernetes/deployment.yaml`'s container `env`:
 
@@ -138,10 +144,6 @@ Add to `.kubernetes/deployment.yaml`'s container `env`:
       name: rabbitmq-default-user
       key: password
 ```
-
-If `rabbitmq-default-user` doesn't exist in the target cluster yet, that's a one-time,
-cluster-level provisioning concern - tell the user rather than inventing a new secret name or a
-provisioning step for it.
 
 ## After making the change
 

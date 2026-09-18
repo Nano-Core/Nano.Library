@@ -44,9 +44,26 @@ there's no issuer/validator distinction to worry about here - always safe to rem
 - Remove the `Data__Identity__ApiKey__Secret` entry from `.kubernetes/deployment.yaml`'s
   container `env`.
 
+⚠ This does **not** delete either underlying live resource - removing the workflow/manifest lines
+only stops maintaining them going forward, the same class of gap as
+`nano-remove-azure-managed-identity` (doesn't delete the Azure identity) and
+`nano-remove-authentication-jwt`'s equivalent note:
+- The `auth-api-key-secret` Kubernetes `Secret` already sitting in the cluster from prior
+  deploys.
+- The **GitHub repository secrets** themselves (`PRODUCTION_AUTH_API_KEY_SECRET`/
+  `STAGING_AUTH_API_KEY_SECRET`) - removing the workflow's `AUTH_API_KEY_SECRET` env var line
+  just stops this workflow from *reading* them; they stay stored in the repo/organization's
+  GitHub settings until someone deletes them there directly (`gh secret delete` or the Settings
+  UI) - this skill has no way to do that itself.
+Say both explicitly rather than letting the user assume "removed the file/workflow line" means
+"removed the actual secret."
+
 ## After making the change
 
 - Show the user every file touched/deleted.
 - Restate step 2's outcome now that it's done - either "JWT auth still works, the key-exchange
   endpoint is gone" or "this app now has no authentication at all, every endpoint is anonymous" -
   whichever applies. Worth a second, explicit confirmation, not just a line in a file list.
+- Restate the ⚠ above - the live `auth-api-key-secret` Kubernetes secret and the
+  `PRODUCTION_AUTH_API_KEY_SECRET`/`STAGING_AUTH_API_KEY_SECRET` GitHub secrets still exist; only
+  this app's manifest/workflow references to them were removed.
