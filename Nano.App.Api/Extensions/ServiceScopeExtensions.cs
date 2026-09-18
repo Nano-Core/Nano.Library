@@ -21,7 +21,7 @@ internal static class ServiceScopeExtensions
 
         var hasAuthController = TypeCache
             .GetAllTypes()
-            .Any(x => x.IsTypeOf(typeof(BaseAuthController)));
+            .Any(x => x.IsTypeOf(typeof(BaseAuthController<>)));
 
         var hasIdentity = serviceScope
             .MapNanoIdentityEndpoints(builder, options, hasAuthController);
