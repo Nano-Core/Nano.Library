@@ -23,8 +23,6 @@ the same "never do one half without the other" rule applies in reverse here.
      `App:HealthCheck` is gone (same dependency as at add-time, just now unsatisfied). Not a
      crash, but tell the user - leaving those blocks in place with no effect is confusing without
      an explanation.
-   - **`Metrics`, if enabled, is unaffected** - it has no dependency on `HealthCheck` in either
-     direction; don't touch it.
 
 ## Kubernetes
 

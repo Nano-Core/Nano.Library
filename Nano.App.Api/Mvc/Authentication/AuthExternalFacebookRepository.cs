@@ -3,6 +3,7 @@ using Nano.Data.Abstractions.Exceptions;
 using Nano.Data.Abstractions.Identity.Authentication.Consts;
 using Nano.Data.Abstractions.Identity.Authentication.Models;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Net.Http;
 using System.Threading;
@@ -23,8 +24,8 @@ public class AuthExternalFacebookRepository(FacebookOptions options, HttpClient 
     {
         ArgumentNullException.ThrowIfNull(flow);
 
-        const string HOST = "https://graph.facebook.com";
-        const string FIELDS = "id,name,address,email,birthday";
+        const string HOST = "https://graph.facebook.com/v21.0";
+        const string FIELDS = "id,name,email";
 
         var debugTokenResponse = await httpClient
             .GetAsync($"{HOST}/debug_token?input_token={flow.AccessToken}&access_token={options.AppId}|{options.AppSecret}", cancellationToken);
@@ -61,15 +62,46 @@ public class AuthExternalFacebookRepository(FacebookOptions options, HttpClient 
         var user = await userResponse.Content
             .ReadAsStringAsync(cancellationToken);
 
-        var externalLoginData = JsonConvert.DeserializeObject<ExternalAuthenticationData>(user);
+        var userData = JsonConvert.DeserializeObject<JObject>(user);
 
-        externalLoginData?.ExternalToken = new ExternalAuthenticationToken
+        if (userData == null)
         {
-            Name = BuiltInExternalLogInProviderNames.FACEBOOK,
-            Token = flow.AccessToken
-        };
+            throw new NullReferenceException(nameof(userData));
+        }
 
-        return externalLoginData ?? throw new UnauthorizedException();
+        var id = userData["id"]?.ToString();
+
+        if (id == null)
+        {
+            throw new NullReferenceException(nameof(id));
+        }
+
+        var name = userData["name"]?.ToString();
+
+        if (name == null)
+        {
+            throw new NullReferenceException(nameof(name));
+        }
+
+        var email = userData["email"]?.ToString();
+
+        if (email == null)
+        {
+            throw new NullReferenceException(nameof(email));
+        }
+
+        return new ExternalAuthenticationData
+        {
+            Id = id,
+            Name = name,
+            EmailAddress = email,
+            Username = email,
+            ExternalToken = new ExternalAuthenticationToken
+            {
+                Name = BuiltInExternalLogInProviderNames.FACEBOOK,
+                Token = flow.AccessToken
+            }
+        };
     }
 
     /// <inheritdoc />

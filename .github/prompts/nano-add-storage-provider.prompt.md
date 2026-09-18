@@ -20,12 +20,18 @@ provisioning step differ.
 
 ## Before making any change, determine
 
-1. **Which provider.** `Local` or `Azure` (see AGENTS.md's provider table for package/type
+1. **Is this app meant to be a Public API?** Per AGENTS.md's [Controllers § Public API vs
+   internal service](#public-api-vs-internal-service), a Public API composes Api Clients into
+   responses and has no `IRepository` of its own - a Storage provider is *allowed* there (not a
+   hard block), but it's a deviation from that lean-façade design, not the default. If this app is
+   a Public API, confirm with the user that file storage genuinely belongs on this app rather than
+   on an internal service reached via Api Client, before proceeding.
+2. **Which provider.** `Local` or `Azure` (see AGENTS.md's provider table for package/type
    names). Ask the user if not already given.
-2. **Is a storage provider already registered?** Check `Program.cs` for an existing
+3. **Is a storage provider already registered?** Check `Program.cs` for an existing
    `.AddNanoStorage<...>()` call - like eventing, there's one `IPathProvider` implementation
    per app, not a multi-provider case. If one exists, treat this as a replace and say so.
-3. **Is a package reference even needed?** Same check as the other add-provider skills: look for
+4. **Is a package reference even needed?** Same check as the other add-provider skills: look for
    `NanoCore`/`Nano.All` (directly, or transitively via a `.Models` project). If found, skip the
    package step. Otherwise add `<PackageReference Include="Nano.Storage.<Provider>" Version="X.Y.Z" />`
    to the **application project**, matching the version of the project's existing Nano
@@ -156,20 +162,30 @@ provider) - there's nothing to run, just a directory.
   and `service-headless.yaml` (same `Get-Content | ExpandEnvironmentVariables | kubectl apply`
   pattern as every other manifest) in `Kubernetes Deploy`, before `deployment.yaml`. There's no
   separate PVC file to apply - `volumeClaimTemplates` creates one per pod automatically as the
-  `StatefulSet` itself is applied.
+  `StatefulSet` itself is applied. Also add `.kubernetes\storage-storageclass.yaml =
+  .kubernetes\storage-storageclass.yaml` and `.kubernetes\service-headless.yaml =
+  .kubernetes\service-headless.yaml` to `{name}.sln`'s `.kubernetes` `SolutionItems` block (see
+  AGENTS.md's Solution Structure note) - new files under `.kubernetes/` don't show up in Visual
+  Studio's Solution Explorer otherwise.
 
 ## Kubernetes - Azure
 
-This provider assumes the app already has **Managed Identity** wired (`nano-add-azure-managed-identity`
-- service-account.yaml, workload-identity annotations, the CI "Managed Identity" step that
-produces `$env:IDENTITY_NAME`/`$env:IDENTITY_CLIENT_ID`/`$env:IDENTITY_PRINCIPAL_ID`) - the
-fileshare mount authenticates via that identity, not a stored credential, and unlike Data's
-`AuthenticationType`, Azure storage has no credentials-based fallback at all (per AGENTS.md's
-`Configuration` table, `Storage` has no `AuthenticationType` setting) - Managed Identity is not
-optional for this provider. If the project doesn't have it yet, point the user at
-`nano-add-azure-managed-identity` first. It also assumes the target Azure Storage **account** already
-exists - provisioning the account itself is out of this skill's scope, only the fileshare *on*
-it is provisioned below.
+This provider requires **Managed Identity** (`nano-add-azure-managed-identity` - service-account.yaml,
+workload-identity annotations, the CI "Managed Identity" step that produces
+`$env:IDENTITY_NAME`/`$env:IDENTITY_CLIENT_ID`/`$env:IDENTITY_PRINCIPAL_ID`) - the fileshare mount
+authenticates via that identity, not a stored credential, and unlike Data's `AuthenticationType`,
+Azure storage has no credentials-based fallback at all (per AGENTS.md's `Configuration` table,
+`Storage` has no `AuthenticationType` setting). This isn't an adjacent, optional feature to ask
+about before pulling in - it's a hard technical dependency of Azure storage itself: the
+"Storage Role Permissions" step below directly references `$env:IDENTITY_PRINCIPAL_ID`, which is
+simply undefined without it, so the generated workflow would fail the first time it runs. If the
+project doesn't have Managed Identity yet, **apply `nano-add-azure-managed-identity` as part of this
+same change** rather than stopping to ask or leaving it as a dangling prerequisite - then note in
+the final summary that it was added alongside storage, so the user isn't surprised by the extra
+files. It also assumes the target Azure Storage **account** already exists - provisioning the
+account itself is out of this skill's scope (a real external resource to ask about, unlike
+Managed Identity, which is just configuration this skill can apply itself), only the fileshare
+*on* it is provisioned below.
 
 1. **Workflow env vars**:
    ```yaml
@@ -273,7 +289,11 @@ it is provisioned below.
    ```
    placed before the `storage-pv.yaml`/`storage-pvc.yaml` apply block (which come before
    `deployment.yaml`, same order as every other manifest). The suffix keeps the PV/PVC name
-   unique per identity, avoiding collisions across redeploys.
+   unique per identity, avoiding collisions across redeploys. Also add
+   `.kubernetes\storage-pv.yaml = .kubernetes\storage-pv.yaml` and `.kubernetes\storage-pvc.yaml
+   = .kubernetes\storage-pvc.yaml` to `{name}.sln`'s `.kubernetes` `SolutionItems` block (see
+   AGENTS.md's Solution Structure note) - new files under `.kubernetes/` don't show up in Visual
+   Studio's Solution Explorer otherwise.
 6. **`.kubernetes/deployment.yaml`** - mount it (`ReadWriteMany`, so multiple replicas can share
    it, unlike `Local`), plus the same `tmp` `emptyDir` volume noted in the Local section above:
    ```yaml
@@ -297,6 +317,8 @@ it is provisioned below.
 - Show the user every file touched, grouped by concern (app code, local docker-compose,
   Kubernetes, and for Azure, CI) - too many files for a flat list to be easy to sanity-check.
 - If the package step was skipped (`NanoCore`/`Nano.All` already covering it), say so explicitly.
-- For `Azure`, if Managed Identity (point the user at `nano-add-azure-managed-identity`) or the storage
-  account weren't already in place, say so explicitly rather than silently doing only the
-  app-code half of the job.
+- For `Azure`, if Managed Identity wasn't already wired, say explicitly that it was added as part
+  of this change (list its files alongside storage's own) - don't let it pass as an unremarked
+  side effect. If the target Storage **account** doesn't exist yet, that's still an external
+  prerequisite outside this skill's scope - flag it rather than silently doing only the app-code
+  half of the job.

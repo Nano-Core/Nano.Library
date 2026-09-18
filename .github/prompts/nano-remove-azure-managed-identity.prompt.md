@@ -15,14 +15,27 @@ skill first - this one undoes exactly what it adds.
    `Managed Identity` workflow step. If neither exists, say so and stop.
 2. **What depends on it?** Two genuinely different situations - check both, and don't treat them
    the same:
-   - **A Data provider set to `AuthenticationType: Azure`** (MySql/PostgreSQL/SqlServer). This
-     one has a real fallback: `Credentials`. But reverting to it isn't a config flip alone - it
-     needs an actual connection string/credential the user supplies (this skill can't invent
-     one), plus removing the CI `<Provider> Database Migration`/`SQL Server Create Database`
-     steps' Managed-Identity-based user creation and the `Data__AuthenticationType`
-     ConfigMap entry. **Ask the user which they want**: supply real credentials and revert this
-     provider to `Credentials` as part of this change, or leave Managed Identity in place and
-     stop here. Don't silently pick one.
+   - **A Data provider currently authenticating via Managed Identity** (MySql/PostgreSQL/
+     SqlServer). **Don't check only the base `appsettings.json`** - per `nano-add-data-provider`,
+     `Data:AuthenticationType` is always `"Credentials"` there, even when Staging/Production
+     actually authenticates via Managed Identity, so the base file alone can't tell you which
+     world you're in. Check two places instead:
+     - `.kubernetes/configmap.yaml` for a `Data__AuthenticationType: %SQL_AUTH_TYPE%` entry - the
+       convention-following case, only present if `nano-add-data-provider`'s Staging/Production
+       section was wired up for this provider, and it only ever expands to `Azure`.
+     - `appsettings.Staging.json`/`appsettings.Production.json` directly for their own
+       `Data:AuthenticationType` - nothing stops someone from setting it there by hand instead of
+       going through the ConfigMap, so don't assume the convention was followed just because the
+       ConfigMap entry is absent; check both before concluding either way.
+     Either one set to `Azure` → this provider depends on Managed Identity. Neither → it's already
+     pure `Credentials` in every environment, nothing to revert, this dependency doesn't apply.
+     If it does apply: this one has a real fallback, `Credentials` - but reverting to it isn't a
+     config flip alone, it needs an actual connection string/credential the user supplies (this
+     skill can't invent one), plus removing the CI `<Provider> Database Migration`/`SQL Server
+     Create Database` steps' Managed-Identity-based user creation and the
+     `Data__AuthenticationType` ConfigMap entry. **Ask the user which they want**: supply real
+     credentials and revert this provider to `Credentials` as part of this change, or leave
+     Managed Identity in place and stop here. Don't silently pick one.
    - **Azure Storage** (`AzureFileshareProvider`, `nano-add-storage-provider`'s Azure section).
      Unlike Data, there's **no credentials-based fallback for Storage** - per AGENTS.md's
      `Configuration` table, `Storage` has no `AuthenticationType` setting at all; Azure storage's

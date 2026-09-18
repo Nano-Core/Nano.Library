@@ -21,10 +21,24 @@ time — it specifically requires this. Ask the user up front rather than assumi
    via `Program.cs`.
 2. **Is the app already publicly exposed?** Check for `.kubernetes/httproute-80.yaml`/
    `httproute-443.yaml`. If present, say so and stop.
-3. **Does the user also want Availability Check?** Ask explicitly if not already stated — see
+3. **Does this app have `BaseEntityUserController` or `BaseAuthController` registered?** Search
+   the project for a controller deriving either (or `BaseAuthController<TIdentity>`). Per
+   AGENTS.md's [Controllers § Public API vs internal service](#public-api-vs-internal-service),
+   both are internal-service-only features:
+   - `BaseEntityUserController` exposes `password/reset/token`/`{id}/password/reset`
+     **anonymously by design**, safe only on an internal network.
+   - `BaseAuthController` in transient mode (Identity absent, external login configured)
+     auto-maps an endpoint that trusts caller-supplied JWT claims verbatim (see
+     `nano-add-authentication-jwt`'s own warning on this).
+
+   Finding either is a strong signal this app is meant to be called *through* a Public API's Api
+   Client, not reached directly — **stop and confirm with the user this is intentional** before
+   proceeding; don't silently expose it. If they confirm, proceed but restate the risk explicitly
+   in the after-change summary rather than treating the confirmation as closing the topic.
+4. **Does the user also want Availability Check?** Ask explicitly if not already stated — see
    above. If yes, run `nano-add-availability-check` after this skill completes (it depends on
    the hostname/HTTPS wiring this skill adds).
-4. **Sub-domain name.** Ask what public sub-domain this app should be reachable at (e.g. `papi`,
+5. **Sub-domain name.** Ask what public sub-domain this app should be reachable at (e.g. `papi`,
    `nano`) — becomes `SUB_DOMAIN_NAME`, combined with every DNS zone configured in the target
    Azure resource group at deploy time (an app can end up reachable under several zones/domains
    at once, not just one).
@@ -132,10 +146,10 @@ group, so an app can be reachable under multiple domains without per-domain conf
 
 ## GitHub Actions
 
-1. **Workflow env vars** — `SUB_DOMAIN_NAME` is whatever the user answered in step 4 above; never
+1. **Workflow env vars** — `SUB_DOMAIN_NAME` is whatever the user answered in step 5 above; never
    invent or guess a value for it:
    ```yaml
-   SUB_DOMAIN_NAME: <sub-domain name the user gave in step 4>
+   SUB_DOMAIN_NAME: <sub-domain name the user gave in step 5>
    AZURE_GROUP_DNS: ${{ vars.AZURE_RESOURCE_GROUP_DNS }}
    ```
 2. **Derive the hostnames and gateway**, in the `Kubernetes Deploy` step, before any manifest is
@@ -160,8 +174,18 @@ group, so an app can be reachable under multiple domains without per-domain conf
 ## After making the change
 
 - Show the user every file touched, grouped by concern (local dev, Kubernetes, CI).
-- If step 3 confirmed Availability Check is also wanted, hand off to
+- If step 3 found `BaseEntityUserController`/`BaseAuthController` on this app and the user
+  confirmed exposing it anyway, restate the specific risk one more time in plain terms (anonymous
+  password-reset endpoints, or claim-forging transient login) rather than letting the earlier
+  confirmation stand as the only mention of it.
+- If step 4 confirmed Availability Check is also wanted, hand off to
   `nano-add-availability-check` next rather than leaving it unaddressed.
 - Mention `AGENTS.md`'s `#### Http Policy Headers` (CORS, HSTS, CSP, security headers) as a
   related but separate concern worth considering for a publicly-reachable app — this skill
   doesn't configure it, only the routing/TLS/DNS layer.
+- A publicly-exposed Public API is the most common case of an app aggregating several Api Clients
+  (see AGENTS.md's `#### Local Development (docker-compose)` under Api Clients) — if this app
+  already consumes any, or gains one later via `nano-add-api-client-configuration`, each target
+  needs to be runnable locally too. This skill doesn't set that up itself (it's orthogonal to
+  public exposure), but it's worth checking it's not missing if the app has Api Clients configured
+  with no matching nested service in `.docker/docker-compose.yml`.

@@ -22,12 +22,26 @@ than re-deriving them.
    parameter fails DI resolution the instant the provider is gone:
    - **`IRepository` or the `DbContext` injected directly.** Search the project for both,
      anywhere - controllers, services, workers. A scaffolded controller
-     (`nano-scaffold-entity`'s own template) always takes `IRepository` as a required parameter,
+     (`nano-add-entity`'s own template) always takes `IRepository` as a required parameter,
      so any existing entity's controller is a guaranteed hit - the app won't start at all with
      it left in place and the provider gone.
-   - **Entities.** Beyond the controller-crash risk above, `BaseEntity`-derived classes and their
-     mappings/query criteria become dead weight with nothing to persist them - not a crash by
-     themselves, but still worth surfacing.
+   - **Data Mappings - a build break, not just dead code, if the package is actually being
+     removed.** Every `Data/Mappings/<Entity>Mapping.cs` file (`BaseEntityMapping<T>`/
+     `BaseMapping<T>`) references `EntityTypeBuilder<T>`
+     (`Microsoft.EntityFrameworkCore.Metadata.Builders`) - a type that only reaches this project
+     transitively through `Nano.Data.<Provider>`, not through `Nano.App`/`Nano.Data.Abstractions`.
+     If step 3 below actually removes that package (i.e. the project isn't on `NanoCore`/
+     `Nano.All`), every mapping file fails to compile the instant it's gone - deleting them is
+     required to keep the build green, not optional cleanup, but **list every mapping file this
+     would delete and get explicit confirmation before deleting any of them** - same rule as
+     deleting any other file the user didn't directly ask you to remove; don't fold it silently
+     into "removing the provider." If `NanoCore`/`Nano.All` stays in place instead, they still
+     compile fine, just with nothing left to ever apply them (`OnModelCreating`'s auto-discovery
+     has no `DbContext` to run from) - dead code, not a break, and there's no deletion to confirm.
+   - **Entities and query criteria.** Beyond the mapping risk above, `BaseEntity`-derived classes
+     and their query criteria become dead weight with nothing to persist them - not a crash or
+     build break by themselves (they don't reference EF Core types directly), but still worth
+     surfacing.
    - **Identity/Master auth.** If `Data:Identity` is configured (see AGENTS.md's `#### Identity`)
      or a JWT auth setup depends on the Identity store this context provides, removing the
      provider breaks authentication entirely.
@@ -51,6 +65,14 @@ blank-app placeholder and the `_` discard parameter.
 - `Data/<Name>DbContextFactory.cs` (if present - `InMemory` never had one)
 - `Migrations/` folder (if present - dead without the factory that constructs the context for
   `dotnet ef`; keeping stale migration files around with no way to run them is just clutter)
+- **`Data/Mappings/*.cs` (every entity's mapping) - required, not optional, whenever step 3 is
+  actually removing the `Nano.Data.<Provider>` package, but only after step 2's confirmation.**
+  Per step 2's Data Mappings risk, leaving these behind breaks the build, not just clutters it -
+  so deletion is the correct end state once confirmed, but list the files and get that
+  confirmation first rather than deleting them as an unannounced side effect of removing the
+  provider. If `NanoCore`/`Nano.All` covers the project instead (package step skipped), they're
+  safe to leave - flag them as dead code per step
+  2 rather than deleting, since the entities/query criteria they map are also staying.
 
 ## appsettings.json
 
@@ -63,33 +85,42 @@ override, per `nano-add-data-provider`'s SqLite section) - remove it from there 
 
 ## docker-compose.yml
 
-Comment out the `database` service block (don't delete it) - matching the established
-convention of keeping all providers' blocks available for future reference, just inactive. Also
-remove `depends_on: [database]` from the app's own service entry, since nothing is left to
-depend on. Skip this step entirely for `InMemory` and `SqLite` - neither ever had a `database`
-service.
+Delete the `database` service block entirely (don't comment it out - `nano-add-data-provider`
+adds only the one block for the chosen provider, with no dormant alternatives for the others, so
+there's nothing to preserve here either). Also remove `depends_on: [database]` from the app's
+own service entry, since nothing is left to depend on. Skip this step entirely for `InMemory` and
+`SqLite` - neither ever had a `database` service.
 
 ## SqLite-specific cleanup
 
 If the provider was `SqLite`, additionally:
-- Delete `.kubernetes/data-storageclass.yaml` and `.kubernetes/data-pvc.yaml`.
-- Remove their `Get-Content | ExpandEnvironmentVariables | kubectl apply` block from the
+- Delete `.kubernetes/data-storageclass.yaml` and `.kubernetes/service-headless.yaml` (there's no
+  separate PVC file to delete - `nano-add-data-provider` never creates one; the `StatefulSet`'s
+  `volumeClaimTemplates` provisions one per pod automatically, and is removed as part of reverting
+  `stateful-set.yaml` back to a plain `Deployment` below).
+- Remove their `Get-Content | ExpandEnvironmentVariables | kubectl apply` blocks from the
   `Kubernetes Deploy` workflow step.
-- Remove the `volumeMounts`/`volumes` entries referencing `%SERVICE_NAME%-volume` from
-  `.kubernetes/deployment.yaml`.
+- Revert `.kubernetes/stateful-set.yaml` back to a plain `deployment.yaml` (`kind: Deployment`,
+  drop `serviceName` and `volumeClaimTemplates`) unless another SqLite-needing reason for a
+  `StatefulSet` remains - and change `.kubernetes/autoscaler.yaml`'s `scaleTargetRef.kind` back
+  from `StatefulSet` to `Deployment` alongside it.
+- Remove the `volumeMounts` entry referencing `%SERVICE_NAME%-volume` from the container spec.
 - Remove the `SQL_SIZE` workflow env var, if nothing else uses it.
 
 ## Staging/Production cleanup (MySql, PostgreSQL, SqlServer only)
 
 Skip entirely for `SqLite`/`InMemory` (covered above / never applicable).
 
-1. **Workflow steps** - remove `<Provider> Database Migration`. For `SqlServer` specifically,
-   also remove `SQL Server Create Database` (the two steps `nano-add-data-provider` always adds
-   together for that provider).
-2. **Workflow env vars** - remove `SQL_TYPE`, `SQL_AUTH_TYPE`, `SQL_NAME`. Only remove
+1. **Workflow steps** - remove `<Provider> Database Migration` (this is the only migration step
+   present - `nano-add-data-provider` no longer adds the other two providers' steps as dormant
+   `if:`-guarded alternatives, so there's nothing else to find here). For `SqlServer`
+   specifically, also remove `SQL Server Create Database` (the two steps `nano-add-data-provider`
+   always adds together for that provider).
+2. **Workflow env vars** - remove `SQL_AUTH_TYPE`, `SQL_NAME` (there is no `SQL_TYPE` to remove -
+   `nano-add-data-provider` no longer adds one). Only remove
    `AZURE_GROUP_DATABASE`/`AZURE_GROUP_LOGS`/`DOTNET_EF_TOOLS_VERSION` if nothing else in the
-   workflow still references them (`AZURE_GROUP_LOGS` in particular is also used by an
-   Availability Check step, if one exists - check before removing).
+   workflow still references them (`AZURE_GROUP_LOGS` is only added for `SqlServer` in the first
+   place, and is also used by an Availability Check step, if one exists - check before removing).
 3. **Kubernetes secret** - delete `.kubernetes/auth-sql-secret.yaml` and remove its apply block
    from the `Kubernetes Deploy` step.
 4. **ConfigMap** - remove `Data__AuthenticationType: %SQL_AUTH_TYPE%` from
@@ -103,7 +134,9 @@ Skip entirely for `SqLite`/`InMemory` (covered above / never applicable).
   Staging/Production CI + K8s) - same reasoning as the add skill: too many files for a flat list
   to be easy to sanity-check.
 - Restate anything flagged in step 2 - required `IRepository`/`DbContext` injections that will
-  now crash the app, plus orphaned entities or broken Identity/auth - one more time here, even
-  if the user already confirmed it; worth a second visible reminder once the removal is done.
+  now crash the app, whether mapping files were deleted (build break avoided) or left as dead
+  code (`NanoCore`/`Nano.All` case), plus orphaned entities/query criteria or broken
+  Identity/auth - one more time here, even if the user already confirmed it; worth a second
+  visible reminder once the removal is done.
 - If a step was skipped because the project uses `NanoCore`/`Nano.All`, or because a Staging/
   Production section never existed to begin with, say so explicitly.

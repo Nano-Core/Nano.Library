@@ -26,6 +26,14 @@ public static class ClaimTypesExtended
     public static string ExternalProviderRefreshToken => "external_provider_refresh_token";
 
     /// <summary>
+    /// Claim type for the manifest recording which roles/claims on this token were asserted as
+    /// non-persisted "transient" ones at login, so a refresh can recover and carry forward exactly
+    /// that set instead of trusting the refresh caller to resupply it. The value is an opaque,
+    /// internally-encoded blob - see <c>TransientClaimsManifest</c> - not meant to be read directly.
+    /// </summary>
+    public static string TransientClaimsManifest => "transient_claims_manifest";
+
+    /// <summary>
     /// Claim type for the API key identifier.
     /// </summary>
     public static string ApiKeyId => "ApiKeyId";

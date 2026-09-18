@@ -23,10 +23,23 @@ identity store on every single request, with no token step at all.
 1. **Is Identity already configured?** Check the base `appsettings.json` for `Data:Identity`, and
    `Program.cs`/the project for an `.AddNanoData<...>()` + identity entity. API-key auth is an
    identity-store feature (AGENTS.md), not usable without it — if missing, stop and point the
-   user at `nano-add-identity` first.
-2. **Is API-key auth already configured?** Check for `Data:Identity:ApiKey:Secret` already set.
+   user at `nano-add-identity` first, which will itself check whether this app is meant to be a
+   Public API (Identity is an internal-service-only feature — see that skill's own warning) before
+   adding anything.
+2. **If Identity already existed before step 1's referral would have caught it, check public
+   exposure directly here too — don't rely solely on the referral.** Look for
+   `.kubernetes/httproute-80.yaml`/`httproute-443.yaml` (the same files `nano-add-identity` and
+   `nano-add-public-exposure` check). Identity may have been added in an earlier session, before
+   this check existed, or by a path that never ran `nano-add-identity`'s gate — so its own
+   forward-looking check can't be assumed to have already happened. If either file is present,
+   **stop before touching anything** and confirm with the user this is intentional: layering
+   API-key auth onto an already-publicly-exposed app that also has `BaseEntityUserController`
+   means raw `X-Api-Key` values are now checked directly against requests from the open internet,
+   not just from another service that already exchanged one for a JWT (see AGENTS.md's own note
+   on that intended flow, under `#### Authentication`).
+3. **Is API-key auth already configured?** Check for `Data:Identity:ApiKey:Secret` already set.
    If so, say so and stop.
-3. **Is JWT authentication already configured on this app?** Check the base `appsettings.json`
+4. **Is JWT authentication already configured on this app?** Check the base `appsettings.json`
    for `App:Authentication:Jwt`, or an existing `AuthController`.
    - **Not configured** — this app will end up in **pure API-key mode**: no `AuthController`, no
      `Jwt` config, `X-Api-Key` is the only credential, checked on every request. Don't add a
@@ -38,7 +51,7 @@ identity store on every single request, with no token step at all.
      becomes reachable at `/auth/login/apikey` the moment this skill sets the config — tell the
      user this new endpoint just appeared, it's a real behavior change on an app that may already
      have callers, not just an implementation detail.
-4. **Application type.** No controller involved either way in pure mode; in the JWT-paired case
+5. **Application type.** No controller involved either way in pure mode; in the JWT-paired case
    the controller already exists (added by `nano-add-authentication-jwt`). Nothing API/Web-specific
    for this skill to gate on beyond that.
 
@@ -91,7 +104,10 @@ testing convenience, set one in `appsettings.Development.json` instead of the ba
 
 - Show the user every file touched.
 - State plainly which mode this app ended up in — pure API-key (no controller, no login step) or
-  paired with existing JWT (`/auth/login/apikey` now live) — from step 3. Don't leave this
+  paired with existing JWT (`/auth/login/apikey` now live) — from step 4. Don't leave this
   implicit; it's the one thing genuinely worth double-checking landed as intended.
+- If step 2 found this app already publicly exposed and the user confirmed proceeding anyway,
+  restate the specific risk one more time — raw `X-Api-Key` values now checked directly against
+  internet traffic — rather than letting the earlier confirmation be the only mention of it.
 - If step 1 stopped the skill early for a missing Identity prerequisite, that's the whole
   response.

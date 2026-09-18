@@ -213,6 +213,7 @@ The following methods are available for Auth operations.
 | `LogInApiKeyAsync`               | LogInApiKeyRequest            | Executes `auth/login/apikey` to authenticate using an API key.                     |
 | `LogInExternalAsync`             | BaseLogInExternalRequest      | Executes `auth/login/external` to authenticate via an external provider.           |
 | `LogInExternalTransientAsync`    | BaseLogInExternalRequest      | Executes `auth/login/external/transient` using a transient external flow.          |
+| `LogInExternalTransientRefreshAsync` | BaseLogInExternalTransientRefreshRequest | Executes `auth/login/external/{providerName}/transient/refresh` to refresh a transient external login. |
 | `LogInRefreshAsync`              | LogInRefreshRequest           | Executes `auth/login/refresh` to refresh an access token.                          |
 | `LogOutAsync`                    | -                             | Executes `auth/logout` to invalidate the current session or token.                 |
 

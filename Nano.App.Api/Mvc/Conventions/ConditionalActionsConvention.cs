@@ -25,7 +25,9 @@ internal sealed class ConditionalActionsConvention(ILogger<ConditionalActionsCon
 
         this.DisableAuthControllerActions(controller);
         this.DisableEntityUserControllerActions(controller);
+
         this.WarnIfAnonymousPasswordResetExposed(controller);
+        this.WarnIfAuthControllerExposesUnfilteredLogin(controller);
     }
 
 
@@ -241,8 +243,29 @@ internal sealed class ConditionalActionsConvention(ILogger<ConditionalActionsCon
         }
 
         const string MESSAGE =
-            "Controller '{ControllerName}' derives from 'BaseEntityUserController' and exposes unauthenticated password-reset endpoints (password/reset/token and {{id}}/password/reset). " +
-            "These issue and consume reset tokens with no auth, allowing full account takeover for any known username. They are for internal services only and must never be reachable outside a trusted network.";
+            "Controller '{ControllerName}' derives from 'BaseEntityUserController' and exposes unauthenticated password-reset endpoints (password/reset/token and " +
+            "{{id}}/password/reset). These issue and consume reset tokens with no auth, allowing full account takeover for any known username. They are for internal services " +
+            "only and must never be reachable outside a trusted network.";
+
+        this.logger
+            .LogWarning(MESSAGE, controller.ControllerType.FullName);
+    }
+    private void WarnIfAuthControllerExposesUnfilteredLogin(ControllerModel controller)
+    {
+        ArgumentNullException.ThrowIfNull(controller);
+
+        var isAuthController = controller.ControllerType
+            .IsTypeOf(typeof(BaseAuthController<>));
+
+        if (!isAuthController)
+        {
+            return;
+        }
+
+        const string MESSAGE =
+            "Controller '{ControllerName}' derives from 'BaseAuthController', whose login endpoints (and, for transient auth, Nano's auto-mapped external-login endpoint) " +
+            "bind TransientClaims/TransientRoles straight from the request with no server-side filtering - any caller can assert arbitrary claims/roles. " +
+            "Use a custom controller instead if this app needs server-computed claims.";
 
         this.logger
             .LogWarning(MESSAGE, controller.ControllerType.FullName);

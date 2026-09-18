@@ -183,10 +183,11 @@ of your own Nano-based application's repository.
 Alongside `AGENTS.md`, this repository also includes a **`.claude`** folder with reusable **[Agent Skills](https://code.claude.com/docs/en/skills)** for common, repeatable Nano development 
 tasks: `AGENTS.md` is reference knowledge an agent reads, a skill is a runnable capability an agent invokes to actually perform a task the same way every time. More skills may be 
 added over time as new repeatable workflows are identified. Like `AGENTS.md`, skills are discovered locally and aren't inherited from a NuGet dependency; copy the `.claude` folder into 
-the root of your own Nano-based application's repository to use them.
+the root of your own Nano-based application's repository to use them. If you want discoverability, point to `.claude/skills/` and `.github/prompts/` directly rather than duplicating 
+the list in prose.
 
 GitHub Copilot is supported the same way: a **`.github/copilot-instructions.md`** provides always-on repository context (read automatically by Copilot in VS Code, Visual Studio, JetBrains, 
-and github.com, no setup needed), and a **`.github/prompts`** folder provides the Copilot equivalent of the entity-scaffolding skill, invokable as `/nano-scaffold-entity` in Copilot Chat. 
+and github.com, no setup needed), and a **`.github/prompts`** folder provides a Copilot prompt file for every skill, invokable the same way, e.g. `/nano-add-entity` in Copilot Chat. 
 A **`.vscode/settings.json`** enables prompt-file discovery in VS Code out of the box. Like `AGENTS.md` and `.claude`, these are discovered locally: copy `.github/copilot-instructions.md`, 
 `.github/prompts`, and `.vscode/settings.json` into the root of your own Nano-based application's repository to use them.
 

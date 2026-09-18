@@ -26,7 +26,8 @@ public class MicrosoftOptions
     public virtual required string ClientSecret { get; set; }
 
     /// <summary>
-    /// OAuth scopes.
+    /// OAuth scopes. Must include "openid" (and should include "profile" and "email") so the
+    /// token response includes an id_token with the claims the login flow reads (oid/name/email).
     /// </summary>
     [Required]
     public virtual string[] Scopes { get; set; } = [];

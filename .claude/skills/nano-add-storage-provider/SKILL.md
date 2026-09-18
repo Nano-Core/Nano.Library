@@ -20,12 +20,18 @@ provisioning step differ.
 
 ## Before making any change, determine
 
-1. **Which provider.** `Local` or `Azure` (see AGENTS.md's provider table for package/type
+1. **Is this app meant to be a Public API?** Per AGENTS.md's [Controllers § Public API vs
+   internal service](#public-api-vs-internal-service), a Public API composes Api Clients into
+   responses and has no `IRepository` of its own — a Storage provider is *allowed* there (not a
+   hard block), but it's a deviation from that lean-façade design, not the default. If this app is
+   a Public API, confirm with the user that file storage genuinely belongs on this app rather than
+   on an internal service reached via Api Client, before proceeding.
+2. **Which provider.** `Local` or `Azure` (see AGENTS.md's provider table for package/type
    names). Ask the user if not already given.
-2. **Is a storage provider already registered?** Check `Program.cs` for an existing
+3. **Is a storage provider already registered?** Check `Program.cs` for an existing
    `.AddNanoStorage<...>()` call — like eventing, there's one `IPathProvider` implementation
    per app, not a multi-provider case. If one exists, treat this as a replace and say so.
-3. **Is a package reference even needed?** Same check as the other add-provider skills: look for
+4. **Is a package reference even needed?** Same check as the other add-provider skills: look for
    `NanoCore`/`Nano.All` (directly, or transitively via a `.Models` project). If found, skip the
    package step. Otherwise add `<PackageReference Include="Nano.Storage.<Provider>" Version="X.Y.Z" />`
    to the **application project**, matching the version of the project's existing Nano

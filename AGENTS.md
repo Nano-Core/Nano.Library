@@ -50,6 +50,7 @@ inside `{name}/`.
 | `.tests/Tests.{name}/Properties/DoNotParallelize.cs`        | ✓   | ✓   | ✓   | Ensures tests are not parallelized.                                                                                          |
 | `.docker/docker-compose.dcproj`                             | ✓   | ✓   | ✓   | Docker Compose project used by Visual Studio for local orchestration.                                                       |
 | `.docker/docker-compose.yml`                                | ✓   | ✓   | ✓   | Docker Compose spec for local (`Development`) orchestration.                                                                |
+| `.docker/publish-dependencies.ps1`                          | (✓) | (✓) | (✓) | Publishes every nested Api Client dependency to `bin/publish` locally _(only present once this app consumes at least one Api Client — see [Api Clients § Local Development](#local-development-docker-compose))_. |
 | `.kubernetes/configmap.yaml`                                | ✓   | ✓   | ✓   | Kubernetes ConfigMap.                                                                                                        |
 | `.kubernetes/autoscaler.yaml`                               | ✓   | ✓   | ✗   | Kubernetes Horizontal Pod Autoscaler.                                                                                        |
 | `.kubernetes/deployment.yaml`                               | ✓   | ✓   | ✗   | Kubernetes Deployment. Mutually exclusive with `stateful-set.yaml` below — an app has one or the other, never both.          |
@@ -208,7 +209,7 @@ Available as properties on the client instance — no implementation needed, jus
 | Group        | Available on                          | Covers                                                                          |
 | -------------- | ---------------------------------------- | ------------------------------------------------------------------------------------ |
 | `.Entity`         | `BaseApiClient`                             | Full CRUD against any entity of the target app: `GetAsync`, `GetManyAsync`, `QueryAsync`, `QueryFirstAsync`, `QueryCountAsync`, `CreateAsync`/`CreateOrEditAsync`/`CreateOrGetAsync`/`CreateAndGetAsync`/`CreateManyAsync`(`Bulk`), `EditAsync`/`EditAndGetAsync`/`EditManyAsync`(`Bulk`)/`EditQueryAsync`(`Bulk`), `DeleteAsync`/`DeleteManyAsync`(`Bulk`)/`DeleteQueryAsync`(`Bulk`). Mirrors the entity controller route table 1:1 — see [Controllers § Full CRUD route table](#full-crud-route-table). |
-| `.Auth`           | `BaseApiClient`                             | `LogInAsync`, `LogInRootAsync`, `LogInApiKeyAsync`, `LogInExternalAsync`, `LogInRefreshAsync`, `LogOutAsync`, `GetExternalSchemesAsync`. |
+| `.Auth`           | `BaseApiClient`                             | `LogInAsync`, `LogInRootAsync`, `LogInApiKeyAsync`, `LogInExternalAsync`, `LogInExternalTransientAsync`, `LogInExternalTransientRefreshAsync`, `LogInRefreshAsync`, `LogOutAsync`, `GetExternalSchemesAsync`. |
 | `.Audit`          | `BaseApiClient`                             | Read-only access to the target's `AuditEntry<TIdentity>` log: `GetAsync`/`GetManyAsync`/`QueryAsync`/`QueryFirstAsync`/`QueryCountAsync`. |
 | `.Identity`       | `BaseIdentityApiClient<TUser[,TIdentity]>`  | Sign-up, password set/change/reset (+ token generation), email/phone change/confirm (+ token generation), roles, claims, external logins, refresh tokens, API keys. |
 
@@ -368,6 +369,93 @@ pass the value explicitly and the target doesn't need a real, matching tenant be
 - Every generic `.Entity` read method accepts an `includeDepth` parameter — thread your own controller's
   `[FromQuery] int? includeDepth` through to it for end-to-end include-depth control, see [Include
   Annotation](#include-annotation).
+
+#### Local Development (docker-compose)
+
+Every application an Api Client points at (per its `Host` in `App:Apis`) must actually be runnable alongside this
+app locally, or `docker compose up` only starts this app while every downstream call fails to connect. Whenever
+`nano-add-api-client-configuration` adds a new `App:Apis` entry, it also nests the target service into this app's
+own `.docker/docker-compose.yml` — not just the config.
+
+**Applies equally to Console applications.** This isn't a Public/Admin-API-only concern — a Console app (a
+run-to-completion job or worker) consuming an Api Client needs its target runnable locally exactly the same way
+(e.g. a sign-up job calling `Svc.Accounts`/`Svc.Emailing`). The only difference is a Console app's own compose
+service has no `ports` of its own to collide with (no HTTP surface — see [Authentication forwarding](#authentication-forwarding)'s
+note that Console workers typically call only anonymous endpoints, or need `LogInRoot`); the nested dependency
+services still need their own unique host ports, same as for an API/Web consumer.
+
+**Why the target isn't built with a normal multi-stage `Dockerfile`**: this app's own `Dockerfile.Local` has no
+`COPY`/build stage at all — Visual Studio's Container Tools injects that step automatically, but only for the
+*primary* project being debugged (the one the `.dcproj` names via `DockerServiceName`). A dependency's own service
+block gets no such treatment, and building it from source with the SDK image inside Docker would need this
+solution's private NuGet feed credentials available *inside the container* — not something to solve by baking
+credentials into an image. Instead, each dependency is published **locally** (where the developer's own NuGet
+credentials already work) into a `bin/publish` folder, and the compose service just `COPY`s that output into a
+bare runtime image:
+
+```yaml
+svc.mytarget:
+  image: svc-mytarget
+  hostname: svc-mytarget
+  restart: on-failure
+  ports:
+    - 8181:8080          # unique per nested service - avoid colliding with this app's own ports (if any; Console apps have none) or any other nested service's
+  build:
+    context: ../../Svc.MyTarget/Svc.MyTarget
+    dockerfile_inline: |
+      FROM mcr.microsoft.com/dotnet/aspnet:10.0
+      WORKDIR /app
+      COPY ./bin/publish/. .
+      ENTRYPOINT ["dotnet", "Svc.MyTarget.dll"]
+  environment:
+    ASPNETCORE_HTTP_PORTS: ""
+  depends_on:               # only if the target actually has a Data/Eventing provider configured
+    - database
+    - eventing
+  networks:
+    - network
+```
+
+A single shared `database` (MySql) and `eventing` (RabbitMq) service serves every nested dependency in the
+compose file (one container each, not one per service) — add them only if not already present, and only wire a
+dependency's `depends_on` to them if that dependency actually has a data/eventing provider configured (check its
+own `Program.cs`; a dependency with neither gets no `depends_on` at all, matching its own standalone
+`docker-compose.yml`).
+
+**Publishing happens automatically on every build, incrementally.** The `.docker/docker-compose.dcproj` gets:
+
+1. A `publish-dependencies.ps1` script (next to the `.yml`) that `dotnet publish`es every nested dependency to its
+   own `bin/publish` folder.
+2. A `PublishDependentServices` MSBuild target, hooked to `BeforeTargets="DockerPrepareForBuild"`, with `Inputs`
+   set to a glob of every dependency's (and its `.Models` project's) `.cs`/`.csproj` files and `Outputs` pointing
+   at a `bin\publish-dependencies.stamp` file the script touches on success — so MSBuild's normal incremental-build
+   comparison skips the whole publish pass when nothing actually changed, instead of republishing on every single
+   `docker compose up`. The stamp lives under `.docker\bin\`, not the `.docker` root, purely so it falls under the
+   solution's existing `**/bin` ignore rule instead of needing its own `.gitignore` entry.
+
+```xml
+<ItemGroup>
+  <DependentServiceSources Include="..\..\Svc.MyTarget\Svc.MyTarget\**\*.cs;..\..\Svc.MyTarget\Svc.MyTarget\Svc.MyTarget.csproj;..\..\Svc.MyTarget\Svc.MyTarget.Models\**\*.cs;..\..\Svc.MyTarget\Svc.MyTarget.Models\Svc.MyTarget.Models.csproj"
+                            Exclude="..\..\Svc.MyTarget\Svc.MyTarget\bin\**;..\..\Svc.MyTarget\Svc.MyTarget\obj\**;..\..\Svc.MyTarget\Svc.MyTarget.Models\bin\**;..\..\Svc.MyTarget\Svc.MyTarget.Models\obj\**" />
+</ItemGroup>
+
+<Target Name="PublishDependentServices"
+        BeforeTargets="DockerPrepareForBuild"
+        Inputs="@(DependentServiceSources)"
+        Outputs="$(MSBuildProjectDirectory)\bin\publish-dependencies.stamp">
+  <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\publish-dependencies.ps1&quot; -Configuration $(Configuration)" />
+</Target>
+```
+
+This means hitting F5 is the only step a developer needs — VS builds the `docker-compose` project before
+launching it, which runs this target, which republishes only the dependencies whose source actually changed,
+before `docker compose up` ever touches the network. No `.gitignore` entry is needed for the stamp file itself —
+it lives under `.docker\bin\`, already covered by the solution's standard `**/bin` ignore rule (the script creates
+that `bin` folder if it doesn't exist yet).
+
+⚠ This whole mechanism exists for *local* `Development` orchestration only. `Staging`/`Production` never build
+this way — each service has its own real `Dockerfile` (multi-stage, built from source in CI, where the pipeline's
+own NuGet credentials are already available) and its own Kubernetes deployment; nothing here changes that.
 
 ### Start-Up Tasks
 
@@ -1467,6 +1555,23 @@ var publicKey = rsa.ExportRSAPublicKeyPem().Replace("-----BEGIN RSA PUBLIC KEY--
 var privateKey = rsa.ExportRSAPrivateKeyPem().Replace("-----BEGIN RSA PRIVATE KEY-----", "").Replace("-----END RSA PRIVATE KEY-----", "").Replace("\n", "");
 ```
 
+**External login providers** (`Jwt.ExternalLogins`) are built-in and config-only — no `BaseAuthExternalRepository<TFlow>`
+implementation needed for Facebook/Google/Microsoft, only the settings from the table above. Each uses a different
+`TFlow` (see [Custom external provider](#custom-external-provider) below for what that means), which determines
+what the client sends:
+
+| Provider    | Flow          | Client sends                              | Credentials come from                                                                    |
+| ----------- | ------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| `Facebook`  | `ImplicitFlow`  | `AccessToken` — the user access token from Facebook's client-side Login SDK, passed straight through and validated server-side via the Graph API's `debug_token` endpoint. | Meta for Developers app (developers.facebook.com), `AppId`/`AppSecret`. |
+| `Google`    | `ImplicitFlow`  | `AccessToken` — despite the name, this must be the **ID token** (JWT) from Google Identity Services' client-side sign-in, not an OAuth access token; it's validated locally via `GoogleJsonWebSignature.ValidateAsync`. The older `gapi.auth2` library (retired by Google in 2023) issued real OAuth access tokens here, which will fail validation. | Google Cloud Console OAuth client (`ClientId`/`ClientSecret`).           |
+| `Microsoft` | `AuthCodeFlow`  | `Code`/`CodeVerifier`/`RedirectUri` — the server exchanges the authorization code for tokens itself (see `AuthExternalMicrosoftRepository`). `Scopes` must include `openid` (and should include `profile`/`email`) so the token response's `id_token` carries the `oid`/`name`/`email` claims Nano reads — the `access_token` is not used for identity, only as the stored `ExternalToken`. | A Microsoft Entra ID (Azure AD) app registration (`TenantId`/`ClientId`/`ClientSecret`). |
+
+Facebook and Google credentials are created by hand through each provider's own developer console — there's no
+CLI/API path worth scripting for either. Microsoft is the exception: an Entra ID app registration (and its client
+secret, which needs periodic rotation) can be fully scripted with the Azure CLI, so use the `nano-add-authentication-microsoft`
+skill for that provider instead of configuring it by hand — it wires up the app registration and a self-rotating
+client secret as a CI step, following the pattern in `Nano.Lessons/Api.Auth.External.Microsoft`.
+
 **Root login** is a statically-configured, transient JWT login — no identity store involved. Useful in
 `Development` when testing a service in isolation, or for console apps authenticating via the API client with no
 specific user account. Logging in as root auto-assigns the `administrator` role.
@@ -1509,8 +1614,30 @@ are all nullable — each is populated only if the matching config exists, and t
 | ---------------------------------- | ------------------------------------------------------ | --------------------------------------------------------- |
 | `AuthRootRepository`                 | `Jwt.RootLogin` configured                              | `/auth/login/root`                                          |
 | `AuthIdentityRepository`              | [Data Identity](#identity) configured                    | `/auth/login`, `/auth/login/apikey`, `/auth/login/refresh`, `/auth/logout` |
-| `AuthTransientRepository`             | `Jwt.ExternalLogins` configured, Identity **not** configured | `/auth/login/external/{providerName}/transient`       |
+| `AuthTransientRepository`             | `Jwt.ExternalLogins` configured, Identity **not** configured | `/auth/login/external/{providerName}/transient`, `/auth/login/external/{providerName}/transient/refresh` |
 | `AuthExternalRepositoryAggregator`    | Always available                                        | `/auth/external/schemes`, external login resolution for both identity and transient repositories |
+
+⚠ **`AuthTransientRepository`'s endpoint trusts the caller.** `/auth/login/external/{providerName}/transient`
+binds `TransientClaims`/`TransientRoles` straight from the request body and mints them into the JWT with no
+server-side filtering — any anonymous caller can assert `{"transientClaims": {"IsAdmin": "true"}}` and receive
+back a validly-signed token carrying it. Per the table above, this endpoint is only auto-mapped when a
+`BaseAuthController`-derived class exists **and** [Identity](#identity) is **not** configured
+(`ServiceScopeExtensions.UseNanoEndpoints`'s `!hasIdentity && hasAuthController` gate, checked by type scan
+across the whole app, not by which controller you meant to use it for). A transient-auth app that needs its own
+server-computed claims on top of external login (an admin flag, an internal role) must **not** derive a
+generic `BaseAuthController`-based controller — implement a custom controller instead (deriving this app's own
+base controller), calling `IAuthExternalRepositoryAggregator`/`IAuthTransientRepository` directly and computing
+claims/roles only from trusted server-side data, never from caller input. This same caller-trust
+problem applies at login on `AuthIdentityRepository` too (`/auth/login`/`/auth/login/external`), not
+just the transient endpoint — refresh is the exception: `/auth/login/refresh` and
+`/auth/login/external/{providerName}/transient/refresh` (auto-mapped under the same
+`!hasIdentity && hasAuthController` gate as the login endpoint above) never accept claims/roles from
+the caller at all, they're recovered from a manifest claim embedded at login
+(`ClaimTypesExtended.TransientClaimsManifest`, built/read via the internal `TransientClaimsManifest`
+class in `Nano.Data.Abstractions`), so a refresh can never grant more than the original login already
+did. The transient refresh endpoint also takes no request body at all — the token being refreshed is
+read from the Authorization header, and the external provider's own refresh token is recovered from
+that same token's claims, never supplied by the caller.
 
 ##### Custom external provider
 
@@ -1672,13 +1799,37 @@ explicit about, since it changes what an action's body actually does:
 
 - **Public API controller** — the customer/end-user-facing application (e.g. `Api.Platform`/`Api.Admin` in this
   solution). Its actions compose one or more injected [Api Clients](#api-clients) into a response; it has no
-  `IRepository` of its own. Called "Public API," not "gateway," specifically to avoid colliding with the
+  `IRepository` of its own. This is the intended shape, not an absolute rule enforced anywhere — a Data,
+  Storage, or Eventing provider *can* be added directly to a Public API if genuinely needed (`nano-add-data-provider`/
+  `nano-add-storage-provider`/`nano-add-eventing-provider` all allow it), but doing so pulls the app away from
+  being a thin façade and should be a deliberate exception, confirmed with whoever's asking, not the default
+  when scaffolding one of these. Called "Public API," not "gateway," specifically to avoid colliding with the
   unrelated Kubernetes Gateway API resource (`nano-add-public-exposure`'s `HTTPRoute`/`Gateway`) — "gateway" in
   this codebase otherwise means that Kubernetes resource, or the network-edge/cert-manager TLS-terminating layer
   in front of a cluster, never this application-level role.
 - **Internal service controller** — implements real logic directly against its own `IRepository`/`IEventing`,
   either as a custom method on an entity controller or a bare `BaseController` action. Only ever called by a
   Public API (or another internal service) via its Api Client — never exposed directly to untrusted clients.
+
+⚠ **`BaseEntityUserController` and `BaseAuthController` (persistent auth) are internal-service-only features —
+never add them to an app playing the Public API role, even though nothing technically stops it.** Unlike a
+plain Data/Storage/Eventing provider (above, allowed as a deliberate exception), this combination is never an
+acceptable exception — a Public API that adds Identity for its own login/signup needs should compose through
+the owning internal service's Api Client instead (see [Api Clients § Built-in method groups](#built-in-method-groups))
+or use transient auth with server-computed claims, not host either controller itself. Two concrete reasons this
+is actively dangerous, not just architecturally unusual:
+- `BaseEntityUserController` exposes `password/reset/token`/`{id}/password/reset` **anonymously by design**, for
+  internal-network use only — see [Identity user controller](#identity-user-controller)'s own ⚠ Security note.
+- `BaseAuthController` in transient mode (no Identity, external login configured) auto-maps an endpoint that
+  trusts caller-supplied JWT claims verbatim — see [Authentication](#authentication)'s own ⚠ note on
+  `AuthTransientRepository`.
+
+A Public API that needs to offer login/signup/password-management to end users does so by **composing calls to
+the internal service that actually owns Identity**, through that service's Api Client (its `.Identity`/`.Auth`
+method groups — see [Api Clients § Built-in method groups](#built-in-method-groups)), or by implementing its
+own transient auth with server-computed claims (see `Api.Admin`'s `AccountsController` in this codebase for a
+working example) — never by hosting `BaseEntityUserController`/persistent `BaseAuthController` on the
+Public API itself.
 
 #### Entity controller hierarchy
 
@@ -1879,7 +2030,8 @@ an eventing provider is actually registered, don't pass `IEventing?` into the `e
 | `roles/{id}/claims[/assign\|replace\|assign-or-replace\|remove]` | various | **administrator** |
 
 ⚠ **Security**: `password/reset/token` and `{id}/password/reset` are anonymous by design, for internal use.
-Never expose this controller directly to untrusted clients without a Public API in front.
+Never expose this controller directly to untrusted clients — it belongs on an internal service only, reached
+through its Api Client, never added to an app playing the [Public API role](#public-api-vs-internal-service).
 
 #### Auth and audit controllers
 

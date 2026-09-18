@@ -63,12 +63,16 @@ and simplifying the setup of new API applications.
 
 > ⚠️ Before proceeding, it is highly recommended to familiarize yourself generally with **[Nano Applications](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App#nanoapp)**.  
 
-The `NanoApiApplication` can operate as either an internal service or an externally accessible API.
+The `NanoApiApplication` can operate as either an internal service or an externally accessible **Public API**.
 As an internal service, it can run behind your network boundary, handling requests from other applications within the system, 
 using the built-in **[Nano Api Client](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App#api-clients)**.
-When exposed as an external API, it sits behind an entry point that manages incoming traffic, providing controlled access to clients while keeping 
-the internal implementation consistent. This design allows the same application to function in both roles without changing its core configuration or service logic, 
-supporting flexible deployment scenarios.  
+As a Public API, it sits behind an entry point that manages incoming traffic, composing calls to one or more internal services into a response rather 
+than implementing business logic directly. The `NanoApiApplication` mechanism itself is identical either way, and switching a given application between 
+the two is a configuration change, not a rewrite - but the two roles are not interchangeable at the feature level. Some features (Identity, JWT/API-key 
+authentication) are internal-service-only and should never be added to a Public API, while others (a Data, Storage, or Eventing provider) are supported 
+but discouraged there, since a Public API is meant to stay a thin façade over the services it composes. See AGENTS.md's 
+**[Public API vs internal service](https://github.com/Nano-Core/Nano.Library/blob/master/AGENTS.md#public-api-vs-internal-service)** section for the 
+full breakdown of which features apply to which role.  
 
 > 📖 Learn more about the overall Nano architecture here: **[Nano Architectures](https://github.com/Nano-Core/Nano.Library#%EF%B8%8F-nano-architectures)**.  
 
@@ -1776,7 +1780,7 @@ The `IAuthIdentityRepository` provides the following methods to support this fun
 | `LogInAsync`                        | logIn                            | Logs in a user using username and password credentials, generating a JWT access token and optional refresh token.                       |
 | `LogInExternalAsync`                | logInExternal                    | Logs in a user using direct external login data, generating a JWT access token and optional refresh token.                              |
 | `LogInExternalAsync`                | providerName, logInExternalFlow  | Logs in a user authenticating with a configured external login provider flow, generating a JWT access token and optional refresh token. |
-| `LogInRefreshAsync`                 | logInRefresh                     | Refreshes an existing access token using a valid refresh token, generating a new JWT and refresh token.                                 |
+| `LogInRefreshAsync`                 | token, refreshToken              | Refreshes an existing access token using a valid refresh token, generating a new JWT and refresh token. `token` is the expired/soon-to-expire access token, read by the controller from the Authorization header, not the request body. |
 | `LogOutAsync`                       | userId, appId                    | Logs out the current user.                                                                                                              |
 
 Try it out yourself using the **[Api.Data.Identity.Auth.Jwt](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Data.Identity.Auth.Jwt)** example.  
@@ -1788,6 +1792,7 @@ also supports external authentication but is designed for transient logins witho
 | ----------------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | `LogInExternalAsync`                | logInExternal        | Performs an external login using direct external login data and generates a corresponding JWT access token.                     |
 | `LogInExternalAsync`                | logInExternalDirect  | Performs an external login using a configured built-in external provider type and generates a corresponding JWT access token.   |
+| `LogInExternalRefreshAsync`         | providerName, token  | Refreshes a transient external login. `token` is the expired/soon-to-expire access token, read from the Authorization header - the provider's own refresh token and any transient claims/roles are recovered from claims embedded in `token` at login, never supplied by the caller. |
 
 Logging in using external authentication in Nano can be achieved either by configuring a built-in provider or by implementing a custom provider (see further down).  
 
@@ -1809,12 +1814,17 @@ For a built-in provider, the following configuration can be added.
         "Facebook": {
             "AppId": null,
             "AppSecret": null,
-            "Scopes": [ ]
+            "Scopes": [ "public_profile", "email", "user_birthday" ]
         }
     }
   }
 }
 ```
+
+`Scopes` must include `email` (`public_profile` is granted by default but listing it explicitly is harmless) so Nano can read the `id`/`name`/`email` fields it 
+requests from the Facebook Graph API; add `user_birthday` too if the `birthday` field is needed. The Facebook App Id/Secret must be created manually through 
+[Meta for Developers](https://developers.facebook.com) - there is no API/CLI path to script this the way there is for Microsoft (see below).  
+
 **Google**
 
 | Setting                    | Type   | Default  | Description                         |
@@ -1831,12 +1841,16 @@ For a built-in provider, the following configuration can be added.
         "Google": {
           "ClientId": null,
           "ClientSecret": null,
-          "Scopes": [ ]
+          "Scopes": [ "openid", "profile", "email" ]
         }
     }
   }
 }
 ```
+
+`Scopes` must include `openid` (and should include `profile`/`email`) - Nano validates the value passed in as a Google ID token and reads its `name`/`email` claims 
+from it. The Google Client Id/Secret must be created manually through the [Google Cloud Console](https://console.cloud.google.com)'s OAuth client setup - there is 
+no API/CLI path to script this the way there is for Microsoft (see below).  
 
 **Microsoft**
 
@@ -1856,14 +1870,117 @@ For a built-in provider, the following configuration can be added.
             "TenantId": null,
             "ClientId": null,
             "ClientSecret": null,
-            "Scopes": [ ]
+            "Scopes": [ "openid", "profile", "email" ]
         }
     }
   }
 }
 ```
 
-> ⚠️ The external provider application must be configured with at least the following scopes: `id`, `email`, and `username`.
+`Scopes` must include `openid` (and should include `profile`/`email`) - Nano reads the login's identity claims (`oid`/`name`/`email`) from the token response's `id_token`, 
+which is only returned when `openid` is requested.  
+
+Unlike Facebook/Google above, and unlike the JWT keys and `RootLogin` elsewhere on this page, Microsoft's Entra ID app registration can be created and rotated 
+entirely through the Azure CLI - so instead of a one-time manual setup stored as a static secret, its credentials are provisioned and rotated by the GitHub Actions 
+workflow itself, in a `Setup App Registration` step. `TenantId` is simply the workflow's own `AZURE_TENANT_ID` (no separate value needed), `ClientId` is looked up 
+fresh every run, and `ClientSecret` is reissued every run and never persisted as a GitHub secret.  
+
+```yaml
+env:
+  AUTH_MICROSOFT_REDIRECT_URI: ${{ vars.AUTH_MICROSOFT_REDIRECT_URI }}
+```
+
+```yaml
+- name: Setup App Registration
+  shell: pwsh
+  run: |
+    $env:APP_DISPLAY_NAME = $env:SERVICE_NAME + "-app";
+    $env:SECRET_DISPLAY_NAME = $env:APP_DISPLAY_NAME + "-secret-" + (Get-Date -Format "yyyyMMddHHmmss");
+    $env:AUTH_MICROSOFT_CLIENT_ID = az ad app list --display-name $env:APP_DISPLAY_NAME --query "[0].appId" -o tsv;
+
+    if (-not $env:AUTH_MICROSOFT_CLIENT_ID) 
+    {
+        az ad app create `
+            --display-name $env:APP_DISPLAY_NAME `
+            --sign-in-audience AzureADMyOrg `
+            --web-redirect-uris $env:AUTH_MICROSOFT_REDIRECT_URI;
+
+        $env:AUTH_MICROSOFT_CLIENT_ID = az ad app list --display-name $env:APP_DISPLAY_NAME --query "[0].appId" -o tsv;
+    }
+    else 
+    {
+        az ad app update `
+            --id $env:AUTH_MICROSOFT_CLIENT_ID `
+            --web-redirect-uris $env:AUTH_MICROSOFT_REDIRECT_URI;
+    }
+
+    $env:AUTH_MICROSOFT_CLIENT_SECRET = az ad app credential reset `
+        --id $env:AUTH_MICROSOFT_CLIENT_ID `
+        --append `
+        --display-name $env:SECRET_DISPLAY_NAME `
+        --years 1 `
+        --query "password" -o tsv;
+
+    echo "::add-mask::$env:AUTH_MICROSOFT_CLIENT_SECRET";
+
+    $staleCredentialIds = az ad app credential list --id $env:AUTH_MICROSOFT_CLIENT_ID --query "sort_by(@, &startDateTime)[:-3].keyId" -o tsv;
+
+    foreach ($keyId in ($staleCredentialIds -split "`n" | Where-Object { $_ })) 
+    {
+        az ad app credential delete `
+            --id $env:AUTH_MICROSOFT_CLIENT_ID `
+            --key-id $keyId;
+    }
+
+    echo "AUTH_MICROSOFT_CLIENT_ID=$env:AUTH_MICROSOFT_CLIENT_ID" >> $env:GITHUB_ENV;
+    echo "AUTH_MICROSOFT_CLIENT_SECRET=$env:AUTH_MICROSOFT_CLIENT_SECRET" >> $env:GITHUB_ENV;
+```
+
+`--append` adds the new client secret alongside any existing ones instead of invalidating them immediately, so pods still running the previous deployment's secret keep 
+working through a rolling update. Credentials are then pruned down to the newest 3, giving an older secret roughly 3 deploys of grace before it actually stops working.  
+
+Create a Kubernetes secret that stores the Microsoft app registration's credentials, allowing them to be securely consumed by the application.  
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: auth-microsoft-secret
+  namespace: %KUBERNETES_NAMESPACE%
+type: Opaque
+stringData:
+  tenant-id: %AZURE_TENANT_ID%
+  client-id: %AUTH_MICROSOFT_CLIENT_ID%
+  client-secret: %AUTH_MICROSOFT_CLIENT_SECRET%
+```
+
+Finally, reference the secret in the application `deployment.yaml` or `cronjob.yaml`.  
+
+```yaml
+spec:
+  template:
+    spec:
+      containers:
+        env:
+        - name: App__Authentication__Jwt__ExternalLogins__Microsoft__TenantId
+          valueFrom:
+            secretKeyRef:
+              name: auth-microsoft-secret
+              key: tenant-id
+        - name: App__Authentication__Jwt__ExternalLogins__Microsoft__ClientId
+          valueFrom:
+            secretKeyRef:
+              name: auth-microsoft-secret
+              key: client-id
+        - name: App__Authentication__Jwt__ExternalLogins__Microsoft__ClientSecret
+          valueFrom:
+            secretKeyRef:
+              name: auth-microsoft-secret
+              key: client-secret
+```
+
+Try it out yourself using the **[Api.Auth.External.Microsoft](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Auth.External.Microsoft)** example, which has this 
+wiring end-to-end.  
 
 Implementing a custom external authentication provider in Nano is straightforward. Create a class that derives from `BaseAuthExternalRepository<TFlow>` and provide a provider name via the 
 constructor. The base class implements the `IAuthExternalRepository<TFlow>` interface, which requires you to implement the abstract methods `AuthenticateAsync` and `AuthenticateRefreshAsync`. 
@@ -2217,6 +2334,7 @@ are not configured will not be registered or available in the controller.
 | `/auth/login/apikey`                             | POST   | Anonymous | Authenticates the user using `X-Api-Key` header value and returns an access token. Only exposed when Identity ApiKeys has been configured.                                           |
 | `/auth/login/external/{providerName}`            | POST   | Anonymous | Signs in a user using external provider authentication. An endpoint is exposed for each registered external provider. Only exposed when Identity has been configured.                |
 | `/auth/login/external/{providerName}/transient`  | POST   | Anonymous | Signs in a transient user using external provider authentication. An endpoint is exposed for each registered external provider. Only exposed when Identity has not been configured.  |
+| `/auth/login/external/{providerName}/transient/refresh` | POST | Anonymous | Refreshes a transient external provider login. No request body - the token is read from the Authorization header. An endpoint is exposed for each registered external provider. Only exposed when Identity has not been configured. |
 | `/auth/login/refresh`                            | POST   | Anonymous | Refreshes an existing access token.                                                                                                                                                  |
 | `/auth/logout`                                   | POST   | Anonymous | Logs out the current user.                                                                                                                                                           |
 | `/auth/external/schemes`                         | GET    | Anonymous | Retrieves all configured external authentication methods (e.g., Google, Facebook). Only exposed when at least one external authentication provider has been registerd.               |

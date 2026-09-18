@@ -45,6 +45,33 @@ public static class StringExtensions
         throw new InvalidOperationException($"Unsupported identity type: {target.FullName}");
     }
 
+    /// <summary>
+    /// Extracts the JWT token from a raw Authorization header value (e.g. bound via <c>[FromHeader]</c>
+    /// on a minimal API endpoint, where reading the full <c>HttpContext</c> isn't needed).
+    /// </summary>
+    /// <param name="authorizationHeader">The raw Authorization header value.</param>
+    /// <returns>The JWT token string, or null if not present or invalid.</returns>
+    public static string? GetJwtToken(this string? authorizationHeader)
+    {
+        const string PREFIX = "Bearer ";
+
+        if (string.IsNullOrEmpty(authorizationHeader))
+        {
+            return null;
+        }
+
+        if (authorizationHeader.Length <= PREFIX.Length)
+        {
+            return null;
+        }
+
+        var value = authorizationHeader[PREFIX.Length..];
+
+        return value == string.Empty
+            ? null
+            : value;
+    }
+
     internal static ApiVersion ToApiVersion(this string version)
     {
         ArgumentNullException.ThrowIfNull(version);

@@ -158,6 +158,11 @@ public class ActionRoutes
     public const string AUTH_LOGIN_EXTERNAL_TRANSIENT = "login/external/{providerName}/transient";
 
     /// <summary>
+    /// Route for refreshing a transient external provider login.
+    /// </summary>
+    public const string AUTH_LOGIN_EXTERNAL_TRANSIENT_REFRESH = "login/external/{providerName}/transient/refresh";
+
+    /// <summary>
     /// Route for refreshing authentication tokens.
     /// </summary>
     public const string AUTH_LOGIN_REFRESH = "login/refresh";

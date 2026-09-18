@@ -19,11 +19,32 @@ way to log in. If the user actually wants login/JWT, that's a different skill.
 
 ## Before making any change, determine
 
-1. **Is a Data provider already registered?** Check `Program.cs` for `.AddNanoData<TProvider,
+1. **Is this app meant to be a Public API, or an internal service?** Per AGENTS.md's [Controllers
+   § Public API vs internal service](#public-api-vs-internal-service): a Public API composes Api
+   Clients into responses and has **no `IRepository` of its own** — Identity (a Data provider +
+   `IIdentityRepository`) structurally doesn't belong there. `BaseEntityUserController` exposes
+   `password/reset/token`/`{id}/password/reset` **anonymously by design**, safe only on an
+   internal network — never on an app reachable directly from the internet. If the request is
+   actually "add login/signup to our Public API," that's **not** this skill: point the user at
+   composing through the owning internal service's Api Client (`.Identity`/`.Auth` method groups)
+   instead, or at `nano-add-authentication-jwt`'s transient-auth path if this app needs to mint
+   its own tokens with server-computed claims. Only proceed with this skill once it's confirmed
+   this app is (or is becoming) the internal service that actually owns the `User` entity.
+
+   **Also check whether this app is already publicly exposed** — look for
+   `.kubernetes/httproute-80.yaml`/`httproute-443.yaml` (the same files
+   `nano-add-public-exposure` checks). Intent (above) and fact can disagree: an app nobody meant
+   to expose may have been anyway, or an app built as an internal service may have picked up
+   public exposure later for an unrelated reason. If either file is present, **stop before
+   touching anything** and flag it explicitly — adding `BaseEntityUserController` here would put
+   its anonymous password-reset endpoints on the open internet the moment this skill finishes,
+   not as a hypothetical to caveat afterward. Get the user's explicit confirmation this is
+   intentional before proceeding.
+2. **Is a Data provider already registered?** Check `Program.cs` for `.AddNanoData<TProvider,
    TContext>()`. Identity is layered onto the existing `DbContext`, not a separate package or
    provider — with none registered, stop and tell the user a Data provider needs to be added
    first (see `nano-add-data-provider`).
-2. **Does an entity with the intended name already exist?** (conventionally `User`, but whatever
+3. **Does an entity with the intended name already exist?** (conventionally `User`, but whatever
    the user actually names it) Three cases, not two:
    - **Already derives `BaseEntityUser`/`BaseEntityUser<TIdentity>`** — Identity is already wired
      to it. Say so and stop (or confirm before adding a second user entity — unusual, but not
@@ -38,15 +59,15 @@ way to log in. If the user actually wants login/JWT, that's a different skill.
      number, etc.) — if a name collides, **stop and ask the user** how to resolve it (rename the
      existing property, or drop it in favor of the built-in one); don't silently pick for them.
    - **Doesn't exist at all** — create fresh, as below.
-3. **No package reference needed.** Unlike the other add-provider skills, Identity isn't a
+4. **No package reference needed.** Unlike the other add-provider skills, Identity isn't a
    separate NuGet package — `BaseEntityUser`, `BaseDbContext<TIdentity>`, `IIdentityRepository`,
    and `BaseEntityUserController` all ship as part of `Nano.Data`/`Nano.App.Api` themselves, so
    whichever Data provider package is already referenced already carries them. Nothing to add
    here.
-4. **Entity identity type.** If entities already exist in the project, match their `TIdentity`
+5. **Entity identity type.** If entities already exist in the project, match their `TIdentity`
    (see the entity-scaffold skill's identity-type step) — `BaseEntityUser<TIdentity>` and
    `IIdentityRepository<TIdentity>` must agree with it.
-5. **Application type.** Check `Program.cs` for `NanoApiApplication`, `NanoWebApplication`, or
+6. **Application type.** Check `Program.cs` for `NanoApiApplication`, `NanoWebApplication`, or
    `NanoConsoleApplication` — same split as the entity-scaffold skill: API/Web get the full
    entity/mapping/criteria/controller set below; Console gets only the entity and mapping (no
    HTTP surface to route identity actions through), unless the user explicitly wants to drive
@@ -71,12 +92,12 @@ This is the entity-scaffold skill's file set, with identity-specific base classe
 the plain ones — read that skill first for the file-location/project-layout rules (split
 `.Models` project vs. single-project), which apply unchanged here. Ask the user for the entity
 name if not given (conventionally `User`) and any additional properties beyond what
-`BaseEntityUser` already provides — unless step 2 already found an existing plain entity to
+`BaseEntityUser` already provides — unless step 3 already found an existing plain entity to
 convert, in which case its existing properties carry over as-is; don't ask for them again.
 
 - **Data model** (`Data/<Entity>.cs`, or the `.Models` project in a split layout): derive from
   `BaseEntityUser`/`BaseEntityUser<TIdentity>` instead of `BaseEntity`. **If converting an
-  existing entity** (step 2), this is the *only* change to the class itself — just the base type;
+  existing entity** (step 3), this is the *only* change to the class itself — just the base type;
   every existing property and method stays. **If creating fresh**, add only the scalar properties
   the user actually asked for — `BaseEntityUser` already carries the identity fields (username,
   email, phone, etc.), don't redeclare them.
@@ -85,7 +106,7 @@ convert, in which case its existing properties carry over as-is; don't ask for t
   `Nano.Data.Mappings.Identity`) instead of `BaseEntityMapping<TEntity>` — it additionally
   configures the required 1:1 relationship to the underlying `IdentityUser` row and an
   `IsActive` query filter, per AGENTS.md's Data Mappings table. **If converting an existing
-  entity** (step 2), convert its existing mapping file the same way — just the base class;
+  entity** (step 3), convert its existing mapping file the same way — just the base class;
   keep every custom `Configure(...)` statement already in it, still calling
   `base.Configure(builder)` first. **If creating fresh**, same `base.Configure(builder)`-first
   rule as a normal mapping.
@@ -141,5 +162,5 @@ leave that as a follow-up the user has to remember separately.
   log in yet — `nano-add-authentication-jwt` (JWT) or `nano-add-authentication-apikey` (API key, works
   standalone without JWT) are separate skills, needed before any of the `identity`-role endpoints
   are reachable by an actual caller.
-- If step 1 or 2 stopped the skill early, that's the whole response — don't partially wire
+- If step 1, 2, or 3 stopped the skill early, that's the whole response — don't partially wire
   Identity while waiting on a prerequisite.

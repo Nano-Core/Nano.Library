@@ -3,28 +3,28 @@ mode: agent
 description: Scaffold a custom, non-CRUD HTTP endpoint end-to-end - two genuinely different shapes depending on the controller. A Public API endpoint composes existing Api Client calls into one response. An internal-service endpoint implements real logic against this app's own IRepository/IEventing, and - since it's a contract another application will call - also scaffolds the paired Api Client custom request/method that calls it, in the same change. Use when the user asks to add a one-off action, custom endpoint, or operation that doesn't fit generic CRUD/Auth/Audit/Identity to a Nano API or Web application.
 ---
 
-# Nano scaffold custom endpoint
+# Nano add custom endpoint
 
 Generates a single custom HTTP action that doesn't fit the generic CRUD/Auth/Audit/Identity
-surface `nano-scaffold-entity` and the built-in Api Client method groups already cover. Read
+surface `nano-add-entity` and the built-in Api Client method groups already cover. Read
 AGENTS.md's `### Controllers` (including its `#### Public API vs internal service` note) and
-`### Api Clients` sections first; this prompt does not repeat those, only how to combine them
+`### Api Clients` sections first; this skill does not repeat those, only how to combine them
 following this solution's own established conventions (one-liner XML doc summaries,
 `[ProducesResponseType]` per status code, `Requests/`/`Responses/` folders matching the
 controller's own namespace).
 
-**Two genuinely different jobs, not one prompt with an optional extra step.** A Public API
-endpoint composes calls that already exist elsewhere; an internal-service endpoint *is* a new
-piece of contract another application will call, so scaffolding it also means scaffolding the
-client-side half of that same contract - one coherent task, not two prompts chained together.
-**Step 2** below determines which applies; read only the matching path once it's decided.
+**Two genuinely different jobs, not one skill with an optional extra step.** A Public API endpoint
+composes calls that already exist elsewhere; an internal-service endpoint *is* a new piece of
+contract another application will call, so scaffolding it also means scaffolding the client-side
+half of that same contract - one coherent task, not two skills chained together. **Step 2** below
+determines which applies; read only the matching path once it's decided.
 
-⚠ **Terminology**: this prompt calls the customer/end-user-facing role "**Public API**" (e.g.
-`Api.Platform`/`Api.Admin` in this solution), never "gateway." "Gateway" in this codebase means
-the Kubernetes Gateway API resource (`nano-add-public-exposure`'s `HTTPRoute`/`Gateway`) or the
-network-edge/cert-manager TLS layer in front of a cluster - an unrelated, infrastructure-level
-concept. Don't reuse that word for this application-level role, in code, comments, or
-conversation with the user.
+⚠ **Terminology**: this skill calls the customer/end-user-facing role "**Public API**" (e.g.
+`Api.Platform`/`Api.Admin` in this solution - this solution's own project template for one is
+`nanocore-api-public`), never "gateway." "Gateway" in this codebase means the Kubernetes Gateway
+API resource (`nano-add-public-exposure`'s `HTTPRoute`/`Gateway`) or the network-edge/cert-manager
+TLS layer in front of a cluster - an unrelated, infrastructure-level concept. Don't reuse that word
+for this application-level role, in code, comments, or conversation with the user.
 
 ---
 
@@ -61,20 +61,21 @@ insufficient - not just "less convenient." Walk through this before scaffolding 
   the right call for a custom endpoint, not a sign to keep looking for a generic-composition way
   around it.
 - **The same generic-composition workaround needed at 2+ call sites is itself a signal to stop
-  composing and build the real custom endpoint.** A union across two entity types done as two
-  generic calls glued together in one Public API action is fine the first time; the same two calls
-  duplicated again in a second and third action is a sign the composition belongs on the *target*
-  service as a real custom endpoint instead - one round trip, one place the logic lives, instead of
-  the same non-trivial join reimplemented at every caller. Don't wait for a fourth duplicate before
+  composing and build the real custom endpoint.** A union across two entity types (e.g. "roles
+  owned by this tenant, plus roles reachable via its subscription plan") done as two generic calls
+  glued together in one Public API action is fine the first time; the same two calls duplicated
+  again in a second and third action is a sign the composition belongs on the *target* service as
+  a real custom endpoint instead - one round trip, one place the logic lives, instead of the same
+  non-trivial join reimplemented at every caller. Don't wait for a fourth duplicate before
   promoting it.
 - **Before scaffolding a single-item lookup, check whether a sibling list/aggregate endpoint
-  already makes it redundant.** If a "get all X for this owner" endpoint already returns every
-  item with what the caller needs populated, a separate "get one" endpoint often isn't pulling its
-  weight - the caller can fetch or already has the list and pick the one entry it wants. This isn't
-  a hard rule (a list that's expensive to fetch, or a route that needs to 404 on a specific id
-  rather than filter client-side, can still justify keeping both), but don't scaffold the
-  single-item version reflexively just because a list version exists; ask whether it earns its own
-  endpoint.
+  already makes it redundant.** If a "get all roles for this tenant" endpoint already returns every
+  role with `RolePermissions` (or whatever the caller needs) populated, a separate "get one role"
+  endpoint often isn't pulling its weight - the caller can fetch or already has the list and pick
+  the one entry it wants. This isn't a hard rule (a list that's expensive to fetch, or a route that
+  needs to 404 on a specific id rather than filter client-side, can still justify keeping both),
+  but don't scaffold the single-item version reflexively just because a list version exists; ask
+  whether it earns its own endpoint.
 - **Is the actual need "the generic write plus an invariant that must always hold," not a new
   route at all?** If what's missing is validation before a create/edit, a linked-entity side-effect
   after one, or a guard before a delete *or a create* (e.g. rejecting a new child row once a
@@ -145,31 +146,32 @@ DTO comes up in either path:
   bad request is rejected by model binding before it ever reaches an Api Client call or a repository
   write, instead of surfacing as a downstream 400/500.
 - **Check for an existing sibling DTO with the same shape before defining a new one.** A response
-  that just repeats a handful of scalar fields from one entity probably already has a matching
-  `<Entity>Response` somewhere in the same project - reuse it rather than defining a
-  near-duplicate. This applies across paths too: if an internal-service change makes a Public API's
-  existing bespoke response DTO redundant (e.g. an indirection layer it existed to route around gets
-  removed), that's a real signal to delete the bespoke DTO and switch the caller to the sibling one,
-  not to keep both.
+  that just repeats `Id`/`Name`/`Description`/`CreatedBy`/`PermissionKeys` from `Role` probably
+  already has a `RoleResponse` (or equivalent) somewhere in the same project - reuse it rather than
+  defining a near-duplicate. This applies across paths too: if an internal-service change makes a
+  Public API's existing bespoke response DTO redundant (e.g. an indirection layer it existed to
+  route around gets removed), that's a real signal to delete the bespoke DTO and switch the caller
+  to the sibling one, not to keep both.
 - **Default to returning the entity (or collection of entities) directly - reach for `[Include]` to
   stitch together whatever the response needs before reaching for a custom Response DTO.** A custom
   endpoint's job is usually a query or a write too specific for generic `.Entity`, not a shape too
-  specific for the entity itself. Return that type directly -
-  `[ProducesResponseType(typeof(MyEntity[]), ...)]`, `this.Ok(entities)` - not wrapped in a
-  `<Name>Response` that just repeats the same properties. Building a custom Response DTO is valid,
-  but treat it as the *last resort*: reach for it when the shape genuinely can't come from the
-  entity plus `[Include]` (computed/aggregated fields not stored anywhere, derived at read time
-  rather than persisted, or a flattened projection across more than one unrelated entity graph) -
-  not by default, and not just because it's the response of a custom action. A Public API that
-  wants its *own* shaped DTO still maps the raw entity into one on its own side; that's not a
-  reason for the target service's endpoint to invent one first.
+  specific for the entity itself - the response is still an ordinary `Role`/`IEnumerable<Role>` with
+  the right navigations eager-loaded. Return that type directly -
+  `[ProducesResponseType(typeof(Role[]), ...)]`, `this.Ok(roles)` - not wrapped in a `<Name>Response`
+  that just repeats the same properties. Building a custom Response DTO is valid, but treat it as
+  the *last resort*: reach for it when the shape genuinely can't come from the entity plus
+  `[Include]` (computed/aggregated fields not stored anywhere - e.g. "is this plan referenced by any
+  Subscription," derived at read time rather than persisted - or a flattened projection across more
+  than one unrelated entity graph) - not by default, and not just because it's the response of a
+  custom action. A Public API that wants its *own* shaped DTO still maps the raw entity into one on
+  its own side; that's not a reason for the target service's endpoint to invent one first.
 - **If the response leans on nested navigations, every level of that chain needs `[Include]`, not
   just the top one.** Per AGENTS.md's Response Serialization section, a navigation only appears in
   the JSON response when it's both loaded (via `includeDepth`) *and* tagged `[Include]` on the
   property itself - and this applies independently at every level of the graph. A response built by
-  walking through two or three levels of navigation needs `[Include]` on each of those navigation
-  properties, not just the first one; skipping a middle link means that step silently comes back
-  empty even though the ends are tagged correctly. Trace the exact path the response
+  walking `Role → SubscriptionPlanRoles → Role → RolePermissions` needs `[Include]` on each of those
+  navigation properties, not just the first one; skipping a middle link means that step silently
+  comes back empty even though the ends are tagged correctly. Trace the exact path the response
   constructor/mapping actually walks and confirm every property on it is tagged before assuming
   `[Include]` "already covers this."
 
@@ -185,18 +187,18 @@ Client method of its own.
 Check whether the Api Client(s) this action needs are already injected in this controller (or
 injectable without issue) and whether the specific call needed is already a generic method or an
 existing custom method - including a custom method on the *target* service's own controller that
-already computes the exact union/aggregate this action needs, rather than re-deriving the same
-result here via several generic calls.
+already computes the exact union/aggregate this action needs (e.g. an existing "get all roles
+available to a tenant" internal-service action), rather than re-deriving the same result here via
+several generic calls.
 
 If a **new custom Api Client method** is needed and doesn't exist yet: **stop and ask the user
 whether to create it now**. That method's controller action lives on the *target* service - a
 different application than this Public API. If the target's Api Client class doesn't exist at all
-yet, that's `nano-define-api-client`'s job, on the target's own project; if the whole
-custom-endpoint contract (controller action + client method) doesn't exist yet, that's *this
-prompt's own Internal service path*, run against the target application, not this one. Don't
-invoke either automatically, and don't scaffold this Public API action against a method that
-doesn't exist yet as if it already does - proceed here only once the user has confirmed
-whether/how that gets created elsewhere.
+yet, that's `nano-add-api-client`'s job, on the target's own project; if the whole custom-endpoint
+contract (controller action + client method) doesn't exist yet, that's *this skill's own Internal
+service path*, run against the target application, not this one. Don't invoke either automatically,
+and don't scaffold this Public API action against a method that doesn't exist yet as if it already
+does - proceed here only once the user has confirmed whether/how that gets created elsewhere.
 
 **Don't wrap a plain generic call - or a plain generic *composition* - in a new custom Api Client
 method.** If the backing call is already `.Entity`/`.Auth`/`.Audit`/`.Identity` with no shaping or
@@ -297,8 +299,8 @@ request/method that lets other applications actually call it.
 
 Check `{ThisApp}.Models/Api/` for an existing `BaseApiClient`/`BaseIdentityApiClient` subclass. If
 none exists, create the bare class inline as part of this same change - it's boilerplate with no
-decision to make (see `nano-define-api-client`'s "Client class" shape), not a reason to stop and
-chain into a separate prompt.
+decision to make (see `nano-add-api-client`'s "Client class" shape), not a reason to stop and
+chain into a separate skill.
 
 ### Shared body model
 
@@ -351,11 +353,10 @@ only in the two cases where inference can't land correctly:
   a bespoke DTO/POCO rather than the entity itself, or because the action lives on a *different*
   controller than the one the response type's name would imply.
 
-In this solution specifically, most custom requests so far have hit the second case - Public API
-and cross-service custom endpoints tend to return bespoke response shapes, or attach to a
-controller that doesn't match the response's name (see `GetTenantDomainRequest`: its response is
-the `TenantDomain` entity, but the action lives on `TenantsController`, not a dedicated
-`TenantDomainsController`) - check this deliberately rather than assuming inference works.
+In this solution specifically, most custom requests so far have hit the second case (see
+`GetTenantDomainRequest`: its response is the `TenantDomain` entity, but the action lives on
+`TenantsController`, not a dedicated `TenantDomainsController`) - check this deliberately rather
+than assuming inference works.
 
 **Define the route segment as a constant** in a `Consts` class inside `{ThisApp}.Models` and
 reference it from both this request's action attribute and the controller action's `[Route(...)]`
@@ -386,7 +387,7 @@ Clients gotchas, a non-success response never throws for a plain 404 - it return
 from an empty collection (found, nothing to return) with no extra plumbing. Have the controller
 action return `this.NotFound()` for the not-found case explicitly, and resist collapsing the
 client method's `null` into `[]` "for convenience" - that throws away the exact distinction the
-caller needs.
+caller needs (e.g. a tenant that doesn't exist vs. a real tenant with no roles yet).
 
 **The method's parameter is the shared body model itself, not its properties spread out as
 separate scalar parameters.** `MyActionAsync(MyAction model, ...)` above, not
@@ -438,7 +439,7 @@ public virtual async Task<IActionResult> MyActionAsync([FromBody][Required] MyAc
 
 - Add to an existing entity controller, or create a new one (`BaseController`, or the appropriate
   entity controller base per AGENTS.md's Entity controller hierarchy) if none exists yet - follow
-  `nano-scaffold-entity`'s controller-file conventions for a brand new controller's shape/naming
+  `nano-add-entity`'s controller-file conventions for a brand new controller's shape/naming
   (correct base tier, naming, eventing-parameter handling). This includes the retrofit case: an
   entity that already exists but has no generic controller yet still gets its full generic
   controller as part of creating it here - this action doesn't replace or narrow that entitlement.
@@ -463,10 +464,10 @@ public virtual async Task<IActionResult> MyActionAsync([FromBody][Required] MyAc
   not-found case that specifically needs a message/code rather than a bare 404:
   `Nano.Data.Abstractions.Exceptions.NotFoundException`.
 - **Don't narrow an entity's controller tier to dodge a route collision with this action - flag it
-  instead.** The controller's tier (full CRUD by default, per `nano-scaffold-entity`) doesn't
-  change because a custom action sits alongside it. If this action's route+verb is identical to a
-  route the generic tier also exposes, that's a genuine defect in the request-side contract (one of
-  the two routes needs to change) - add the action anyway, with a prominent comment naming exactly
+  instead.** The controller's tier (full CRUD by default, per `nano-add-entity`) doesn't change
+  because a custom action sits alongside it. If this action's route+verb is identical to a route
+  the generic tier also exposes, that's a genuine defect in the request-side contract (one of the
+  two routes needs to change) - add the action anyway, with a prominent comment naming exactly
   which generic route it collides with (verb + path + which AGENTS.md table row), and leave both
   in place for the user to resolve.
 - **Check built-in routes on narrower base classes too, not just the generic CRUD table** - e.g.
@@ -492,8 +493,8 @@ public virtual async Task<IActionResult> MyActionAsync([FromBody][Required] MyAc
 The case above generalizes into a real alternative to scaffolding a new custom action: whenever
 the actual requirement is "the same generic write, plus an invariant that must hold no matter which
 caller/route triggers it" - validation before a create/edit, a linked-entity side-effect after one,
-a reference-count guard before a delete *or before a create* (e.g. a parent whose children must
-stop being addable, not just removable, once another entity references it) - override the relevant
+a reference-count guard before a delete *or before a create* (e.g. a plan whose Roles must stop
+being addable, not just removable, once any Subscription references it) - override the relevant
 `BaseEntityController<...>` method(s) directly rather than adding a parallel custom action next to
 them. This enforces the rule as a property of the *entity's own controller*, so it holds for every
 consumer, not just the one Public API that remembered to compose it.

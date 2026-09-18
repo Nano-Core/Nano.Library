@@ -47,14 +47,18 @@ public interface IAuthTransientRepository
         where TFlow : BaseAuthFlow;
 
     /// <summary>
-    /// Refreshes an external login using the provider's refresh token and generates a new corresponding JWT access token.
+    /// Refreshes a transient external login and generates a new corresponding JWT access token. The
+    /// provider's own refresh token is never supplied by the caller - it is recovered from a claim embedded
+    /// in <paramref name="token"/> at login, since a transient login has no other store to keep it in.
+    /// Transient claims/roles are recovered the same way, so a refresh can never grant more than the
+    /// original login already did.
     /// </summary>
     /// <param name="providerName">The name of the provider.</param>
-    /// <param name="logInRefresh">The refresh information, including the expired access token, the provider's refresh token, and transient claims/roles to apply to the new token.</param>
+    /// <param name="token">The expired or soon-to-expire access token, read from the caller's Authorization header.</param>
     /// <param name="cancellationToken">A <see cref="CancellationToken"/> to cancel the operation.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains a new <see cref="AccessToken"/> for the authenticated external user.</returns>
-    /// <exception cref="ArgumentNullException">Thrown if <paramref name="logInRefresh"/> is null.</exception>
+    /// <exception cref="ArgumentNullException">Thrown if <paramref name="token"/> is null.</exception>
     /// <exception cref="NullReferenceException">Thrown if the underlying external repository is not configured.</exception>
-    /// <exception cref="UnauthorizedException">Thrown if <paramref name="logInRefresh"/>'s token fails validation, or if the refresh fails with the external provider.</exception>
-    Task<AccessToken> LogInExternalRefreshAsync(string providerName, LogInRefresh logInRefresh, CancellationToken cancellationToken = default);
+    /// <exception cref="UnauthorizedException">Thrown if <paramref name="token"/> fails validation, does not carry a refreshable external login, or the refresh fails with the external provider.</exception>
+    Task<AccessToken> LogInExternalRefreshAsync(string providerName, string token, CancellationToken cancellationToken = default);
 }
