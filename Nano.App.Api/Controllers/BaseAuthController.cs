@@ -195,8 +195,16 @@ public abstract class BaseAuthController<TIdentity>(ILogger<BaseAuthController<T
             return this.NotFound();
         }
 
+        var token = this.HttpContext
+            .GetJwtToken();
+
+        if (token == null)
+        {
+            return this.Unauthorized();
+        }
+
         var accessToken = await this.authRepository.AuthIdentityRepository
-            .LogInRefreshAsync(logInRefresh, cancellationToken);
+            .LogInRefreshAsync(token, logInRefresh.RefreshToken, cancellationToken);
 
         return this.Ok(accessToken);
     }

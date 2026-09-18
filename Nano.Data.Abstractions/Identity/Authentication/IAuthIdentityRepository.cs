@@ -66,12 +66,16 @@ public interface IAuthIdentityRepository<in TIdentity>
 
     /// <summary>
     /// Refreshes an existing access token using a valid refresh token, generating a new JWT and refresh token.
+    /// Non-persisted "transient" roles/claims are never accepted from the caller here - they are recovered
+    /// from the manifest embedded in <paramref name="token"/> at login, so a refresh can never grant more
+    /// than the original login already did.
     /// </summary>
-    /// <param name="logInRefresh">The refresh login request containing the original token, refresh token, roles, and claims.</param>
+    /// <param name="token">The expired or soon-to-expire access token, read from the caller's Authorization header.</param>
+    /// <param name="refreshToken">The refresh token used to issue a new access token.</param>
     /// <param name="cancellationToken">A <see cref="CancellationToken"/> to cancel the operation.</param>
     /// <returns>A task that returns a new <see cref="AccessToken"/> with updated expiration.</returns>
     /// <exception cref="UnauthorizedException">Thrown if the refresh token is missing, invalid, expired, or does not match the stored token.</exception>
-    Task<AccessToken> LogInRefreshAsync(LogInRefresh logInRefresh, CancellationToken cancellationToken = default);
+    Task<AccessToken> LogInRefreshAsync(string token, string refreshToken, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Logs out the current user, removing any server-side authentication state.

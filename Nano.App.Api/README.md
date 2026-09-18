@@ -1780,7 +1780,7 @@ The `IAuthIdentityRepository` provides the following methods to support this fun
 | `LogInAsync`                        | logIn                            | Logs in a user using username and password credentials, generating a JWT access token and optional refresh token.                       |
 | `LogInExternalAsync`                | logInExternal                    | Logs in a user using direct external login data, generating a JWT access token and optional refresh token.                              |
 | `LogInExternalAsync`                | providerName, logInExternalFlow  | Logs in a user authenticating with a configured external login provider flow, generating a JWT access token and optional refresh token. |
-| `LogInRefreshAsync`                 | logInRefresh                     | Refreshes an existing access token using a valid refresh token, generating a new JWT and refresh token.                                 |
+| `LogInRefreshAsync`                 | token, refreshToken              | Refreshes an existing access token using a valid refresh token, generating a new JWT and refresh token. `token` is the expired/soon-to-expire access token, read by the controller from the Authorization header, not the request body. |
 | `LogOutAsync`                       | userId, appId                    | Logs out the current user.                                                                                                              |
 
 Try it out yourself using the **[Api.Data.Identity.Auth.Jwt](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Data.Identity.Auth.Jwt)** example.  
@@ -1792,6 +1792,7 @@ also supports external authentication but is designed for transient logins witho
 | ----------------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | `LogInExternalAsync`                | logInExternal        | Performs an external login using direct external login data and generates a corresponding JWT access token.                     |
 | `LogInExternalAsync`                | logInExternalDirect  | Performs an external login using a configured built-in external provider type and generates a corresponding JWT access token.   |
+| `LogInExternalRefreshAsync`         | providerName, token  | Refreshes a transient external login. `token` is the expired/soon-to-expire access token, read from the Authorization header - the provider's own refresh token and any transient claims/roles are recovered from claims embedded in `token` at login, never supplied by the caller. |
 
 Logging in using external authentication in Nano can be achieved either by configuring a built-in provider or by implementing a custom provider (see further down).  
 
@@ -2333,6 +2334,7 @@ are not configured will not be registered or available in the controller.
 | `/auth/login/apikey`                             | POST   | Anonymous | Authenticates the user using `X-Api-Key` header value and returns an access token. Only exposed when Identity ApiKeys has been configured.                                           |
 | `/auth/login/external/{providerName}`            | POST   | Anonymous | Signs in a user using external provider authentication. An endpoint is exposed for each registered external provider. Only exposed when Identity has been configured.                |
 | `/auth/login/external/{providerName}/transient`  | POST   | Anonymous | Signs in a transient user using external provider authentication. An endpoint is exposed for each registered external provider. Only exposed when Identity has not been configured.  |
+| `/auth/login/external/{providerName}/transient/refresh` | POST | Anonymous | Refreshes a transient external provider login. No request body - the token is read from the Authorization header. An endpoint is exposed for each registered external provider. Only exposed when Identity has not been configured. |
 | `/auth/login/refresh`                            | POST   | Anonymous | Refreshes an existing access token.                                                                                                                                                  |
 | `/auth/logout`                                   | POST   | Anonymous | Logs out the current user.                                                                                                                                                           |
 | `/auth/external/schemes`                         | GET    | Anonymous | Retrieves all configured external authentication methods (e.g., Google, Facebook). Only exposed when at least one external authentication provider has been registerd.               |

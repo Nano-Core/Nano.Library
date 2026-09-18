@@ -165,6 +165,33 @@ public sealed class AuthApi(ApiClient api)
     }
 
     /// <summary>
+    /// Executes <c>auth/login/external/{providerName}/transient/refresh</c> to refresh a transient
+    /// external-login access token. Sets the authorization header on success.
+    /// </summary>
+    /// <typeparam name="TRequest">The transient external login refresh request type.</typeparam>
+    /// <param name="request">The transient external login refresh request.</param>
+    /// <param name="cancellationToken">The cancellation token.</param>
+    /// <returns>The refreshed access token.</returns>
+    /// <exception cref="UnauthorizedException">Thrown if refresh fails.</exception>
+    public async Task<AccessToken> LogInExternalTransientRefreshAsync<TRequest>(TRequest request, CancellationToken cancellationToken = default)
+        where TRequest : BaseLogInExternalTransientRefreshRequest
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        var response = await this.api
+            .InvokeAsync<TRequest, AccessToken>(request, cancellationToken);
+
+        if (response == null)
+        {
+            throw new UnauthorizedException();
+        }
+
+        this.SetAuthorizationHeader(response.Token);
+
+        return response;
+    }
+
+    /// <summary>
     /// Executes <c>auth/login/refresh</c> to refresh an access token.
     /// Sets the authorization header on success.
     /// </summary>

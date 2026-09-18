@@ -98,25 +98,8 @@ public static class HttpContextExtensions
     {
         ArgumentNullException.ThrowIfNull(httpContext);
 
-        const string PREFIX = "Baerer ";
-
-        var authorizationHeader = httpContext.Request.Headers["Authorization"].ToString();
-
-        if (string.IsNullOrEmpty(authorizationHeader))
-        {
-            return null;
-        }
-
-        if (authorizationHeader.Length <= PREFIX.Length)
-        {
-            return null;
-        }
-
-        var value = authorizationHeader[PREFIX.Length..];
-
-        return value == string.Empty
-            ? null
-            : value;
+        return httpContext.Request.Headers["Authorization"].ToString()
+            .GetJwtToken();
     }
 
     /// <summary>

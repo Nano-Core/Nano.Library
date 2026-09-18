@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Nano.Data.Abstractions.Exceptions;
 using Nano.Data.Abstractions.Extensions;
+using Nano.Data.Abstractions.Identity.Authentication.Helpers;
 
 namespace Nano.Data.Identity.Authentication;
 
@@ -57,6 +58,11 @@ public abstract class BaseAuthIdentityRepository<TIdentity> : IAuthIdentityRepos
         var claims = await this.identityRepository
             .GetAllUserClaims(identityUser, logIn.TransientRoles, logIn.TransientClaims, cancellationToken);
 
+        var transientClaimsManifest = TransientClaimsManifest.Build(logIn.TransientRoles, logIn.TransientClaims);
+
+        claims
+            .Add(transientClaimsManifest);
+
         var accessToken = this.authJwtRepository
             .GenerateJwtToken(new GenerateJwtToken
             {
@@ -91,6 +97,11 @@ public abstract class BaseAuthIdentityRepository<TIdentity> : IAuthIdentityRepos
 
         var claims = await this.identityRepository
             .GetAllUserClaims(identityUser, logInExternal.TransientRoles, logInExternal.TransientClaims, cancellationToken);
+
+        var transientClaimsManifest = TransientClaimsManifest.Build(logInExternal.TransientRoles, logInExternal.TransientClaims);
+
+        claims
+            .Add(transientClaimsManifest);
 
         var accessToken = this.authJwtRepository
             .GenerateJwtToken(new GenerateJwtToken
@@ -139,20 +150,21 @@ public abstract class BaseAuthIdentityRepository<TIdentity> : IAuthIdentityRepos
     }
 
     /// <inheritdoc />
-    public virtual async Task<AccessToken> LogInRefreshAsync(LogInRefresh logInRefresh, CancellationToken cancellationToken = default)
+    public virtual async Task<AccessToken> LogInRefreshAsync(string jwtToken, string refreshToken, CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(logInRefresh);
+        ArgumentNullException.ThrowIfNull(jwtToken);
+        ArgumentNullException.ThrowIfNull(refreshToken);
 
         var jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
 
         var userId = jwtSecurityTokenHandler
-            .GetJwtUserId<TIdentity>(logInRefresh.Token);
+            .GetJwtUserId<TIdentity>(jwtToken);
 
         var identityUser = await this.identityRepository
             .GetIdentityUserAsync(userId, cancellationToken);
 
         var appId = jwtSecurityTokenHandler
-            .GetJwtAppId(logInRefresh.Token) ?? IdentityDefaults.DEFAULT_APP_ID;
+            .GetJwtAppId(jwtToken) ?? IdentityDefaults.DEFAULT_APP_ID;
 
         var identityRefreshToken = await this.identityRepository
             .GetRefreshToken(userId, appId, cancellationToken);
@@ -162,7 +174,7 @@ public abstract class BaseAuthIdentityRepository<TIdentity> : IAuthIdentityRepos
             throw new UnauthorizedException($"The refresh token of user: {identityUser.UserName} could not be found.");
         }
 
-        if (identityRefreshToken.Value != logInRefresh.RefreshToken)
+        if (identityRefreshToken.Value != refreshToken)
         {
             throw new UnauthorizedException($"The refresh token of user: {identityUser.UserName} is invalid.");
         }
@@ -173,17 +185,28 @@ public abstract class BaseAuthIdentityRepository<TIdentity> : IAuthIdentityRepos
         }
 
         this.authJwtRepository
-            .ValidateTokenForRefresh(logInRefresh.Token);
+            .ValidateTokenForRefresh(jwtToken);
+
+        var jwtSecurityToken = jwtSecurityTokenHandler
+            .ReadJwtToken(jwtToken);
+
+        var (transientRoles, transientClaims) = TransientClaimsManifest
+            .Parse(jwtSecurityToken.Claims);
 
         var claims = await this.identityRepository
-            .GetAllUserClaims(identityUser, logInRefresh.TransientRoles, logInRefresh.TransientClaims, cancellationToken);
+            .GetAllUserClaims(identityUser, transientRoles, transientClaims, cancellationToken);
 
-        var externalProviderName = claims
+        var transientClaimsManifest = TransientClaimsManifest.Build(transientRoles, transientClaims);
+
+        claims
+            .Add(transientClaimsManifest);
+
+        var externalProviderName = jwtSecurityToken.Claims
             .Where(x => x.Type == ClaimTypesExtended.ExternalProviderName)
             .Select(x => x.Value)
             .FirstOrDefault();
 
-        var externalProviderRefreshToken = claims
+        var externalProviderRefreshToken = jwtSecurityToken.Claims
             .Where(x => x.Type == ClaimTypesExtended.ExternalProviderRefreshToken)
             .Select(x => x.Value)
             .FirstOrDefault();

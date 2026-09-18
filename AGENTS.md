@@ -209,7 +209,7 @@ Available as properties on the client instance — no implementation needed, jus
 | Group        | Available on                          | Covers                                                                          |
 | -------------- | ---------------------------------------- | ------------------------------------------------------------------------------------ |
 | `.Entity`         | `BaseApiClient`                             | Full CRUD against any entity of the target app: `GetAsync`, `GetManyAsync`, `QueryAsync`, `QueryFirstAsync`, `QueryCountAsync`, `CreateAsync`/`CreateOrEditAsync`/`CreateOrGetAsync`/`CreateAndGetAsync`/`CreateManyAsync`(`Bulk`), `EditAsync`/`EditAndGetAsync`/`EditManyAsync`(`Bulk`)/`EditQueryAsync`(`Bulk`), `DeleteAsync`/`DeleteManyAsync`(`Bulk`)/`DeleteQueryAsync`(`Bulk`). Mirrors the entity controller route table 1:1 — see [Controllers § Full CRUD route table](#full-crud-route-table). |
-| `.Auth`           | `BaseApiClient`                             | `LogInAsync`, `LogInRootAsync`, `LogInApiKeyAsync`, `LogInExternalAsync`, `LogInRefreshAsync`, `LogOutAsync`, `GetExternalSchemesAsync`. |
+| `.Auth`           | `BaseApiClient`                             | `LogInAsync`, `LogInRootAsync`, `LogInApiKeyAsync`, `LogInExternalAsync`, `LogInExternalTransientAsync`, `LogInExternalTransientRefreshAsync`, `LogInRefreshAsync`, `LogOutAsync`, `GetExternalSchemesAsync`. |
 | `.Audit`          | `BaseApiClient`                             | Read-only access to the target's `AuditEntry<TIdentity>` log: `GetAsync`/`GetManyAsync`/`QueryAsync`/`QueryFirstAsync`/`QueryCountAsync`. |
 | `.Identity`       | `BaseIdentityApiClient<TUser[,TIdentity]>`  | Sign-up, password set/change/reset (+ token generation), email/phone change/confirm (+ token generation), roles, claims, external logins, refresh tokens, API keys. |
 
@@ -1614,7 +1614,7 @@ are all nullable — each is populated only if the matching config exists, and t
 | ---------------------------------- | ------------------------------------------------------ | --------------------------------------------------------- |
 | `AuthRootRepository`                 | `Jwt.RootLogin` configured                              | `/auth/login/root`                                          |
 | `AuthIdentityRepository`              | [Data Identity](#identity) configured                    | `/auth/login`, `/auth/login/apikey`, `/auth/login/refresh`, `/auth/logout` |
-| `AuthTransientRepository`             | `Jwt.ExternalLogins` configured, Identity **not** configured | `/auth/login/external/{providerName}/transient`       |
+| `AuthTransientRepository`             | `Jwt.ExternalLogins` configured, Identity **not** configured | `/auth/login/external/{providerName}/transient`, `/auth/login/external/{providerName}/transient/refresh` |
 | `AuthExternalRepositoryAggregator`    | Always available                                        | `/auth/external/schemes`, external login resolution for both identity and transient repositories |
 
 ⚠ **`AuthTransientRepository`'s endpoint trusts the caller.** `/auth/login/external/{providerName}/transient`
@@ -1627,7 +1627,17 @@ across the whole app, not by which controller you meant to use it for). A transi
 server-computed claims on top of external login (an admin flag, an internal role) must **not** derive a
 generic `BaseAuthController`-based controller — implement a custom controller instead (deriving this app's own
 base controller), calling `IAuthExternalRepositoryAggregator`/`IAuthTransientRepository` directly and computing
-claims/roles only from trusted server-side data, never from caller input.
+claims/roles only from trusted server-side data, never from caller input. This same caller-trust
+problem applies at login on `AuthIdentityRepository` too (`/auth/login`/`/auth/login/external`), not
+just the transient endpoint — refresh is the exception: `/auth/login/refresh` and
+`/auth/login/external/{providerName}/transient/refresh` (auto-mapped under the same
+`!hasIdentity && hasAuthController` gate as the login endpoint above) never accept claims/roles from
+the caller at all, they're recovered from a manifest claim embedded at login
+(`ClaimTypesExtended.TransientClaimsManifest`, built/read via the internal `TransientClaimsManifest`
+class in `Nano.Data.Abstractions`), so a refresh can never grant more than the original login already
+did. The transient refresh endpoint also takes no request body at all — the token being refreshed is
+read from the Authorization header, and the external provider's own refresh token is recovered from
+that same token's claims, never supplied by the caller.
 
 ##### Custom external provider
 

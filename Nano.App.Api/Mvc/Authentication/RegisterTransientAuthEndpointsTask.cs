@@ -59,6 +59,7 @@ internal sealed class RegisterTransientAuthEndpointsTask(IEnumerable<IAuthExtern
         ArgumentNullException.ThrowIfNull(root);
 
         builder
-            .MapEndpointAuthTransient<TFlow>(providerName, version, root);
+            .MapEndpointAuthTransient<TFlow>(providerName, version, root)
+            .MapEndpointAuthTransientRefresh(providerName, version, root);
     }
 }

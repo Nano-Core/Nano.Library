@@ -137,38 +137,50 @@ overrides, no keys (those come from the Kubernetes secret, never a static file):
 
 ## AuthController (API/Web only)
 
-**Stop and check this before scaffolding it — it's not always safe to add.** Nano auto-maps the
-built-in transient external-login endpoint (`/auth/login/external/{provider}/transient`) whenever
-*any* `BaseAuthController`-derived class exists in the app **and** no Identity is configured —
-see `ServiceScopeExtensions.UseNanoEndpoints`'s `!hasIdentity && hasAuthController` gate, checked
-by type scan, not by whether this specific controller is the one deriving it. That endpoint binds
-the request body straight into `LogInExternal<TFlow>` and merges its `TransientClaims`/
-`TransientRoles` **verbatim, with no server-side filtering,** into the minted JWT
-(`AuthTransientRepository.LogInExternalAsync`). Concretely: once this app is in transient auth
-(step 2) with any external login provider configured, adding this controller means **any
-anonymous caller can post `{"transientClaims": {"IsAdmin": "true"}}` to that endpoint and receive
-back a validly-signed token carrying that claim** — nothing here validates or restricts which
-claims/roles a caller may assert about themselves.
+**Stop and check this before scaffolding it — it's not always safe to add.** `BaseAuthController`'s
+`login`/`login/external` actions bind `TransientClaims`/`TransientRoles` straight from the request
+body and merge them **verbatim, with no server-side filtering,** into the minted JWT
+(`AuthTransientRepository.LogInExternalAsync`/`BaseAuthIdentityRepository.LogInAsync`/
+`LogInExternalAsync`) — this applies to **both persistent and transient auth**, not just transient.
+Concretely: adding this controller means **any caller who can reach it can post
+`{"transientClaims": {"IsAdmin": "true"}}` at login and receive back a validly-signed token carrying
+that claim** — nothing here validates or restricts which claims/roles a caller may assert about
+themselves. Refresh does not have this problem: `login/refresh`/the transient external-login
+refresh never accept claims/roles from the caller at all — they're always recovered from a manifest
+claim embedded at login, so a refresh can never grant more than the original login already did (see
+`ClaimTypesExtended.TransientClaimsManifest`/the internal `TransientClaimsManifest` class in
+`Nano.Data.Abstractions`). The transient refresh endpoint
+(`/auth/login/external/{providerName}/transient/refresh`) also takes no request body at all - the
+token being refreshed comes from the Authorization header. The risk below is specific to login, and
+to whoever can reach `AuthController` at all.
 
 - **If this app needs to compute its own claims server-side** (an `IsAdmin` flag, an internal
-  role, anything not meant to be caller-assignable) **on top of transient external login, don't
-  add this controller at all.** Write a custom controller instead (derive it from this app's own
-  base controller, *not* `BaseAuthController`) that calls `IAuthExternalRepositoryAggregator`/
-  `IAuthTransientRepository` directly and builds the claims/roles itself from trusted data — never
-  from caller input. This is exactly what shields the app: `hasAuthController` stays `false`, so
-  Nano's own claim-forging endpoint is never mapped in the first place. This is a real, load-bearing
-  pattern in this codebase, not a hypothetical — see `Api.Admin`'s `AccountsController` (deriving
-  its own `BaseAdminController`), which implements `login/microsoft`/`login/refresh`/`me` by hand
-  for exactly this reason.
+  role, anything not meant to be caller-assignable) **at login, don't add this controller at all.**
+  Write a custom controller instead (derive it from this app's own base controller, *not*
+  `BaseAuthController`) that calls `IAuthExternalRepositoryAggregator`/`IAuthTransientRepository`/
+  `IAuthIdentityRepository` directly and builds the claims/roles itself from trusted data — never
+  from caller input. This is a real, load-bearing pattern in this codebase, not a hypothetical — see
+  `Api.Admin`'s `AccountsController` (deriving its own `BaseAdminController`), which implements
+  `login/microsoft`/`login/refresh`/`me` by hand for exactly this reason.
+- Nano additionally auto-maps built-in transient external-login endpoints
+  (`/auth/login/external/{provider}/transient` and its `/refresh` counterpart) whenever *any*
+  `BaseAuthController`-derived class exists in the app **and** no Identity is configured — see
+  `ServiceScopeExtensions.UseNanoEndpoints`'s `!hasIdentity && hasAuthController` gate, checked by
+  type scan, not by whether this specific controller is the one deriving it. This is an extra
+  exposure specific to transient auth: it means a custom controller alone isn't enough to shield a
+  transient app unless `hasAuthController` also stays `false` (i.e. no `BaseAuthController`-derived
+  class anywhere in the app) — `Api.Admin`'s custom controller works precisely because it doesn't
+  derive `BaseAuthController`. The `/refresh` counterpart is auto-mapped under the same gate, but
+  isn't a caller-trust risk the way login is - see above.
 - **This risk is sharpest on a publicly-exposed app** (anyone on the internet can reach the
   endpoint), but don't treat an internal-only app as automatically safe either — anything that lets
-  a caller assign its own JWT claims is worth a deliberate decision, not a default.
-- **Persistent auth (Identity present) does not have this problem** — `!hasIdentity` in the gate
-  above means the transient endpoint is never mapped once Identity is configured, regardless of
-  `AuthController`/external login. This warning is specific to the transient-auth shape.
-- If none of the above applies — persistent auth, or transient auth with no need for
-  server-computed claims beyond what the external provider itself asserts — the generic controller
-  below is fine as-is.
+  a caller assign its own JWT claims is worth a deliberate decision, not a default. `AuthController`
+  is an internal-service-only pattern to begin with (see AGENTS.md's [Controllers § Public API vs
+  internal service](#public-api-vs-internal-service)), so "internal-only" is the floor, not a reason
+  to skip the decision.
+- If none of the above applies — no need for server-computed claims beyond what the external
+  provider itself asserts, and whoever can reach this app's `AuthController` is already trusted to
+  assert login-time claims — the generic controller below is fine as-is.
 
 `Controllers/AuthController.cs`, main app project:
 
