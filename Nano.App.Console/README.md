@@ -100,7 +100,7 @@ The `App` section in the configuration defines behavior related to the applicati
 
 ## Localization
 The Nano configuration supports specifying a default `CultureInfo` for console applications, ensuring that culture-sensitive operations 
-such as date, number, and currency formatting—are applied consistently across the entire application lifecycle.  
+such as date, number, and currency formatting, are applied consistently across the entire application lifecycle.  
 
 The `DefaultCultureInfo` will be set to the configured default culture.  
 

@@ -17,7 +17,7 @@ This package provides the Serilog logging provider for Nano.
 The provider is preconfigured to write log output to the console using a concise format:
 
 ```
-{Timestamp:dd-MM-yyyy HH:mm:ss.ffffff} [{Level:u3}] {Message}{NewLine}{Exception}
+{Timestamp:dd-MM-yyyy HH:mm:ss.ffffff} [{Level:u3}] {Message:lj}{NewLine}{Exception}
 ```
 
 > 📖 Learn more about **[Nano Logging](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Logging/README.md#nanologging)**.

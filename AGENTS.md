@@ -2335,7 +2335,7 @@ regardless of which provider you register.
 | Setting                       | Type   | Default     | Description                                                              |
 | --------------------------------- | ------ | ----------- | ------------------------------------------------------------------------------ |
 | `LogLevel`                          | enum   | Information | Default minimum log level: `Debug`, `Information`, `Warning`, `Error`, `Fatal`. |
-| `LogLevelOverrides[].Namespace`     | string | null        | Namespace to override (supports `*` prefix wildcard).                          |
+| `LogLevelOverrides[].Namespace`     | string | null        | Namespace (or namespace prefix) to override — matched as a prefix, no wildcard character needed. |
 | `LogLevelOverrides[].LogLevel`      | enum   | Warning     | Log level for that namespace.                                                  |
 
 ```json

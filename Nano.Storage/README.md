@@ -77,7 +77,6 @@ The ```Storage``` section in the configuration defines the storage provider and 
 | Setting            | Type   | Default     | Description                                                                                 |
 | ------------------ | ------ | ----------- | ------------------------------------------------------------------------------------------- |
 |  `ShareName`       | string | null        | The logical container, share, or bucket name used for file storage.                         |
-|  `Credentials`     | object | null        | Optional. The credential or account of the storage provider.                                |
 |  `HealthCheck`     | object | null        | Storage health check. _Only relevant for `NanoApiApplication` and `NanoWebApplication`_..   |
 
 ```json

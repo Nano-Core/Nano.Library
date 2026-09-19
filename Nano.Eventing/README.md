@@ -150,14 +150,20 @@ for details.
 > ⚠️ Share the event model as a NuGet package to ensure a consistent contract between publishers and subscribers. Exchange and queue names are derived automatically 
 from the event type.
 
-Next, to publish an event from one application:
+Next, to publish an event from one application, inject `IEventing` and call `PublishAsync`:
 
 ```csharp
-await this.Eventing
-    .PublishAsync(new MyEvent
+public class MyController(ILogger<MyController> logger, IEventing eventing) : BaseController(logger)
+{
+    public async Task DoSomethingAsync()
     {
-        Text = "Message from another service"
-    });
+        await eventing
+            .PublishAsync(new MyEvent
+            {
+                Text = "Message from another service"
+            });
+    }
+}
 ```
 
 ⚠️ IEventing also provides a `SubscribeAsync(...)` method, but manual invocation is not required. All `IEventingHandler<T>` implementations are automatically 

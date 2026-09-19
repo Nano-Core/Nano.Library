@@ -278,19 +278,39 @@ services:
 In `Staging` and `Production`, TLS certificates are automatically managed by the [Kubernetes Gateway](https://github.com/Nano-Core/Nano.Azure.Kubernetes/blob/master/Nano.Azure.Kubernetes.Gateway/README.md#nanoazurekubernetesgateway) 
 and [Cert-Manager](https://github.com/Nano-Core/Nano.Azure.Kubernetes/blob/master/Nano.Azure.Kubernetes.CertManager/README.md#nanoazurekubernetescertmanager).  
 
-Applications that are exposed publicly just need to define a subdomain and create an `HTTPRoute` Kubernetes resource.  
+Applications that are exposed publicly just need to define a subdomain and create a pair of `HTTPRoute` Kubernetes resources: one redirecting plain HTTP to HTTPS, and one routing the actual HTTPS traffic to the app. The two always come together.  
 
 ```yaml
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: {{name}}-route
+  name: {{name}}-route-80
+  namespace: {{namespace}}
+spec:
+  parentRefs:
+    - name: {{gateway-name}}
+      sectionName: http
+  hostnames:
+    - {{sub-domain}}{{dns-zone-name}}
+  rules:
+    - filters:
+        - type: RequestRedirect
+          requestRedirect:
+            scheme: https
+            statusCode: 301
+```
+
+```yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: {{name}}-route-443
   namespace: {{namespace}}
 spec:
   parentRefs:
     - name: {{gateway-name}}
   hostnames:
-    - {{sub-domain}}{{dns-zone-name]]
+    - {{sub-domain}}{{dns-zone-name}}
   rules:
     - matches:
         - path:
@@ -1107,7 +1127,7 @@ The HTTP cache stores a response associated with a request and reuses the stored
 There are several advantages to reusability. First, since there is no need to deliver the request to the origin server, 
 then the closer the client and cache are, the faster the response will be. The most typical example is when the browser itself stores a cache for browser requests.  
 
-Also, when a response is reusable, the origin server does not need to process the request — so it does not need to parse and route the request, 
+Also, when a response is reusable, the origin server does not need to process the request, so it does not need to parse and route the request, 
 restore the session based on the cookie, query the DB for results, or render the template engine. That reduces the load on the server.
 
 > ⚠️ It's recommended to enable this in configuration, then disable for specific actions using `[ResponseCache(...)]`.

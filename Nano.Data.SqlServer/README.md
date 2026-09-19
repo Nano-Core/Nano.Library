@@ -65,7 +65,7 @@ Add the data configuration to `appsettings.json`.
   "ConnectionString": null,
   "AuthenticationType": "Credentials",
   "Repository": {
-    "UseAutoSave": false,
+    "UseAutoSave": true,
     "QueryIncludeDepth": 4
   },
   "Identity": null,

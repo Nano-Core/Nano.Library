@@ -103,7 +103,7 @@ public class MyApiClient(ApiClient apiClient) : BaseApiClient(apiClient)
 or with Identity.  
 
 ```csharp 
-public class MyIdentityApiClient<TUser>(ApiClient apiClient) : BaseIdentityApiClient(apiClient)
+public class MyIdentityApiClient(ApiClient apiClient) : BaseIdentityApiClient<MyUser>(apiClient)
 {
 }
 ``` 
@@ -207,12 +207,12 @@ The following methods are available for Auth operations.
 
 | Setting                          | Parameters                    | Description                                                                        |
 | -------------------------------- | ----------------------------- | ---------------------------------------------------------------------------------- |
-| `GetExternalSchemesAsync`        | GetExternalSchemesRequest     | Executes `auth/external-schemes` to retrieve available external login providers.   |
+| `GetExternalSchemesAsync`        | GetExternalSchemesRequest     | Executes `auth/external/schemes` to retrieve available external login providers.   |
 | `LogInAsync`                     | LogInRequest                  | Executes `auth/login` to authenticate a user and obtain an access token.           |
 | `LogInRootAsync`                 | LogInRootRequest              | Executes `auth/login/root` to authenticate using root credentials.                 |
 | `LogInApiKeyAsync`               | LogInApiKeyRequest            | Executes `auth/login/apikey` to authenticate using an API key.                     |
-| `LogInExternalAsync`             | BaseLogInExternalRequest      | Executes `auth/login/external` to authenticate via an external provider.           |
-| `LogInExternalTransientAsync`    | BaseLogInExternalRequest      | Executes `auth/login/external/transient` using a transient external flow.          |
+| `LogInExternalAsync`             | BaseLogInExternalRequest      | Executes `auth/login/external/{providerName}` to authenticate via an external provider. |
+| `LogInExternalTransientAsync`    | BaseLogInExternalRequest      | Executes `auth/login/external/{providerName}/transient` using a transient external flow. |
 | `LogInExternalTransientRefreshAsync` | BaseLogInExternalTransientRefreshRequest | Executes `auth/login/external/{providerName}/transient/refresh` to refresh a transient external login. |
 | `LogInRefreshAsync`              | LogInRefreshRequest           | Executes `auth/login/refresh` to refresh an access token.                          |
 | `LogOutAsync`                    | -                             | Executes `auth/logout` to invalidate the current session or token.                 |

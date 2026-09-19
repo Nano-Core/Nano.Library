@@ -120,7 +120,7 @@ The `Data` section in the configuration defines the data provider and related se
   "ConnectionString": null,
   "AuthenticationType": "Credentials",
   "Repository": { 
-    "UseAutoSave": false,
+    "UseAutoSave": true,
     "QueryIncludeDepth": 4
   },
   "ConnectionPool": null,
@@ -173,7 +173,7 @@ access control.
 "Data": {
   "Identity": { 
     "TokensExpiration": "24:00:00",
-    "UseAudit": false,
+    "UseAudit": "None",
     "User": {
       "IsUniqueEmailAddressRequired": true,
       "IsUniquePhoneNumberRequired": false,
@@ -192,12 +192,12 @@ access control.
       "DefaultLockoutTimeSpan": "00:30:00"
     },
     "Password": {
-      "RequireDigit": false,
-      "RequireNonAlphanumeric": false,
-      "RequireLowercase": false,
-      "RequireUppercase": false,
-      "RequiredLength": 5,
-      "RequiredUniqueCharacters": 5
+      "RequireDigit": true,
+      "RequireNonAlphanumeric": true,
+      "RequireLowercase": true,
+      "RequireUppercase": true,
+      "RequiredLength": 12,
+      "RequiredUniqueCharacters": 3
     },
     "ApiKey": {
       "Secret": null
@@ -239,7 +239,7 @@ When identity has been configured the following roles are automatically added.
 | writer        | Authorized to read and write.        | 
 | creator       | Authorized to create.                | 
 | editor        | Authorized to update.                | 
-| deleter       | Authorized to create.                | 
+| deleter       | Authorized to delete.                | 
 | identity      | Authorized to use identity actions.  | 
 | Administrator | Full access to everything.           | 
 
@@ -601,7 +601,7 @@ identity logic through a single, consistent repository.
 | `SignOutAsync`                          | Login                | userId, appId                                 | Signs out the currently authenticated user and removes any associated refresh tokens.                                |
 | `IsEmailAddressTakenAsync`              | Sign Up              | emailAddress                                  | Checks whether the specified email address is already registered. Returns true if taken.                             |
 | `IsPhoneNumberTakenAsync`               | Sign Up              | phoneNumber                                   | Checks whether the specified phone number is already registered. Returns true if taken.                              |
-| `GetPasswordOptionsAsync`               | Sign Up              | —                                             | Retrieves the password configuration options for the identity system, if available.                                  |
+| `GetPasswordOptionsAsync`               | Sign Up              | -                                              | Retrieves the password configuration options for the identity system, if available.                                  |
 | `SignUpAsync<TUser>`                    | Sign Up              | signUp                                        | Registers a new user with the specified sign-up information. Returns the created user entity.                        |
 | `SignUpExternalAsync<TUser>`            | Sign Up              | signUpExternal                                | Registers a new user using external login provider information. Returns the created user entity.                     |
 | `GetIdentityUserAsync`                  | User                 | id                                            | Retrieves the identity user by its identifier. Throws if the user is not found.                                      |
@@ -662,7 +662,7 @@ identity logic through a single, consistent repository.
 | `ReplaceRoleClaimAsync`                 | Api Key Claims       | roleId, replaceClaim                          | Replaces an existing claim of an api key with a new value.                                                               |
 | `AssignOrReplaceRoleClaimAsync`         | Api Key Claims       | roleId, assignOrReplaceClaim                  | Assigns a claim to an api key or replaces it if it already exists.                                                       |
 | `RemoveRoleClaimAsync`                  | Api Key Claims       | roleId, removeClaim                           | Removes a claim from an api key.                                                                                         |
-| `GetRolesAsync`                         | Roles                | —                                             | Retrieves all roles in the system.                                                                                   |
+| `GetRolesAsync`                         | Roles                | -                                              | Retrieves all roles in the system.                                                                                   |
 | `CreateRoleAsync`                       | Roles                | roleName                                      | Creates a new role. Returns the created role.                                                                        |
 | `DeleteRoleAsync`                       | Roles                | roleName                                      | Deletes an existing role.                                                                                            |
 | `GetRoleClaimAsync`                     | Role Claims          | roleId, getClaim                              | Retrieves a specific claim of a role by claim type.                                                                  |
