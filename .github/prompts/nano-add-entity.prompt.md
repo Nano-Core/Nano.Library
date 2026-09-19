@@ -256,7 +256,7 @@ public class <Entity>QueryCriteria : BaseQueryCriteria
   mechanically add one filter per scalar property on the entity.
 - Every filter property must be `virtual` and nullable.
 - Use the `CriteriaExpression` builder methods appropriate to each property's type
-  (`StartsWith`/`Contains` for strings, `EqualTo`/`GreaterThan`/etc. for numerics and dates)
+  (`StartsWith`/`Contains` for strings, `Equal`/`GreaterThan`/etc. for numerics and dates)
   - check the project's other query criteria classes for the operations actually available,
   don't guess.
 

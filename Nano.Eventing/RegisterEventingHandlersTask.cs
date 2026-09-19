@@ -44,7 +44,7 @@ internal sealed class RegisterEventingHandlersTask(IEventing eventing) : IRegist
                 .GetProperty(nameof(IEventingHandler.RoutingKey), BindingFlags.Public | BindingFlags.Static)?
                 .GetValue(null);
 
-            var overridePrefetchCount = (string?)eventHandlerType
+            var overridePrefetchCount = (ushort?)eventHandlerType
                 .GetProperty(nameof(IEventingHandler.OverridePrefetchCount), BindingFlags.Public | BindingFlags.Static)?
                 .GetValue(null);
 

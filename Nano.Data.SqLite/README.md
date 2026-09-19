@@ -65,7 +65,7 @@ Add the data configuration to `appsettings.json`.
   "DefaultCollation": null,
   "ConnectionString": "Data Source=/mnt/data/nanoDb.sqlite",
   "Repository": {
-    "UseAutoSave": false,
+    "UseAutoSave": true,
     "QueryIncludeDepth": 4
   },
   "Identity": null,
@@ -97,7 +97,7 @@ services:
 ## Kubernetes
 Add an additional Kubernetes template, `data-storageclass.yaml`, for dynamically provisioning the disk backing the SqLite database file.
 
-> ⚠️ Single-attach (`ReadWriteOnce`) — fine for a `CronJob`, but a multi-replica API/Web app needs `stateful-set.yaml` (`StatefulSet` + `volumeClaimTemplates`), not `deployment.yaml`, so 
+> ⚠️ Single-attach (`ReadWriteOnce`): fine for a `CronJob`, but a multi-replica API/Web app needs `stateful-set.yaml` (`StatefulSet` + `volumeClaimTemplates`), not `deployment.yaml`, so 
 each replica gets its own (unshared) database file. For one shared database, use a network provider such as **[Nano.Data.MySql](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data.MySql/README.md#nanodatamysql)**.
 
 For a `CronJob`, or a single-replica Deployment, mount the disk via a static `data-pvc.yaml` `PersistentVolumeClaim` as before.

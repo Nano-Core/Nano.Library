@@ -7,6 +7,6 @@ namespace Nano.App.ApiClient.Requests.Identity;
 /// <summary>
 /// Class for Google external sign-up requests.
 /// </summary>
-public class SignUpExternalGoogleRequest<TUser, TIdentity>() : SignUpExternalImplicitRequest<TUser, TIdentity>(BuiltInExternalLogInProviderNames.GOOGLE)
+public class SignUpExternalGoogleRequest<TUser, TIdentity>() : SignUpExternalAuthCodeRequest<TUser, TIdentity>(BuiltInExternalLogInProviderNames.GOOGLE)
     where TUser : IEntityUser<TIdentity>
     where TIdentity : IEquatable<TIdentity>;

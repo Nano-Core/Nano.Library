@@ -112,12 +112,12 @@ If the provider was `SqLite`, additionally:
 Skip entirely for `SqLite`/`InMemory` (covered above / never applicable).
 
 1. **Workflow steps** - remove `<Provider> Database Migration` (this is the only migration step
-   present - `nano-add-data-provider` no longer adds the other two providers' steps as dormant
-   `if:`-guarded alternatives, so there's nothing else to find here). For `SqlServer`
+   present - `nano-add-data-provider` only ever adds the one step matching the chosen provider, no
+   dormant alternatives for the other two). For `SqlServer`
    specifically, also remove `SQL Server Create Database` (the two steps `nano-add-data-provider`
    always adds together for that provider).
 2. **Workflow env vars** - remove `SQL_AUTH_TYPE`, `SQL_NAME` (there is no `SQL_TYPE` to remove -
-   `nano-add-data-provider` no longer adds one). Only remove
+   `nano-add-data-provider` doesn't add one). Only remove
    `AZURE_GROUP_DATABASE`/`AZURE_GROUP_LOGS`/`DOTNET_EF_TOOLS_VERSION` if nothing else in the
    workflow still references them (`AZURE_GROUP_LOGS` is only added for `SqlServer` in the first
    place, and is also used by an Availability Check step, if one exists - check before removing).

@@ -24,12 +24,12 @@
 	    <Summary>Reusable libraries for building .NET microservice applications</Summary>
 	    <Description>This package is part of the Nano Library, a set of reusable .NET libraries for building microservice applications. Nano addresses common non-business concerns such as logging, persistence, messaging, validation, and documentation, while remaining fully configurable and extensible, so applications can stay focused on business logic. See https://github.com/Nano-Core/Nano.Library for details.</Description>
 	    <PackageReleaseNotes>
-			- Added httpContextExntesion.GetJwtClaimValues()
-			- Added prompts and skill for adding Microsoft authentication
-			- Updated Facebook authentication implementation
-			- Updated Microsoft authentication implementation
-			- Removed script for copying skills
-			- Fixed login-refresh claim trust and added transient external-login refresh support.
+			- Updated NuGets
+			- Updated skills, prompts and AGENTS.md
+			- Fix transient auth endpoint detection to match generic BaseAuthController{T}
+			- Added discard of external provider refresh token when login is not refreshable
+			- Changed Google from implicit flow to auth-code flow
+			- Fixed incorrect cast to string for RegisterEventingHandlersTask overridePrefetchCount
 		</PackageReleaseNotes>
 		<RepositoryType>git</RepositoryType>
 	    <RepositoryBranch>master</RepositoryBranch>

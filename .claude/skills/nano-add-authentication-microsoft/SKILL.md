@@ -51,9 +51,9 @@ convention for those the way this skill does for Microsoft.
    | Any org + personal Microsoft accounts | `AzureADandPersonalMicrosoftAccount` | literal `common` |
    | Personal Microsoft accounts only | `PersonalMicrosoftAccount` | literal `consumers` |
 
-   Default to `AzureADMyOrg` if the user has no specific need — it's the least-privilege choice and
-   what `Nano.Lessons/Api.Auth.External.Microsoft` and `Nano.Templates/Api.Admin` both use. Whatever
-   is chosen, remind the user that the client-side code that starts the sign-in (MSAL.js or
+   Default to `AzureADMyOrg` if the user has no specific need — it's the least-privilege choice for
+   internal, single-tenant auth. Whatever is chosen, remind the user that the client-side code that
+   starts the sign-in (MSAL.js or
    equivalent) must be configured with the matching authority, or Azure rejects the sign-in before a
    code is ever issued — that part lives outside Nano and this skill can't set it.
 
@@ -67,20 +67,35 @@ Base `appsettings.json`, nested under the existing `Jwt` block:
     "TenantId": null,
     "ClientId": null,
     "ClientSecret": null,
-    "Scopes": [ "openid", "profile", "email" ]
+    "Scopes": [ "openid", "profile", "email", "offline_access" ]
   }
 }
 ```
 
-`appsettings.Development.json` — same shape, still `null`. **Do not hardcode real values here**,
-unlike the shared JWT Development key pair — a Microsoft app registration is tied to a real Azure
-tenant, not a throwaway pair everyone in the codebase can share. The developer fills these in
-locally themselves, after creating their own Entra ID app registration (Azure Portal → Microsoft
-Entra ID → App registrations → New registration → choose the sign-in audience decided above → Web
-redirect URI matching whatever client will call this → Certificates & secrets → new client secret,
-copied immediately since it's shown once → note the Application (client) ID). No Graph API
-permission is needed beyond the default — `openid`/`profile`/`email` only affect what lands in the
-`id_token`, not access to any resource.
+`offline_access` is included by default since most apps want refresh support, and leaving it in
+place is safe even for logins that don't use it: `LogInExternal`/`LogInExternal<TFlow>`'s
+`IsRefreshable` flag is the real, per-login-call gate — Nano discards the external refresh token
+server-side whenever a specific login request sets `IsRefreshable: false`, regardless of what
+`Scopes` requested. Remove `offline_access` from `Scopes` only if this app should never support
+refresh at all.
+
+The client-side authorize request's own `scope` parameter must match — include `offline_access`
+there too, unconditionally, the same as here; consent is granted once, at that initial redirect, so
+this app's own config alone can't retroactively grant it.
+
+**`ExternalLogins.Microsoft` belongs in the base file only.** Unlike the shared JWT Development key
+pair (a throwaway value every developer can share, so it's worth hardcoding into the tracked
+Development file), a Microsoft app registration's `TenantId`/`ClientId`/`ClientSecret` are tied to
+whatever Entra ID app registration each individual developer creates for themselves — there's
+nothing shared to pre-seed. A developer who's created their own Entra ID app registration (Azure
+Portal → Microsoft Entra ID → App
+registrations → New registration → choose the sign-in audience decided above → Web redirect URI
+matching whatever client will call this → Certificates & secrets → new client secret, copied
+immediately since it's shown once → note the Application (client) ID) adds their own real values to
+their own local `appsettings.Development.json` at that point, overriding just the fields they have
+values for — not something this skill pre-creates. No Graph API permission is needed beyond the
+default — `openid`/`profile`/`email`/`offline_access` only affect what lands in the `id_token` and
+whether a `refresh_token` is issued alongside it, not access to any resource.
 
 For `TenantId`, use the table above: the real Directory (tenant) ID from the app registration only
 if it's `AzureADMyOrg`; otherwise the literal `organizations`/`common`/`consumers` string, which is
@@ -237,20 +252,6 @@ Apply it in the `Kubernetes Deploy` step alongside `auth-jwt-secret.yaml`, befor
       key: client-secret
 ```
 
-## Reference implementation
-
-`Nano.Lessons/Api.Auth.External.Microsoft` is this exact setup end-to-end (transient login, no
-Identity) — its `.github/workflows/build-and-deploy.yml`, `.kubernetes/auth-microsoft-secret.yaml`,
-and `.kubernetes/deployment.yaml` are the working, tested version of everything above. When in
-doubt about exact formatting or step ordering, diff against that lesson rather than guessing.
-
-One difference: the lesson (and `Nano.Templates/Api.Admin`) hardcode `AzureADMyOrg` directly rather
-than reading `$env:AUTH_MICROSOFT_SIGN_IN_AUDIENCE`, and their Kubernetes secret still reads
-`%AZURE_TENANT_ID%` rather than `%AUTH_MICROSOFT_TENANT_ID%` — both are intentionally left as the
-simpler, single-tenant-only version, since neither needs broader sign-in. Don't "fix" them to match
-this skill unless asked; treat this skill's parameterized version as what to scaffold for a *new*
-app whose audience was actually asked about in step 5.
-
 ## After making the change
 
 - Show the user every file touched, grouped by concern: appsettings per environment, and — if
@@ -264,3 +265,27 @@ app whose audience was actually asked about in step 5.
 - If they also want Facebook or Google, say plainly that this skill doesn't cover those — configure
   `Jwt.ExternalLogins.Facebook`/`.Google` by hand per AGENTS.md, and ask how they want the secret
   stored for Staging/Production rather than assuming this skill's Microsoft-specific pattern applies.
+- Restate that `offline_access` was included in `Scopes` by default, and that the client-side
+  authorize request's own `scope` parameter must include it too for Microsoft to actually issue a
+  `refresh_token` — don't let confirming the config change alone read as the whole fix.
+- **Always include the frontend half in your reply, even though this skill only touches the
+  backend.** The config change alone isn't enough to sign anyone in — the frontend has to redirect
+  the user through Microsoft's own sign-in first. Per AGENTS.md's `#### Authentication` section
+  (the same authorize-URL shape and PKCE explanation, don't re-derive it), give the user the
+  authorize URL with this app's actual `TenantId`/`ClientId`/`RedirectUri` filled in (not left as
+  placeholders, once known):
+  ```
+  https://login.microsoftonline.com/{TenantId}/oauth2/v2.0/authorize
+    ?client_id={ClientId}
+    &response_type=code
+    &redirect_uri={RedirectUri}
+    &response_mode=query
+    &scope=openid profile email offline_access
+    &code_challenge={code_challenge}
+    &code_challenge_method=S256
+    &state={state}
+  ```
+  plus a short explanation that `code_challenge` isn't something to fill in from this app's own
+  config — it's a PKCE value the frontend itself must generate a `code_verifier` for, hash
+  (SHA-256, base64url-encoded) into `code_challenge` for this URL, and then send the raw
+  `code_verifier` back to the login endpoint alongside the `code` Microsoft returns.

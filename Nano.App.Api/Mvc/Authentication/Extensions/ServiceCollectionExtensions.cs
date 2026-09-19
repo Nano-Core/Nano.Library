@@ -214,10 +214,19 @@ internal static class ServiceCollectionExtensions
         }
 
         services
+            .AddHttpClient<AuthExternalGoogleRepository>();
+
+        services
             .AddScoped<IAuthExternalRepository, AuthExternalGoogleRepository>(x =>
             {
                 var apiOptions = x
                     .GetRequiredService<IOptionsMonitor<ApiOptions>>();
+
+                var httpClientFactory = x
+                    .GetRequiredService<IHttpClientFactory>();
+
+                var httpClient = httpClientFactory
+                    .CreateClient(nameof(AuthExternalGoogleRepository));
 
                 var googleOptions = apiOptions.CurrentValue.Authentication.Jwt?.ExternalLogins.Google;
 
@@ -226,7 +235,7 @@ internal static class ServiceCollectionExtensions
                     throw new NullReferenceException(nameof(apiOptions.CurrentValue.Authentication.Jwt.ExternalLogins.Google));
                 }
 
-                return new AuthExternalGoogleRepository(googleOptions);
+                return new AuthExternalGoogleRepository(googleOptions, httpClient);
             });
 
         return services;

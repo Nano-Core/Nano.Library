@@ -7,14 +7,14 @@
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.12" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="10.0.12" />
 		<PackageReference Include="OpenTelemetry.Exporter.Prometheus.AspNetCore" Version="1.17.0-beta.1" />
-		<PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.18.0" />
+		<PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.19.0" />
 		<PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.18.0" />
 		<PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.18.0" />
 		<PackageReference Include="OpenTelemetry.Instrumentation.Runtime" Version="1.18.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.3" />
 		<PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="10.2.3" />
 		<PackageReference Include="Swashbuckle.AspNetCore.Newtonsoft" Version="10.2.3" />
-		<PackageReference Include="Vivet.AspNetCore.RequestVirusScan" Version="10.0.6" />
+		<PackageReference Include="Vivet.AspNetCore.RequestVirusScan" Version="10.0.7" />
 
 	</ItemGroup>
 

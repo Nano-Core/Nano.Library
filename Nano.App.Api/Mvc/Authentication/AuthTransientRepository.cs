@@ -76,6 +76,11 @@ public class AuthTransientRepository(IAuthJwtRepository authJwtRepository, IAuth
         var authenticationData = await this.authExternalRepository
             .AuthenticateAsync(providerName, logInExternal.Flow, cancellationToken);
 
+        if (!logInExternal.IsRefreshable)
+        {
+            authenticationData.ExternalToken.RefreshToken = null;
+        }
+
         var claims = logInExternal.TransientClaims
             .Merge(authenticationData.TransientClaims);
 

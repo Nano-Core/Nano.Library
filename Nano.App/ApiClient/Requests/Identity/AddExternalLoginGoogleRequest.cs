@@ -6,5 +6,5 @@ namespace Nano.App.ApiClient.Requests.Identity;
 /// <summary>
 /// Class for add external login Google request.
 /// </summary>
-public class AddExternalLoginGoogleRequest<TIdentity>() : AddExternalLoginImplicitRequest<TIdentity>(BuiltInExternalLogInProviderNames.GOOGLE)
+public class AddExternalLoginGoogleRequest<TIdentity>() : AddExternalLoginAuthCodeRequest<TIdentity>(BuiltInExternalLogInProviderNames.GOOGLE)
     where TIdentity : IEquatable<TIdentity>;

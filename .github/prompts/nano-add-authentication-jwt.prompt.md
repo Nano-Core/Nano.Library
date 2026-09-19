@@ -3,7 +3,6 @@ mode: agent
 description: Configure Nano's built-in JWT authentication (App:Authentication:Jwt) on a Nano.Library-based API/Web application - adds the Jwt configuration, the AuthController, the Development key setup, and (for the token-issuing app) the Staging/Production key-generation and Kubernetes secret. Use when the user asks to add login, sign-in, or JWT authentication to a Nano API or Web application - not for adding a user store by itself (that's nano-add-identity) or for API-key authentication by itself (that's nano-add-authentication-apikey, which works standalone without any of this).
 ---
 
-
 # Nano add JWT authentication
 
 Configures Nano's built-in JWT authentication on an existing Nano API/Web application. Read
@@ -37,17 +36,17 @@ repository backs a given external login in that case - not repeated here.
 ## Before making any change, determine
 
 1. **Does this app issue tokens, or only validate them?** Ask if the request doesn't say.
-  - **Issuer**: needs both `PublicKey` and `PrivateKey` in Staging/Production, and creates the
+   - **Issuer**: needs both `PublicKey` and `PrivateKey` in Staging/Production, and creates the
      `auth-jwt-secret` Kubernetes secret from real GitHub secrets.
-  - **Validator-only**: needs only `PublicKey` in Staging/Production, and must **not** create or
+   - **Validator-only**: needs only `PublicKey` in Staging/Production, and must **not** create or
      re-apply the secret - it references the one the issuer app already created. See the
      Kubernetes section below; getting this backwards silently corrupts the shared secret with
      unexpanded placeholder values - a real bug found and fixed this way in this codebase, so
      don't repeat it.
-  - This distinction **does not apply to Development** - see below.
+   - This distinction **does not apply to Development** - see below.
 2. **Persistent or transient auth?** Check whether [Identity](nano-add-identity) (`Data:Identity`)
    is already configured.
-  - **Persistent** (Identity present): `AuthIdentityRepository` auto-populates and backs
+   - **Persistent** (Identity present): `AuthIdentityRepository` auto-populates and backs
      `/auth/login`, `/auth/login/refresh`, `/auth/logout` - nothing further to wire beyond the
      `Jwt` config and controller below. **This combination (persistent auth + `AuthController`)
      is an internal-service-only pattern** - per AGENTS.md's [Controllers § Public API vs
@@ -56,14 +55,14 @@ repository backs a given external login in that case - not repeated here.
      be a Public API, stop: it shouldn't have Identity here at all - see `nano-add-identity`'s own
      warning on this, and point the user at composing through the owning internal service's Api
      Client instead.
-  - **Transient** (no Identity): needs `Jwt.ExternalLogins` configured (built-in Facebook/
+   - **Transient** (no Identity): needs `Jwt.ExternalLogins` configured (built-in Facebook/
      Google/Microsoft, or a custom provider - see "External Login" below) - ask which, and
      whether a custom provider implementation is needed, before proceeding. **Also ask whether
      this app needs to assert its own server-computed claims/roles on top of the external login**
      (e.g. an `IsAdmin` flag) - if so, see the "AuthController" section's warning below before
      scaffolding a generic `AuthController`; adding one unconditionally here can open a
      caller-controlled claim-injection endpoint.
-  - If the user wants persistent auth but Identity isn't registered yet, stop and point them at
+   - If the user wants persistent auth but Identity isn't registered yet, stop and point them at
      `nano-add-identity` first.
 3. **Is Authentication already configured?** Check the base `appsettings.json` for
    `App:Authentication:Jwt`, or an existing `AuthController`. If present, say so before changing
@@ -80,10 +79,10 @@ repository backs a given external login in that case - not repeated here.
    `IAuthRepository` without `Jwt` configured, so it genuinely didn't exist yet). Adding `Jwt` now
    changes two things **automatically, from config alone** - nothing extra to build, but tell the
    user about both:
-  - Nano's scheme selection (`AddNanoAuthentication`, based on whether `Jwt`/`ApiKeyOptions` are
+   - Nano's scheme selection (`AddNanoAuthentication`, based on whether `Jwt`/`ApiKeyOptions` are
      each present) switches from API-key-only to `JWT_OR_APIKEY` - existing API-key callers keep
      working unchanged, requests carrying a JWT `Authorization` header now also work.
-  - The `AuthController` this skill adds will immediately expose `/auth/login/apikey` (its
+   - The `AuthController` this skill adds will immediately expose `/auth/login/apikey` (its
      visibility is gated purely on `Data:Identity:ApiKey:Secret` being set, per
      `ConditionalActionsConvention`) - callers can now trade an API key for a JWT once instead of
      presenting the key on every request.
@@ -208,12 +207,26 @@ value only where it's actually safe to have one.
 
 - **Microsoft has its own skill, `nano-add-authentication-microsoft`** - it's the one built-in
   provider whose credentials can be scripted (an Entra ID app registration via the Azure CLI), so
-  it has an established, self-rotating Kubernetes-secret/GitHub-Actions convention (see
-  `Nano.Lessons/Api.Auth.External.Microsoft`). If the request names Microsoft specifically, use
-  that skill instead of configuring `Jwt.ExternalLogins.Microsoft` by hand here.
+  it has an established, self-rotating Kubernetes-secret/GitHub-Actions convention. If the request
+  names Microsoft specifically, use that skill instead of configuring `Jwt.ExternalLogins.Microsoft`
+  by hand here.
 - **Facebook/Google have no such convention.** Their credentials are created by hand through each
   provider's own developer console - don't invent a Kubernetes/GitHub-secret pattern for them; ask
   the user how they want it stored for Staging/Production rather than assuming one exists.
+- **Facebook logins can never be refreshed - don't offer an `offline_access`-style option for it.**
+  `AuthExternalFacebookRepository.AuthenticateRefreshAsync` unconditionally throws, regardless of
+  config, yet `.../transient/refresh` is still auto-mapped for every registered provider and will
+  always 401 for Facebook. If the user asks for refresh support on a Facebook login, say plainly
+  that it isn't possible with the built-in provider rather than looking for a config option that
+  doesn't exist. Google and Microsoft, by contrast, are both refreshable - see AGENTS.md's
+  `#### Authentication` table.
+- **`Facebook.Scopes`/`Google.Scopes` are frontend-only - setting them here does nothing server-side.**
+  Neither repository reads `options.Scopes` at all; scope negotiation happens in the client-side SDK
+  (Facebook) or the frontend's own authorize-URL redirect (Google) before Nano ever sees the
+  request. Still add them to config for documentation purposes if the user gives specific scopes,
+  but don't imply this app's config is what actually requests them - for Google specifically,
+  refresh support also needs the frontend's authorize request to include `access_type=offline`/
+  `prompt=consent`, which has nothing to do with this `Scopes` entry either.
 
 **Custom provider - real code, no config entry.** Per AGENTS.md's `##### Custom external provider`,
 this is auto-discovered by type, not registered via `Jwt.ExternalLogins` config the way built-in
