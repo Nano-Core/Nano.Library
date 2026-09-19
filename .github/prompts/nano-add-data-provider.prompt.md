@@ -271,15 +271,12 @@ Provisioning that server is out of this skill's scope.
    AZURE_GROUP_DATABASE: ${{ vars.AZURE_RESOURCE_GROUP_DATABASE }}
    DOTNET_EF_TOOLS_VERSION: "10.0"
    ```
-   ⚠ No `SQL_TYPE` variable, and no `if:` guard on the migration step below. A `SQL_TYPE`-style
-   runtime switch only earns its keep when an app genuinely needs to pick its provider at deploy
-   time - that's not this skill's job; the app has exactly one data provider, chosen once, here.
-   Add only the one migration step matching that provider, unconditionally. Don't add the other
-   two providers' steps as dormant `if:`-guarded alternatives - unreachable steps (and the
-   `AZURE_GROUP_LOGS` env var the SQL Server one alone needs) are clutter to maintain, not
-   documentation, and a workflow file is not the place to leave every road not taken. If this is
-   *replacing* an existing provider, remove that provider's migration step (and any env vars only
-   it needed) rather than leaving it disabled alongside the new one.
+   ⚠ Add only the one migration step matching the chosen provider, unconditionally - no `SQL_TYPE`
+   variable or `if:` guard needed. Don't add the other two providers' steps as dormant
+   alternatives - unreachable steps (and the `AZURE_GROUP_LOGS` env var the SQL Server one alone
+   needs) are clutter to maintain, not documentation. If this is *replacing* an existing provider,
+   remove that provider's migration step (and any env vars only it needed) rather than leaving it
+   disabled alongside the new one.
 2. **Migration step** - add the one step below matching the chosen provider, placed after
    `Managed Identity` and before `Kubernetes Deploy` in the workflow. It resolves the Azure
    server, runs `dotnet ef database update` using an elevated/admin credential, then grants the

@@ -353,10 +353,10 @@ only in the two cases where inference can't land correctly:
   a bespoke DTO/POCO rather than the entity itself, or because the action lives on a *different*
   controller than the one the response type's name would imply.
 
-In this solution specifically, most custom requests so far have hit the second case (see
-`GetTenantDomainRequest`: its response is the `TenantDomain` entity, but the action lives on
-`TenantsController`, not a dedicated `TenantDomainsController`) — check this deliberately rather
-than assuming inference works.
+Check this deliberately rather than assuming inference works — e.g. a request whose `TResponse`
+is `MyFile` but whose action actually lives on `MyEntitiesController` (a file attached to an
+entity, not a controller of its own) needs `this.Controller = "MyEntities";` set explicitly, the
+same shape as the example above.
 
 **Define the route segment as a constant** in a `Consts` class inside `{ThisApp}.Models` and
 reference it from both this request's action attribute and the controller action's `[Route(...)]`

@@ -104,9 +104,14 @@ provider) — there's nothing to run, just a directory.
   isolated from the others — a file written via one replica isn't visible from another. If the
   app instead needs one *shared* volume across replicas, that's what `Azure` storage is for,
   below — its file-share CSI mount supports concurrent multi-pod access.)
-- **`.kubernetes/deployment.yaml`**: change `kind: Deployment` → `kind: StatefulSet`, and add
-  `serviceName: %SERVICE_NAME%-stateful-headless` alongside `replicas`/`selector` (a `StatefulSet` field,
-  required — see the headless service below). Mount the volume, plus the standard `tmp`
+- **Replace `.kubernetes/deployment.yaml` with a new `.kubernetes/stateful-set.yaml`** — per
+  AGENTS.md's Solution Structure table, the two are mutually exclusive, and `stateful-set.yaml`
+  replaces `deployment.yaml` entirely rather than the two coexisting. Delete `deployment.yaml`,
+  create `stateful-set.yaml` with the same content plus `kind: StatefulSet` (not `Deployment`) and
+  `serviceName: %SERVICE_NAME%-stateful-headless` alongside `replicas`/`selector` (a `StatefulSet`
+  field, required — see the headless service below); update the `.sln`'s `.kubernetes`
+  `SolutionItems` block to reference the new filename instead of the old one. Mount the volume,
+  plus the standard `tmp`
   `emptyDir` volume that backs `IPathProvider`'s temporary directory (AGENTS.md: registering a
   provider "also registers `IPathProvider` ... exposing the storage root and a temporary (`tmp`)
   directory") — include `tmp` for **both** providers, it's provider-agnostic:
@@ -160,7 +165,8 @@ provider) — there's nothing to run, just a directory.
   `Gi`) and `STORAGE_SHARE_NAME` env vars, and apply
   `storage-storageclass.yaml` (still needed — referenced by name from `volumeClaimTemplates`)
   and `service-headless.yaml` (same `Get-Content | ExpandEnvironmentVariables | kubectl apply`
-  pattern as every other manifest) in `Kubernetes Deploy`, before `deployment.yaml`. There's no
+  pattern as every other manifest) in `Kubernetes Deploy`, before `stateful-set.yaml` (which
+  replaces the `deployment.yaml` apply line, per the rename above). There's no
   separate PVC file to apply — `volumeClaimTemplates` creates one per pod automatically as the
   `StatefulSet` itself is applied. Also add `.kubernetes\storage-storageclass.yaml =
   .kubernetes\storage-storageclass.yaml` and `.kubernetes\service-headless.yaml =

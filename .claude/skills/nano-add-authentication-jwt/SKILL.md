@@ -213,17 +213,20 @@ value only where it's actually safe to have one.
 - **Facebook/Google have no such convention.** Their credentials are created by hand through each
   provider's own developer console — don't invent a Kubernetes/GitHub-secret pattern for them; ask
   the user how they want it stored for Staging/Production rather than assuming one exists.
-- **Facebook/Google logins can never be refreshed — don't offer an `offline_access`-style option
-  for either.** Both providers' `AuthenticateRefreshAsync` unconditionally throws, regardless of
+- **Facebook logins can never be refreshed — don't offer an `offline_access`-style option for it.**
+  `AuthExternalFacebookRepository.AuthenticateRefreshAsync` unconditionally throws, regardless of
   config, yet `.../transient/refresh` is still auto-mapped for every registered provider and will
-  always 401 for these two. If the user asks for refresh support on a Facebook/Google login, say
-  plainly that it isn't possible with the built-in providers rather than looking for a config
-  option that doesn't exist — see AGENTS.md's own warning on this.
+  always 401 for Facebook. If the user asks for refresh support on a Facebook login, say plainly
+  that it isn't possible with the built-in provider rather than looking for a config option that
+  doesn't exist. Google and Microsoft, by contrast, are both refreshable — see AGENTS.md's
+  `#### Authentication` table.
 - **`Facebook.Scopes`/`Google.Scopes` are frontend-only — setting them here does nothing server-side.**
   Neither repository reads `options.Scopes` at all; scope negotiation happens in the client-side SDK
-  before Nano ever sees the request. Still add them to config for documentation purposes if the user
-  gives specific scopes, but don't imply this app's config is what actually requests them from
-  Facebook/Google — only Microsoft's `AuthCodeFlow` does that server-side.
+  (Facebook) or the frontend's own authorize-URL redirect (Google) before Nano ever sees the
+  request. Still add them to config for documentation purposes if the user gives specific scopes,
+  but don't imply this app's config is what actually requests them — for Google specifically,
+  refresh support also needs the frontend's authorize request to include `access_type=offline`/
+  `prompt=consent`, which has nothing to do with this `Scopes` entry either.
 
 **Custom provider — real code, no config entry.** Per AGENTS.md's `##### Custom external provider`,
 this is auto-discovered by type, not registered via `Jwt.ExternalLogins` config the way built-in
