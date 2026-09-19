@@ -136,6 +136,11 @@ public abstract class BaseAuthIdentityRepository<TIdentity> : IAuthIdentityRepos
         var authenticationData = await this.authExternalRepository
             .AuthenticateAsync(providerName, logInExternalFlow.Flow, cancellationToken);
 
+        if (!logInExternalFlow.IsRefreshable)
+        {
+            authenticationData.ExternalToken.RefreshToken = null;
+        }
+
         var claims = logInExternalFlow.TransientClaims
             .Merge(authenticationData.TransientClaims);
 
