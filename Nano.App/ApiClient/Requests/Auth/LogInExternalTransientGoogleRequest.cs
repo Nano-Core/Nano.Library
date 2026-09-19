@@ -5,4 +5,4 @@ namespace Nano.App.ApiClient.Requests.Auth;
 /// <summary>
 /// Class for Google transient external login requests.
 /// </summary>
-public class LogInExternalTransientGoogleRequest() : LogInExternalTransientImplicitRequest(BuiltInExternalLogInProviderNames.GOOGLE);
+public class LogInExternalTransientGoogleRequest() : LogInExternalTransientAuthCodeRequest(BuiltInExternalLogInProviderNames.GOOGLE);

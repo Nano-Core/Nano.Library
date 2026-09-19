@@ -5,4 +5,4 @@ namespace Nano.App.ApiClient.Requests.Auth;
 /// <summary>
 /// Class for Google external login requests.
 /// </summary>
-public class LogInExternalGoogleRequest() : LogInExternalImplicitRequest(BuiltInExternalLogInProviderNames.GOOGLE);
+public class LogInExternalGoogleRequest() : LogInExternalAuthCodeRequest(BuiltInExternalLogInProviderNames.GOOGLE);

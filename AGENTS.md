@@ -46,6 +46,7 @@ inside `{name}/`.
 | `{name}.Models/Data/`                                       | ✓   | ✓   | ✗   | Entity models (conventional location).                                                                                      |
 | `{name}.Models/Criterias/`                                  | ✓   | ✓   | ✗   | Query criteria classes (conventional location).                                                                             |
 | `{name}.Models/Api/`                                        | ✓   | ✓   | ✗   | API client + `Requests/` (conventional location, for apps exposing a typed client to consumers).                            |
+| `{name}.Events/{name}.Events.csproj`                        | (✓) | (✓) | (✓) | Sibling project holding Publish/Subscribe event contract classes _(optional — only when this app has a **shared** event, one another application in a different solution needs to publish or subscribe to; see [Nano.Eventing § Publish and Subscribe](#publish-and-subscribe)). Publishable as its own NuGet, same as `{name}.Models`. A **local** event (used only within this solution) stays a plain class in `{name}/Eventing/` instead — no separate project needed._ |
 | `.tests/Tests.{name}/Tests.{name}.csproj`                   | ✓   | ✓   | ✓   | Test project — empty by default, demonstrates where unit/integration tests belong.                                          |
 | `.tests/Tests.{name}/Properties/DoNotParallelize.cs`        | ✓   | ✓   | ✓   | Ensures tests are not parallelized.                                                                                          |
 | `.docker/docker-compose.dcproj`                             | ✓   | ✓   | ✓   | Docker Compose project used by Visual Studio for local orchestration.                                                       |
@@ -81,7 +82,7 @@ line to that block, or it exists on disk but never shows up in the solution.
 **NuGet packages**: for a quick start, add `NanoCore` (all-inclusive; `Nano.All` is the identical, differently-named
 package underneath it — either one works the same way) to `{name}.Models` only — since `{name}` references
 `{name}.Models` via `ProjectReference`, every Nano package flows into the app project transitively, so no Nano
-package reference is needed there directly. This is what Nano.Templates itself does. Once you know which providers
+package reference is needed there directly. Once you know which providers
 you're actually using, switch to referencing only the specific packages you need — smaller dependency footprint,
 and it makes provider choices explicit in the `.csproj` rather than implicit via a meta-package:
 - `Nano.App` goes on `{name}.Models` — it's the only Nano package that project needs (entity/query-criteria base
@@ -1563,14 +1564,83 @@ what the client sends:
 | Provider    | Flow          | Client sends                              | Credentials come from                                                                    |
 | ----------- | ------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------ |
 | `Facebook`  | `ImplicitFlow`  | `AccessToken` — the user access token from Facebook's client-side Login SDK, passed straight through and validated server-side via the Graph API's `debug_token` endpoint. | Meta for Developers app (developers.facebook.com), `AppId`/`AppSecret`. |
-| `Google`    | `ImplicitFlow`  | `AccessToken` — despite the name, this must be the **ID token** (JWT) from Google Identity Services' client-side sign-in, not an OAuth access token; it's validated locally via `GoogleJsonWebSignature.ValidateAsync`. The older `gapi.auth2` library (retired by Google in 2023) issued real OAuth access tokens here, which will fail validation. | Google Cloud Console OAuth client (`ClientId`/`ClientSecret`).           |
-| `Microsoft` | `AuthCodeFlow`  | `Code`/`CodeVerifier`/`RedirectUri` — the server exchanges the authorization code for tokens itself (see `AuthExternalMicrosoftRepository`). `Scopes` must include `openid` (and should include `profile`/`email`) so the token response's `id_token` carries the `oid`/`name`/`email` claims Nano reads — the `access_token` is not used for identity, only as the stored `ExternalToken`. | A Microsoft Entra ID (Azure AD) app registration (`TenantId`/`ClientId`/`ClientSecret`). |
+| `Google`    | `AuthCodeFlow`  | `Code`/`CodeVerifier`/`RedirectUri` — the server exchanges the authorization code for tokens itself (see `AuthExternalGoogleRepository`), same shape as Microsoft. `Scopes` must include `openid` (and should include `profile`/`email`) so the token response's `id_token` carries the `sub`/`name`/`email` claims Nano reads via `GoogleJsonWebSignature.ValidateAsync` — the `access_token` is not used for identity, only as the stored `ExternalToken`. | Google Cloud Console OAuth client (`ClientId`/`ClientSecret`).           |
+| `Microsoft` | `AuthCodeFlow`  | `Code`/`CodeVerifier`/`RedirectUri` — the server exchanges the authorization code for tokens itself (see `AuthExternalMicrosoftRepository`). `Scopes` must include `openid` (and should include `profile`/`email`) so the token response's `id_token` carries the `oid`/`name`/`email` claims Nano reads — the `access_token` is not used for identity, only as the stored `ExternalToken`. Include `offline_access` by default — most apps want refresh support, and requesting it doesn't force any single login to use it (see `IsRefreshable` below) — but the same scope must also be requested in the client-side authorize request, since consent for it is granted once, at that initial redirect. | A Microsoft Entra ID (Azure AD) app registration (`TenantId`/`ClientId`/`ClientSecret`). |
+
+⚠ **`Scopes` is inert on the backend for Facebook — it's a frontend-only concern there.**
+`AuthExternalFacebookRepository` never reads `options.Scopes`; only `AppId`/`AppSecret` are used server-side. Scope
+negotiation happens entirely in the client-side SDK when it obtains the token, before Nano ever sees the request —
+Nano has no OAuth round-trip with Facebook at all, unlike Google's and Microsoft's `AuthCodeFlow`, both of which
+genuinely exchange the authorization code server-side. Setting `Facebook.Scopes` in config only documents what the
+frontend SDK should request; it has no runtime effect on this app.
+
+⚠ **Facebook logins can never be refreshed, by design — there's no `offline_access`-style opt-in.**
+`AuthExternalFacebookRepository.AuthenticateRefreshAsync` unconditionally throws `UnauthorizedException`, regardless
+of any config. Despite that, `RegisterTransientAuthEndpointsTask` still auto-maps
+`POST /auth/login/external/facebook/transient/refresh` the same as every other registered provider — the route
+exists, is visible in the API documentation, and will **always** return `401 Unauthorized` when called. This isn't a
+bug to work around; don't build a client flow that assumes Facebook's login is refreshable, and don't confuse a
+`401` from this specific route with an actual auth failure elsewhere.
+
+Google, unlike Microsoft, has no `Scopes` entry to opt into refresh — instead, the frontend's own authorize request
+must include `access_type=offline` (and typically `prompt=consent`, since Google otherwise only issues a
+`refresh_token` on a user's very first consent) as query parameters, not as a scope. Without both, `refresh_token`
+is silently absent from Google's token response (not an error), same failure mode as Microsoft's missing
+`offline_access`.
+
+`LogInExternal`/`LogInExternal<TFlow>`'s `IsRefreshable` flag is the real per-login-call gate for Google's and
+Microsoft's refresh capability — Nano discards the external refresh token server-side whenever a login request sets
+`IsRefreshable: false`, regardless of what the frontend requested. Setting it `true` against Facebook has no effect
+either way, since there's never a refresh token to discard or keep.
 
 Facebook and Google credentials are created by hand through each provider's own developer console — there's no
 CLI/API path worth scripting for either. Microsoft is the exception: an Entra ID app registration (and its client
 secret, which needs periodic rotation) can be fully scripted with the Azure CLI, so use the `nano-add-authentication-microsoft`
 skill for that provider instead of configuring it by hand — it wires up the app registration and a self-rotating
-client secret as a CI step, following the pattern in `Nano.Lessons/Api.Auth.External.Microsoft`.
+client secret as a CI step.
+
+**Microsoft's `AuthCodeFlow` requires the frontend to redirect the user through Microsoft's own sign-in first, using
+PKCE** — Nano's backend only ever sees the resulting authorization code, never the user's Microsoft credentials:
+
+```
+https://login.microsoftonline.com/{TenantId}/oauth2/v2.0/authorize
+  ?client_id={ClientId}
+  &response_type=code
+  &redirect_uri={RedirectUri}
+  &response_mode=query
+  &scope=openid profile email
+  &code_challenge={code_challenge}
+  &code_challenge_method=S256
+  &state={state}
+```
+
+`code_challenge` is not something to fill in from this app's own config — it's a PKCE value the frontend itself
+generates: a random `code_verifier`, hashed (SHA-256) and base64url-encoded into `code_challenge` for this URL.
+Microsoft redirects back to `redirect_uri` with `?code=...`, and the frontend then sends that `code` plus the
+original, un-hashed `code_verifier` to Nano's login endpoint — exactly `AuthCodeFlow`'s `Code`/`CodeVerifier`/
+`RedirectUri` — which is what lets Microsoft's own token endpoint confirm whoever redeems the code is the same
+client that started the flow. `state` is a separate, unguessable per-attempt value the frontend generates and
+verifies on return, as CSRF protection for the redirect itself — unrelated to PKCE and not part of any Nano
+request/response shape.
+
+**Google's `AuthCodeFlow` works the same way, through Google's own sign-in and PKCE** — same `Code`/`CodeVerifier`/
+`RedirectUri` shape, same `state` handling, just a different authorize endpoint and no `TenantId`:
+
+```
+https://accounts.google.com/o/oauth2/v2/auth
+  ?client_id={ClientId}
+  &response_type=code
+  &redirect_uri={RedirectUri}
+  &scope=openid profile email
+  &code_challenge={code_challenge}
+  &code_challenge_method=S256
+  &state={state}
+  &access_type=offline
+  &prompt=consent
+```
+
+`access_type=offline`/`prompt=consent` are only needed if this login should be refreshable — omit both if it
+shouldn't be, same as omitting Microsoft's `offline_access`.
 
 **Root login** is a statically-configured, transient JWT login — no identity store involved. Useful in
 `Development` when testing a service in isolation, or for console apps authenticating via the API client with no
@@ -1937,9 +2007,9 @@ groupBC.Equal(nameof(MyEntity.C), c, LogicalType.Or);
 return new[] { groupA, groupBC };   // A AND (B OR C)
 ```
 
-This is why every real criteria class in Nano.Templates/Nano.Lessons keeps to a single `CriteriaExpression` with
-only `And` (the default) — as soon as an `Or` is needed, the grouping above is what's actually required to get
-correct results, not just adding another `.Or(...)` call in the same chain.
+This is why most real-world criteria classes keep to a single `CriteriaExpression` with only `And` (the default) —
+as soon as an `Or` is needed, the grouping above is what's actually required to get correct results, not just
+adding another `.Or(...)` call in the same chain.
 
 ##### Nested and collection properties
 
@@ -3225,7 +3295,9 @@ public class MyEventHandler : BaseEventHandler<MyEvent>
 ```
 
 Optionally scope a handler to a specific routing key, and/or override the globally-configured prefetch count, by
-hiding the base interface's static members on your handler class:
+declaring these two static properties directly on your handler class, matching `IEventingHandler`'s member names
+exactly — the registration task looks them up by name via reflection on your concrete class, so declaring them is
+enough; there's no override or `new` keyword involved:
 
 ```csharp
 public class MyEventHandler : BaseEventHandler<MyEvent>

@@ -1680,13 +1680,13 @@ Console.Read();
 In Nano, all authentication features are accessed through a set of repository interfaces. The table below details each supported login type and its corresponding registered 
 interfaces, showing what is available for use in your application.
 
-| Login                  | Auth Type         | Config / Registration Required | Primary Interface            |
-| ---------------------- | ----------------- | ------------------------------ | ---------------------------- |
-| Root                   | JWT Transient     | Jwt, RootLogin                 | `IAuthRootRepository`        |
-| Credentials            | JWT Identity      | Jwt, Identity                  | `IAuthIdentityRepository`    |
-| External               | JWT Identity      | Jwt, ExternalLogins, Identity  | `IAuthIdentityRepository`    |
-| External Transient     | JWT Transient     | Jwt, ExternalLogins            | `IAuthTransientRepository`   |
-| Api Key                | Api Key Identity  | Identity, ApiKey               | -                            |
+| Login                  | Auth Type         | Config / Registration Required | Primary Interface              |
+| ---------------------- | ----------------- | ------------------------------ | ------------------------------ |
+| Root                   | JWT Transient     | Jwt, RootLogin                 | `IAuthRootRepository`          |
+| Credentials            | JWT Identity      | Jwt, Identity                  | `IAuthIdentityRepository`      |
+| External               | JWT Identity      | Jwt, ExternalLogins, Identity  | `IAuthIdentityRepository`      |
+| External Transient     | JWT Transient     | Jwt, ExternalLogins            | `IAuthTransientRepository`     |
+| Api Key                | Api Key Identity  | Identity, ApiKey               | (_`IAuthIdentityRepository`_)  |
 
 Nano supports a statically configured JWT login called `RootLogin`. It is primarily intended for use in `Development` environments when testing services in isolation, but where 
 the application still requires an authenticated user. Another common scenario is when console applications need to authenticate through the Nano API client but do not have 
@@ -1799,6 +1799,7 @@ Logging in using external authentication in Nano can be achieved either by confi
 For a built-in provider, the following configuration can be added.  
 
 **Facebook**
+Uses an implicit flow: the client-side SDK obtains the access token directly and sends it straight to Nano; there's no server-side token exchange, and logins can't be refreshed.
 
 | Setting                    | Type   | Default  | Description                         |
 | -------------------------- | ------ | -------- | ----------------------------------- |
@@ -1821,11 +1822,14 @@ For a built-in provider, the following configuration can be added.
 }
 ```
 
-`Scopes` must include `email` (`public_profile` is granted by default but listing it explicitly is harmless) so Nano can read the `id`/`name`/`email` fields it 
-requests from the Facebook Graph API; add `user_birthday` too if the `birthday` field is needed. The Facebook App Id/Secret must be created manually through 
-[Meta for Developers](https://developers.facebook.com) - there is no API/CLI path to script this the way there is for Microsoft (see below).  
+The `Scopes` must include `email` (`public_profile` is granted by default but listing it explicitly is harmless) so Nano can read the `id`, `name` and `email` fields it 
+requests from the Facebook Graph API; add `user_birthday` too if the `birthday` field is needed. 
+
+The Facebook App Id/Secret must be created manually through [Meta for Developers](https://developers.facebook.com).  
 
 **Google**
+Uses an auth code flow: the frontend redirects the user through Google's sign-in with PKCE, and Nano exchanges the resulting code for tokens itself server-side. 
+Refreshable if the frontend requests it.
 
 | Setting                    | Type   | Default  | Description                         |
 | -------------------------- | ------ | -------- | ----------------------------------- |
@@ -1848,11 +1852,29 @@ requests from the Facebook Graph API; add `user_birthday` too if the `birthday` 
 }
 ```
 
-`Scopes` must include `openid` (and should include `profile`/`email`) - Nano validates the value passed in as a Google ID token and reads its `name`/`email` claims 
-from it. The Google Client Id/Secret must be created manually through the [Google Cloud Console](https://console.cloud.google.com)'s OAuth client setup - there is 
-no API/CLI path to script this the way there is for Microsoft (see below).  
+The `Scopes` must include `openid` (and should include `profile` and `email`). Nano exchanges the authorization code for tokens itself and reads the `name` and `email` claims 
+from the resulting `id_token`.
+
+Generate a PKCE `code_verifier` and `code_challenge` pair and a random `state` value, then redirect the user to the following URI to trigger Google's sign-in flow:
+
+```
+https://accounts.google.com/o/oauth2/v2/auth
+  ?client_id={ClientId}
+  &response_type=code
+  &redirect_uri={RedirectUri}
+  &scope=openid profile email
+  &code_challenge={code_challenge}
+  &code_challenge_method=S256
+  &state={state}
+```
+
+Then send the resulting `code` and the `code_verifier` used to derive `code_challenge` to the external login endpoint.
+
+The Google Client Id/Secret must be created manually through the [Google Cloud Console](https://console.cloud.google.com)'s OAuth client setup.
 
 **Microsoft**
+Uses an auth code flow: the frontend redirects the user through Microsoft's sign-in with PKCE, and Nano exchanges the resulting code for tokens itself server-side. 
+Refreshable if the frontend requests it.
 
 | Setting                    | Type   | Default  | Description                         |
 | -------------------------- | ------ | -------- | ----------------------------------- |
@@ -1870,20 +1892,37 @@ no API/CLI path to script this the way there is for Microsoft (see below).
             "TenantId": null,
             "ClientId": null,
             "ClientSecret": null,
-            "Scopes": [ "openid", "profile", "email" ]
+            "Scopes": [ "openid", "profile", "email", "offline_access" ]
         }
     }
   }
 }
 ```
 
-`Scopes` must include `openid` (and should include `profile`/`email`) - Nano reads the login's identity claims (`oid`/`name`/`email`) from the token response's `id_token`, 
-which is only returned when `openid` is requested.  
+The `Scopes` must include `openid` (and should include `profile` and `email`). Nano reads the login's identity claims `oid`, `name` and `email` from the token response's 
+`id_token`, which is only returned when `openid` is requested. Add `offline_access` as a fourth entry only if this login should be refreshable. Microsoft silently omits 
+`refresh_token` from the token response without it. The same scope must also be requested in the frontend's own sign-in redirect below, since consent for it is granted once, 
+at that initial step.
 
-Unlike Facebook/Google above, and unlike the JWT keys and `RootLogin` elsewhere on this page, Microsoft's Entra ID app registration can be created and rotated 
-entirely through the Azure CLI - so instead of a one-time manual setup stored as a static secret, its credentials are provisioned and rotated by the GitHub Actions 
-workflow itself, in a `Setup App Registration` step. `TenantId` is simply the workflow's own `AZURE_TENANT_ID` (no separate value needed), `ClientId` is looked up 
-fresh every run, and `ClientSecret` is reissued every run and never persisted as a GitHub secret.  
+Generate a PKCE `code_verifier`/`code_challenge` pair and a random `state` value, then redirect the user to the following URI to trigger Microsoft's sign-in flow:
+
+```
+https://login.microsoftonline.com/{TenantId}/oauth2/v2.0/authorize
+  ?client_id={ClientId}
+  &response_type=code
+  &redirect_uri={RedirectUri}
+  &response_mode=query
+  &scope=openid profile email offline_access
+  &code_challenge={code_challenge}
+  &code_challenge_method=S256
+  &state={state}
+```
+
+Then send the resulting `code` and the `code_verifier` used to derive `code_challenge` to the external login endpoint.
+
+Microsoft's Entra ID app registration credentials are provisioned and rotated by the GitHub Actions workflow itself, in a `Setup App Registration` step. The `TenantId` is simply 
+the workflow's own `AZURE_TENANT_ID` (no separate value needed), `ClientId` is looked up fresh every run, and `ClientSecret` is reissued every run and never persisted as a 
+GitHub secret.
 
 ```yaml
 env:
@@ -2327,17 +2366,17 @@ simply derive a concrete controller from one of these base classes. There is no 
 The following endpoints are available in the `BaseAuthController` for managing authentication. Nano only exposes endpoints that match the current configuration; any features that 
 are not configured will not be registered or available in the controller.  
 
-| Endpoint                                         | Method | Role      | Description                                                                                                                                                                          |
-| ------------------------------------------------ | ------ | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `/auth/login`                                    | POST   | Anonymous | Authenticates a user and returns an access token (JWT). Only exposed when Identity has been configured.                                                                              |
-| `/auth/login/root`                               | POST   | Anonymous | Authenticates the root user from configuration and returns an access token.                                                                                                          |
-| `/auth/login/apikey`                             | POST   | Anonymous | Authenticates the user using `X-Api-Key` header value and returns an access token. Only exposed when Identity ApiKeys has been configured.                                           |
-| `/auth/login/external/{providerName}`            | POST   | Anonymous | Signs in a user using external provider authentication. An endpoint is exposed for each registered external provider. Only exposed when Identity has been configured.                |
-| `/auth/login/external/{providerName}/transient`  | POST   | Anonymous | Signs in a transient user using external provider authentication. An endpoint is exposed for each registered external provider. Only exposed when Identity has not been configured.  |
-| `/auth/login/external/{providerName}/transient/refresh` | POST | Anonymous | Refreshes a transient external provider login. No request body - the token is read from the Authorization header. An endpoint is exposed for each registered external provider. Only exposed when Identity has not been configured. |
-| `/auth/login/refresh`                            | POST   | Anonymous | Refreshes an existing access token.                                                                                                                                                  |
-| `/auth/logout`                                   | POST   | Anonymous | Logs out the current user.                                                                                                                                                           |
-| `/auth/external/schemes`                         | GET    | Anonymous | Retrieves all configured external authentication methods (e.g., Google, Facebook). Only exposed when at least one external authentication provider has been registerd.               |
+| Endpoint                                                | Method | Role      | Description                                                                                                                                                                          |
+| ------------------------------------------------------- | ------ | --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `/auth/login`                                           | POST   | Anonymous | Authenticates a user and returns an access token (JWT). Only exposed when Identity has been configured.                                                                              |
+| `/auth/login/root`                                      | POST   | Anonymous | Authenticates the root user from configuration and returns an access token.                                                                                                          |
+| `/auth/login/apikey`                                    | POST   | Anonymous | Authenticates the user using `X-Api-Key` header value and returns an access token. Only exposed when Identity ApiKeys has been configured.                                           |
+| `/auth/login/external/{providerName}`                   | POST   | Anonymous | Signs in a user using external provider authentication. An endpoint is exposed for each registered external provider. Only exposed when Identity has been configured.                |
+| `/auth/login/external/{providerName}/transient`         | POST   | Anonymous | Signs in a transient user using external provider authentication. An endpoint is exposed for each registered external provider. Only exposed when Identity has not been configured.  |
+| `/auth/login/external/{providerName}/transient/refresh` | POST   | Anonymous | Refreshes a transient external login via the Authorization header. One endpoint per provider, only without Identity.                                                                 |
+| `/auth/login/refresh`                                   | POST   | Anonymous | Refreshes an existing access token.                                                                                                                                                  |
+| `/auth/logout`                                          | POST   | Anonymous | Logs out the current user.                                                                                                                                                           |
+| `/auth/external/schemes`                                | GET    | Anonymous | Retrieves all configured external authentication methods (e.g., Google, Facebook). Only exposed when at least one external authentication provider has been registerd.               |
 
 > 📖 Learn more about **[Authentication](#authentication)**.
 
