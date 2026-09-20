@@ -162,9 +162,10 @@ match the actual FK dependency chain (see step 7 above), not alphabetically.
 
 ## File output
 
-- One file per application: `<AppName>.json` (e.g. `Svc.Accounts.json`, `Api.Admin.json`) at the
-  **solution root** - never nested under a `.postman/` subfolder, never combined with another
-  app's folders into one file.
+- One file per application: `Postman_<AppName>.json` (e.g. `Postman_Svc.Accounts.json`,
+  `Postman_Api.Admin.json`), in that application's **own folder** (the same directory as its
+  `README.md`) - never at the solution root, never nested under a `.postman/` subfolder, never
+  combined with another app's folders into one file.
 - Collection `info.name` is the application name; top-level `item` entries are the app's own
   folders directly (Auth, then each entity in dependency order) - don't wrap them in an outer
   folder named after the app, since the collection itself already carries that name.
@@ -175,10 +176,10 @@ match the actual FK dependency chain (see step 7 above), not alphabetically.
 ## README
 
 Add a `## Testing with Postman` section to the application's `README.md`, pointing at
-`<AppName>.json` in the solution root, and listing the ordered request flow (matching the
-collection's own folder order) with a one-line note per step for anything non-obvious: which
-variable it sets, whether it's `AllowAnonymous`, whether it's Create-only/read-only and why, and
-any business-rule guard worth knowing about before calling it.
+`Postman_<AppName>.json` alongside it in the same folder, and listing the ordered request flow
+(matching the collection's own folder order) with a one-line note per step for anything
+non-obvious: which variable it sets, whether it's `AllowAnonymous`, whether it's Create-only/
+read-only and why, and any business-rule guard worth knowing about before calling it.
 
 ## After making the change
 
