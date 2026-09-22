@@ -51,6 +51,7 @@ inside `{name}/`.
 | `.tests/Tests.{name}/Properties/DoNotParallelize.cs`        | ✓   | ✓   | ✓   | Ensures tests are not parallelized.                                                                                          |
 | `.docker/docker-compose.dcproj`                             | ✓   | ✓   | ✓   | Docker Compose project used by Visual Studio for local orchestration.                                                       |
 | `.docker/docker-compose.yml`                                | ✓   | ✓   | ✓   | Docker Compose spec for local (`Development`) orchestration.                                                                |
+| `.docker/.env`                                              | ✓   | ✓   | ✓   | Local-only secrets file loaded into this app's own compose service via `env_file` — always present, even empty, and gitignored. See [Local Development (docker-compose)](#local-development-docker-compose). |
 | `.docker/publish-dependencies.ps1`                          | (✓) | (✓) | (✓) | Publishes every nested Api Client dependency to `bin/publish` locally _(only present once this app consumes at least one Api Client — see [Api Clients § Local Development](#local-development-docker-compose))_. |
 | `.kubernetes/configmap.yaml`                                | ✓   | ✓   | ✓   | Kubernetes ConfigMap.                                                                                                        |
 | `.kubernetes/autoscaler.yaml`                               | ✓   | ✓   | ✗   | Kubernetes Horizontal Pod Autoscaler.                                                                                        |
@@ -131,6 +132,10 @@ defaulting to `Development`.
 | `Development` | Local  | Local development machine.    |
 | `Staging`     | Cloud  | Cloud Kubernetes deployment.  |
 | `Production`  | Cloud  | Cloud Kubernetes deployment.  |
+
+This default is why a nested dependency's compose service block (see [Local Development (docker-compose)](#local-development-docker-compose))
+doesn't need `ASPNETCORE_ENVIRONMENT` set explicitly — with nothing set, Nano itself resolves to `Development`,
+the same as running locally any other way.
 
 ### Configuration
 
@@ -408,6 +413,8 @@ svc.mytarget:
       WORKDIR /app
       COPY ./bin/publish/. .
       ENTRYPOINT ["dotnet", "Svc.MyTarget.dll"]
+  env_file:
+    - ../../Svc.MyTarget/.docker/.env
   environment:
     ASPNETCORE_HTTP_PORTS: ""
   depends_on:               # only if the target actually has a Data/Eventing provider configured
@@ -422,6 +429,26 @@ compose file (one container each, not one per service) — add them only if not 
 dependency's `depends_on` to them if that dependency actually has a data/eventing provider configured (check its
 own `Program.cs`; a dependency with neither gets no `depends_on` at all, matching its own standalone
 `docker-compose.yml`).
+
+**Local-dev secrets (`.env`)**: `dotnet user-secrets`/`secrets.json` doesn't reach a Docker container — it reads
+from a host-machine path outside any build context. The one exception is Visual Studio's own Docker Compose
+debug launch, which auto-mounts the host's user-secrets folder, but only for the *primary* project being
+debugged — never for a dependency's own nested service block, which is always built from a published binary
+(see above), not through VS's debug tooling. So a nested dependency needs its secrets some other way.
+
+Every Nano app template ships with an empty `.docker/.env` alongside its `docker-compose.yml`, wired into that
+app's own compose service via `env_file: [.env]` — present from day one, even with nothing in it yet. That file
+is the single source of truth for that app's local-dev secrets (real external credentials — an emailing
+provider's API key, not fixed shared dev values like the RabbitMq/MySql credentials below, which stay in
+`appsettings.Development.json` as before). Name each key exactly as its `.NET` config path
+(`Emailing__ApiKey`, matching `Emailing:ApiKey`), so `env_file:` needs no separate mapping step.
+
+`nano-add-api-client-configuration` always adds the `env_file:` reference shown above when nesting a target,
+whether or not that target's `.env` currently has anything in it — since the file always exists, this means a
+secret added to the target later needs nothing done on the consuming app's side to pick it up. Note that
+`env_file:` loads every key in the referenced file into the container, with no way to select a subset — this is
+fine specifically because the file is scoped to one dependency, and any consumer already fully depends on that
+whole service anyway.
 
 **Publishing happens automatically on every build, incrementally.** The `.docker/docker-compose.dcproj` gets:
 

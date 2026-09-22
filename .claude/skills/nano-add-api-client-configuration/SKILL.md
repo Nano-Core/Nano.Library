@@ -151,7 +151,13 @@ Console app's own compose service has no `ports` of its own to worry about colli
 3. **Add the nested service block**, per AGENTS.md's template — `dockerfile_inline` copying from
    `./bin/publish/.`, a host port that doesn't collide with this app's own or any other nested
    service's port, and `depends_on` wired both onto this app's own primary service (add the new
-   `svc.*` key there) and, per step 2, onto `database`/`eventing` if applicable.
+   `svc.*` key there) and, per step 2, onto `database`/`eventing` if applicable. **Also add
+   `env_file: [../../{TargetName}/.docker/.env]`, unconditionally** — every Nano app template
+   ships with an empty `.docker/.env` alongside its `docker-compose.yml` (see AGENTS.md's Local
+   Development section), so the file always exists even if the target has no secrets yet today.
+   Wiring the reference now means a secret added to the target later needs nothing done on this
+   app's side to pick it up — don't skip this because the target doesn't currently have any
+   secrets in its `.env`.
 4. **Wire the publish step into `.docker/docker-compose.dcproj`**:
    - If `publish-dependencies.ps1` doesn't exist yet in `.docker/`, create it (per AGENTS.md's
      template) and add the `PublishDependentServices` MSBuild target with `Inputs`/`Outputs`
