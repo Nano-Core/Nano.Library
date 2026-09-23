@@ -57,9 +57,10 @@ it impossible to swap the Postman auth token between apps without stepping on an
    `Program.cs` for `.AddNanoIdentity(...)`.) If it's `null`, the plain username/password Login,
    Login Refresh, and Logout actions have no user store to authenticate against and won't work -
    the Auth folder is **Login Root only**. If Identity is configured, include the full Login/Login
-   Root/Login Refresh/Logout set, plus an External Login folder if `nano-add-authentication-jwt`'s
-   `ExternalLogins` (Microsoft/Google/Facebook) is configured - see that skill and
-   `nano-add-authentication-microsoft` for the PKCE/authorize-URL flow if Microsoft is present.
+   Root/Login Refresh/Logout set, plus a Login request per configured `ExternalLogins` provider
+   (Microsoft/Google/Facebook, from `App:Authentication:Jwt:ExternalLogins` - see
+   `nano-add-authentication-microsoft`) - see External login requests below for what each one's
+   `description` needs.
 5. **Root login credentials.** Read `appsettings.Development.json`'s `Jwt.RootLogin.Username`/
    `Password` **for this specific app** - never copy another app's credentials, they're
    per-app-configured and commonly differ.
@@ -160,6 +161,110 @@ bodies reference the earlier entity's `{{Entity.Id}}` for their FK fields, so th
 run top-to-bottom without manual value substitution - order the collection's top-level folders to
 match the actual FK dependency chain (see step 7 above), not alphabetically.
 
+## External login requests
+
+A `Login {Provider}` request's body only carries what the *backend* needs (`Code`/`CodeVerifier`/
+`RedirectUri` for Microsoft/Google, `AccessToken` for Facebook) - none of that can be produced by
+Postman itself, since it's the *frontend* that has to redirect a real browser through the
+provider's own sign-in first. Put the frontend's side of that exchange in the request's
+`description`, as the actual authorize-redirect URL (or SDK note for Facebook) with placeholders,
+so a tester doesn't have to go hunting for it elsewhere:
+
+- **Source the URL template from `Nano.App.Api` README's `#### Microsoft`/`#### Google` sections**
+  (under External Logins) - don't reproduce your own version of the query-string shape from
+  memory, that section is the one place PKCE parameters, scopes, and (for Google)
+  `access_type`/`prompt` are kept correct; copy the template from there so this collection can't
+  drift from it.
+- **Resolve `{ClientId}`/`{TenantId}` from this app's own config** (`appsettings.Development.json`'s
+  `App:Authentication:Jwt:ExternalLogins:{Provider}`) - these are real, per-app values, not
+  placeholders, so put the actual configured value in the URL.
+- **`redirect_uri` also doesn't need to be a real per-app frontend URL for a test collection - use
+  the same fixed local value every time**: `http://localhost/auth`. Put it directly in the
+  authorize URL in the description (in place of a `{redirect_uri}` placeholder), and set
+  `Auth.Microsoft.RedirectUri` (or the Google equivalent)'s **collection variable default** to this
+  same value, so `Login {Provider}`'s `RedirectUri` field already matches the URL in the
+  description out of the box. This value has nothing to do with the app's own hosting/CORS
+  config - Microsoft/Google only compare it byte-for-byte against what the app registration's
+  redirect URI allowlist contains, so `http://localhost/auth` only actually works end-to-end once
+  it's added to that allowlist too (`nano-add-authentication-microsoft`'s
+  `AUTH_MICROSOFT_REDIRECT_URI`/`--web-redirect-uris` is developer-supplied, not fixed by that
+  skill - add `http://localhost/auth` there, or add it as an extra entry alongside a real one, so
+  this collection's fixed value is actually registered and not just a placeholder that looks
+  real). Document that overriding it (with a real frontend callback URL, registered to match)
+  works too, same as `code_verifier`/`code_challenge` below.
+- **`state` and `code_challenge`/`code_verifier` don't need to be freshly random per attempt for a
+  test collection - use the same fixed values every time.** `state` is inert to everyone but the
+  frontend itself (nothing server-side ever checks it), so put the literal `12345` in the URL
+  instead of a `{state}` placeholder. `code_challenge` genuinely can't be an arbitrary placeholder -
+  Microsoft's token endpoint checks it against `SHA256(code_verifier)` when the code is redeemed -
+  but it also doesn't need to change between runs, so use this fixed, real, already-matching pair
+  in every collection this skill generates, rather than computing a new one each time:
+  - `code_verifier`: `Postman-DevTest-CodeVerifier-Fixed-Value-1234567890-ABCDEFGHIJK`
+  - `code_challenge` (its SHA-256, base64url, no padding): `d8u9K3bpfN5jJTaQxkiQ33ippLXy-OONYvhVMFumhNY`
+
+  Put the `code_challenge` value directly in the authorize URL in the description. Set
+  `Auth.Microsoft.CodeVerifier` (or the Google equivalent)'s **collection variable default** to the
+  `code_verifier` value above, so the paired `Login {Provider}` request already sends a verifier
+  that matches out of the box - the tester only has to fill in `Code`/`RedirectUri` from a real
+  redirect, not reconstruct a matching PKCE pair by hand. Still document that overriding the
+  variable (with a freshly generated pair, and a matching `code_challenge` in the URL) works too,
+  for anyone who wants a real per-attempt PKCE exchange instead of the fixed test pair.
+- **For Microsoft, `TenantId` is not always the literal `organizations`** - it depends on which
+  `--sign-in-audience` this specific app was set up with (check its own CI workflow's "Setup App
+  Registration" step, not another app's). Per the sign-in-audience table, `AzureADMyOrg` means
+  `TenantId` is the real tenant GUID (`AZURE_TENANT_ID`), `AzureADMultipleOrgs` means the literal
+  `organizations`, and so on - two apps in the same solution can genuinely use different audiences,
+  so don't carry a value over from one app's collection into another's without checking.
+- **Facebook has no authorize-redirect URL at all** (AGENTS.md's Authentication section - it's an
+  implicit flow, the client-side Login SDK obtains the access token directly). Don't fabricate one;
+  instead note in the description that the frontend uses the Facebook Login SDK to obtain an
+  `AccessToken` client-side and sends it straight through.
+
+## .Prerequisites folder
+
+Sometimes this app's own collection needs test data that only a *different* application can
+create - Api.Platform's Postman collection can't test anything before a real, finalized User
+exists, but Api.Platform itself has no signup of its own; a Public API's read-only reference data
+(Currencies, Product Categories) may have no Create endpoint in that app at all. When this
+happens, don't just note it in a description and leave the tester to go run a different
+collection by hand first - add a `.Prerequisites` folder (the leading dot sorts it first in
+Postman's sidebar, ahead of Auth) with the minimum requests needed to unblock this collection's
+own flow.
+
+- **Target the actual owning application directly, never a composing Public API.** A Public API
+  (Api.Admin, Api.Platform) has no data of its own - it's always some internal service
+  (`Svc.Accounts`, `Svc.Assets`, etc.) that actually owns the entity, per AGENTS.md's Public API vs
+  internal service section. Go straight there, using that service's own base URL scheme
+  (`http://{{host}}:{{port}}` - see Base URL scheme above), not through another Public API's
+  composed endpoint. This also means `.Prerequisites` only ever works against `Development` (the
+  same reason an internal service's own collection is Development-only) - say so in the folder's
+  `description`, even when the rest of this collection runs against all three environments.
+- **Create-only, not full management.** The point is unblocking this collection's own flow, not
+  duplicating the owning application's own collection - one (or a short chain of) Create request(s)
+  for exactly the entity/entities this collection can't create itself, nothing more. That owning
+  entity's real Read/Edit/Delete surface stays in its owning application's own collection, not
+  here.
+- **Reuse whatever auth the owning service actually offers for this** - its own Login Root if one
+  exists and its role-based authorization is enough for the generic Create actions involved (see
+  AGENTS.md's Authorization policy table), or an existing anonymous endpoint if the entity in
+  question genuinely has one (e.g. `signup`). Don't invent new backend capability just to make this
+  folder anonymous - if the owning service's real routes require an authenticated call to create
+  the prerequisite data, that's the truth to reflect, not something to route around.
+- **Wire the result into the variables this collection's own requests already expect.** If Auth /
+  Login expects `User.EmailAddress`/`User.Password`, the last `.Prerequisites` request's test
+  script should set exactly those - not a separately-namespaced variable the rest of the collection
+  never reads.
+- **Place it where its own FK dependencies are actually satisfied, not always at the top.** A
+  `.Prerequisites` folder with no dependency on anything else in this collection (bootstrapping the
+  very first User, e.g.) is the collection's first top-level folder, ahead of Auth. One that needs
+  an Id this collection's own earlier folders create (e.g. an Assets folder needs an Organization
+  that only exists in another service, but that Organization itself needs this collection's own
+  already-created `Tenant.Id`) can't run before that - nest a `.Prerequisites` folder *inside* the
+  specific folder that needs it instead, right before that folder's own requests, so it runs at the
+  point in the collection where its own inputs actually exist. Don't force every prerequisite into
+  one global first folder just for consistency if doing so would make it reference a variable
+  that isn't set yet.
+
 ## File output
 
 - One file per application: `Postman_<AppName>.json` (e.g. `Postman_Svc.Accounts.json`,
@@ -179,7 +284,9 @@ Add a `## Testing with Postman` section to the application's `README.md`, pointi
 `Postman_<AppName>.json` alongside it in the same folder, and listing the ordered request flow
 (matching the collection's own folder order) with a one-line note per step for anything
 non-obvious: which variable it sets, whether it's `AllowAnonymous`, whether it's Create-only/
-read-only and why, and any business-rule guard worth knowing about before calling it.
+read-only and why, and any business-rule guard worth knowing about before calling it. If a
+`.Prerequisites` folder exists, it's step one, with a short explanation of what it bootstraps, that
+it only applies to `Development`, and which variables it hands off to the rest of the flow.
 
 ## After making the change
 

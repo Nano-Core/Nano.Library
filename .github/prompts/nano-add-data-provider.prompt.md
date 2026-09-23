@@ -36,6 +36,14 @@ without breaking what's already there.
 5. **Entity identity type.** If entities already exist in the project, match their `TIdentity`
    (see the entity-scaffold skill's identity-type step) - the `DbContext`/`AddNanoData<...>`
    generic arguments must agree with it.
+6. **Database name.** Derive it from the application's own name, not the solution/repo name and
+   not a copy-pasted value from another app: strip any `Svc.`/`Api.`/`Web.` prefix, lowercase the
+   first letter of what's left, and append `Db` - e.g. `Svc.Accounts` → `accountsDb`, `Api.Admin`
+   → `adminDb`. Use this exact value everywhere a database name appears for this app (local
+   `ConnectionString`, `POSTGRES_DB`, the SqLite file name, and the Staging/Production `SQL_NAME`
+   below) - one derived name, reused consistently, not decided separately per environment. Don't
+   reuse another app's prefix/pattern by copying its CI workflow or `appsettings.Development.json`
+   as a starting point without re-deriving this value for the new app.
 
 ## Program.cs
 
@@ -94,7 +102,8 @@ In `appsettings.Development.json`, add:
 Use `host.docker.internal` as the host in the local connection string, not the docker-compose
 service name - `BaseDbContextFactory` specifically rewrites `host.docker.internal` → `localhost`
 in `Development` so `dotnet ef` commands from a local shell still work; the docker-compose
-service name wouldn't resolve outside the compose network at all.
+service name wouldn't resolve outside the compose network at all. Use step 6's derived database
+name for the connection string's `Database=`/equivalent value.
 
 ⚠ Add only the chosen provider's connection string, active. Don't add the other providers'
 connection strings as commented-out alternatives - a project commits to exactly one provider, and
@@ -145,7 +154,7 @@ database:
   environment:
     POSTGRES_USER: sa
     POSTGRES_PASSWORD: myPassword_123
-    POSTGRES_DB: nanoDb
+    POSTGRES_DB: <step 6's derived database name>
 
 # SqlServer
 database:
@@ -170,8 +179,8 @@ database - but unlike `InMemory` it does need K8s storage so the file survives p
 it deviates from the base-vs-Development split used elsewhere in this skill:
 
 - **`appsettings.json` (base, not just Development)**: `"StartupAction": "Migrate"` and
-  `"ConnectionString": "Data Source=/mnt/data/nanoDb.sqlite"` go directly in the base file, the
-  same in every environment. There's no external CI migration path for SqLite the way there is
+  `"ConnectionString": "Data Source=/mnt/data/<step 6's derived database name>.sqlite"` go
+  directly in the base file, the same in every environment. There's no external CI migration path for SqLite the way there is
   for the network providers, so the app must self-migrate at startup everywhere - this is the
   one case where `Migrate` outside `Development` is correct, not an AGENTS.md violation.
 - **`.kubernetes/data-storageclass.yaml`** (new file):
@@ -267,7 +276,7 @@ Provisioning that server is out of this skill's scope.
 1. **Workflow env vars** - add alongside the existing ones:
    ```yaml
    SQL_AUTH_TYPE: Azure
-   SQL_NAME: <database name>
+   SQL_NAME: <step 6's derived database name - same value as the local ConnectionString>
    AZURE_GROUP_DATABASE: ${{ vars.AZURE_RESOURCE_GROUP_DATABASE }}
    DOTNET_EF_TOOLS_VERSION: "10.0"
    ```

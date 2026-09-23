@@ -450,36 +450,60 @@ secret added to the target later needs nothing done on the consuming app's side 
 fine specifically because the file is scoped to one dependency, and any consumer already fully depends on that
 whole service anyway.
 
-**Publishing happens automatically on every build, incrementally.** The `.docker/docker-compose.dcproj` gets:
+**Publishing happens incrementally, one MSBuild target per nested dependency — never one shared target for all of
+them.** The `.docker/docker-compose.dcproj` gets:
 
-1. A `publish-dependencies.ps1` script (next to the `.yml`) that `dotnet publish`es every nested dependency to its
-   own `bin/publish` folder.
-2. A `PublishDependentServices` MSBuild target, hooked to `BeforeTargets="DockerPrepareForBuild"`, with `Inputs`
-   set to a glob of every dependency's (and its `.Models` project's) `.cs`/`.csproj` files and `Outputs` pointing
-   at a `bin\publish-dependencies.stamp` file the script touches on success — so MSBuild's normal incremental-build
-   comparison skips the whole publish pass when nothing actually changed, instead of republishing on every single
-   `docker compose up`. The stamp lives under `.docker\bin\`, not the `.docker` root, purely so it falls under the
-   solution's existing `**/bin` ignore rule instead of needing its own `.gitignore` entry.
+1. A `publish-dependencies.ps1` script (next to the `.yml`) that `dotnet publish`es **one** project — the one named
+   by its `-Project`/`-StampName` parameters — to that project's own `bin/publish` folder. It takes no list of
+   dependencies itself; which project gets published is entirely up to whichever target invokes it.
+2. **One `Publish{Target}` MSBuild target per nested dependency** (`PublishSvcAccounts`, `PublishSvcAssets`, …, not
+   a single shared `PublishDependentServices` covering all of them), each hooked to
+   `BeforeTargets="DockerPrepareForBuild"`, with its own `Inputs` — a glob of just *that* dependency's (and its
+   `.Models` project's) `.cs`/`.csproj` files, **plus that dependency's own `.json` files** (`appsettings*.json`,
+   not its `.Models` project's — those don't ship any) — and its own `Outputs`, a per-dependency stamp file
+   (`bin\publish-{target}.stamp`). **This per-dependency split is load-bearing, not a style choice**: a single
+   shared target across every dependency means editing *one* service's source republishes (and, transitively,
+   rebuilds the Docker image for) every other nested service too, on every build — with 5+ dependencies nested,
+   that's a real, avoidable slowdown on every single F5. Splitting the target per dependency means MSBuild's own
+   incremental comparison only reruns `dotnet publish` for the dependency whose own files actually changed; the
+   rest are untouched, and Docker's own layer cache then skips rebuilding their images too since their
+   `bin/publish` content didn't change.
+   ⚠ The `.json` glob is load-bearing, not decorative — a config-only edit to a dependency's `appsettings.*.json`
+   (a connection string, a database name) is exactly as real a change as editing its `.cs` files, but without it
+   in that dependency's own `Inputs`, MSBuild sees no changed input, skips the publish pass for it, and the stale
+   `bin\publish` output (with the old config baked in) keeps getting `COPY`'d into the image indefinitely —
+   surviving `docker compose down`, killing containers, even closing and reopening the IDE, since none of that
+   touches the stamp file this target actually keys off. If this ever needs a manual unstick regardless, delete
+   that dependency's own `.docker\bin\publish-{target}.stamp` (forces a republish of just that one dependency on
+   the next build) or run `publish-dependencies.ps1 -Project <path> -StampName <name>` directly.
 
 ```xml
 <ItemGroup>
-  <DependentServiceSources Include="..\..\Svc.MyTarget\Svc.MyTarget\**\*.cs;..\..\Svc.MyTarget\Svc.MyTarget\Svc.MyTarget.csproj;..\..\Svc.MyTarget\Svc.MyTarget.Models\**\*.cs;..\..\Svc.MyTarget\Svc.MyTarget.Models\Svc.MyTarget.Models.csproj"
-                            Exclude="..\..\Svc.MyTarget\Svc.MyTarget\bin\**;..\..\Svc.MyTarget\Svc.MyTarget\obj\**;..\..\Svc.MyTarget\Svc.MyTarget.Models\bin\**;..\..\Svc.MyTarget\Svc.MyTarget.Models\obj\**" />
+  <SvcMyTargetSources Include="..\..\Svc.MyTarget\Svc.MyTarget\**\*.cs;..\..\Svc.MyTarget\Svc.MyTarget\**\*.json;..\..\Svc.MyTarget\Svc.MyTarget\Svc.MyTarget.csproj;..\..\Svc.MyTarget\Svc.MyTarget.Models\**\*.cs;..\..\Svc.MyTarget\Svc.MyTarget.Models\Svc.MyTarget.Models.csproj"
+                       Exclude="..\..\Svc.MyTarget\Svc.MyTarget\bin\**;..\..\Svc.MyTarget\Svc.MyTarget\obj\**;..\..\Svc.MyTarget\Svc.MyTarget.Models\bin\**;..\..\Svc.MyTarget\Svc.MyTarget.Models\obj\**" />
 </ItemGroup>
 
-<Target Name="PublishDependentServices"
+<Target Name="PublishSvcMyTarget"
         BeforeTargets="DockerPrepareForBuild"
-        Inputs="@(DependentServiceSources)"
-        Outputs="$(MSBuildProjectDirectory)\bin\publish-dependencies.stamp">
-  <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\publish-dependencies.ps1&quot; -Configuration $(Configuration)" />
+        Inputs="@(SvcMyTargetSources)"
+        Outputs="$(MSBuildProjectDirectory)\bin\publish-svc-mytarget.stamp">
+  <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\publish-dependencies.ps1&quot; -Configuration $(Configuration) -Project &quot;..\..\Svc.MyTarget\Svc.MyTarget\Svc.MyTarget.csproj&quot; -StampName publish-svc-mytarget.stamp" />
 </Target>
 ```
 
-This means hitting F5 is the only step a developer needs — VS builds the `docker-compose` project before
-launching it, which runs this target, which republishes only the dependencies whose source actually changed,
-before `docker compose up` ever touches the network. No `.gitignore` entry is needed for the stamp file itself —
-it lives under `.docker\bin\`, already covered by the solution's standard `**/bin` ignore rule (the script creates
-that `bin` folder if it doesn't exist yet).
+A second nested dependency means one more `{Target}Sources` `ItemGroup` entry and one more `Publish{Target}` block,
+following the same shape — never adding to an existing dependency's `Inputs` glob or reusing its stamp file. No
+`.gitignore` entry is needed for any of the stamp files — they all live under `.docker\bin\`, already covered by
+the solution's standard `**/bin` ignore rule (the script creates that `bin` folder if it doesn't exist yet).
+
+⚠ **In practice, a plain F5 while nothing is currently running does not reliably trigger these targets at all** —
+Visual Studio's own "is a build actually needed" check for the `docker-compose` project doesn't always decide a
+rebuild is warranted just because a nested dependency's source changed, even though MSBuild's own `Inputs`/
+`Outputs` comparison (if actually invoked) would correctly say it's out of date. An explicit **Rebuild** on the
+solution/`docker-compose` project *does* reliably invoke it. The practical workflow after changing a nested
+dependency is therefore **Rebuild → F5**, not F5 alone — Rebuild also removes the running containers, but since
+the per-dependency stamps mean only the changed dependency actually republishes and rebuilds its image, the
+following F5 recreating every container is fast for the unchanged ones (cached images) regardless.
 
 ⚠ This whole mechanism exists for *local* `Development` orchestration only. `Staging`/`Production` never build
 this way — each service has its own real `Dockerfile` (multi-stage, built from source in CI, where the pipeline's

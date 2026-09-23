@@ -159,9 +159,18 @@ to whoever can reach `AuthController` at all.
   Write a custom controller instead (derive it from this app's own base controller, *not*
   `BaseAuthController`) that calls `IAuthExternalRepositoryAggregator`/`IAuthTransientRepository`/
   `IAuthIdentityRepository` directly and builds the claims/roles itself from trusted data - never
-  from caller input. This is a real, load-bearing pattern in this codebase, not a hypothetical - see
-  `Api.Admin`'s `AccountsController` (deriving its own `BaseAdminController`), which implements
-  `login/microsoft`/`login/refresh`/`me` by hand for exactly this reason.
+  from caller input.
+  ⚠ **A custom controller built this way must still explicitly set `TransientRoles` on the
+  `LogInExternal`/`LogIn` request it builds - an omitted `TransientRoles` silently defaults to an
+  empty array**, not an error. The resulting JWT authenticates fine (login itself returns `200 OK`)
+  but carries no role claims at all, so it satisfies none of Nano's built-in role-based policies
+  (`NanoRead`/`NanoAdd`/etc. - see AGENTS.md's Authorization section) on *any* downstream call that
+  forwards this JWT - including this app's own generic entity controllers, and any internal service
+  reached through an Api Client. This surfaces as a `403 Forbidden` on a later, unrelated-looking
+  request, not at login, which makes it easy to misdiagnose as a routing/CORS/collection problem
+  instead of a missing field on the login endpoint. If the app grants a fixed set of custom claims
+  unconditionally (e.g. `IsAdmin: true` for anyone who authenticates), set the matching
+  `TransientRoles` (e.g. `administrator`) on the same request, not just the custom claims.
 - Nano additionally auto-maps built-in transient external-login endpoints
   (`/auth/login/external/{provider}/transient` and its `/refresh` counterpart) whenever *any*
   `BaseAuthController`-derived class exists in the app **and** no Identity is configured - see
@@ -169,9 +178,9 @@ to whoever can reach `AuthController` at all.
   type scan, not by whether this specific controller is the one deriving it. This is an extra
   exposure specific to transient auth: it means a custom controller alone isn't enough to shield a
   transient app unless `hasAuthController` also stays `false` (i.e. no `BaseAuthController`-derived
-  class anywhere in the app) - `Api.Admin`'s custom controller works precisely because it doesn't
-  derive `BaseAuthController`. The `/refresh` counterpart is auto-mapped under the same gate, but
-  isn't a caller-trust risk the way login is - see above.
+  class anywhere in the app) - a custom controller only actually avoids this exposure because it
+  doesn't derive `BaseAuthController`. The `/refresh` counterpart is auto-mapped under the same
+  gate, but isn't a caller-trust risk the way login is - see above.
 - **This risk is sharpest on a publicly-exposed app** (anyone on the internet can reach the
   endpoint), but don't treat an internal-only app as automatically safe either - anything that lets
   a caller assign its own JWT claims is worth a deliberate decision, not a default. `AuthController`

@@ -158,16 +158,27 @@ Console app's own compose service has no `ports` of its own to worry about colli
    Wiring the reference now means a secret added to the target later needs nothing done on this
    app's side to pick it up — don't skip this because the target doesn't currently have any
    secrets in its `.env`.
-4. **Wire the publish step into `.docker/docker-compose.dcproj`**:
-   - If `publish-dependencies.ps1` doesn't exist yet in `.docker/`, create it (per AGENTS.md's
-     template) and add the `PublishDependentServices` MSBuild target with `Inputs`/`Outputs`
-     incremental-build wiring.
-   - If it already exists (this app already consumes at least one other Api Client), add the new
-     target's `.csproj` publish line to the existing script, and add a new `DependentServiceSources`
-     `ItemGroup` entry for the target (its main project + its `.Models` project, `.cs`/`.csproj`
-     globs, excluding `bin`/`obj`) — don't create a second script or a second target.
-5. No `.gitignore` entry is needed for the stamp file the script writes — it lives under
-   `.docker/bin/`, already covered by the solution's standard `**/bin` ignore rule.
+4. **Wire the publish step into `.docker/docker-compose.dcproj`**, per AGENTS.md's template — **one MSBuild
+   target per nested dependency, never one shared target for all of them**:
+   - If `publish-dependencies.ps1` doesn't exist yet in `.docker/`, create it (per AGENTS.md's template — it
+     takes `-Project`/`-StampName` parameters and publishes exactly one project per invocation, no dependency
+     list of its own).
+   - Whether this is the first dependency or the app already consumes others, add a **new, separate**
+     `{Target}Sources` `ItemGroup` entry (the target's main project + its `.Models` project, `.cs`/`.csproj`
+     globs, excluding `bin`/`obj`, **plus `**\*.json` on the target's main project only** — its `.Models`
+     project doesn't ship any) and a **new, separate** `Publish{Target}` MSBuild target with its own
+     `Inputs="@({Target}Sources)"` and its own `Outputs=".../bin/publish-{target}.stamp"` — never add to an
+     existing dependency's `ItemGroup`/`Inputs`/stamp, and never fold two dependencies into one target. This
+     per-dependency split is what lets MSBuild republish (and let Docker rebuild) only the one dependency that
+     actually changed, instead of every nested dependency on every build — see AGENTS.md's own ⚠ on this.
+     Skipping the `.json` glob has the same failure mode as before: a config-only `appsettings.*.json` edit
+     silently never triggers a republish, leaving stale config baked into the image indefinitely.
+5. No `.gitignore` entry is needed for any stamp file the script writes — they all live under `.docker/bin/`,
+   already covered by the solution's standard `**/bin` ignore rule.
+6. **Tell the user Rebuild → F5 is the required workflow after changing a nested dependency**, not F5 alone —
+   see AGENTS.md's own ⚠ on this: a plain F5 while nothing is running doesn't reliably re-invoke these targets,
+   even though an explicit Rebuild does. This isn't something a project file can fix; it's Visual Studio's own
+   build-vs-launch trigger behavior for `docker-compose` projects.
 
 ## After making the change
 
