@@ -1736,7 +1736,7 @@ The `RootLogin` configuration is defined as follows.
 }
 ```
 
-`RootLogin` is primarily a `Development` convenience, but it can also be enabled in `Staging` and `Production`, for example to give a Console application a simple way to authenticate through the Nano API client when no specific user account is available. Doing so means the credentials must come from a secret, not a config file, the same as the JWT keys above.
+It can also be enabled in `Staging` and `Production`, for example to give a Console application a simple way to authenticate through the Nano API client when no specific user account is available. Doing so means the credentials must come from a secret, not a config file, the same as the JWT keys above.
 
 | Variable                                    | Type     | Description                        |
 | -------------------------------------------- | -------- | ----------------------------------------- |
@@ -1803,8 +1803,6 @@ The `IAuthIdentityRepository` provides the following methods to support this fun
 | Method                              | Parameters                       | Description                                                                                                                             |
 | ----------------------------------- | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
 | `LogInAsync`                        | logIn                            | Logs in a user using username and password credentials, generating a JWT access token and optional refresh token.                       |
-| `LogInExternalAsync`                | logInExternal                    | Logs in a user using direct external login data, generating a JWT access token and optional refresh token.                              |
-| `LogInExternalAsync`                | providerName, logInExternalFlow  | Logs in a user authenticating with a configured external login provider flow, generating a JWT access token and optional refresh token. |
 | `LogInRefreshAsync`                 | token, refreshToken              | Refreshes an existing access token using a valid refresh token, generating a new JWT and refresh token. `token` is the expired/soon-to-expire access token, read by the controller from the Authorization header, not the request body. |
 | `LogOutAsync`                       | userId, appId                    | Logs out the current user.                                                                                                              |
 
@@ -1813,14 +1811,22 @@ Try it out yourself using the **[Api.Data.Identity.Auth.Jwt](https://github.com/
 ### External Logins
 > ⚠️ Remember to store secrets for external logins securely in `docker-compose`'s `.env`, not in `appsettings.Development.json` or committed to source control.
 
-The `IAuthIdentityRepository` supports external authentication backed by the identity store, as shown in the table above. In contrast, the `IAuthTransientRepository`, shown in the table below, 
-also supports external authentication but is designed for transient logins without persistence and provides dedicated methods for external transient authentication.
+External authentication is supported two ways. `IAuthIdentityRepository` backs it by the identity store - the resulting user, roles and claims are persisted, and refreshed with 
+the same `LogInRefreshAsync` shown above - and adds the following methods for it:
 
-| Method                              | Parameters           | Description                                                                                                                     |
-| ----------------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `LogInExternalAsync`                | logInExternal        | Performs an external login using direct external login data and generates a corresponding JWT access token.                     |
-| `LogInExternalAsync`                | logInExternalDirect  | Performs an external login using a configured built-in external provider type and generates a corresponding JWT access token.   |
-| `LogInExternalRefreshAsync`         | providerName, token  | Refreshes a transient external login. `token` is the expired/soon-to-expire access token, read from the Authorization header - the provider's own refresh token and any transient claims/roles are recovered from claims embedded in `token` at login, never supplied by the caller. |
+| Method                              | Parameters                       | Description                                                                                                                             |
+| ----------------------------------- | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `LogInExternalAsync`                | logInExternal                    | Logs in a user using direct external login data, generating a JWT access token and optional refresh token.                              |
+| `LogInExternalAsync`                | providerName, logInExternalFlow  | Logs in a user authenticating with a configured external login provider flow, generating a JWT access token and optional refresh token. |
+
+`IAuthTransientRepository`, in contrast, is designed for transient logins without persistence and provides dedicated methods for external transient authentication, including 
+its own method for refreshing them:
+
+| Method                              | Parameters                  | Description                                                                                                                     |
+| ----------------------------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `LogInExternalAsync`                | logInExternal                | Performs an external login using direct external login data and generates a corresponding JWT access token.                     |
+| `LogInExternalAsync`                | providerName, logInExternal  | Performs an external login using a configured built-in external provider type and generates a corresponding JWT access token.   |
+| `LogInExternalRefreshAsync`         | providerName, token          | Refreshes a transient external login. `token` is the expired/soon-to-expire access token, read from the Authorization header - the provider's own refresh token and any transient claims/roles are recovered from claims embedded in `token` at login, never supplied by the caller. |
 
 Logging in using external authentication in Nano can be achieved either by configuring a built-in provider or by implementing a custom provider (see further down).  
 
