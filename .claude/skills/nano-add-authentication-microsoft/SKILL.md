@@ -134,11 +134,12 @@ or `if`/`else` branching — this runs once, by a human, not repeatedly by CI):
 ```powershell
 $env:APP_DISPLAY_NAME = "{service-name}-app-development";
 $env:AUTH_MICROSOFT_REDIRECT_URI = "";
+$env:AUTH_MICROSOFT_SIGNIN_AUDIENCE = {SignInAudienceLiteral};
 $env:AUTH_MICROSOFT_TENANT_ID = {TenantIdLiteral};
 
 az ad app create `
     --display-name $env:APP_DISPLAY_NAME `
-    --sign-in-audience {SignInAudience} `
+    --sign-in-audience $env:AUTH_MICROSOFT_SIGNIN_AUDIENCE `
     --web-redirect-uris $env:AUTH_MICROSOFT_REDIRECT_URI;
 
 $env:AUTH_MICROSOFT_CLIENT_ID = az ad app list --display-name $env:APP_DISPLAY_NAME --query "[0].appId" -o tsv;
@@ -159,9 +160,9 @@ Write-Host "ClientSecret: $env:AUTH_MICROSOFT_CLIENT_SECRET";
   uses), with `-app-development` appended — kept distinct from the CI-managed `{service-name}-app`
   registration shared by Staging/Production, since this one belongs to a single developer's own
   tenant, not a deployed environment.
-- `{SignInAudience}`/`{TenantIdLiteral}` are the exact same literals used in the CI step below — fill
-  them in once, from step 4's table above, matching whatever was decided for this app. No switch
-  statement here either, same reasoning as the CI step.
+- `{SignInAudienceLiteral}`/`{TenantIdLiteral}` are the exact same literals used in the CI step below
+  — fill them in once, from step 4's table above, matching whatever was decided for this app. No
+  switch statement here either, same reasoning as the CI step.
 - `AUTH_MICROSOFT_REDIRECT_URI` is left empty in the snippet on purpose — the developer fills in
   their own local callback URL before running it. Don't fill in a guessed value.
 - After running it, the developer fills the three values into the keys the `.docker/.env` step above
@@ -186,13 +187,16 @@ env:
 `vars`, not `secrets` — it isn't sensitive. Ask the user for its value (the real deployed client's
 callback URL) rather than defaulting to a placeholder.
 
-**`--sign-in-audience` and the resulting `TenantId` are hardcoded directly into the step below, not
-sourced from a workflow variable or derived by a runtime switch.** The audience was already decided
-once, at authoring time, in step 4 above — there's nothing left to branch on at runtime. Fill in both
-`--sign-in-audience` occurrences and the `$env:AUTH_MICROSOFT_TENANT_ID` literal below with whichever
-pair was chosen, straight from step 4's table (e.g. `AzureADMyOrg` paired with
-`$env:AZURE_TENANT_ID`, or `AzureADMultipleOrgs` paired with `"organizations"`) — the same two
-literals used in the Development script above.
+**`--sign-in-audience` and `TenantId` are each assigned once, as their own `$env:` variables at the
+top of the step, not sourced from a workflow variable and not derived by a runtime switch.** The
+audience was already decided once, at authoring time, in step 4 above — there's nothing left to
+branch on at runtime. Fill in `$env:AUTH_MICROSOFT_SIGNIN_AUDIENCE` and `$env:AUTH_MICROSOFT_TENANT_ID`
+below with whichever pair was chosen, straight from step 4's table (e.g. `"AzureADMyOrg"` paired with
+`$env:AZURE_TENANT_ID`, or `"AzureADMultipleOrgs"` paired with `"organizations"`) — the same two
+literals used in the Development script above. **`$env:AUTH_MICROSOFT_TENANT_ID` is always set this
+way, even for `AzureADMyOrg`** — the Kubernetes secret and `$env:GITHUB_ENV` output below always read
+`$env:AUTH_MICROSOFT_TENANT_ID`, never `$env:AZURE_TENANT_ID` directly, so the two stay
+interchangeable regardless of which audience a given app uses.
 
 Add a **"Setup App Registration"** step, after `Build & Push Image` and before `Kubernetes Deploy`
 (needs `AZURE_TENANT_ID`/an authenticated `az` session from `Azure Login`, and its output feeds the
@@ -204,13 +208,15 @@ Kubernetes step):
   run: |
     $env:APP_DISPLAY_NAME = $env:SERVICE_NAME + "-app";
     $env:SECRET_DISPLAY_NAME = $env:APP_DISPLAY_NAME + "-secret-" + (Get-Date -Format "yyyyMMddHHmmss");
+    $env:AUTH_MICROSOFT_SIGNIN_AUDIENCE = {SignInAudienceLiteral};
+    $env:AUTH_MICROSOFT_TENANT_ID = {TenantIdLiteral};
     $env:AUTH_MICROSOFT_CLIENT_ID = az ad app list --display-name $env:APP_DISPLAY_NAME --query "[0].appId" -o tsv;
 
     if (-not $env:AUTH_MICROSOFT_CLIENT_ID)
     {
         az ad app create `
             --display-name $env:APP_DISPLAY_NAME `
-            --sign-in-audience {SignInAudience} `
+            --sign-in-audience $env:AUTH_MICROSOFT_SIGNIN_AUDIENCE `
             --web-redirect-uris $env:AUTH_MICROSOFT_REDIRECT_URI;
 
         $env:AUTH_MICROSOFT_CLIENT_ID = az ad app list --display-name $env:APP_DISPLAY_NAME --query "[0].appId" -o tsv;
@@ -219,11 +225,9 @@ Kubernetes step):
     {
         az ad app update `
             --id $env:AUTH_MICROSOFT_CLIENT_ID `
-            --sign-in-audience {SignInAudience} `
+            --sign-in-audience $env:AUTH_MICROSOFT_SIGNIN_AUDIENCE `
             --web-redirect-uris $env:AUTH_MICROSOFT_REDIRECT_URI;
     }
-
-    $env:AUTH_MICROSOFT_TENANT_ID = {TenantIdLiteral};
 
     $env:AUTH_MICROSOFT_CLIENT_SECRET = az ad app credential reset `
         --id $env:AUTH_MICROSOFT_CLIENT_ID `
@@ -252,13 +256,20 @@ What this does, and why it's shaped this way:
 
 - **Idempotent app registration.** Looks the app up by display name first; creates it only if
   missing, otherwise just keeps its redirect URI/audience in sync.
-- **`AUTH_MICROSOFT_TENANT_ID` is a literal filled in once, at authoring time, not computed at
-  runtime.** Only `AzureADMyOrg` uses the real tenant GUID (`$env:AZURE_TENANT_ID`, the workflow's
-  own tenant) — the other three audiences need the literal `organizations`/`common`/`consumers`
-  string instead, per the table in "Before making any change, determine" above. Since the audience
-  is decided once per app, not per run, there's no reason to carry it as a workflow variable or
-  re-derive `TenantId` from it with a runtime switch — just write the two matching literals
-  straight into this step (and the Development script above) when applying this skill.
+- **`AUTH_MICROSOFT_SIGNIN_AUDIENCE` and `AUTH_MICROSOFT_TENANT_ID` are each literals filled in once,
+  at authoring time, not computed at runtime.** Only `AzureADMyOrg` uses the real tenant GUID
+  (`$env:AZURE_TENANT_ID`, the workflow's own tenant) for `AUTH_MICROSOFT_TENANT_ID` — the other
+  three audiences need the literal `organizations`/`common`/`consumers` string instead, per the table
+  in "Before making any change, determine" above. Since the audience is decided once per app, not per
+  run, there's no reason to carry it as a workflow variable or re-derive `TenantId` from it with a
+  runtime switch — just assign both as `$env:` variables once, at the top of the step, when applying
+  this skill (and again in the Development script above).
+- **Always reference `$env:AUTH_MICROSOFT_TENANT_ID` downstream, never `$env:AZURE_TENANT_ID`
+  directly** — in the Kubernetes secret's `stringData` below and in the `$env:GITHUB_ENV` output.
+  Even when the two happen to hold the same value (the `AzureADMyOrg` case), keeping every downstream
+  reference pointed at `AUTH_MICROSOFT_TENANT_ID` means the app works identically regardless of which
+  audience it was configured with — nothing downstream needs to know or care which literal was
+  chosen.
 - **`--append`, not a bare `az ad app credential reset`.** A bare reset atomically replaces every
   existing secret — any pod still running the previous deployment's env vars would find its
   `ClientSecret` invalid mid-rollout. `--append` adds a new one alongside, so the old secret keeps
