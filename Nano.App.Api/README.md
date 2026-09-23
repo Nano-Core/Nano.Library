@@ -2015,7 +2015,7 @@ env:
         --id $env:AUTH_MICROSOFT_CLIENT_ID `
         --append `
         --display-name $env:SECRET_DISPLAY_NAME `
-        --years 1 `
+        --years 2 `
         --query "password" -o tsv;
 
     echo "::add-mask::$env:AUTH_MICROSOFT_CLIENT_SECRET";

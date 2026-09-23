@@ -148,12 +148,8 @@ $env:AUTH_MICROSOFT_CLIENT_SECRET = az ad app credential reset `
     --id $env:AUTH_MICROSOFT_CLIENT_ID `
     --append `
     --display-name ($env:APP_DISPLAY_NAME + "-secret") `
-    --years 1 `
+    --years 2 `
     --query "password" -o tsv;
-
-Write-Host "TenantId: $env:AUTH_MICROSOFT_TENANT_ID";
-Write-Host "ClientId: $env:AUTH_MICROSOFT_CLIENT_ID";
-Write-Host "ClientSecret: $env:AUTH_MICROSOFT_CLIENT_SECRET";
 ```
 
 - `{service-name}` is this app's kebab-case `SERVICE_NAME` (the same value the CI workflow already
@@ -233,7 +229,7 @@ Kubernetes step):
         --id $env:AUTH_MICROSOFT_CLIENT_ID `
         --append `
         --display-name $env:SECRET_DISPLAY_NAME `
-        --years 1 `
+        --years 2 `
         --query "password" -o tsv;
 
     echo "::add-mask::$env:AUTH_MICROSOFT_CLIENT_SECRET";
@@ -338,8 +334,8 @@ Apply it in the `Kubernetes Deploy` step alongside `auth-jwt-secret.yaml`, befor
   additions, and the `.sln` entry.
 - Include the Local Development script directly in your response (not written to a file - see
   above), with a reminder to fill in their own redirect URI before running it, then add the three
-  printed values to this app's own `.docker/.env` using the `App__...` key names above - not
-  `appsettings.Development.json`.
+  values the script assigns (`$env:AUTH_MICROSOFT_TENANT_ID`/`CLIENT_ID`/`CLIENT_SECRET`) to this
+  app's own `.docker/.env` using the `App__...` key names above - not `appsettings.Development.json`.
 - Restate that `offline_access` was included in `Scopes` by default, and that the client-side
   authorize request's own `scope` parameter must include it too for Microsoft to actually issue a
   `refresh_token` - don't let confirming the config change alone read as the whole fix.
