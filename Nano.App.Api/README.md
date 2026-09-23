@@ -1809,8 +1809,6 @@ The `IAuthIdentityRepository` provides the following methods to support this fun
 Try it out yourself using the **[Api.Data.Identity.Auth.Jwt](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Data.Identity.Auth.Jwt)** example.  
 
 ### External Logins
-> ⚠️ Remember to store secrets for external logins securely in `docker-compose`'s `.env`, not in `appsettings.Development.json` or committed to source control.
-
 External authentication is supported two ways. `IAuthIdentityRepository` backs it by the identity store - the resulting user, roles and claims are persisted, and refreshed with 
 the same `LogInRefreshAsync` shown above - and adds the following methods for it:
 
@@ -1829,6 +1827,8 @@ its own method for refreshing them:
 | `LogInExternalRefreshAsync`         | providerName, token          | Refreshes a transient external login. `token` is the expired/soon-to-expire access token, read from the Authorization header - the provider's own refresh token and any transient claims/roles are recovered from claims embedded in `token` at login, never supplied by the caller. |
 
 Login using external authentication in Nano can be achieved either by configuring a built-in provider or by implementing a custom provider (see further down).  
+
+> ⚠️ Remember to store secrets for external logins securely in `docker-compose`'s `.env`, not in `appsettings.Development.json` or committed to source control.
 
 For a built-in provider, the following configuration can be added.  
 
@@ -2086,7 +2086,7 @@ spec:
 Try it out yourself using the **[Api.Auth.External.Microsoft](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Auth.External.Microsoft)** example, which has this 
 wiring end-to-end.  
 
-#### Custom
+#### Custom Provider
 Implementing a custom external authentication provider in Nano is straightforward. Create a class that derives from `BaseAuthExternalRepository<TFlow>` and provide a provider name via the 
 constructor. The base class implements the `IAuthExternalRepository<TFlow>` interface, which requires you to implement the abstract methods `AuthenticateAsync` and `AuthenticateRefreshAsync`. 
 The `TFlow` generic parameter defines the authentication flow used by the provider. Nano includes two built-in flows, `Implicit` and `AuthCode`, but you can extend this by creating your own 
