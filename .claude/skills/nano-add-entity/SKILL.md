@@ -295,6 +295,18 @@ public class <Entity>sController(ILogger<<Entity>sController> logger, IRepositor
 - No manual registration needed — Nano's MVC discovery picks up the controller
   automatically from the assembly.
 
+## Postman collection (API/Web only — skip for Console)
+
+If the application already has a Postman collection (`Postman_<AppName>.json` in the application's own
+folder, next to its `README.md`), add the new entity's folder to it, following the
+`nano-add-postman-collection` skill's conventions: only the generic actions the controller's actual base
+class exposes (see File 4), placed in FK-dependency order, with Id/name chaining test scripts. Edit only the
+new folder; don't regenerate or reorder the rest of the file, and remind the user to **Replace**-import it in
+Postman.
+
+**If no collection exists, do nothing Postman-related** — don't create one. The entity is picked up when the
+user later generates the collection with `nano-add-postman-collection`.
+
 ## After generating
 
 - Show the user the files generated and where they were placed (two for Console, four for

@@ -29,6 +29,22 @@ takes effect.
 
 ## Before making any change, determine
 
+0. **Is the client already referenced by this application, and if not, where is it?** Do this first.
+   - **Already referenced:** if this application's project (`{name}/{name}.csproj`) already has a
+     `ProjectReference`/`PackageReference` that provides the client class, nothing to add - continue.
+   - **Not referenced, and the user named the target service** (e.g. "add api client configuration for
+     `Svc.Something`"): search the **root directory** - one level up from this application's own solution
+     directory, where every sibling solution lives - for a solution folder with that name and its
+     `{TargetName}.Models` project. If found, add the `ProjectReference` (step 2) without asking again.
+   - **Not referenced, and the user did not name a target service** (only the client class): tell the user
+     the client could not be found in this application's references, and - if a sibling `{TargetName}.Models`
+     project containing it is found under the root directory - offer to add a project reference to it,
+     naming that project. Wait for their answer.
+   - **Not found anywhere locally, or several matches:** say so and ask - don't guess, and never invent a
+     package reference or version.
+   - **Whenever a project reference is (or is about to be) added, say upfront** that it is a
+     development-time reference: it must be replaced with the real NuGet `PackageReference` once the target
+     service's package is published, before this application is deployed.
 1. **Does the client class already exist?** Check the target service's `{TargetName}.Models/Api/`
    project (or its published NuGet) for the `BaseApiClient`/`BaseIdentityApiClient` subclass the
    user means. If it doesn't exist yet, stop — don't create it inline, and don't invoke
@@ -37,26 +53,20 @@ takes effect.
    wiring into right now, and if so, did they mean to create the client first (on the owning
    service's own project, a separate task from this one)? Let them answer both before doing
    anything else.
-2. **How does this app reference the target's `.Models` project?** Check how any other Api
-   Client in this project already references its target (`ProjectReference` for a
-   same-solution/monorepo target, or a NuGet/private-feed `PackageReference` for a separate-repo
-   target — the more common real-world case, since most Nano apps live in separate repos and
-   publish their `.Models` project as a private package) and match that convention — AGENTS.md
-   explicitly allows either here. If this is the first Api Client in the project, ask which
-   applies.
-   - **Then actually add the reference to this app's `.csproj` if it isn't already there** — don't
-     stop at determining which kind it should be. A missing reference here is a real, previously
-     observed gap (this app referencing a target's Api Client with no corresponding
-     `ProjectReference`/`PackageReference` at all, caught only when the build failed).
-   - **For a `PackageReference`, determine the version rather than guessing.** If the target's
-     source is locally available (a monorepo or multiple repos checked out side by side), read
-     its `.csproj`'s `<Version>` directly. If it isn't, ask the user for the version instead of
-     inventing one.
-   - **Private feed authentication is the user's responsibility, not something to work around.**
-     If the target's package lives on a private feed (Azure Artifacts, GitHub Packages, etc.) and
-     restore fails for missing credentials, say so plainly and let the user resolve their own
-     `nuget.config`/feed auth — don't attempt to supply or guess at credentials yourself, and
-     don't silently fall back to a different reference shape to dodge the failure.
+2. **Always add the reference to the consuming application's own project (`{name}/{name}.csproj`), never
+   to a `.Models` project** - even if this application happens to have one. A `.Models` project is shared
+   (published as a NuGet) with other applications, so a reference to another service's `.Models` placed
+   there would leak into every consumer of it, which it shouldn't. Most consumers (a Public API, a Console
+   application) have no `.Models` project at all.
+   - Use a relative `ProjectReference` to the target's `{TargetName}.Models.csproj` found in step 0. Match
+     how the project's other Api Client references are written where that applies.
+   - **Never write a `PackageReference` or a version yourself** - the real version is injected by CI/CD, so
+     there is nothing reliable to read locally, and the package is on a private feed you have no business
+     querying. Switching to the package is the user's step (see "After making the change").
+   - **Actually add the reference if it isn't already there** - a missing reference is a real, previously
+     observed gap (caught only when the build failed).
+   - If the application already references other targets by `PackageReference`, still add the
+     `ProjectReference` for this one, and say the same replace-later note applies.
 3. **Is a client with this class name already registered?** Check for an existing `App:Apis` key
    matching the class name — if one's already there pointing at a different host/target, confirm
    with the user before overwriting it.
@@ -182,6 +192,9 @@ Console app's own compose service has no `ports` of its own to worry about colli
 
 ## After making the change
 
+- **If a `ProjectReference` was added, remind the user:** remember to replace the project reference with
+  the real NuGet `PackageReference` once the target service's package is published, before deploying.
+  The skill never writes the package reference or version itself.
 - Show the user every file touched in *this* app — the `.csproj` reference (if one was added),
   the `appsettings.json` addition, the injection site, and every docker-compose/dcproj/gitignore
   file touched by the section above.

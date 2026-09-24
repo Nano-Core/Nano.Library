@@ -555,6 +555,24 @@ consumer, not just the one Public API that remembered to compose it.
 
 ---
 
+## Postman collection
+
+If the application already has a Postman collection, every endpoint this skill adds must also land in it:
+
+1. Look for `Postman_<AppName>.json` in the application's own folder (next to its `README.md`).
+2. **If it exists**, add the new endpoint's request to it — inside the folder for its controller, in the
+   position matching the controller's own action order — with the correct verb, route (the same route
+   constant the controller uses), request body/query, and a `description` noting anything a tester needs
+   to know (`[AllowAnonymous]`, business-rule guards, side effects). Follow the conventions of the
+   `nano-add-postman-collection` skill (base URL scheme, variable chaining, `bearer` auth). Edit only the
+   new request; don't regenerate or reorder the rest of the file.
+3. **If it doesn't exist, do nothing Postman-related** — don't create a collection. The endpoint is picked up
+   when the user later generates the collection with `nano-add-postman-collection`.
+4. If the file was edited, remind the user to **Replace**-import it in Postman — writing the file changes
+   nothing in Postman by itself.
+
+---
+
 ## After generating
 
 - Show the user every file touched/created, grouped by concern (Request/Response DTOs, controller

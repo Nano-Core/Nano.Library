@@ -81,6 +81,12 @@ request that doesn't imply anything else in the app is changing.
   delete this before every other entity's relationship to it has been resolved, or you'll be
   fixing the same compile break twice.
 
+## Postman collection (API/Web only)
+
+If the application already has a Postman collection (`Postman_<AppName>.json` in the application's own folder,
+next to its `README.md`), remove this entity's folder from it, and remove or fix any later request that chained
+this entity's Id/name variables. Edit only what's affected; don't regenerate the file. If the file was edited,
+remind the user to **Replace**-import it in Postman. If no collection exists, do nothing Postman-related.
 ## After making the change
 
 - Show the user every file deleted, and every other file touched to resolve step 2's
