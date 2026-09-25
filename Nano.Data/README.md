@@ -345,7 +345,7 @@ If you specify a `TIdentity` type during data **[Registration](#registration)** 
 concrete entities.
 
 Alternatively, you can derive your entity model from one of the specialized CRUD base classes: `BaseEntityReadOnly`, `BaseEntityCreatable`, `BaseEntityCreatableAndUpdatable`, 
-`BaseEntityUpdatable`, or `BaseEntityDeletable`, to restrict the allowed `IRepository` operations for that entity.  
+`BaseEntityCreatableAndDeletable`, `BaseEntityUpdatable`, or `BaseEntityDeletable`, to restrict the allowed `IRepository` operations for that entity.  
 
 > ⚠️ `BaseEntityReadOnly` is immutable and is not intended to be used directly.
 

@@ -99,8 +99,8 @@ public class <Entity> : BaseEntity
   existing convention (see step 5 above).
 - For restricted CRUD (e.g. read-only, or no delete), derive instead from
   `BaseEntityReadOnly`, `BaseEntityCreatable`, `BaseEntityUpdatable`,
-  `BaseEntityCreatableAndUpdatable`, or `BaseEntityDeletable` - ask the user if the request
-  implies one of these rather than full CRUD.
+  `BaseEntityCreatableAndUpdatable`, `BaseEntityCreatableAndDeletable`, or `BaseEntityDeletable` -
+  ask the user if the request implies one of these rather than full CRUD.
 - **`[Subscribe]` entities are restricted CRUD by convention, not a case to ask about.** Per step
   8, a `[Subscribe]` entity is a local replica kept in sync by the built-in
   `EntityEventingHandler` whenever the publishing app's source entity changes - update/delete
@@ -224,7 +224,10 @@ public class <Entity>Mapping : BaseEntityMapping<<Entity>>
     mapping file to read the relationship's actual shape from. Model it as its own entity (e.g.
     `Product`/`Tag` → a real `ProductTag` entity with `ProductId`/`TagId` FKs) with its own File
     1/File 2 pair - a normal one-to-many-to-one shape from each side, not a special case - even
-    when the join entity currently has no columns beyond the two FKs.
+    when the join entity currently has no columns beyond the two FKs. A join entity with nothing but
+    its foreign keys is only ever added and removed, never edited (editing one would just re-point
+    it), so it derives from `BaseEntityCreatableAndDeletable` in File 1 and gets
+    `BaseEntityCreatableAndDeletableController` in File 4.
 - **Index every property the entity is queried or sorted by** - one `HasIndex(...)` in the mapping for each
   property File 3's query criteria filters on, and each property an ordering (`Order.By`) or a keyword
   search reaches, declared at the end of `Configure`, after the properties and relationships. Foreign keys
@@ -307,14 +310,19 @@ public class <Entity>sController(ILogger<<Entity>sController> logger, IRepositor
 - If the identity type isn't `Guid` (per step 5), the controller generic list needs the
   identity type too: `BaseEntityController<<Entity>, <TIdentity>, <Entity>QueryCriteria>`.
 - **`BaseEntityController<<Entity>, <Entity>QueryCriteria>` (full CRUD) is the default for every
-  entity, with no exceptions other than `[Subscribe]`.** Having custom actions on the same
+  entity, with no exceptions other than `[Subscribe]` and a foreign-keys-only join entity (below).**
+  Having custom actions on the same
   controller - even ones that overlap in intent with a generic CRUD action - is not on its own a
   reason to narrow the tier. A colliding route is a defect to flag (see below), not a signal to
   remove generic capability the entity is otherwise entitled to.
 - **`[Subscribe]` entities use `BaseEntityCreatableController<<Entity>, <Entity>QueryCriteria>`**,
   not `BaseEntityController` - per File 1's note, update/delete happen through the Subscribe
-  mechanism, not this app's HTTP surface, so only Get/Query/Create are exposed here. This is the
-  *only* case that changes the default tier.
+  mechanism, not this app's HTTP surface, so only Get/Query/Create are exposed here.
+- **A join entity with only foreign keys uses
+  `BaseEntityCreatableAndDeletableController<<Entity>, <Entity>QueryCriteria>`** (Get/Query/Create/Delete,
+  no Edit) - see File 2's many-to-many note. Any rule that must hold on add or remove (e.g. the parent is
+  immutable once in use) is then an override of the create/delete actions only, with no edit path left
+  open around it. These two are the only cases that change the default tier.
 - No manual registration needed - Nano's MVC discovery picks up the controller
   automatically from the assembly.
 

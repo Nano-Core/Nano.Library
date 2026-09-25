@@ -36,6 +36,8 @@ it impossible to swap the Postman auth token between apps without stepping on an
      No Create, no Delete.
    - `BaseEntityDeletableController` — Read + Delete (Delete, Delete Many, Delete Query). No
      Create, no Edit.
+   - `BaseEntityCreatableAndDeletableController` — Read + Create (Create, Create Or Get, Create And
+     Reload, Create Many) + Delete (Delete, Delete Many, Delete Query). No Edit, so no Create Or Edit.
    - `BaseEntityCreatableAndEditableController` — Read + Create + Edit, including Create Or Edit
      now that both halves exist.
    - `BaseEntityController` — full CRUD (Read + Create + Edit + Delete).

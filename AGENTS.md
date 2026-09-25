@@ -1966,6 +1966,7 @@ capability you want to expose — each is gated by its own [authorization policy
 | `BaseEntityCreatableController<TEntity, TCriteria>`                | ✓   | ✓     | ✓      | ✗    | ✗      | `NanoRead` + `NanoAdd` |
 | `BaseEntityEditableController<TEntity, TCriteria>`                 | ✓   | ✓     | ✗      | ✓    | ✗      | `NanoRead` + `NanoEdit` |
 | `BaseEntityCreatableAndEditableController<TEntity, TCriteria>`     | ✓   | ✓     | ✓      | ✓    | ✗      | adds `NanoAddOrEdit` for the upsert action |
+| `BaseEntityCreatableAndDeletableController<TEntity, TCriteria>`    | ✓   | ✓     | ✓      | ✗    | ✓      | `NanoRead` + `NanoAdd` + `NanoDelete` - for entities only ever added and removed, e.g. a join row |
 | `BaseEntityDeletableController<TEntity, TCriteria>`                | ✓   | ✓     | ✗      | ✗    | ✓      | `NanoRead` + `NanoDelete` |
 | `BaseEntityController<TEntity, TCriteria>`                         | ✓   | ✓     | ✓      | ✓    | ✓      | full set, adds `NanoDelete` on top |
 
@@ -2714,6 +2715,7 @@ IEntitySoftDeletable         : IEntityDeletable, redeclares IsDeleted   (opt-in)
 | `BaseEntityUpdatable` / `<TIdentity>`              | `IEntityUpdatable` only                | |
 | `BaseEntityDeletable` / `<TIdentity>`              | `IEntityDeletable` only                | |
 | `BaseEntityCreatableAndUpdatable` / `<TIdentity>`   | Create + update, no delete             | |
+| `BaseEntityCreatableAndDeletable` / `<TIdentity>`   | Create + delete, no update             | For entities only ever added and removed, such as a join row between two entities. |
 | `BaseEntityUser` / `<TIdentity>`                   | Update + delete (`IEntityUser<TIdentity>`) | Adds `IdentityUser` (`IdentityUserEx<TIdentity>`), tagged `[Include]` + `[ValidateNever]` + `[SwaggerRequestIgnore]` — always eager-loaded, never validated as input, never shown in Swagger request bodies. See [Identity](#identity). |
 | `BaseEntityView`                                   | None — bare `IEntity`, no `Id`/`IsDeleted`/`CreatedAt` at all | Non-generic only. For entities mapped to a SQL view — you define every property yourself, including any identifier. |
 | `BaseEntityIdentity` / `<TIdentity>`                | `Id` only, nothing else                | For advanced cases that don't want the built-in `IsDeleted`/`CreatedAt` — implement whichever capability interface (`IEntityCreatable`, `IEntityWritable`, etc.) yourself to restore the operations you need. |
