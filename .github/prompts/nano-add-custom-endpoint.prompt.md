@@ -227,6 +227,14 @@ Location: `Requests/<Feature>/<Name>Request.cs` in the Public API's own app proj
 Public-API-facing DTO, not an Api Client `BaseRequest`**; don't confuse the two even though an Api
 Client call happens inside the same action.
 
+`<Feature>` is always the **route name of the controller that hosts the action** (its class name without
+`Controller`, e.g. a controller named `FooBarsController` uses `FooBars`), for both `Requests/` and
+`Responses/`. One folder per controller; never group DTOs by another axis (a shared `Common/` folder, or a
+folder named after a sub-entity the controller also serves). A DTO used by several controllers lives in the
+folder of the controller that returns it, or is duplicated per controller if each needs its own shape. A
+request/response in a folder that doesn't match its controller is a defect: move it and fix the namespace
+and `using`s.
+
 ```csharp
 public class <Name>Request
 {
@@ -278,6 +286,20 @@ public virtual async Task<IActionResult> <Name>Async([FromBody][Required] <Name>
 
 - Only include the `[ProducesResponseType]`s that are actually reachable by this action's logic -
   match what sibling actions in the same controller declare, don't pad the list.
+- **Only use the `...AndGet` Api Client calls when the returned entity is actually used.**
+  `.Entity.CreateAndGetAsync`/`EditAndGetAsync` (with `CreateAndGetRequest`/`EditAndGetRequest`) make the
+  target service reload the entity with its includes, which is wasted work when the action discards the
+  result (a bare `return this.Ok();`, a join-row insert, a fire-and-forget update). Use plain
+  `.Entity.CreateAsync`/`EditAsync` (`CreateRequest`/`EditRequest`) there, and reserve the `...AndGet`
+  variants for when the result feeds the response. The same goes for `CreateOrGetAsync` when the existing
+  row's content isn't needed.
+- **Don't materialize a collection you don't need to.** Leave a LINQ query/`IEnumerable` as is when it's only
+  enumerated once (mapped into a response, iterated, passed on). Materialize only when it's genuinely
+  required: enumerated more than once, used as a value that must be stable (a `Contains` set, a captured
+  closure), or assigned to a persisted collection property. Then prefer `.ToArray()` (the most minimal
+  collection - also fine for an `ICollection<T>` navigation being persisted) and use `.ToList()` only when a
+  `List<T>` is truly needed (`Add`/`AddRange`, an API that takes a `List<T>`). Likewise no `?? []` on a
+  collection an Api Client call returns.
 - `[AllowAnonymous]` only if this runs before a JWT exists (e.g. part of a login flow) - and if it
   calls another application's endpoint in that state, that target endpoint must itself be
   `[AllowAnonymous]`; note that requirement in a comment.
@@ -451,13 +473,23 @@ public virtual async Task<IActionResult> MyActionAsync([FromBody][Required] MyAc
   the base constructor"). The base class exposes `this.Repository`/`this.Eventing` properties for
   exactly this reason - use those instead.
 - Only include the `[ProducesResponseType]`s actually reachable by this action's logic.
+- Same collection rule as the Public API path: don't `.ToList()`/`?? []` a repository or Api Client result
+  you only enumerate once; materialize only when required, preferring `.ToArray()` and `.ToList()` only when
+  a `List<T>` is truly needed (e.g. `AddRange`).
+- **Persist every change to a loaded entity with an explicit `this.Repository.UpdateAsync(entity, ...)`.** Don't
+  assign a property on an entity read through the repository and rely on it being tracked and written by a later
+  `AddAsync`/`DeleteAsync` save. Nano's `DbContext` overrides `Update` (it hydrates the entity graph so audit
+  captures the original vs new values), so an update that skips that path is not equivalent, and an explicit call
+  keeps the write visible on read. The price is a separate save per call instead of one transaction, so order the
+  calls where a unique index or foreign key needs it (e.g. close the old row before adding the row that replaces
+  it, delete before restoring a predecessor), and only rely on a single save when that atomicity genuinely matters.
 - **Throw, don't bare-return, for error responses that will cross an Api Client boundary.** A
   plain `this.BadRequest()`/`this.NotFound()` `IActionResult` has no `ProblemDetails` body. Per
   AGENTS.md's Api Clients Gotchas and Error Handling sections: a `404` always surfaces as `null` to
   the caller regardless of body, so bare `this.NotFound()` is fine - but any other non-2xx with no
   parseable `ProblemDetails` body becomes an `ApiClientException` the calling Public API's own
   middleware doesn't recognize, and it falls back to a **generic 500** for whoever called the
-  Public API, silently losing the real 400. Throw `new BadRequestException()` (`Nano.App.Exceptions`)
+  Public API, silently losing the real 400. Throw `new BadRequestException("<short reason>")` (`Nano.App.Exceptions`) (always with a short, human-readable message, never the parameterless form)
   instead - the centralized exception-handling middleware turns it into a proper `ProblemDetails`
   400 that an Api Client parses as `ProblemDetailsException` (any status), which the calling
   Public API's own middleware then correctly re-surfaces with the same status code. Same idea for a
@@ -526,7 +558,7 @@ consumer, not just the one Public API that remembered to compose it.
 - **A reference-count/existence guard can gate a create just as validly as a delete.** Don't assume
   this pattern only protects against removing something still in use - "reject adding a child row
   once a sibling entity's existence makes the parent immutable" is the same shape of check
-  (`CountAsync`/`QueryCountAsync` against the related entity, `throw BadRequestException()` if it's
+  (`CountAsync`/`QueryCountAsync` against the related entity, `throw new BadRequestException("<short reason>")` if it's
   non-zero), just applied to `CreateAsync`/`CreateAndGetAsync`/`CreateOrGetAsync` instead of
   `DeleteAsync`. If an entity has any notion of "locked" or "immutable" derived from another
   entity's existence, check both directions before assuming only deletes need guarding.
@@ -555,6 +587,23 @@ consumer, not just the one Public API that remembered to compose it.
 
 ---
 
+## Postman collection
+
+If the application already has a Postman collection, every endpoint this skill adds must also land in it:
+
+1. Look for `Postman_<AppName>.json` in the application's own folder (next to its `README.md`).
+2. **If it exists**, add the new endpoint's request to it - inside the folder for its controller, in the
+   position matching the controller's own action order - with the correct verb, route (the same route
+   constant the controller uses), request body/query, and a `description` noting anything a tester needs
+   to know (`[AllowAnonymous]`, business-rule guards, side effects). Follow the conventions of the
+   `nano-add-postman-collection` skill (base URL scheme, variable chaining, `bearer` auth). Edit only the
+   new request; don't regenerate or reorder the rest of the file.
+3. **If it doesn't exist, do nothing Postman-related** - don't create a collection. The endpoint is picked up
+   when the user later generates the collection with `nano-add-postman-collection`.
+4. If the file was edited, remind the user to **Replace**-import it in Postman - writing the file changes
+   nothing in Postman by itself.
+
+---
 ## After generating
 
 - Show the user every file touched/created, grouped by concern (Request/Response DTOs, controller

@@ -42,15 +42,16 @@ inside `{name}/`.
 | `{name}/Migrations/`                                        | ✓   | ✓   | ✓   | EF Core migrations (conventional location, when a SQL data provider is used).                                              |
 | `{name}/wwwroot/`                                           | ✓   | ✓   | ✗   | Static/dynamic web content root.                                                                                            |
 | `{name}/Dockerfile.Local`                                   | ✓   | ✓   | ✓   | Used by Docker Compose in `Development`; must stay in the application project folder.                                       |
-| `{name}.Models/{name}.Models.csproj`                        | ✓   | ✓   | ✗   | Sibling project holding entity models, query criteria, and API client (Requests/Api). Publishable as its own NuGet for sharing models + API client with consumers. Should reference at minimum `Nano.App`. |
-| `{name}.Models/Data/`                                       | ✓   | ✓   | ✗   | Entity models (conventional location).                                                                                      |
-| `{name}.Models/Criterias/`                                  | ✓   | ✓   | ✗   | Query criteria classes (conventional location).                                                                             |
-| `{name}.Models/Api/`                                        | ✓   | ✓   | ✗   | API client + `Requests/` (conventional location, for apps exposing a typed client to consumers).                            |
+| `{name}.Models/{name}.Models.csproj`                        | (✓) | (✓) | ✗   | Sibling project holding entity models, query criteria, and API client (Requests/Api). Publishable as its own NuGet for sharing models + API client with consumers. Should reference at minimum `Nano.App`. |
+| `{name}.Models/Data/`                                       | (✓) | (✓) | ✗   | Entity models (conventional location).                                                                                      |
+| `{name}.Models/Criterias/`                                  | (✓) | (✓) | ✗   | Query criteria classes (conventional location).                                                                             |
+| `{name}.Models/Api/`                                        | (✓) | (✓) | ✗   | API client + `Requests/` (conventional location, for apps exposing a typed client to consumers).                            |
 | `{name}.Events/{name}.Events.csproj`                        | (✓) | (✓) | (✓) | Sibling project holding Publish/Subscribe event contract classes _(optional — only when this app has a **shared** event, one another application in a different solution needs to publish or subscribe to; see [Nano.Eventing § Publish and Subscribe](#publish-and-subscribe)). Publishable as its own NuGet, same as `{name}.Models`. A **local** event (used only within this solution) stays a plain class in `{name}/Eventing/` instead — no separate project needed._ |
 | `.tests/Tests.{name}/Tests.{name}.csproj`                   | ✓   | ✓   | ✓   | Test project — empty by default, demonstrates where unit/integration tests belong.                                          |
 | `.tests/Tests.{name}/Properties/DoNotParallelize.cs`        | ✓   | ✓   | ✓   | Ensures tests are not parallelized.                                                                                          |
 | `.docker/docker-compose.dcproj`                             | ✓   | ✓   | ✓   | Docker Compose project used by Visual Studio for local orchestration.                                                       |
 | `.docker/docker-compose.yml`                                | ✓   | ✓   | ✓   | Docker Compose spec for local (`Development`) orchestration.                                                                |
+| `.docker/.env`                                              | ✓   | ✓   | ✓   | Local-only secrets file loaded into this app's own compose service via `env_file` — always present, even empty, and gitignored. See [Local Development (docker-compose)](#local-development-docker-compose). |
 | `.docker/publish-dependencies.ps1`                          | (✓) | (✓) | (✓) | Publishes every nested Api Client dependency to `bin/publish` locally _(only present once this app consumes at least one Api Client — see [Api Clients § Local Development](#local-development-docker-compose))_. |
 | `.kubernetes/configmap.yaml`                                | ✓   | ✓   | ✓   | Kubernetes ConfigMap.                                                                                                        |
 | `.kubernetes/autoscaler.yaml`                               | ✓   | ✓   | ✗   | Kubernetes Horizontal Pod Autoscaler.                                                                                        |
@@ -68,6 +69,8 @@ inside `{name}/`.
 | `.dockerignore` / `.gitignore`                              | ✓   | ✓   | ✓   | Solution root.                                                                                                               |
 | `README.md` / `icon.png` / `LICENSE`                        | (✓) | (✓) | (✓) | Solution root, optional — used for the repo and any published NuGet packages.                                                |
 
+**{name}.Models is optional.** Only an application that shares entity models, query criteria, or an Api Client with other applications needs one - in practice, internal services. A Public API (which composes other services' Api Clients) or a Console application normally has none, and nothing stops adding one if there's a real reason. An application consuming another service's Api Client never adds that reference to its own .Models project (if it has one): the reference goes on the application project, so it isn't leaked into everything that consumes this application's .Models.
+
 Folder names like `Controllers/`, `Data/`, `Criterias/`, `Api/`, and `Migrations/` are convention, not a
 framework requirement — Nano discovers controllers, mappings, and data providers by type, not by folder
 location. As each feature section below is filled in, it will also note where new files of that kind
@@ -80,7 +83,7 @@ Kubernetes secret, storage class, HTTPRoute, etc.) means also adding a `.kuberne
 line to that block, or it exists on disk but never shows up in the solution.
 
 **NuGet packages**: for a quick start, add `NanoCore` (all-inclusive; `Nano.All` is the identical, differently-named
-package underneath it — either one works the same way) to `{name}.Models` only — since `{name}` references
+package underneath it — either one works the same way) to `{name}.Models` only (or, for an application with no `.Models` project, to `{name}` itself) — since `{name}` references
 `{name}.Models` via `ProjectReference`, every Nano package flows into the app project transitively, so no Nano
 package reference is needed there directly. Once you know which providers
 you're actually using, switch to referencing only the specific packages you need — smaller dependency footprint,
@@ -131,6 +134,10 @@ defaulting to `Development`.
 | `Development` | Local  | Local development machine.    |
 | `Staging`     | Cloud  | Cloud Kubernetes deployment.  |
 | `Production`  | Cloud  | Cloud Kubernetes deployment.  |
+
+This default is why a nested dependency's compose service block (see [Local Development (docker-compose)](#local-development-docker-compose))
+doesn't need `ASPNETCORE_ENVIRONMENT` set explicitly — with nothing set, Nano itself resolves to `Development`,
+the same as running locally any other way.
 
 ### Configuration
 
@@ -408,6 +415,8 @@ svc.mytarget:
       WORKDIR /app
       COPY ./bin/publish/. .
       ENTRYPOINT ["dotnet", "Svc.MyTarget.dll"]
+  env_file:
+    - ../../Svc.MyTarget/.docker/.env
   environment:
     ASPNETCORE_HTTP_PORTS: ""
   depends_on:               # only if the target actually has a Data/Eventing provider configured
@@ -423,36 +432,80 @@ dependency's `depends_on` to them if that dependency actually has a data/eventin
 own `Program.cs`; a dependency with neither gets no `depends_on` at all, matching its own standalone
 `docker-compose.yml`).
 
-**Publishing happens automatically on every build, incrementally.** The `.docker/docker-compose.dcproj` gets:
+**Local-dev secrets (`.env`)**: `dotnet user-secrets`/`secrets.json` doesn't reach a Docker container — it reads
+from a host-machine path outside any build context. The one exception is Visual Studio's own Docker Compose
+debug launch, which auto-mounts the host's user-secrets folder, but only for the *primary* project being
+debugged — never for a dependency's own nested service block, which is always built from a published binary
+(see above), not through VS's debug tooling. So a nested dependency needs its secrets some other way.
 
-1. A `publish-dependencies.ps1` script (next to the `.yml`) that `dotnet publish`es every nested dependency to its
-   own `bin/publish` folder.
-2. A `PublishDependentServices` MSBuild target, hooked to `BeforeTargets="DockerPrepareForBuild"`, with `Inputs`
-   set to a glob of every dependency's (and its `.Models` project's) `.cs`/`.csproj` files and `Outputs` pointing
-   at a `bin\publish-dependencies.stamp` file the script touches on success — so MSBuild's normal incremental-build
-   comparison skips the whole publish pass when nothing actually changed, instead of republishing on every single
-   `docker compose up`. The stamp lives under `.docker\bin\`, not the `.docker` root, purely so it falls under the
-   solution's existing `**/bin` ignore rule instead of needing its own `.gitignore` entry.
+Every Nano app template ships with an empty `.docker/.env` alongside its `docker-compose.yml`, wired into that
+app's own compose service via `env_file: [.env]` — present from day one, even with nothing in it yet. That file
+is the single source of truth for that app's local-dev secrets (real external credentials — an emailing
+provider's API key, not fixed shared dev values like the RabbitMq/MySql credentials below, which stay in
+`appsettings.Development.json` as before). Name each key exactly as its `.NET` config path
+(`Emailing__ApiKey`, matching `Emailing:ApiKey`), so `env_file:` needs no separate mapping step.
+
+`nano-add-api-client-configuration` always adds the `env_file:` reference shown above when nesting a target,
+whether or not that target's `.env` currently has anything in it — since the file always exists, this means a
+secret added to the target later needs nothing done on the consuming app's side to pick it up. Note that
+`env_file:` loads every key in the referenced file into the container, with no way to select a subset — this is
+fine specifically because the file is scoped to one dependency, and any consumer already fully depends on that
+whole service anyway.
+
+**Publishing happens incrementally, one MSBuild target per nested dependency — never one shared target for all of
+them.** The `.docker/docker-compose.dcproj` gets:
+
+1. A `publish-dependencies.ps1` script (next to the `.yml`) that `dotnet publish`es **one** project — the one named
+   by its `-Project`/`-StampName` parameters — to that project's own `bin/publish` folder. It takes no list of
+   dependencies itself; which project gets published is entirely up to whichever target invokes it.
+2. **One `Publish{Target}` MSBuild target per nested dependency** (`PublishSvcAccounts`, `PublishSvcAssets`, …, not
+   a single shared `PublishDependentServices` covering all of them), each hooked to
+   `BeforeTargets="DockerPrepareForBuild"`, with its own `Inputs` — a glob of just *that* dependency's (and its
+   `.Models` project's) `.cs`/`.csproj` files, **plus that dependency's own `.json` files** (`appsettings*.json`,
+   not its `.Models` project's — those don't ship any) — and its own `Outputs`, a per-dependency stamp file
+   (`bin\publish-{target}.stamp`). **This per-dependency split is load-bearing, not a style choice**: a single
+   shared target across every dependency means editing *one* service's source republishes (and, transitively,
+   rebuilds the Docker image for) every other nested service too, on every build — with 5+ dependencies nested,
+   that's a real, avoidable slowdown on every single F5. Splitting the target per dependency means MSBuild's own
+   incremental comparison only reruns `dotnet publish` for the dependency whose own files actually changed; the
+   rest are untouched, and Docker's own layer cache then skips rebuilding their images too since their
+   `bin/publish` content didn't change.
+   ⚠ The `.json` glob is load-bearing, not decorative — a config-only edit to a dependency's `appsettings.*.json`
+   (a connection string, a database name) is exactly as real a change as editing its `.cs` files, but without it
+   in that dependency's own `Inputs`, MSBuild sees no changed input, skips the publish pass for it, and the stale
+   `bin\publish` output (with the old config baked in) keeps getting `COPY`'d into the image indefinitely —
+   surviving `docker compose down`, killing containers, even closing and reopening the IDE, since none of that
+   touches the stamp file this target actually keys off. If this ever needs a manual unstick regardless, delete
+   that dependency's own `.docker\bin\publish-{target}.stamp` (forces a republish of just that one dependency on
+   the next build) or run `publish-dependencies.ps1 -Project <path> -StampName <name>` directly.
 
 ```xml
 <ItemGroup>
-  <DependentServiceSources Include="..\..\Svc.MyTarget\Svc.MyTarget\**\*.cs;..\..\Svc.MyTarget\Svc.MyTarget\Svc.MyTarget.csproj;..\..\Svc.MyTarget\Svc.MyTarget.Models\**\*.cs;..\..\Svc.MyTarget\Svc.MyTarget.Models\Svc.MyTarget.Models.csproj"
-                            Exclude="..\..\Svc.MyTarget\Svc.MyTarget\bin\**;..\..\Svc.MyTarget\Svc.MyTarget\obj\**;..\..\Svc.MyTarget\Svc.MyTarget.Models\bin\**;..\..\Svc.MyTarget\Svc.MyTarget.Models\obj\**" />
+  <SvcMyTargetSources Include="..\..\Svc.MyTarget\Svc.MyTarget\**\*.cs;..\..\Svc.MyTarget\Svc.MyTarget\**\*.json;..\..\Svc.MyTarget\Svc.MyTarget\Svc.MyTarget.csproj;..\..\Svc.MyTarget\Svc.MyTarget.Models\**\*.cs;..\..\Svc.MyTarget\Svc.MyTarget.Models\Svc.MyTarget.Models.csproj"
+                       Exclude="..\..\Svc.MyTarget\Svc.MyTarget\bin\**;..\..\Svc.MyTarget\Svc.MyTarget\obj\**;..\..\Svc.MyTarget\Svc.MyTarget.Models\bin\**;..\..\Svc.MyTarget\Svc.MyTarget.Models\obj\**" />
 </ItemGroup>
 
-<Target Name="PublishDependentServices"
+<Target Name="PublishSvcMyTarget"
         BeforeTargets="DockerPrepareForBuild"
-        Inputs="@(DependentServiceSources)"
-        Outputs="$(MSBuildProjectDirectory)\bin\publish-dependencies.stamp">
-  <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\publish-dependencies.ps1&quot; -Configuration $(Configuration)" />
+        Inputs="@(SvcMyTargetSources)"
+        Outputs="$(MSBuildProjectDirectory)\bin\publish-svc-mytarget.stamp">
+  <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\publish-dependencies.ps1&quot; -Configuration $(Configuration) -Project &quot;..\..\Svc.MyTarget\Svc.MyTarget\Svc.MyTarget.csproj&quot; -StampName publish-svc-mytarget.stamp" />
 </Target>
 ```
 
-This means hitting F5 is the only step a developer needs — VS builds the `docker-compose` project before
-launching it, which runs this target, which republishes only the dependencies whose source actually changed,
-before `docker compose up` ever touches the network. No `.gitignore` entry is needed for the stamp file itself —
-it lives under `.docker\bin\`, already covered by the solution's standard `**/bin` ignore rule (the script creates
-that `bin` folder if it doesn't exist yet).
+A second nested dependency means one more `{Target}Sources` `ItemGroup` entry and one more `Publish{Target}` block,
+following the same shape — never adding to an existing dependency's `Inputs` glob or reusing its stamp file. No
+`.gitignore` entry is needed for any of the stamp files — they all live under `.docker\bin\`, already covered by
+the solution's standard `**/bin` ignore rule (the script creates that `bin` folder if it doesn't exist yet).
+
+⚠ **In practice, a plain F5 while nothing is currently running does not reliably trigger these targets at all** —
+Visual Studio's own "is a build actually needed" check for the `docker-compose` project doesn't always decide a
+rebuild is warranted just because a nested dependency's source changed, even though MSBuild's own `Inputs`/
+`Outputs` comparison (if actually invoked) would correctly say it's out of date. An explicit **Rebuild** on the
+solution/`docker-compose` project *does* reliably invoke it. The practical workflow after changing a nested
+dependency is therefore **Rebuild → F5**, not F5 alone — Rebuild also removes the running containers, but since
+the per-dependency stamps mean only the changed dependency actually republishes and rebuilds its image, the
+following F5 recreating every container is fast for the unchanged ones (cached images) regardless.
 
 ⚠ This whole mechanism exists for *local* `Development` orchestration only. `Staging`/`Production` never build
 this way — each service has its own real `Dockerfile` (multi-stage, built from source in CI, where the pipeline's
@@ -1913,6 +1966,7 @@ capability you want to expose — each is gated by its own [authorization policy
 | `BaseEntityCreatableController<TEntity, TCriteria>`                | ✓   | ✓     | ✓      | ✗    | ✗      | `NanoRead` + `NanoAdd` |
 | `BaseEntityEditableController<TEntity, TCriteria>`                 | ✓   | ✓     | ✗      | ✓    | ✗      | `NanoRead` + `NanoEdit` |
 | `BaseEntityCreatableAndEditableController<TEntity, TCriteria>`     | ✓   | ✓     | ✓      | ✓    | ✗      | adds `NanoAddOrEdit` for the upsert action |
+| `BaseEntityCreatableAndDeletableController<TEntity, TCriteria>`    | ✓   | ✓     | ✓      | ✗    | ✓      | `NanoRead` + `NanoAdd` + `NanoDelete` - for entities only ever added and removed, e.g. a join row |
 | `BaseEntityDeletableController<TEntity, TCriteria>`                | ✓   | ✓     | ✗      | ✗    | ✓      | `NanoRead` + `NanoDelete` |
 | `BaseEntityController<TEntity, TCriteria>`                         | ✓   | ✓     | ✓      | ✓    | ✓      | full set, adds `NanoDelete` on top |
 
@@ -1982,15 +2036,20 @@ constructing one that isn't throws `InvalidOperationException` immediately:
 ##### Combining criteria — sequential, not grouped
 
 Every operation call takes a `LogicalType` (`And` default, or `Or`). Multiple calls on the **same**
-`CriteriaExpression` combine strictly **left to right** — each new condition's `LogicalType` says how it joins
-with everything accumulated *so far*, not with what comes after it. There is no parenthesized grouping within
-one `CriteriaExpression`:
+`CriteriaExpression` combine strictly **left to right** — each condition's `LogicalType` says how it joins
+with the **next** condition added, not with the one before it, and the **last** condition's `LogicalType` is
+ignored since nothing follows it. There is no parenthesized grouping within one `CriteriaExpression`:
 
 ```csharp
-expression.Equal(nameof(MyEntity.A), a);              // A
-expression.Equal(nameof(MyEntity.B), b);               // (A) AND B
-expression.Equal(nameof(MyEntity.C), c, LogicalType.Or); // (A AND B) OR C  -- NOT A AND (B OR C)
+expression.Equal(nameof(MyEntity.A), a);                  // A, joined to B with AND (the default)
+expression.Equal(nameof(MyEntity.B), b, LogicalType.Or);  // (A AND B), joined to C with OR
+expression.Equal(nameof(MyEntity.C), c);                  // (A AND B) OR C  -- NOT A AND (B OR C); C's own type is ignored
 ```
+
+⚠ Because it's the *next* condition that a type binds to, matching one value against several columns (a keyword
+search) needs `Or` on **every condition except the last**: `X(Or), Y(Or), Z` is `X OR Y OR Z`, whereas
+`X, Y(Or), Z` — the reading most people expect from "Or on the later ones" — is `(X AND Y) OR Z`, which
+silently returns almost nothing.
 
 To get `A AND (B OR C)`, build `(B OR C)` as one `CriteriaExpression` and put `A` in a **separate**
 `CriteriaExpression` — the `IList<CriteriaExpression>` returned by `GetExpressions()` is itself combined with
@@ -2001,8 +2060,8 @@ var groupA = new CriteriaExpression();
 groupA.Equal(nameof(MyEntity.A), a);
 
 var groupBC = new CriteriaExpression();
-groupBC.Equal(nameof(MyEntity.B), b);
-groupBC.Equal(nameof(MyEntity.C), c, LogicalType.Or);
+groupBC.Equal(nameof(MyEntity.B), b, LogicalType.Or);
+groupBC.Equal(nameof(MyEntity.C), c);
 
 return new[] { groupA, groupBC };   // A AND (B OR C)
 ```
@@ -2656,6 +2715,7 @@ IEntitySoftDeletable         : IEntityDeletable, redeclares IsDeleted   (opt-in)
 | `BaseEntityUpdatable` / `<TIdentity>`              | `IEntityUpdatable` only                | |
 | `BaseEntityDeletable` / `<TIdentity>`              | `IEntityDeletable` only                | |
 | `BaseEntityCreatableAndUpdatable` / `<TIdentity>`   | Create + update, no delete             | |
+| `BaseEntityCreatableAndDeletable` / `<TIdentity>`   | Create + delete, no update             | For entities only ever added and removed, such as a join row between two entities. |
 | `BaseEntityUser` / `<TIdentity>`                   | Update + delete (`IEntityUser<TIdentity>`) | Adds `IdentityUser` (`IdentityUserEx<TIdentity>`), tagged `[Include]` + `[ValidateNever]` + `[SwaggerRequestIgnore]` — always eager-loaded, never validated as input, never shown in Swagger request bodies. See [Identity](#identity). |
 | `BaseEntityView`                                   | None — bare `IEntity`, no `Id`/`IsDeleted`/`CreatedAt` at all | Non-generic only. For entities mapped to a SQL view — you define every property yourself, including any identifier. |
 | `BaseEntityIdentity` / `<TIdentity>`                | `Id` only, nothing else                | For advanced cases that don't want the built-in `IsDeleted`/`CreatedAt` — implement whichever capability interface (`IEntityCreatable`, `IEntityWritable`, etc.) yourself to restore the operations you need. |

@@ -44,6 +44,9 @@
   * **[Error Handling](#error-handling)**
   * **[Static Files](#static-files)**
   * **[Authentication](#authentication)**
+    * **[Root Login](#root-login)**
+    * **[Credentials Login](#credentials-login)**
+    * **[External Logins](#external-logins)**
   * **[Authorization](#authorization)**
   * **[Api Clients](#api-clients)**
 * **[Controllers](#controllers)**
@@ -1708,6 +1711,7 @@ interfaces, showing what is available for use in your application.
 | External Transient     | JWT Transient     | Jwt, ExternalLogins            | `IAuthTransientRepository`     |
 | Api Key                | Api Key Identity  | Identity, ApiKey               | (_`IAuthIdentityRepository`_)  |
 
+### Root Login
 Nano supports a statically configured JWT login called `RootLogin`. It is primarily intended for use in `Development` environments when testing services in isolation, but where 
 the application still requires an authenticated user. Another common scenario is when console applications need to authenticate through the Nano API client but do not have 
 a specific user account available for login. This login type is transient and does not rely on an identity store.  
@@ -1732,7 +1736,7 @@ The `RootLogin` configuration is defined as follows.
 }
 ```
 
-`RootLogin` is primarily a `Development` convenience, but it can also be enabled in `Staging` and `Production`, for example to give a Console application a simple way to authenticate through the Nano API client when no specific user account is available. Doing so means the credentials must come from a secret, not a config file, the same as the JWT keys above.
+It can also be enabled in `Staging` and `Production`, for example to give a Console application a simple way to authenticate through the Nano API client when no specific user account is available. Doing so means the credentials must come from a secret, not a config file, the same as the JWT keys above.
 
 | Variable                                    | Type     | Description                        |
 | -------------------------------------------- | -------- | ----------------------------------------- |
@@ -1791,6 +1795,7 @@ The `IAuthRootRepository` contains just a single method.
 
 Try it out yourself using the **[Api.Auth.RootLogin](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Auth.RootLogin)** example.  
 
+### Credentials Login
 The most basic and commonly used authentication method is logging in with credentials, a username and password, validated against the configured identity store.  
 
 The `IAuthIdentityRepository` provides the following methods to support this functionality.  
@@ -1798,27 +1803,36 @@ The `IAuthIdentityRepository` provides the following methods to support this fun
 | Method                              | Parameters                       | Description                                                                                                                             |
 | ----------------------------------- | -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
 | `LogInAsync`                        | logIn                            | Logs in a user using username and password credentials, generating a JWT access token and optional refresh token.                       |
-| `LogInExternalAsync`                | logInExternal                    | Logs in a user using direct external login data, generating a JWT access token and optional refresh token.                              |
-| `LogInExternalAsync`                | providerName, logInExternalFlow  | Logs in a user authenticating with a configured external login provider flow, generating a JWT access token and optional refresh token. |
 | `LogInRefreshAsync`                 | token, refreshToken              | Refreshes an existing access token using a valid refresh token, generating a new JWT and refresh token. `token` is the expired/soon-to-expire access token, read by the controller from the Authorization header, not the request body. |
 | `LogOutAsync`                       | userId, appId                    | Logs out the current user.                                                                                                              |
 
 Try it out yourself using the **[Api.Data.Identity.Auth.Jwt](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Data.Identity.Auth.Jwt)** example.  
 
-The `IAuthIdentityRepository` supports external authentication backed by the identity store, as shown in the table above. In contrast, the `IAuthTransientRepository`, shown in the table below, 
-also supports external authentication but is designed for transient logins without persistence and provides dedicated methods for external transient authentication.
+### External Logins
+External authentication is supported two ways. `IAuthIdentityRepository` backs it by the identity store - the resulting user, roles and claims are persisted, and refreshed with 
+the same `LogInRefreshAsync` shown above - and adds the following methods for it:
 
-| Method                              | Parameters           | Description                                                                                                                     |
-| ----------------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `LogInExternalAsync`                | logInExternal        | Performs an external login using direct external login data and generates a corresponding JWT access token.                     |
-| `LogInExternalAsync`                | logInExternalDirect  | Performs an external login using a configured built-in external provider type and generates a corresponding JWT access token.   |
-| `LogInExternalRefreshAsync`         | providerName, token  | Refreshes a transient external login. `token` is the expired/soon-to-expire access token, read from the Authorization header - the provider's own refresh token and any transient claims/roles are recovered from claims embedded in `token` at login, never supplied by the caller. |
+| Method                              | Parameters                       | Description                                                                                                                             |
+| ----------------------------------- | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| `LogInExternalAsync`                | logInExternal                    | Logs in a user using direct external login data, generating a JWT access token and optional refresh token.                              |
+| `LogInExternalAsync`                | providerName, logInExternalFlow  | Logs in a user authenticating with a configured external login provider flow, generating a JWT access token and optional refresh token. |
 
-Logging in using external authentication in Nano can be achieved either by configuring a built-in provider or by implementing a custom provider (see further down).  
+`IAuthTransientRepository`, in contrast, is designed for transient logins without persistence and provides dedicated methods for external transient authentication, including 
+its own method for refreshing them:
+
+| Method                              | Parameters                  | Description                                                                                                                     |
+| ----------------------------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| `LogInExternalAsync`                | logInExternal                | Performs an external login using direct external login data and generates a corresponding JWT access token.                     |
+| `LogInExternalAsync`                | providerName, logInExternal  | Performs an external login using a configured built-in external provider type and generates a corresponding JWT access token.   |
+| `LogInExternalRefreshAsync`         | providerName, token          | Refreshes a transient external login. `token` is the expired/soon-to-expire access token, read from the Authorization header - the provider's own refresh token and any transient claims/roles are recovered from claims embedded in `token` at login, never supplied by the caller. |
+
+Login using external authentication in Nano can be achieved either by configuring a built-in provider or by implementing a custom provider (see further down).  
+
+> ⚠️ Remember to store secrets for external logins securely in `docker-compose`'s `.env`, not in `appsettings.Development.json` or committed to source control.
 
 For a built-in provider, the following configuration can be added.  
 
-**Facebook**
+#### Facebook
 Uses an implicit flow: the client-side SDK obtains the access token directly and sends it straight to Nano; there's no server-side token exchange, and logins can't be refreshed.
 
 | Setting                    | Type   | Default  | Description                         |
@@ -1847,7 +1861,7 @@ requests from the Facebook Graph API; add `user_birthday` too if the `birthday` 
 
 The Facebook App Id/Secret must be created manually through [Meta for Developers](https://developers.facebook.com).  
 
-**Google**
+#### Google
 Uses an auth code flow: the frontend redirects the user through Google's sign-in with PKCE, and Nano exchanges the resulting code for tokens itself server-side. 
 Refreshable if the frontend requests it.
 
@@ -1875,6 +1889,10 @@ Refreshable if the frontend requests it.
 The `Scopes` must include `openid` (and should include `profile` and `email`). Nano exchanges the authorization code for tokens itself and reads the `name` and `email` claims 
 from the resulting `id_token`.
 
+Unlike Microsoft, Google has no `offline_access` scope - refreshability is controlled by the `access_type`/`prompt` query parameters on the authorize redirect below, not by anything 
+in `Scopes`. Google only returns a `refresh_token` on a request that includes `access_type=offline`, and only grants a *new* one when `prompt=consent` forces the consent screen to 
+show again - without it, a user who already granted consent gets no `refresh_token` on subsequent logins. Omit both parameters entirely if this login should never be refreshable.
+
 Generate a PKCE `code_verifier` and `code_challenge` pair and a random `state` value, then redirect the user to the following URI to trigger Google's sign-in flow:
 
 ```
@@ -1883,6 +1901,8 @@ https://accounts.google.com/o/oauth2/v2/auth
   &response_type=code
   &redirect_uri={RedirectUri}
   &scope=openid profile email
+  &access_type=offline
+  &prompt=consent
   &code_challenge={code_challenge}
   &code_challenge_method=S256
   &state={state}
@@ -1892,7 +1912,7 @@ Then send the resulting `code` and the `code_verifier` used to derive `code_chal
 
 The Google Client Id/Secret must be created manually through the [Google Cloud Console](https://console.cloud.google.com)'s OAuth client setup.
 
-**Microsoft**
+#### Microsoft
 Uses an auth code flow: the frontend redirects the user through Microsoft's sign-in with PKCE, and Nano exchanges the resulting code for tokens itself server-side. 
 Refreshable if the frontend requests it.
 
@@ -1924,6 +1944,18 @@ The `Scopes` must include `openid` (and should include `profile` and `email`). N
 `refresh_token` from the token response without it. The same scope must also be requested in the frontend's own sign-in redirect below, since consent for it is granted once, 
 at that initial step.
 
+Which accounts can sign in is controlled by the Entra ID app registration's `--sign-in-audience`, decided once when the app registration is created. It also determines what 
+`TenantId` must hold at runtime, since Nano interpolates it straight into the token endpoint URL (`https://login.microsoftonline.com/{TenantId}/oauth2/v2.0/token`):
+
+| Who can sign in                                       | `--sign-in-audience`                | Runtime `TenantId`   |
+| ------------------------------------------------------ | ------------------------------------ | --------------------- |
+| Only users in your own tenant (default, most common)    | `AzureADMyOrg`                       | the real tenant GUID  |
+| Users in any Azure AD/Entra org                          | `AzureADMultipleOrgs`                | literal `organizations` |
+| Any org + personal Microsoft accounts                    | `AzureADandPersonalMicrosoftAccount` | literal `common`      |
+| Personal Microsoft accounts only                         | `PersonalMicrosoftAccount`           | literal `consumers`   |
+
+Whatever is chosen, the client-side code that starts the sign-in must be configured with the matching authority, or Azure rejects the sign-in before a code is ever issued.
+
 Generate a PKCE `code_verifier`/`code_challenge` pair and a random `state` value, then redirect the user to the following URI to trigger Microsoft's sign-in flow:
 
 ```
@@ -1940,9 +1972,18 @@ https://login.microsoftonline.com/{TenantId}/oauth2/v2.0/authorize
 
 Then send the resulting `code` and the `code_verifier` used to derive `code_challenge` to the external login endpoint.
 
-Microsoft's Entra ID app registration credentials are provisioned and rotated by the GitHub Actions workflow itself, in a `Setup App Registration` step. The `TenantId` is simply 
-the workflow's own `AZURE_TENANT_ID` (no separate value needed), `ClientId` is looked up fresh every run, and `ClientSecret` is reissued every run and never persisted as a 
-GitHub secret.
+Microsoft's Entra ID app registration credentials are provisioned and rotated by the GitHub Actions workflow itself, in a `Setup App Registration` step. `ClientId` is looked up 
+fresh every run, and `ClientSecret` is reissued every run and never persisted as a GitHub secret. `--sign-in-audience` and `TenantId` are each assigned once, as their own `$env:` 
+variables at the top of the step, straight from the table above (e.g. `AzureADMyOrg` paired with `$env:AZURE_TENANT_ID`, or `AzureADMultipleOrgs` paired with `"organizations"`) - 
+not sourced from a workflow variable, and not derived by a runtime switch, since the audience is decided once per app, not per run. Every downstream reference (the Kubernetes 
+secret below, and the `$env:GITHUB_ENV` output) always reads `$env:AUTH_MICROSOFT_TENANT_ID`, never `$env:AZURE_TENANT_ID` directly, so the app works identically regardless of 
+which audience it was configured with.
+
+| Variable                      | Type   | Description                                        |
+| ------------------------------ | ------ | --------------------------------------------------- |
+| AUTH_MICROSOFT_REDIRECT_URI    | vars   | The redirect URI the client is called back on after signing in with Microsoft.  |
+
+Configure the GitHub Actions workflow for the application by adding the following environment variable.
 
 ```yaml
 env:
@@ -1955,13 +1996,15 @@ env:
   run: |
     $env:APP_DISPLAY_NAME = $env:SERVICE_NAME + "-app";
     $env:SECRET_DISPLAY_NAME = $env:APP_DISPLAY_NAME + "-secret-" + (Get-Date -Format "yyyyMMddHHmmss");
+    $env:AUTH_MICROSOFT_SIGNIN_AUDIENCE = "AzureADMyOrg";
+    $env:AUTH_MICROSOFT_TENANT_ID = $env:AZURE_TENANT_ID;
     $env:AUTH_MICROSOFT_CLIENT_ID = az ad app list --display-name $env:APP_DISPLAY_NAME --query "[0].appId" -o tsv;
 
     if (-not $env:AUTH_MICROSOFT_CLIENT_ID) 
     {
         az ad app create `
             --display-name $env:APP_DISPLAY_NAME `
-            --sign-in-audience AzureADMyOrg `
+            --sign-in-audience $env:AUTH_MICROSOFT_SIGNIN_AUDIENCE `
             --web-redirect-uris $env:AUTH_MICROSOFT_REDIRECT_URI;
 
         $env:AUTH_MICROSOFT_CLIENT_ID = az ad app list --display-name $env:APP_DISPLAY_NAME --query "[0].appId" -o tsv;
@@ -1970,6 +2013,7 @@ env:
     {
         az ad app update `
             --id $env:AUTH_MICROSOFT_CLIENT_ID `
+            --sign-in-audience $env:AUTH_MICROSOFT_SIGNIN_AUDIENCE `
             --web-redirect-uris $env:AUTH_MICROSOFT_REDIRECT_URI;
     }
 
@@ -1977,7 +2021,7 @@ env:
         --id $env:AUTH_MICROSOFT_CLIENT_ID `
         --append `
         --display-name $env:SECRET_DISPLAY_NAME `
-        --years 1 `
+        --years 2 `
         --query "password" -o tsv;
 
     echo "::add-mask::$env:AUTH_MICROSOFT_CLIENT_SECRET";
@@ -1993,6 +2037,7 @@ env:
 
     echo "AUTH_MICROSOFT_CLIENT_ID=$env:AUTH_MICROSOFT_CLIENT_ID" >> $env:GITHUB_ENV;
     echo "AUTH_MICROSOFT_CLIENT_SECRET=$env:AUTH_MICROSOFT_CLIENT_SECRET" >> $env:GITHUB_ENV;
+    echo "AUTH_MICROSOFT_TENANT_ID=$env:AUTH_MICROSOFT_TENANT_ID" >> $env:GITHUB_ENV;
 ```
 
 `--append` adds the new client secret alongside any existing ones instead of invalidating them immediately, so pods still running the previous deployment's secret keep 
@@ -2008,7 +2053,7 @@ metadata:
   namespace: %KUBERNETES_NAMESPACE%
 type: Opaque
 stringData:
-  tenant-id: %AZURE_TENANT_ID%
+  tenant-id: %AUTH_MICROSOFT_TENANT_ID%
   client-id: %AUTH_MICROSOFT_CLIENT_ID%
   client-secret: %AUTH_MICROSOFT_CLIENT_SECRET%
 ```
@@ -2041,6 +2086,7 @@ spec:
 Try it out yourself using the **[Api.Auth.External.Microsoft](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Auth.External.Microsoft)** example, which has this 
 wiring end-to-end.  
 
+#### Custom Provider
 Implementing a custom external authentication provider in Nano is straightforward. Create a class that derives from `BaseAuthExternalRepository<TFlow>` and provide a provider name via the 
 constructor. The base class implements the `IAuthExternalRepository<TFlow>` interface, which requires you to implement the abstract methods `AuthenticateAsync` and `AuthenticateRefreshAsync`. 
 The `TFlow` generic parameter defines the authentication flow used by the provider. Nano includes two built-in flows, `Implicit` and `AuthCode`, but you can extend this by creating your own 
@@ -2181,6 +2227,7 @@ CRUD operations depending on their intended responsibility, as shown below.
 | `BaseEntityReadOnlyController<TEntity, TCriteria>`              | ✔   | ✔   | ❌     | ❌     | ❌     |
 | `BaseEntityCreatableController<TEntity, TCriteria>`             | ✔   | ✔   | ✔      | ❌     | ❌     |
 | `BaseEntityCreatableAndUpdatableController<TEntity, TCriteria>` | ✔   | ✔   | ✔      | ✔     | ❌     |
+| `BaseEntityCreatableAndDeletableController<TEntity, TCriteria>` | ✔   | ✔   | ✔      | ❌     | ✔      |
 | `BaseEntityEditableController<TEntity, TCriteria>`              | ✔   | ✔   | ❌     | ✔      | ❌     |
 | `BaseEntityDeletableController<TEntity, TCriteria>`             | ✔   | ✔   | ❌     | ❌     | ✔      |
 | `BaseEntityViewController<TEntity, TCriteria>`                  | ❌  | ✔   | ❌      | ❌    | ❌     |

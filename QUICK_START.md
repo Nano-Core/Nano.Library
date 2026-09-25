@@ -40,7 +40,7 @@ Two other pre-configured Api flavors are also available: one for a publicly-expo
 
 If you'd rather not use a template (for example, to learn the underlying solution structure, or to build on a non-standard layout), each application type is also available
 as a _blank_ solution you can copy or clone directly, then rename the solution and projects to fit your application, updating namespaces and identifiers as needed throughout
-the files, and add the **NanoCore** NuGet package to your Models project for a quick start; add more specific packages (e.g. a single data provider) as needed later.  
+the files, and add the **NanoCore** NuGet package to your Models project (or the application project, if there is no Models project, e.g. a Console application) for a quick start; add more specific packages (e.g. a single data provider) as needed later.  
 
 - **[Api._Blank](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api._Blank)**
 - **[Console._Blank](https://github.com/Nano-Core/Nano.Lessons/blob/master/Console._Blank)**

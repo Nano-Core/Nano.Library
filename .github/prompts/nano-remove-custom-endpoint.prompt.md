@@ -184,6 +184,12 @@ because the override now covers it.
 
 ---
 
+## Postman collection
+
+If the application already has a Postman collection (`Postman_<AppName>.json` in the application's own folder,
+next to its `README.md`), remove this endpoint's request from it (or, if the endpoint was converted rather than
+removed, update that request to match). Edit only that request; don't regenerate the file. If the file was
+edited, remind the user to **Replace**-import it in Postman. If no collection exists, do nothing Postman-related.
 ## After making the change
 
 - Show the user every file/method touched or deleted, grouped by concern, and which path was
