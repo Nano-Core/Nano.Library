@@ -2035,15 +2035,20 @@ constructing one that isn't throws `InvalidOperationException` immediately:
 ##### Combining criteria — sequential, not grouped
 
 Every operation call takes a `LogicalType` (`And` default, or `Or`). Multiple calls on the **same**
-`CriteriaExpression` combine strictly **left to right** — each new condition's `LogicalType` says how it joins
-with everything accumulated *so far*, not with what comes after it. There is no parenthesized grouping within
-one `CriteriaExpression`:
+`CriteriaExpression` combine strictly **left to right** — each condition's `LogicalType` says how it joins
+with the **next** condition added, not with the one before it, and the **last** condition's `LogicalType` is
+ignored since nothing follows it. There is no parenthesized grouping within one `CriteriaExpression`:
 
 ```csharp
-expression.Equal(nameof(MyEntity.A), a);              // A
-expression.Equal(nameof(MyEntity.B), b);               // (A) AND B
-expression.Equal(nameof(MyEntity.C), c, LogicalType.Or); // (A AND B) OR C  -- NOT A AND (B OR C)
+expression.Equal(nameof(MyEntity.A), a);                  // A, joined to B with AND (the default)
+expression.Equal(nameof(MyEntity.B), b, LogicalType.Or);  // (A AND B), joined to C with OR
+expression.Equal(nameof(MyEntity.C), c);                  // (A AND B) OR C  -- NOT A AND (B OR C); C's own type is ignored
 ```
+
+⚠ Because it's the *next* condition that a type binds to, matching one value against several columns (a keyword
+search) needs `Or` on **every condition except the last**: `X(Or), Y(Or), Z` is `X OR Y OR Z`, whereas
+`X, Y(Or), Z` — the reading most people expect from "Or on the later ones" — is `(X AND Y) OR Z`, which
+silently returns almost nothing.
 
 To get `A AND (B OR C)`, build `(B OR C)` as one `CriteriaExpression` and put `A` in a **separate**
 `CriteriaExpression` — the `IList<CriteriaExpression>` returned by `GetExpressions()` is itself combined with
@@ -2054,8 +2059,8 @@ var groupA = new CriteriaExpression();
 groupA.Equal(nameof(MyEntity.A), a);
 
 var groupBC = new CriteriaExpression();
-groupBC.Equal(nameof(MyEntity.B), b);
-groupBC.Equal(nameof(MyEntity.C), c, LogicalType.Or);
+groupBC.Equal(nameof(MyEntity.B), b, LogicalType.Or);
+groupBC.Equal(nameof(MyEntity.C), c);
 
 return new[] { groupA, groupBC };   // A AND (B OR C)
 ```

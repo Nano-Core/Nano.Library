@@ -127,6 +127,16 @@ public class <Entity> : BaseEntity
   `false`/first-member-value default) without stating it, since that's exactly the kind of
   intent that's invisible on read until it's a production surprise. File 2's `.HasDefaultValue(...)`
   must match the same value.
+- **Date/time properties are always named `...At`** — `CreatedAt`, `StartsAt`, `EndsAt`, `CancelledAt`,
+  `ShreddedAt`, never `...Date`, `...Timestamp`, or a `...Utc` suffix (a `DateTime` holding UTC is still just
+  `...At`). Name it after the event: past tense for something that happened (`ClosedAt`), a plain "starts/ends"
+  form for a boundary (`StartsAt`, `EndsAt`). This carries through everywhere the property appears: the mapping,
+  query criteria filters, requests, responses and their doc comments.
+- **Derive, don't store, a value that is a pure function of other columns and the clock** (e.g. a lifecycle
+  status computed from `StartsAt`/`EndsAt`). Expose it as a getter-only property marked `[NotMapped]` (and
+  `.Ignore(...)` in the mapping), and have the query criteria translate a filter on it into conditions on the
+  underlying columns. A stored status column for this goes stale, and a database generated column can't
+  reference the current time.
 
 ## File 2 — Data mapping
 
@@ -215,6 +225,16 @@ public class <Entity>Mapping : BaseEntityMapping<<Entity>>
     `Product`/`Tag` → a real `ProductTag` entity with `ProductId`/`TagId` FKs) with its own File
     1/File 2 pair — a normal one-to-many-to-one shape from each side, not a special case — even
     when the join entity currently has no columns beyond the two FKs.
+- **Index every property the entity is queried or sorted by** — one `HasIndex(...)` in the mapping for each
+  property File 3's query criteria filters on, and each property an ordering (`Order.By`) or a keyword
+  search reaches, declared at the end of `Configure`, after the properties and relationships. Foreign keys
+  already get an index from EF's conventions, so don't repeat those unless a composite covers them better;
+  don't index a low-selectivity flag (a plain `bool` or status on its own). When a list is always filtered
+  by one property and sorted by another (a foreign key, newest first), use one composite index in that
+  order (`HasIndex(x => new { x.ParentId, x.CreatedAt })`), which replaces a plain single-column index on
+  the same leading property. An index only helps a text search that anchors at the start of the value,
+  which is why File 3 uses `StartsWith`, not `Contains`. If it isn't clear from the request how the entity
+  is listed, searched, and sorted, ask before guessing which indexes it needs.
 - No registration step needed — Nano auto-discovers mappings via
   `ModelBuilderExtensions.MapEntities<TIdentity>` at startup.
 - Add a new EF Core migration after this file exists: `dotnet ef migrations add <Name>`
@@ -255,8 +275,11 @@ public class <Entity>QueryCriteria : BaseQueryCriteria
 - Only add filter properties for fields that make sense to search/filter by — don't
   mechanically add one filter per scalar property on the entity.
 - Every filter property must be `virtual` and nullable.
+- **Text search uses `StartsWith`, never `Contains`** — a `Contains` (leading wildcard) can't use an index
+  and scans the whole table as it grows; `StartsWith` can. Whatever a criteria property filters on gets a
+  matching `HasIndex` in File 2's mapping.
 - Use the `CriteriaExpression` builder methods appropriate to each property's type
-  (`StartsWith`/`Contains` for strings, `Equal`/`GreaterThan`/etc. for numerics and dates)
+  (`StartsWith` for strings, `Equal`/`GreaterThan`/etc. for numerics and dates)
   — check the project's other query criteria classes for the operations actually available,
   don't guess.
 
