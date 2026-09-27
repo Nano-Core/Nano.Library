@@ -547,6 +547,16 @@ public interface IRepository : IDisposable
         where TKey : IEquatable<TKey>;
 
     /// <summary>
+    /// Adds a single instance of <see cref="IEntityCreatable"/> with a GUID identity, or if it already exists reload it.
+    /// </summary>
+    /// <typeparam name="TEntity">The <see cref="IEntityIdentity{Guid}"/> type.</typeparam>
+    /// <param name="entity">The entity instance to add.</param>
+    /// <param name="cancellationToken">Optional <see cref="CancellationToken"/>.</param>
+    /// <returns>The added entity with related entities loaded, or null if not added.</returns>
+    Task<TEntity?> AddOrGetAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityCreatable, IEntityIdentity<Guid>;
+
+    /// <summary>
     /// Adds a single instance of <see cref="IEntityCreatable"/> and reloads it to include any <see cref="IncludeAttribute"/> relations.
     /// </summary>
     /// <typeparam name="TEntity">The type of entity to add.</typeparam>
@@ -557,6 +567,17 @@ public interface IRepository : IDisposable
     Task<TEntity?> AddAndGetAsync<TEntity, TKey>(TEntity entity, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityCreatable, IEntityIdentity<TKey>
         where TKey : IEquatable<TKey>;
+
+    /// <summary>
+    /// Adds a single instance of <see cref="IEntityCreatable"/> with a GUID identity, and reloads it to include any
+    /// <see cref="IncludeAttribute"/> relations.
+    /// </summary>
+    /// <typeparam name="TEntity">The <see cref="IEntityIdentity{Guid}"/> type.</typeparam>
+    /// <param name="entity">The entity instance to add.</param>
+    /// <param name="cancellationToken">Optional <see cref="CancellationToken"/>.</param>
+    /// <returns>The added entity with related entities loaded, or null if not added.</returns>
+    Task<TEntity?> AddAndGetAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityCreatable, IEntityIdentity<Guid>;
 
     /// <summary>
     /// Adds multiple instances of <see cref="IEntityCreatable"/>.
@@ -600,6 +621,17 @@ public interface IRepository : IDisposable
     Task<TEntity?> UpdateAndGetAsync<TEntity, TKey>(TEntity entity, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityUpdatable, IEntityIdentity<TKey>
         where TKey : IEquatable<TKey>;
+
+    /// <summary>
+    /// Updates a single instance of <see cref="IEntityUpdatable"/> with a GUID identity, and reloads it to include any
+    /// <see cref="IncludeAttribute"/> relations.
+    /// </summary>
+    /// <typeparam name="TEntity">The <see cref="IEntityIdentity{Guid}"/> type.</typeparam>
+    /// <param name="entity">The entity instance to update.</param>
+    /// <param name="cancellationToken">Optional <see cref="CancellationToken"/>.</param>
+    /// <returns>The updated entity with related entities loaded, or null if not updated.</returns>
+    Task<TEntity?> UpdateAndGetAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityUpdatable, IEntityIdentity<Guid>;
 
     /// <summary>
     /// Updates multiple instances of <see cref="IEntityUpdatable"/>.
