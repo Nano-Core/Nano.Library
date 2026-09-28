@@ -237,53 +237,13 @@ value only where it's actually safe to have one.
   refresh support also needs the frontend's authorize request to include `access_type=offline`/
   `prompt=consent`, which has nothing to do with this `Scopes` entry either.
 
-**Custom provider - real code, no config entry.** Per AGENTS.md's `##### Custom external provider`,
-this is auto-discovered by type, not registered via `Jwt.ExternalLogins` config the way built-in
-providers are - there's no appsettings.json entry for it at all.
-
-1. **`TFlow`.** `ImplicitFlow` or `AuthCodeFlow` (both derive `BaseAuthFlow`) - pick whichever
-   matches the provider's actual OAuth flow; ask if unclear rather than guessing. Derive a custom
-   `BaseAuthFlow` subclass instead only if the provider's flow doesn't fit either built-in shape.
-2. **The class**, conventionally `Auth/{Provider}ExternalRepository.cs` in the application
-   project (discovery is by type, so the location isn't enforced):
-   ```csharp
-   public class MyExternalRepository() : BaseAuthExternalRepository<ImplicitFlow>("MyProvider")
-   {
-       public override async Task<ExternalAuthenticationData> AuthenticateAsync(ImplicitFlow flow, CancellationToken cancellationToken = default)
-       {
-           // call the external provider, map its response to ExternalAuthenticationData
-           return new ExternalAuthenticationData
-           {
-               Id = "external-id",
-               Username = "MyUser",
-               EmailAddress = "user@domain.com",
-               Name = "My User",
-               ExternalToken = new ExternalAuthenticationToken { Name = this.ProviderName, Token = "token", RefreshToken = "refresh-token" }
-           };
-       }
-
-       public override async Task<ExternalAuthenticationToken> AuthenticateRefreshAsync(string refreshToken, CancellationToken cancellationToken = default)
-       {
-           // refresh against the external provider
-           return new ExternalAuthenticationToken { Name = this.ProviderName, Token = "token", RefreshToken = "refresh-token" };
-       }
-   }
-   ```
-   The constructor's string argument (`"MyProvider"` above) is `ProviderName` - this is what
-   `AuthExternalRepositoryAggregator` resolves against, and what appears in the
-   `/auth/login/external/{providerName}/...` route, so ask the user what they want it called
-   rather than defaulting to the class name.
-3. **Whatever credentials/endpoint the provider itself needs** (API key, base URL, etc.) - these
-   are this custom repository's own concern, not `Jwt.ExternalLogins`'s. Add them as an options
-   class bound from whatever config section makes sense for this provider (same pattern as any
-   other custom service in this codebase), then inject it into the repository's constructor. Don't
-   try to route them through `Jwt.ExternalLogins` - that section is exclusively for the three
-   built-in providers.
-
-Either way, the actual login endpoint this exposes is
-`/auth/login/external/{providerName}/transient` when Identity isn't configured, or the
-persistent equivalent per AGENTS.md's sub-repository table when it is - this skill doesn't scaffold
-that call site, only the repository/config that backs it.
+**Custom provider - its own skill, `nano-add-authentication-external-custom`.** Per AGENTS.md's
+`##### Custom external provider`, a custom provider is auto-discovered by type, not registered via
+`Jwt.ExternalLogins` config the way built-in providers are - there's no appsettings.json entry for
+it at all, just a `BaseAuthExternalRepository<TFlow>` subclass. That skill covers the `TFlow`
+choice (`AuthCodeFlow` vs. `ImplicitFlow`), the class scaffold itself, and reports which endpoint
+set (transient vs. persistent) the new provider ends up exposing - the same distinction as
+`nano-add-authentication-microsoft` above, use that skill instead of hand-rolling the class here.
 
 ## Kubernetes / GitHub Actions (Staging/Production) - issuer app only
 

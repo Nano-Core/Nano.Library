@@ -577,6 +577,13 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
+    public virtual Task<TEntity?> AddOrGetAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityCreatable, IEntityIdentity<Guid>
+    {
+        return this.AddOrGetAsync<TEntity, Guid>(entity, cancellationToken);
+    }
+
+    /// <inheritdoc />
     public virtual async Task<TEntity?> AddAndGetAsync<TEntity, TKey>(TEntity entity, CancellationToken cancellationToken = default)
         where TEntity : class, IEntityCreatable, IEntityIdentity<TKey>
         where TKey : IEquatable<TKey>
@@ -589,6 +596,13 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         await this.SaveChangesAsync(cancellationToken);
 
         return await this.GetAsync<TEntity, TKey>(entry.Entity.Id, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public virtual Task<TEntity?> AddAndGetAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityCreatable, IEntityIdentity<Guid>
+    {
+        return this.AddAndGetAsync<TEntity, Guid>(entity, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -650,6 +664,13 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
         await this.SaveChangesAsync(cancellationToken);
 
         return await this.GetAsync<TEntity, TKey>(entry.Entity.Id, includeDepth, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public virtual Task<TEntity?> UpdateAndGetAsync<TEntity>(TEntity entity, CancellationToken cancellationToken = default)
+        where TEntity : class, IEntityUpdatable, IEntityIdentity<Guid>
+    {
+        return this.UpdateAndGetAsync<TEntity, Guid>(entity, cancellationToken);
     }
 
     /// <inheritdoc />

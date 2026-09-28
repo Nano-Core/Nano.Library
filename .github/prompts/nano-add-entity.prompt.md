@@ -127,6 +127,11 @@ public class <Entity> : BaseEntity
   `false`/first-member-value default) without stating it, since that's exactly the kind of
   intent that's invisible on read until it's a production surprise. File 2's `.HasDefaultValue(...)`
   must match the same value.
+- **A `string` property File 3's query criteria will match with `StartsWith`/`Contains`/`Equal` for
+  human-typed search or lookup gets a computed `XNormalized` twin** - see AGENTS.md's `##### Case-insensitive
+  search (Normalized columns)` for the full pattern and when to skip it (exact technical identifiers, seeded
+  constants). Decide this together with File 3, not in isolation - if the request doesn't say whether the
+  entity needs a search/lookup field at all yet, this only applies once one exists.
 - **Date/time properties are always named `...At`** - `CreatedAt`, `StartsAt`, `EndsAt`, `CancelledAt`,
   `ShreddedAt`, never `...Date`, `...Timestamp`, or a `...Utc` suffix (a `DateTime` holding UTC is still just
   `...At`). Name it after the event: past tense for something that happened (`ClosedAt`), a plain "starts/ends"
@@ -264,7 +269,7 @@ public class <Entity>QueryCriteria : BaseQueryCriteria
         if (!string.IsNullOrEmpty(this.Name))
         {
             expression
-                .StartsWith("Name", this.Name);
+                .StartsWith(nameof(<Entity>.NameNormalized), this.Name.ToUpper());
         }
 
         expressions
@@ -281,6 +286,10 @@ public class <Entity>QueryCriteria : BaseQueryCriteria
 - **Text search uses `StartsWith`, never `Contains`** - a `Contains` (leading wildcard) can't use an index
   and scans the whole table as it grows; `StartsWith` can. Whatever a criteria property filters on gets a
   matching `HasIndex` in File 2's mapping.
+- **Search/lookup against a `string` property filters on its `XNormalized` twin (see File 1), with the input
+  itself also uppercased** (`this.Name.ToUpper()`) - never match the raw property directly for a
+  `StartsWith`/`Contains`/`Equal` a human might type in any casing. File 2's index goes on the `Normalized`
+  property too, not the raw one.
 - Use the `CriteriaExpression` builder methods appropriate to each property's type
   (`StartsWith` for strings, `Equal`/`GreaterThan`/etc. for numerics and dates)
   - check the project's other query criteria classes for the operations actually available,
