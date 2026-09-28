@@ -1,12 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Nano.Data.Abstractions.Identity.Authentication.Models.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Nano.Data.Abstractions.Identity.Authentication.Models;
 
 /// <summary>
 /// Auth code flow.
 /// </summary>
-public class AuthCodeFlow() : BaseAuthFlow(AuthFlowType.AuthCode)
+public class AuthCodeFlow : BaseAuthFlow
 {
     /// <summary>
     /// The authorization code returned by the external provider.
