@@ -1792,10 +1792,20 @@ public class MyExternalRepository() : BaseAuthExternalRepository<ImplicitFlow>("
 ```
 
 `TFlow` is `ImplicitFlow` or `AuthCodeFlow` (both derive `BaseAuthFlow`) — pick whichever matches the provider's
-OAuth flow, or derive your own from `BaseAuthFlow` for something else entirely. Every `IAuthExternalRepository<TFlow>`
-implementation is exposed through `AuthExternalRepositoryAggregator`, which resolves the right one by
-`ProviderName` when multiple are registered. Built-in providers (Facebook/Google/Microsoft) exist purely as
-config (see above) — no repository implementation needed for those.
+OAuth flow, or derive your own from `BaseAuthFlow` for something else entirely. `BaseAuthFlow` is a bare marker
+base with no members of its own — a custom subclass just adds whatever properties the provider's real handshake
+sends, nothing else to satisfy. Every `IAuthExternalRepository<TFlow>` implementation is exposed through
+`AuthExternalRepositoryAggregator`, which resolves the right one by `ProviderName` when multiple are registered
+— dispatch happens entirely through `TFlow`'s actual CLR type (`BaseAuthExternalRepository<TFlow>.
+AuthenticateAsync`'s `flow is not TFlow typedFlow` check, and each generated endpoint's request model being
+generically typed to one concrete `TFlow`), so a custom flow class needs nothing beyond deriving `BaseAuthFlow`
+to be dispatched to correctly. Built-in providers (Facebook/Google/Microsoft) exist purely as config (see
+above) — no repository implementation needed for those.
+
+Use the `nano-add-authentication-external-custom` skill to scaffold this — it asks which `TFlow` fits the
+provider (`ImplicitFlow`, `AuthCodeFlow`, or a custom `BaseAuthFlow` subclass it can scaffold too) and what
+to name it, and reports whether the resulting login ends up transient or persistent (see below) based on
+whether Identity is configured. `nano-remove-authentication-external-custom` removes one.
 
 ##### Access tokens & claims
 
@@ -2015,6 +2025,68 @@ public class MyEntityQueryCriteria : BaseQueryCriteria
 
 Built on the [DynamicExpression](https://github.com/vivet/DynamicExpression) library — criteria properties are
 compiled into LINQ expressions against the entity, not hand-written `Where` clauses.
+
+##### Case-insensitive search (Normalized columns)
+
+`StartsWith`/`Contains`/`Equal` against a raw `string` column relies on the database's own collation to decide
+case-sensitivity — which isn't guaranteed consistent across [Data Providers](#data-providers) (MySQL's default
+collation is case-insensitive, PostgreSQL's and SqlServer's default to case-sensitive), and isn't something a
+query criteria class should depend on implicitly either way. For any `string` property a query criteria filters
+by for **human-typed search or lookup** — a name, a domain, a keyword field, anything a person might type in
+mixed case and expect to still match — give it a computed `XNormalized` twin instead of matching the raw column
+directly:
+
+```csharp
+public class MyEntity : BaseEntity
+{
+    public virtual string Name
+    {
+        get;
+        set
+        {
+            field = value;
+            this.NameNormalized = value.ToUpper();
+        }
+    } = null!;
+
+    public virtual string NameNormalized { get; internal set; } = null!;
+}
+```
+
+```csharp
+public class MyEntityMapping : BaseEntityMapping<MyEntity>
+{
+    public override void Configure(EntityTypeBuilder<MyEntity> builder)
+    {
+        base.Configure(builder);
+
+        builder.Property(x => x.Name).IsRequired().HasMaxLength(128);
+        builder.Property(x => x.NameNormalized).IsRequired().HasMaxLength(128);
+
+        // Index (and IsUnique(), if the raw property needed uniqueness) goes on the Normalized twin, not Name:
+        builder.HasIndex(x => x.NameNormalized);
+    }
+}
+```
+
+```csharp
+if (!string.IsNullOrEmpty(this.Name))
+{
+    expression.StartsWith(nameof(MyEntity.NameNormalized), this.Name.ToUpper());
+}
+```
+
+- `Name` keeps whatever casing the caller typed — it's still what gets displayed back. `NameNormalized` exists
+  purely so search/lookup and uniqueness are correct regardless of collation, and is never itself exposed for
+  editing (`internal set`, populated only by `Name`'s own setter) or included in a `[Publish]` list.
+- If the raw property carried a unique index (a domain, a plan/category name meant to be one-of-a-kind), move
+  that `IsUnique()` onto the `Normalized` twin too — two values differing only by case should conflict as
+  duplicates, the same way the search should find them as the same match.
+- **Don't apply this to every `string` property reflexively.** It's for properties a query criteria actually
+  matches with `StartsWith`/`Contains`/`Equal` where case is not meant to be significant. Skip it for an exact
+  technical identifier where case either doesn't vary in practice (a numeric code) or is already canonicalized
+  at the point of entry, and for an internal fixed-constant lookup (matching a seeded system name by its exact
+  literal) where case sensitivity is the intended, correct behavior.
 
 ##### Available operations
 
