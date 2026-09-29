@@ -123,6 +123,9 @@ internal class EntityGraphHydrator(DbContext dbContext)
 
                 break;
             }
+            case EntityState.Unchanged:
+            case EntityState.Detached:
+                break;
 
             default:
                 throw new ArgumentOutOfRangeException(nameof(entityEntry.State), entityEntry.State, "Argument out of range.");
