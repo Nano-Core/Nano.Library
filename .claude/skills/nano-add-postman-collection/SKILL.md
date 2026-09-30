@@ -163,6 +163,13 @@ bodies reference the earlier entity's `{{Entity.Id}}` for their FK fields, so th
 run top-to-bottom without manual value substitution - order the collection's top-level folders to
 match the actual FK dependency chain (see step 7 above), not alphabetically.
 
+## Description length
+
+Keep every `description` (collection, folder, request) short, never an essay: one or two sentences
+for most requests, three to five only for a complex endpoint. Drop anything a tester doesn't need,
+but never drop something essential to actually running the request (the external login authorize
+URL, a required precondition, an auth note).
+
 ## External login requests
 
 A `Login {Provider}` request's body only carries what the *backend* needs (`Code`/`CodeVerifier`/

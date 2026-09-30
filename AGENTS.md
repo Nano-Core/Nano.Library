@@ -2243,6 +2243,15 @@ through its Api Client, never added to an app playing the [Public API role](#pub
 
 Conventionally placed in a `Controllers/` folder in the application project (not a hard requirement).
 
+#### XML doc comments
+
+Controller `///` comments feed the public Swagger, so keep them short and safe to publish:
+
+- One line `<summary>` that says what the action does (`Gets a list of assets.`, `Deletes a non archived order.`), and short `<param>`/`<returns>`/`<response>` text. Never an essay.
+- A brief rule or condition is fine when it helps the caller and is not sensitive.
+- No implementation details or other internals: no other service or application names, method names, or internal rules.
+- Never put `///` on private or internal members.
+
 #### Request Validation
 
 Automatic on any controller deriving from `BaseController` — a failing model returns `400 Bad Request` with
