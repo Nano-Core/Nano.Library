@@ -96,6 +96,8 @@ Three Api flavors are available (minimal, publicly-exposed, and internal-service
 > entity, wire up an eventing subscription. The same steps as the Quick Start Guide, just conversational, since the generated repository already ships `AGENTS.md`, Claude Code 
 > skills, and Copilot instructions so the assistant knows Nano's conventions from the first prompt. See **[AI Agent Reference](#-ai-agent-reference)**.
 
+![Installing NanoCore.Templates and scaffolding a new application](https://raw.githubusercontent.com/Nano-Core/Nano.Library/refs/heads/master/.assets/Nano-dotnet-new.gif)
+
 ## ✨ Highlighted features
 
 ### ✨ Api Clients
@@ -190,6 +192,8 @@ GitHub Copilot is supported the same way: a **`.github/copilot-instructions.md`*
 and github.com, no setup needed), and a **`.github/prompts`** folder provides a Copilot prompt file for every skill, invokable the same way, e.g. `/nano-add-entity` in Copilot Chat. 
 A **`.vscode/settings.json`** enables prompt-file discovery in VS Code out of the box. Like `AGENTS.md` and `.claude`, these are discovered locally: copy `.github/copilot-instructions.md`, 
 `.github/prompts`, and `.vscode/settings.json` into the root of your own Nano-based application's repository to use them.
+
+![Adding a MySQL data provider with an AI coding assistant](https://raw.githubusercontent.com/Nano-Core/Nano.Library/refs/heads/master/.assets/Nano-Claude-Code-Data-Provider-Demo.gif)
 
 ## 🧩 Solution Composition
 All Nano applications follow a consistent and predictable solution structure.  

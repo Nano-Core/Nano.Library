@@ -577,6 +577,7 @@ The following table lists the methods available in `IRepository` along with thei
 | `ExecuteProcedureAsync<TResult>`            | procedureName, parameters                                 | -                                     | Execute a stored procedure and return a single result.                                    |
 | `ExecuteProcedureScalarAsync<TResult>`      | procedureName, parameters                                 | -                                     | Execute a stored procedure and return a list results.                                     |
 | `ExecuteProcedureAsync<TResult>`            | procedureName, parameters                                 | -                                     | Execute a stored procedure and return a scalar value.                                     |
+| `ExecuteInTransactionAsync`                 | action                                                    | -                                     | Executes the action in one transaction. See **[Transactions](#transactions)**.            |
 | `SaveChangesAsync`                          | -                                                         | -                                     | Persists all pending changes to the data store.                                           | 
 
 Several methods include overloads, which have been merged here for simplicity.  
@@ -683,6 +684,20 @@ multiple individual add or update calls.
 If you need more fine-grained control over when changes are committed, you can disable `UseAutoSave` in the repository configuration.  
 
 Try it out yourself using the **[Api.Data.Repository.Autosave](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Data.Repository.Autosave)**.  
+
+## Transactions
+To make several repository calls atomic, wrap them in `ExecuteInTransactionAsync`. Every call made inside the action is committed together, or rolled back together if any of them fails,
+even when autosave is enabled.  
+
+```csharp
+await repository.ExecuteInTransactionAsync(async ct =>
+{
+    await repository.DeleteManyAsync(oldItems, ct);
+    await repository.AddManyAsync(newItems, ct);
+}, cancellationToken);
+```
+
+The action runs through the data provider's retry strategy, so it may run more than once and must be safe to repeat.  
 
 ## Cache
 Currently, Nano does not support data caching.  

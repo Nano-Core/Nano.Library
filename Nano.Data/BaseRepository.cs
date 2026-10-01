@@ -1198,6 +1198,27 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     }
 
     /// <inheritdoc />
+    public virtual async Task ExecuteInTransactionAsync(Func<CancellationToken, Task> action, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(action);
+
+        var executionStrategy = this.dbContext.Database
+            .CreateExecutionStrategy();
+
+        await executionStrategy
+            .ExecuteAsync(async () =>
+            {
+                await using var transaction = await this.dbContext.Database
+                    .BeginTransactionAsync(cancellationToken);
+
+                await action(cancellationToken);
+
+                await transaction
+                    .CommitAsync(cancellationToken);
+            });
+    }
+
+    /// <inheritdoc />
     public virtual async Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         await this.dbContext

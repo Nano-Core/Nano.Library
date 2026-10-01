@@ -1,6 +1,6 @@
 ---
 name: nano-add-authentication-external-custom
-description: Scaffold a custom BaseAuthExternalRepository<TFlow> external-login provider on a Nano.Library-based API/Web application, for a provider Nano has no built-in support for (not Microsoft/Google/Facebook — see nano-add-authentication-microsoft for that one, and AGENTS.md's Authentication section for why the other two stay config-only). Asks whether the provider's OAuth flow is AuthCodeFlow, ImplicitFlow (Nano's two built-in BaseAuthFlow shapes), or a custom class the user derives from BaseAuthFlow themselves (scaffolded too, if needed) — and what the provider should be called — then generates the repository class as a placeholder shell (mocked return values + TODO markers), matching the class shape used throughout Nano.Lessons' external-custom-auth examples — not a working integration against any real provider API, since this skill can't know one specific provider's token/userinfo API shape. Requires nano-add-authentication-jwt already configured (Jwt + AuthController). Use when the user asks to add a custom, third-party, or in-house external login provider to a Nano API or Web application.
+description: Scaffold a custom BaseAuthExternalRepository<TFlow> external-login provider on a Nano.Library-based API/Web application, for a provider Nano has no built-in support for (not Microsoft/Google/Facebook — see nano-add-authentication-microsoft for that one, and AGENTS.md's Authentication section for why the other two stay config-only). Asks whether the provider's OAuth flow is AuthCodeFlow, ImplicitFlow (Nano's two built-in BaseAuthFlow shapes), or a custom class the user derives from BaseAuthFlow themselves (scaffolded too, if needed) — and what the provider should be called — then generates the repository class as a placeholder shell (mocked return values + placeholder comments), matching the class shape used throughout Nano.Lessons' external-custom-auth examples — not a working integration against any real provider API, since this skill can't know one specific provider's token/userinfo API shape. Requires nano-add-authentication-jwt already configured (Jwt + AuthController). Use when the user asks to add a custom, third-party, or in-house external login provider to a Nano API or Web application.
 ---
 
 # Nano add custom external authentication
@@ -22,7 +22,7 @@ the generated class is discovered by type — nothing to add to `.ConfigureServi
 
 **Output is a placeholder shell, not a working integration.** This skill cannot know a specific
 provider's real token-exchange or userinfo-lookup API shape, so `AuthenticateAsync` returns
-static, clearly-fake data with a `// TODO` marking where the real HTTP call belongs — the same
+static, clearly-fake data with a `// Placeholder` marking where the real HTTP call belongs — the same
 shape as Nano.Lessons' external-custom-auth examples. Say this plainly when done: the app will
 build and the new endpoint(s) will respond, but signing in through them won't yet produce a real
 user identity from any actual external service.
@@ -98,7 +98,7 @@ Conventionally alongside the repository class, e.g. `Authentication/{Provider}Fl
 ```csharp
 public class {Provider}Flow : BaseAuthFlow
 {
-    // TODO: add whatever properties {Provider}'s own flow actually carries - mirroring
+    // Placeholder: add whatever properties {Provider}'s own flow actually carries - mirroring
     // AuthCodeFlow's Code/CodeVerifier/RedirectUri or ImplicitFlow's AccessToken shape,
     // each `[Required] public virtual required {Type} {Name} { get; set; }`.
 }
@@ -106,7 +106,7 @@ public class {Provider}Flow : BaseAuthFlow
 
 Use this class (not `AuthCodeFlow`/`ImplicitFlow`) as `{TFlow}` in the repository class below.
 Since this skill doesn't know what properties the provider's flow actually needs, leave the class
-body as the `// TODO` above rather than guessing field names — the user fills those in once they
+body as the `// Placeholder` above rather than guessing field names — the user fills those in once they
 know exactly what the provider's handshake sends.
 
 ## The repository class
@@ -120,7 +120,7 @@ public class {Provider}ExternalRepository() : BaseAuthExternalRepository<{TFlow}
 {
     public override async Task<ExternalAuthenticationData> AuthenticateAsync({TFlow} flow, CancellationToken cancellationToken = default)
     {
-        // TODO: call {Provider}'s own token-exchange/userinfo API using the data on `flow`
+        // Placeholder: call {Provider}'s own token-exchange/userinfo API using the data on `flow`
         // ({TFlow} fields — Code/CodeVerifier/RedirectUri for AuthCodeFlow, AccessToken for
         // ImplicitFlow, or whatever properties a custom flow class carries), and map its
         // response onto ExternalAuthenticationData below.
@@ -149,7 +149,7 @@ public class {Provider}ExternalRepository() : BaseAuthExternalRepository<{TFlow}
 
     public override async Task<ExternalAuthenticationToken> AuthenticateRefreshAsync(string refreshToken, CancellationToken cancellationToken = default)
     {
-        // TODO: call {Provider}'s token-refresh endpoint using `refreshToken`, and map its
+        // Placeholder: call {Provider}'s token-refresh endpoint using `refreshToken`, and map its
         // response onto ExternalAuthenticationToken below.
         await Task.CompletedTask;
 
@@ -183,7 +183,7 @@ dead code just because the app is persistent.
 
 ## Wiring real provider credentials later
 
-Not part of this skill's own output — advisory only, for when the `// TODO` above gets filled in
+Not part of this skill's own output — advisory only, for when the `// Placeholder` above gets filled in
 for real. At that point the provider will need its own credentials (an API key, a client
 id/secret, a base URL) passed into the repository's constructor. Follow AGENTS.md's `### Custom
 Configuration Section` pattern: a plain options class bound via `AddNanoConfigSection<TOptions>`,
@@ -199,7 +199,7 @@ pattern is the common answer) rather than assuming a convention.
 - Show the file(s) created — the repository class, and the custom flow class too if step 3 needed
   one.
 - State the flow type chosen and why (matching what the user said about the provider's real OAuth
-  shape) — including, if a custom class was scaffolded, that its properties are left as a `// TODO`
+  shape) — including, if a custom class was scaffolded, that its properties are left as a `// Placeholder`
   for the user to fill in — and the refresh decision (implemented for real later vs. explicitly
   unsupported).
 - **State the actual, resulting endpoint set from step 5** — transient's two routes, or persistent's

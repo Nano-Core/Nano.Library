@@ -1032,6 +1032,17 @@ public interface IRepository : IDisposable
     Task<TResult> ExecuteProcedureScalarAsync<TResult>(string procedureName, IDictionary<string, object?>? parameters = null, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Executes the given action inside one database transaction, so every repository call made within it is committed together or rolled back together.
+    /// </summary>
+    /// <param name="action">The action to execute. Receives the <see cref="CancellationToken"/>.</param>
+    /// <param name="cancellationToken">Optional <see cref="CancellationToken"/> to cancel the operation.</param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+    /// <remarks>
+    /// Honors the provider's retry strategy, so <paramref name="action"/> may run more than once and must be safe to repeat.
+    /// </remarks>
+    Task ExecuteInTransactionAsync(Func<CancellationToken, Task> action, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Persists all pending changes to the underlying data store.
     /// </summary>
     /// <param name="cancellationToken">Optional <see cref="CancellationToken"/> to cancel the operation.</param>

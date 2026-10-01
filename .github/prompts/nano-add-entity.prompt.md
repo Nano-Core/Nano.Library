@@ -142,6 +142,16 @@ public class <Entity> : BaseEntity
   `.Ignore(...)` in the mapping), and have the query criteria translate a filter on it into conditions on the
   underlying columns. A stored status column for this goes stale, and a database generated column can't
   reference the current time.
+- **Every reference navigation property (`virtual TOther Nav`) is typed nullable (`TOther? Nav`), even when the
+  relationship is required and the FK scalar itself is non-nullable.** ASP.NET Core's model binding treats a
+  non-nullable reference-type property as implicitly required on an incoming request body, with no `[Required]`
+  attribute needed to trigger it - a non-nullable navigation on an entity that's also a request/response shape
+  turns into an unintended required field, typically surfacing as an unexplained 400 on a request that never
+  meant to supply that navigation at all. The FK scalar (`TOtherId`) is where real requiredness belongs - enforced
+  by the database via File 2's `.IsRequired()`/`.HasForeignKey(...)` - the navigation property itself stays
+  nullable regardless of cardinality. This applies to every reference navigation on every entity, not just ones
+  the request happens to touch today: an entity's shape can end up serialized into a request/response later even
+  if it isn't today, so getting this right at scaffold time avoids a mapping-wide retrofit once it is.
 
 ## File 2 - Data mapping
 
