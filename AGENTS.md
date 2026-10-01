@@ -2248,6 +2248,7 @@ Conventionally placed in a `Controllers/` folder in the application project (not
 Controller `///` comments feed the public Swagger, so keep them short and safe to publish:
 
 - One line `<summary>` that says what the action does (`Gets a list of assets.`, `Deletes a non archived order.`), and short `<param>`/`<returns>`/`<response>` text. Never an essay.
+- The controller class `<summary>` says what the controller is for in 5-8 words (`Manages saved reports and how they are shared.`), not just the entity name (`Reports.`).
 - A brief rule or condition is fine when it helps the caller and is not sensitive.
 - No implementation details or other internals: no other service or application names, method names, or internal rules.
 - Never put `///` on private or internal members.
