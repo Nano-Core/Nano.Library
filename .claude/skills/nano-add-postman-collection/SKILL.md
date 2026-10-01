@@ -243,9 +243,12 @@ own flow.
 - **Target the actual owning application directly, never a composing Public API.** A Public API
   (Api.Admin, Api.Platform) has no data of its own — it's always some internal service
   (`Svc.Accounts`, `Svc.Assets`, etc.) that actually owns the entity, per AGENTS.md's Public API vs
-  internal service section. Go straight there, using that service's own base URL scheme
-  (`http://{{host}}:{{port}}` — see Base URL scheme above), not through another Public API's
-  composed endpoint. This also means `.Prerequisites` only ever works against `Development` (the
+  internal service section. Go straight there, not through another Public API's composed endpoint.
+  Use `http://{{host}}:<port>` with that service's literal host port, read from the nested service
+  block in this app's own `.docker/docker-compose.yml` (each nested service is mapped to a unique
+  port so they can all run together) - never `{{port}}`, which only fits a service's own collection.
+  Use one shared `Prereq.Auth.Token` variable for every service's root login; each login simply
+  overwrites the previous one. This also means `.Prerequisites` only ever works against `Development` (the
   same reason an internal service's own collection is Development-only) — say so in the folder's
   `description`, even when the rest of this collection runs against all three environments.
 - **Create-only, not full management.** The point is unblocking this collection's own flow, not
