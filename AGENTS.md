@@ -377,6 +377,9 @@ pass the value explicitly and the target doesn't need a real, matching tenant be
 - Every generic `.Entity` read method accepts an `includeDepth` parameter — thread your own controller's
   `[FromQuery] int? includeDepth` through to it for end-to-end include-depth control, see [Include
   Annotation](#include-annotation).
+- Before a generic `.Entity.EditAsync`/`EditAndGetAsync`, load the entity with `includeDepth: 0` (read-modify-write
+  of the entity's own properties only). A deeper load sends its `[Include]`d navigations back and they are
+  rewritten too — see [Include Annotation](#include-annotation).
 
 #### Local Development (docker-compose)
 
@@ -1996,6 +1999,30 @@ public class MyEntitysController(ILogger<MyEntitysController> logger, IRepositor
 ⚠ Naming convention: a concrete entity controller must be named the **pluralized entity name** — `MyEntity` →
 `MyEntitysController` — this is how the route segment is derived.
 
+#### Changing a parent's related rows: assign / remove or a collection
+
+When an action changes the rows related to a parent (a join entity, or a one-to-many child), choose one of two
+shapes. **Default to assign / remove** and use a collection only when one of the reasons below applies.
+
+- **Assign / remove (default).** One endpoint adds one related row, another removes one (`.../{childId}/add`,
+  `.../{childId}/remove`, or `assign`/`remove`), usually next to an "assignable" list endpoint. Each call is
+  atomic and idempotent on its own, needs no Save step in the frontend, can't overwrite another editor's change,
+  and the server validates one row at a time. The related row is a plain join entity behind a creatable and
+  deletable entity controller; the checks that need context (the parent and child belong to the caller's tenant,
+  the link doesn't already exist) are made by the Public API before the generic create or delete.
+- **Collection (exception).** The request carries the whole set and an explicit server action replaces it in one
+  transaction (diff the existing rows against the requested ones, then delete and add). Use it only when:
+  - the set is edited as a reviewed batch with an explicit Save (for example a role's permissions, where every
+    live toggle would change access immediately and one Save is one audit entry), or
+  - a rule can only be checked against the final set, or
+  - the parent is meaningless without its first children and is created with them.
+
+  A collection update must be an explicit action: the generic edit routes can't change a collection (see [Include
+  Annotation](#include-annotation)). An empty set is valid unless a rule says otherwise.
+
+Pick one shape per relationship and keep both its create and update on it. Don't offer a collection on create and
+assign / remove for later edits of the same relationship unless create genuinely needs its first children.
+
 #### Query criteria
 
 The second generic parameter defines what's queryable. Derive from `BaseQueryCriteria` (already contributes
@@ -3029,6 +3056,19 @@ serialized-object-nesting depth).
 ⚠ **No selective `$expand`.** Callers can only dial the recursion *depth* via `includeDepth` — they cannot pick
 *which* navigations to expand. If a property isn't `[Include]`-tagged by the entity author, no `includeDepth`
 value will ever surface it.
+
+⚠ **Load with `includeDepth: 0` before a read-modify-write edit.** `IRepository.UpdateAsync` (and so every generic
+edit route and `.Entity.EditAsync`/`EditAndGetAsync`) calls EF Core's `Update` on the whole object graph: every
+`[Include]`d navigation that travels with the entity is marked `Modified` and written back, whatever the caller
+meant to change. An unchanged child is rewritten with the same values, a child the client altered is
+overwritten, a new child that already has an `Id` (the `Guid` is assigned in the entity constructor) is
+treated as existing and fails on a missing row, and a child left out of a collection is never deleted. So
+when you load an entity only to change its own properties and send it back, load it with `includeDepth: 0`
+(`.Entity.GetAsync<T>(id, 0, ct)`, or the `includeDepth` of a query request) so no navigation travels with it.
+Prefer this over loading deep and then setting the navigations to `null` before saving, which relies on every
+author remembering to do it. The only reason to send a graph is when you deliberately want a graph update; to
+change a parent and its related rows together, use an explicit action that diffs the children itself (see
+[Controllers](#controllers)) instead of a generic edit.
 
 ⚠ **Avoid include cycles.** Nano does not detect reference cycles between `[Include]` properties — attribute
 only one direction of a bidirectional relationship (as `Order.Customer` above is deliberately left un-annotated
