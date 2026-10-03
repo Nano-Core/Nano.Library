@@ -83,8 +83,8 @@ public static class ServiceCollectionExtensions
 
         services
             .AddScoped<TContext>()
-            .AddScoped<DbContext, TContext>()
-            .AddScoped<BaseDbContext<TIdentity>, TContext>()
+            .AddScoped<DbContext>(x => x.GetRequiredService<TContext>())
+            .AddScoped<BaseDbContext<TIdentity>>(x => x.GetRequiredService<TContext>())
             .AddScoped<IRepository, Repository<TContext, TIdentity>>();
 
         services

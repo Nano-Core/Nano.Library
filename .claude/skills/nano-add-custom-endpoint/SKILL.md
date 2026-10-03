@@ -293,6 +293,20 @@ public virtual async Task<IActionResult> <Name>Async([FromBody][Required] <Name>
   `.Entity.CreateAsync`/`EditAsync` (`CreateRequest`/`EditRequest`) there, and reserve the `...AndGet`
   variants for when the result feeds the response. The same goes for `CreateOrGetAsync` when the existing
   row's content isn't needed.
+- **Load with `includeDepth: 0` before a generic edit.** When the action reads an entity only to change its own
+  properties and sends it back through `.Entity.EditAsync`/`EditAndGetAsync`, fetch it with
+  `.Entity.GetAsync<T>(id, 0, cancellationToken)` (or `includeDepth` `0` on a query request). The edit marks the
+  whole object graph `Modified`, so any `[Include]`d navigation that travels with the entity is written back
+  too (see AGENTS.md's Include Annotation section). Don't load deep and null the navigations out instead. If
+  the action must change a parent together with its related rows, that is a service-side action, not a generic
+  edit.
+- **Related rows: default to assign / remove, not a collection.** To add or remove the rows related to a parent
+  (a join entity or a one-to-many child), scaffold two endpoints, one that adds a single related row and one
+  that removes it, and compose the generic creatable/deletable calls for the join entity in the Public API,
+  validating the parent and child against the caller's context first. Only scaffold a "replace the whole set"
+  endpoint that takes a collection when the set is edited as a reviewed batch with a Save, a rule needs the
+  final set, or the parent is created together with its first children, and then make it an explicit
+  service-side action in one transaction. See AGENTS.md's "Changing a parent's related rows" section.
 - **Don't materialize a collection you don't need to.** Leave a LINQ query/`IEnumerable` as is when it's only
   enumerated once (mapped into a response, iterated, passed on). Materialize only when it's genuinely
   required: enumerated more than once, used as a value that must be stable (a `Contains` set, a captured
