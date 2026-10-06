@@ -24,6 +24,7 @@
 * **[Migrations](#migrations)**
 * **[Repositories](#repositories)**
   * **[Autosave](#autosave)**
+  * **[Transactions](#transactions)**
   * **[Cache](#cache)**
   * **[Include Annotation](#include-annotation)**
 * **[Audit](#audit)**
@@ -698,6 +699,8 @@ await repository.ExecuteInTransactionAsync(async ct =>
 ```
 
 The action runs through the data provider's retry strategy, so it may run more than once and must be safe to repeat.  
+
+If a transaction is already open on the context, the action joins it instead of starting a new one. It runs once, and the outer transaction decides whether everything is committed.  
 
 ## Cache
 Currently, Nano does not support data caching.  

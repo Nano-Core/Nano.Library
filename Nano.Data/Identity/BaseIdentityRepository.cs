@@ -200,17 +200,20 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
     {
         ArgumentNullException.ThrowIfNull(signUp);
 
-        var identityUser = new IdentityUserEx<TIdentity>
+        return await this.ExecuteSignUpInTransactionAsync(async () =>
         {
-            Email = signUp.EmailAddress,
-            UserName = signUp.Username,
-            PhoneNumber = signUp.PhoneNumber
-        };
+            var identityUser = new IdentityUserEx<TIdentity>
+            {
+                Email = signUp.EmailAddress,
+                UserName = signUp.Username,
+                PhoneNumber = signUp.PhoneNumber
+            };
 
-        await this.CreateIdentityUser(identityUser, signUp.Password);
-        await this.AssignSignUpRolesAndClaims(identityUser, signUp.Roles, signUp.Claims);
+            await this.CreateIdentityUser(identityUser, signUp.Password);
+            await this.AssignSignUpRolesAndClaims(identityUser, signUp.Roles, signUp.Claims);
 
-        return await this.CreateUser(signUp.User, identityUser, cancellationToken);
+            return await this.CreateUser(signUp.User, identityUser, cancellationToken);
+        }, cancellationToken);
     }
 
     /// <inheritdoc />
@@ -219,27 +222,30 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
     {
         ArgumentNullException.ThrowIfNull(signUpExternal);
 
-        var identityUser = new IdentityUserEx<TIdentity>
+        return await this.ExecuteSignUpInTransactionAsync(async () =>
         {
-            Email = signUpExternal.EmailAddress,
-            UserName = signUpExternal.Username,
-            PhoneNumber = signUpExternal.PhoneNumber
-        };
+            var identityUser = new IdentityUserEx<TIdentity>
+            {
+                Email = signUpExternal.EmailAddress,
+                UserName = signUpExternal.Username,
+                PhoneNumber = signUpExternal.PhoneNumber
+            };
 
-        await this.CreateIdentityUser(identityUser);
-        await this.AssignSignUpRolesAndClaims(identityUser, signUpExternal.Roles, signUpExternal.Claims);
+            await this.CreateIdentityUser(identityUser);
+            await this.AssignSignUpRolesAndClaims(identityUser, signUpExternal.Roles, signUpExternal.Claims);
 
-        var userLoginInfo = new UserLoginInfo(signUpExternal.ExternalProvider.Name, signUpExternal.ExternalProvider.UserId, signUpExternal.ExternalProvider.Name);
+            var userLoginInfo = new UserLoginInfo(signUpExternal.ExternalProvider.Name, signUpExternal.ExternalProvider.UserId, signUpExternal.ExternalProvider.Name);
 
-        var addLoginResult = await this.userManager
-            .AddLoginAsync(identityUser, userLoginInfo);
+            var addLoginResult = await this.userManager
+                .AddLoginAsync(identityUser, userLoginInfo);
 
-        if (!addLoginResult.Succeeded)
-        {
-            ThrowIdentityExceptions(addLoginResult.Errors);
-        }
+            if (!addLoginResult.Succeeded)
+            {
+                ThrowIdentityExceptions(addLoginResult.Errors);
+            }
 
-        return await this.CreateUser(signUpExternal.User, identityUser, cancellationToken);
+            return await this.CreateUser(signUpExternal.User, identityUser, cancellationToken);
+        }, cancellationToken);
     }
 
     #endregion
@@ -801,7 +807,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
     }
 
     /// <inheritdoc />
-    public virtual Task DeleteUserAsync(TIdentity id, CancellationToken cancellationToken = default)
+    public virtual async Task DeleteUserAsync(TIdentity id, CancellationToken cancellationToken = default)
     {
         var identityUser = this.dbContext
             .Find<IdentityUserEx<TIdentity>>(id);
@@ -811,7 +817,16 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
             throw new NotFoundException(nameof(identityUser));
         }
 
-        return this.DeleteIdentityUser(identityUser, cancellationToken);
+        var result = await this.userManager
+            .DeleteAsync(identityUser);
+
+        if (!result.Succeeded)
+        {
+            ThrowIdentityExceptions(result.Errors);
+        }
+
+        await this.dbContext
+            .SaveChangesAsync(cancellationToken);
     }
 
     #endregion
@@ -2041,22 +2056,39 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
         user.IdentityUser = this.dbContext
             .Find<IdentityUserEx<TIdentity>>(identityUser.Id)!;
 
-        try
-        {
-            await this.dbContext
-                .AddAsync(user, cancellationToken);
+        await this.dbContext
+            .AddAsync(user, cancellationToken);
 
-            await this.dbContext
-                .SaveChangesAsync(cancellationToken);
-        }
-        catch
-        {
-            await this.DeleteIdentityUser(identityUser, cancellationToken);
-
-            throw;
-        }
+        await this.dbContext
+            .SaveChangesAsync(cancellationToken);
 
         return user;
+    }
+    private async Task<TUser> ExecuteSignUpInTransactionAsync<TUser>(Func<Task<TUser>> action, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(action);
+
+        if (this.dbContext.Database.CurrentTransaction != null)
+        {
+            return await action();
+        }
+
+        var executionStrategy = this.dbContext.Database
+            .CreateExecutionStrategy();
+
+        return await executionStrategy
+            .ExecuteAsync(async () =>
+            {
+                await using var transaction = await this.dbContext.Database
+                    .BeginTransactionAsync(cancellationToken);
+
+                var user = await action();
+
+                await transaction
+                    .CommitAsync(cancellationToken);
+
+                return user;
+            });
     }
     private async Task CreateIdentityUser(IdentityUserEx<TIdentity> identityUser, string? password = null)
     {
@@ -2091,21 +2123,6 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
         {
             ThrowIdentityExceptions(createResult.Errors);
         }
-    }
-    private async Task DeleteIdentityUser(IdentityUserEx<TIdentity> identityUser, CancellationToken cancellationToken = default)
-    {
-        ArgumentNullException.ThrowIfNull(identityUser);
-
-        var result = await this.userManager
-            .DeleteAsync(identityUser);
-
-        if (!result.Succeeded)
-        {
-            ThrowIdentityExceptions(result.Errors);
-        }
-
-        await this.dbContext
-            .SaveChangesAsync(cancellationToken);
     }
     private async Task AssignSignUpRolesAndClaims(IdentityUserEx<TIdentity> identityUser, IEnumerable<string>? roles = null, IEnumerable<KeyValuePair<string, string>>? claims = null)
     {
@@ -2142,7 +2159,6 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
             }
         }
     }
-
     private static void ThrowIdentityExceptions(IEnumerable<IdentityError> errors)
     {
         ArgumentNullException.ThrowIfNull(errors);

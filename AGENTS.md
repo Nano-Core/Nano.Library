@@ -2985,7 +2985,8 @@ the matching capability interface from [Data Models](#data-models):
 `Data:Repository:UseAutoSave` (default `true`) governs whether each mutating call commits immediately. To make
 several repository calls atomic, wrap them in `Repository.ExecuteInTransactionAsync(async ct => { ... }, ct)` — every
 call inside commits together or rolls back together, even with `UseAutoSave: true`. It runs through the provider's
-retry strategy, so the action may run more than once and must be safe to repeat. Alternatively, set `UseAutoSave:
+retry strategy, so the action may run more than once and must be safe to repeat. If a transaction is already open on
+the context, the action joins it (runs once, the outer transaction decides the outcome). Alternatively, set `UseAutoSave:
 false` and call `Repository.SaveChangesAsync()` once yourself at the end (one save, no explicit transaction).
 
 ⚠ `AddAndGetAsync`/`UpdateAndGetAsync` **always** save regardless of `UseAutoSave` — they need the row persisted
