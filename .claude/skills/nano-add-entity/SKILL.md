@@ -205,6 +205,16 @@ public class <Entity>Mapping : BaseEntityMapping<<Entity>>
     parent while dependents still exist should be a hard error instead of silently taking them
     with it, `SetNull` only for a genuinely optional reference. Don't default to `Cascade`
     everywhere just because it's often EF's own inferred behavior for required FKs.
+  - **Never give the FK scalar its own `.Property(...)` block.** `.HasForeignKey(...)` together with
+    `.IsRequired()` on the relationship already configures it (its nullability follows the property's
+    type), so a separate `.Property(x => x.ParentId).IsRequired();` (or a bare `.Property(x => x.ParentId);`)
+    is noise. The FK property is still declared on the entity in File 1.
+  - **Never leave `.WithMany()`/`.WithOne()` empty.** Every relationship has a navigation on both ends: if
+    the principal entity has no inverse collection/reference yet, add it to the principal's File 1 (for
+    example `Registrations` on the `Organization` that a `Registration` points at, or `SubmittedProducts`
+    when the reference is named `SubmittedByOrganization`), name the relationship in both mappings, and add
+    the principal-side `.HasMany(...).WithOne(...)` block described below. Don't skip the inverse because it
+    "isn't used" - an unnamed end is exactly what hides a missing or accidental relationship.
   - **Inverse collection/reference navigation with no FK of its own** (the principal side of a
     relationship whose FK is declared in the *dependent* entity's own mapping): configure it
     explicitly here too, not just with a comment — `.HasMany(x => x.Children).WithOne(x => x.Parent)`
@@ -245,8 +255,11 @@ public class <Entity>Mapping : BaseEntityMapping<<Entity>>
     `BaseEntityCreatableAndDeletableController` in File 4.
 - **Index every property the entity is queried or sorted by** — one `HasIndex(...)` in the mapping for each
   property File 3's query criteria filters on, and each property an ordering (`Order.By`) or a keyword
-  search reaches, declared at the end of `Configure`, after the properties and relationships. Foreign keys
-  already get an index from EF's conventions, so don't repeat those unless a composite covers them better;
+  search reaches, declared directly beneath the mapping of the property it indexes, not collected at the end
+  of `Configure` (a composite index goes beneath the last of its properties to be mapped, after that
+  property's relationship block if it is a foreign key). Foreign keys already get an index from EF's
+  conventions, so never write a single-column `HasIndex` on a foreign key property, and none at all when a
+  composite index or unique index already starts with it;
   don't index a low-selectivity flag (a plain `bool` or status on its own). When a list is always filtered
   by one property and sorted by another (a foreign key, newest first), use one composite index in that
   order (`HasIndex(x => new { x.ParentId, x.CreatedAt })`), which replaces a plain single-column index on

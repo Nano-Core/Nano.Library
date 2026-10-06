@@ -2873,6 +2873,16 @@ public class MyEntityMapping : BaseEntityMapping<MyEntity>
 ⚠ Always call `base.Configure(builder)` **first** in an override — every behavior in the table above depends on
 it running before your own configuration.
 
+⚠ Declare each `HasIndex(...)` directly beneath the mapping of the property it indexes, not collected at the end
+of `Configure` (a composite index goes beneath the last of its properties to be mapped). Never write a
+single-column `HasIndex` on a foreign key property: EF Core already creates an index for every foreign key, and
+skips it when a composite or unique index already starts with that property.
+
+⚠ Don't map a foreign key property on its own (`builder.Property(x => x.ParentId).IsRequired()`): the relationship's
+`.HasForeignKey(...)` and `.IsRequired()` already configure it. And never leave `.WithMany()`/`.WithOne()` empty:
+give the principal entity the inverse navigation (collection or reference) and name it in the relationship, so both
+ends are explicit.
+
 #### Auto-discovery mechanics
 
 `BaseDbContext<TIdentity>.OnModelCreating` calls `modelBuilder.MapEntities<TIdentity>()`, which reflects the
