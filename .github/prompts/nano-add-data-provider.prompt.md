@@ -38,8 +38,8 @@ without breaking what's already there.
    generic arguments must agree with it.
 6. **Database name.** Derive it from the application's own name, not the solution/repo name and
    not a copy-pasted value from another app: strip any `Svc.`/`Api.`/`Web.` prefix, lowercase the
-   first letter of what's left, and append `Db` - e.g. `Svc.Accounts` → `accountsDb`, `Api.Admin`
-   → `adminDb`. Use this exact value everywhere a database name appears for this app (local
+   first letter of what's left, and append `Db` - e.g. `Svc.Orders` → `ordersDb`, `Api.Backoffice`
+   → `backofficeDb`. Use this exact value everywhere a database name appears for this app (local
    `ConnectionString`, `POSTGRES_DB`, the SqLite file name, and the Staging/Production `SQL_NAME`
    below) - one derived name, reused consistently, not decided separately per environment. Don't
    reuse another app's prefix/pattern by copying its CI workflow or `appsettings.Development.json`

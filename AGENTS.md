@@ -1947,6 +1947,25 @@ explicit about, since it changes what an action's body actually does:
   either as a custom method on an entity controller or a bare `BaseController` action. Only ever called by a
   Public API (or another internal service) via its Api Client — never exposed directly to untrusted clients.
 
+⚠ **Complicated logic always belongs in the internal service, not in the Public API.** A Public API action stays
+simple: fetch then act (a get, then an edit), or check then act (a lookup or an ownership check, then a create,
+edit or delete). A check on the request, or on what the action just fetched, that rejects with a
+`BadRequestException` before acting is part of that and stays in the Public API (for example rejecting a request that
+allows no login method, or a duplicate found by a lookup). Complicated rules, a decision made from which other rows exist, or a combined result or flags built
+from several calls are one custom method on the owning service, exposed through its own Api Client method, and the
+Public API only maps what it returns. That is exactly the case the [Core Principle](#core-principle--built-in-before-custom)
+allows a custom endpoint for. Combining calls to different services is the Public API's job. The service then
+enforces and reports a rule from one place, so a response or a button can never say yes where the service would
+say no.
+
+Best practice: a service action that changes something returns the data the caller needs next (for example the
+finished overview), so the Public API never makes a second call just to fetch it after the action.
+
+⚠ **Controllers never share logic with each other.** A controller must not call another controller's helper, and
+two controllers must not each carry a copy of the same private method. In an internal service put shared logic in
+a repository extension method (an `IRepository` extension in the app's `Extensions/` folder) that every controller
+calls.
+
 ⚠ **`BaseEntityUserController` and `BaseAuthController` (persistent auth) are internal-service-only features —
 never add them to an app playing the Public API role, even though nothing technically stops it.** Unlike a
 plain Data/Storage/Eventing provider (above, allowed as a deliberate exception), this combination is never an
@@ -2278,7 +2297,7 @@ Controller `///` comments feed the public Swagger, so keep them short and safe t
 - The controller class `<summary>` says what the controller is for in 5-8 words (`Manages saved reports and how they are shared.`), not just the entity name (`Reports.`).
 - A brief rule or condition is fine when it helps the caller and is not sensitive.
 - No implementation details or other internals: no other service or application names, method names, or internal rules.
-- Never put `///` on private or internal members.
+- Never put `///` on private or internal members, in a controller or anywhere else in the code.
 
 #### Request Validation
 

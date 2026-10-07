@@ -19,8 +19,7 @@ contract another application will call, so scaffolding it also means scaffolding
 half of that same contract — one coherent task, not two skills chained together. **Step 2** below
 determines which applies; read only the matching path once it's decided.
 
-⚠ **Terminology**: this skill calls the customer/end-user-facing role "**Public API**" (e.g.
-`Api.Platform`/`Api.Admin` in this solution — this solution's own project template for one is
+⚠ **Terminology**: this skill calls the customer/end-user-facing role "**Public API**" (this solution's own project template for one is
 `nanocore-api-public`), never "gateway." "Gateway" in this codebase means the Kubernetes Gateway
 API resource (`nano-add-public-exposure`'s `HTTPRoute`/`Gateway`) or the network-edge/cert-manager
 TLS layer in front of a cluster — an unrelated, infrastructure-level concept. Don't reuse that word
@@ -60,14 +59,12 @@ insufficient — not just "less convenient." Walk through this before scaffoldin
   calls from the caller would let the write happen without the validation ever running. This is
   the right call for a custom endpoint, not a sign to keep looking for a generic-composition way
   around it.
-- **The same generic-composition workaround needed at 2+ call sites is itself a signal to stop
-  composing and build the real custom endpoint.** A union across two entity types (e.g. "roles
-  owned by this tenant, plus roles reachable via its subscription plan") done as two generic calls
-  glued together in one Public API action is fine the first time; the same two calls duplicated
-  again in a second and third action is a sign the composition belongs on the *target* service as
-  a real custom endpoint instead — one round trip, one place the logic lives, instead of the same
-  non-trivial join reimplemented at every caller. Don't wait for a fourth duplicate before
-  promoting it.
+- **A combined result built from several generic calls belongs on the owning service.** A union across
+  two entity types (e.g. "roles owned by this tenant, plus roles reachable via its subscription plan")
+  is not a fetch followed by an action, it is logic, so build it as a real custom endpoint on the
+  *target* service from the start — one round trip, one place the logic lives, instead of the same
+  non-trivial join reimplemented at every caller. The same two calls showing up in a second action is
+  a clear sign it was missed.
 - **Before scaffolding a single-item lookup, check whether a sibling list/aggregate endpoint
   already makes it redundant.** If a "get all roles for this tenant" endpoint already returns every
   role with `RolePermissions` (or whatever the caller needs) populated, a separate "get one role"
@@ -109,14 +106,25 @@ surface, not a free side-effect — say so rather than tagging it silently.
 Not always obvious from the request alone — ask if unclear, don't default to one. Getting this
 wrong means the wrong constructor, the wrong dependency, and a DTO shape aimed at the wrong layer:
 
-- **Public API controller** (e.g. `Api.Platform`/`Api.Admin` in this solution) — the action
-  composes one or more injected Api Clients (`.Entity`/`.Auth`/`.Audit`/`.Identity` calls, or an
-  existing custom client method) into one response; it has no `IRepository` of its own. Go to
-  **Public API path** below.
+- **Public API controller** — the action composes one or more injected Api Clients
+  (`.Entity`/`.Auth`/`.Audit`/`.Identity` calls, or an existing custom client method) into one
+  response; it has no `IRepository` of its own. Go to **Public API path** below.
 - **Internal service controller** — the action implements logic directly against this app's own
   `IRepository`/`IEventing`, either as a custom method on an existing entity controller
   (`BaseEntityController<...>` subclass) or a bare `BaseController` action with no entity backing
   it at all. Go to **Internal service path** below.
+
+**Where the logic goes.** A Public API action stays simple: fetch then act, or check then act (for
+example a lookup or an ownership check, then a create, edit or delete). A check on the request, or on
+what the action just fetched, that rejects with a `BadRequestException` before acting is part of that and
+stays in the Public API. Complicated logic always
+belongs in the internal service, as one custom action behind its Api Client: complicated rules,
+deciding something from which other rows exist, or building a combined result or flags from several
+calls. If a Public API action would need more than fetch-then-act or check-then-act, scaffold the
+internal service endpoint instead and have the Public API call just that. Combining calls to
+different services is the Public API's job. Controllers never share logic with each other — a
+service puts shared logic in a repository extension method (an `IRepository` extension in the
+app's `Extensions/` folder).
 
 ## Step 3 — Pin down shape and conventions
 
@@ -479,6 +487,9 @@ public virtual async Task<IActionResult> MyActionAsync([FromBody][Required] MyAc
   (correct base tier, naming, eventing-parameter handling). This includes the retrofit case: an
   entity that already exists but has no generic controller yet still gets its full generic
   controller as part of creating it here — this action doesn't replace or narrow that entitlement.
+- **Return what the caller needs.** An action that changes something returns the data the caller will
+  show or use next (for example the finished overview), so the Public API never makes a second call
+  just to fetch it after the action. This is best practice, not an absolute rule.
 - **Use `this.Repository`/`this.Eventing`, not the raw primary-constructor parameter, inside the
   action body.** On an entity controller (`BaseEntityController<...>` and friends), the primary
   constructor's `repository`/`eventing` parameters are already passed to the base constructor:

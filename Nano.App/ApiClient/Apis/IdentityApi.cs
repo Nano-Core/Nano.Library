@@ -20,9 +20,6 @@ public sealed class IdentityApi<TUser, TIdentity>(ApiClient api)
     where TUser : class, IEntityUser<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
-    /// <summary>
-    /// Identity Controller.
-    /// </summary>
     private static string IdentityController => $"{typeof(TUser).Name.ToLower()}s";
 
     private readonly ApiClient api = api ?? throw new ArgumentNullException(nameof(api));
