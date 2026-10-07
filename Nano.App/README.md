@@ -179,16 +179,16 @@ The following entity methods are available. Additional overloads are also provid
 | `CreateOrGetAsync`      | CreateOrGetRequest       | Invokes the `create/get` endpoint and returns the created or existing entity.      |
 | `CreateAndGetAsync`     | CreateAndGetRequest      | Invokes the `create/reload` endpoint and returns the created entity.               |
 | `CreateManyAsync`       | CreateManyRequest        | Invokes the `create/many` endpoint for multiple entities.                          |
-| `CreateManyBulkAsync`   | CreateManyBulkRequest    | Invokes the bulk `'create/many/bulk` endpoint.                                     |
+| `CreateManyBulkAsync`   | CreateManyBulkRequest    | Invokes the bulk `'create/many/bulk` endpoint. Requires EF Plus Enterprise.        |
 | `EditAsync`             | EditRequest              | Updates an entity via the `edit` endpoint and returns the updated entity.          |
 | `EditAndGetAsync`       | EditAndGetRequest        | Updates an entity via the `edit/get` endpoint and returns the updated entity.      |
 | `EditManyAsync`         | EditManyRequest          | Updates multiple entities via the `edit/many` endpoint.                            |
-| `EditManyBulkAsync`     | EditManyBulkRequest      | Bulk updates entities via the `edit/many/bulk` endpoint.                           |
+| `EditManyBulkAsync`     | EditManyBulkRequest      | Bulk updates entities via the `edit/many/bulk` endpoint. Requires EF Plus Enterprise. |
 | `EditQueryAsync`        | EditQueryRequest         | Updates entities matching a query via the `edit/query` endpoint.                   |
 | `EditQueryBulkAsync`    | EditQueryBulkRequest     | Bulk (batch) updates entities matching a query via the `edit/query/bulk` endpoint. |
 | `DeleteAsync`           | DeleteRequest            | Deletes a single entity using the `delete` endpoint.                               |
 | `DeleteManyAsync`       | DeleteManyRequest        | Deletes multiple entities using the `delete/many` endpoint.                        |
-| `DeleteManyBulkAsync`   | DeleteManyBulkRequest    | Bulk deletes multiple entities using the `delete/many/bulk` endpoint.              |
+| `DeleteManyBulkAsync`   | DeleteManyBulkRequest    | Bulk deletes multiple entities using the `delete/many/bulk` endpoint. Requires EF Plus Enterprise. |
 | `DeleteQueryAsync`      | DeleteQueryRequest       | Deletes entities matching a query using the `delete/query` endpoint.               |
 | `DeleteQueryBulkAsync`  | DeleteQueryBulkRequest   | Bulk (batch) deletes entities using a query via the `delete/query/bulk` endpoint.  |
 
