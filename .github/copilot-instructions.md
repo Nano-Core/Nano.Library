@@ -1,8 +1,8 @@
-# Copilot instructions — Nano Framework
+# Copilot instructions - Nano Framework
 
 This repository (and any application built on the `NanoCore`/`Nano.*` NuGet packages) uses the
 **Nano framework** for API/Web/Console applications. Before making changes, check the repo root
-for an `AGENTS.md` — it is the authoritative implementation reference for Nano and documents the
+for an `AGENTS.md`: it is the authoritative implementation reference for Nano and documents the
 exact base classes, configuration, and gotchas for that specific solution. These instructions are
 a short always-on summary; `AGENTS.md` takes precedence on any conflict.
 
@@ -10,30 +10,30 @@ a short always-on summary; `AGENTS.md` takes precedence on any conflict.
 
 A Nano app named `{name}` conventionally looks like:
 
-- `{name}/` — the app project (`Program.cs`, `Controllers/`, `Data/` for `DbContext`+`Mappings/`,
+- `{name}/`: the app project (`Program.cs`, `Controllers/`, `Data/` for `DbContext`+`Mappings/`,
   `appsettings*.json`).
-- `{name}.Models/` — a **separate sibling project** (not nested) holding entity models,
-  `Criterias/` (query criteria), and `Api/` (typed API client) — only present in a "split layout";
+- `{name}.Models/`: a **separate sibling project** (not nested) holding entity models,
+  `Criterias/` (query criteria), and `Api/` (typed API client), only present in a "split layout";
   many smaller apps use a single-project layout with everything in `{name}/` instead.
-- `.tests/Tests.{name}/` — test project.
-- `.docker/`, `.kubernetes/`, `.github/workflows/build-and-deploy.yml`, root `Dockerfile` — local
+- `.tests/Tests.{name}/`: test project.
+- `.docker/`, `.kubernetes/`, `.github/workflows/build-and-deploy.yml`, root `Dockerfile`: local
   orchestration, deployment, and CI/CD.
 
 Folder names (`Controllers/`, `Data/`, `Criterias/`, `Api/`) are convention, not a framework
-requirement — Nano discovers controllers, mappings, and data providers by type via reflection, not
+requirement: Nano discovers controllers, mappings, and data providers by type via reflection, not
 by location.
 
 ## Conventions to follow
 
 - **Identity type**: default to `Guid` (`BaseEntity` = `BaseEntity<Guid>`) unless the project
   already consistently uses another `TIdentity` everywhere (entities, mappings, repository,
-  controllers, API client) — it is a cross-cutting choice, never a per-entity one.
-- **Entity mappings** must call `base.Configure(builder)` before any custom configuration —
-  omitting it silently breaks inherited behavior (soft delete, audit, etc.).
+  controllers, API client): it is a cross-cutting choice, never a per-entity one.
+- **Entity mappings** override `ConfigureEntity`, never `Configure` (it is not virtual). Nano
+  applies its inherited behavior (soft delete, audit, etc.) first, so there is no `base` call to make.
 - **Controller naming is load-bearing**: `<Entity>` + literal `s` + `Controller` (naive
-  pluralization, e.g. `Country` → `CountrysController`, not "correct" English plurals) — Nano
+  pluralization, e.g. `Country` → `CountrysController`, not "correct" English plurals): Nano
   derives the route from the class name.
-- No manual registration is needed for mappings, controllers, startup tasks, or API clients —
+- No manual registration is needed for mappings, controllers, startup tasks, or API clients:
   Nano discovers them by type/assembly scanning. Don't add DI registration calls for these unless
   a project's existing code clearly does otherwise.
 - Match existing conventions in the project (nullable-reference style, split vs single-project

@@ -24,6 +24,7 @@
 * **[Migrations](#migrations)**
 * **[Repositories](#repositories)**
   * **[Autosave](#autosave)**
+  * **[Transactions](#transactions)**
   * **[Cache](#cache)**
   * **[Include Annotation](#include-annotation)**
 * **[Audit](#audit)**
@@ -423,16 +424,12 @@ in the database and allow you to customize Entity Framework behavior.
 ```csharp
 public class MyEntityMapping : BaseEntityMapping<MyEntity>
 {
-    public override void Configure(EntityTypeBuilder<MyEntity> builder)
+    protected override void ConfigureEntity(EntityTypeBuilder<MyEntity> builder)
     {
-        base.Configure(builder);
-
         // Add Entity Framework mappings here.
     }
 }
 ```
-
-> ⚠️ Always call `base.Configure(builder);` in your data mappings to ensure Nano functions correctly.  
 
 Nano automatically applies all data mappings, so there is no need to manually register them. Only non-abstract, non-generic mapping classes are automatically 
 detected and applied.  
@@ -445,10 +442,8 @@ as for regular entity models.
 ```csharp
 public class MyEntityUserMapping : BaseEntityUserMapping<MyEntityUser>
 {
-    public override void Configure(EntityTypeBuilder<MyEntityUser> builder)
+    protected override void ConfigureEntity(EntityTypeBuilder<MyEntityUser> builder)
     {
-        base.Configure(builder);
-
         // Add Entity Framework mappings here.
     }
 }
@@ -544,18 +539,18 @@ The following table lists the methods available in `IRepository` along with thei
 | `GetManyAsync<TEntity>`                     | query, includeDepth                                       | `IEntity`                             | Gets entities matching the specified query.                                               |
 | `GetManyAsync<TEntity, TCriteria>`          | criteria, includeDepth                                    | `IEntity`                             | Gets entities matching the specified criteria.                                            |
 | `GetManyAsync<TEntity>`                     | where, pagination, ordering, includeDepth                 | `IEntity`                             | Gets entities matching a predicate with pagination and ordering.                          |
-| `GetManyAsync<TEntity, TKey>`               | where, pagination, includeDepth, orderBy, orderDirection  | `IEntity`                              | Gets entities matching a predicate ordered by a key selector with pagination.             |
+| `GetManyAsync<TEntity, TKey>`               | where, pagination, includeDepth, orderBy, orderDirection  | `IEntity`                             | Gets entities matching a predicate ordered by a key selector with pagination.             |
 | `AddAsync<TEntity>`                         | entity                                                    | `IEntityCreatable`                    | Adds a single entity.                                                                     |
-| `AddOrGetAsync<TEntity, TKey>` (or `<TEntity>` for a GUID key) | entity                          | `IEntityCreatable`, `IEntityIdentity` | Adds an entity, or retrieves it if it already exists. ⚠️ _Always uses autosave._          |
-| `AddAndGetAsync<TEntity, TKey>` (or `<TEntity>` for a GUID key) | entity                         | `IEntityCreatable`, `IEntityIdentity` | Adds an entity and reloads it including related entities. ⚠️ _Always uses autosave._      |
+| `AddOrGetAsync<TEntity, TKey>`              | entity                                                    | `IEntityCreatable`, `IEntityIdentity` | Adds an entity, or retrieves it if it already exists. ⚠️ _Always uses autosave._          |
+| `AddAndGetAsync<TEntity, TKey>`             | entity                                                    | `IEntityCreatable`, `IEntityIdentity` | Adds an entity and reloads it including related entities. ⚠️ _Always uses autosave._      |
 | `AddManyAsync<TEntity>`                     | entities                                                  | `IEntityCreatable`                    | Adds multiple entities.                                                                   |
-| `AddManyBulkAsync<TEntity>`                 | entities                                                  | `IEntityCreatable`                    | Bulk adds multiple entities using EF Plus Enterprise.                                     |
+| `AddManyBulkAsync<TEntity>`                 | entities                                                  | `IEntityCreatable`                    | Bulk adds multiple entities. Requires EF Plus Enterprise.                                 |
 | `UpdateAsync<TEntity>`                      | entity                                                    | `IEntityUpdatable`                    | Updates a single entity.                                                                  |
-| `UpdateAndGetAsync<TEntity, TKey>` (or `<TEntity>` for a GUID key) | entity                          | `IEntityUpdatable`, `IEntityIdentity` | Updates an entity and reloads it including related entities. ⚠️ _Always uses autosave._   |
+| `UpdateAndGetAsync<TEntity, TKey>`          | entity                                                    | `IEntityUpdatable`, `IEntityIdentity` | Updates an entity and reloads it including related entities. ⚠️ _Always uses autosave._   |
 | `UpdateManyAsync<TEntity>`                  | entities                                                  | `IEntityUpdatable`                    | Updates multiple entities.                                                                |
 | `UpdateManyAsync<TEntity>`                  | where, propertyUpdates                                    | `IEntityUpdatable`                    | Updates entities matching a predicate.                                                    |
 | `UpdateManyAsync<TEntity, TCriteria>`       | criteria, propertyUpdates                                 | `IEntityUpdatable`                    | Updates entities based on specified criteria.                                             |
-| `UpdateManyBulkAsync<TEntity>`              | entities                                                  | `IEntityUpdatable`                    | Bulk updates multiple entities using EF Plus Enterprise.                                  |
+| `UpdateManyBulkAsync<TEntity>`              | entities                                                  | `IEntityUpdatable`                    | Bulk updates multiple entities. Requires EF Plus Enterprise.                              |
 | `UpdateManyBulkAsync<TEntity>`              | where, propertyUpdates                                    | `IEntityUpdatable`                    | Bulk (batch) updates entities matching a predicate.                                       |
 | `UpdateManyBulkAsync<TEntity, TCriteria>`   | criteria, propertyUpdates                                 | `IEntityUpdatable`                    | Bulk (batch) updates entities based on specified criteria.                                |
 | `AddOrUpdateAsync<TEntity>`                 | entity                                                    | `IEntityCreatableAndUpdatable`        | Adds or updates a single entity.                                                          |
@@ -566,8 +561,8 @@ The following table lists the methods available in `IRepository` along with thei
 | `DeleteManyAsync<TEntity>`                  | entities                                                  | `IEntityDeletable`                    | Deletes multiple entities.                                                                |
 | `DeleteManyAsync<TEntity, TCriteria>`       | criteria                                                  | `IEntityDeletable`                    | Deletes entities matching specified criteria.                                             |
 | `DeleteManyAsync<TEntity>`                  | expression                                                | `IEntityDeletable`                    | Deletes entities matching a filter expression.                                            |
-| `DeleteManyBulkAsync<TEntity, TKey>`        | ids                                                       | `IEntityDeletable`, `IEntityIdentity` | Bulk deletes entities with specified keys.                                                |
-| `DeleteManyBulkAsync<TEntity>`              | entities                                                  | `IEntityDeletable`                    | Bulk deletes specified entities.                                                          |
+| `DeleteManyBulkAsync<TEntity, TKey>`        | ids                                                       | `IEntityDeletable`, `IEntityIdentity` | Bulk deletes entities with specified keys. Requires EF Plus Enterprise.                   |
+| `DeleteManyBulkAsync<TEntity>`              | entities                                                  | `IEntityDeletable`                    | Bulk deletes specified entities. Requires EF Plus Enterprise.                             |
 | `DeleteManyBulkAsync<TEntity, TCriteria>`   | criteria                                                  | `IEntityDeletable`                    | Bulk (batch) deletes entities matching specified criteria.                                |
 | `DeleteManyBulkAsync<TEntity>`              | expression                                                | `IEntityDeletable`                    | Bulk (batch) deletes entities matching a filter expression.                               |
 | `CountAsync<TEntity, TCriteria>`            | criteria                                                  | `IEntity`                             | Returns the number of entities matching the criteria.                                     |
@@ -581,6 +576,9 @@ The following table lists the methods available in `IRepository` along with thei
 | `SaveChangesAsync`                          | -                                                         | -                                     | Persists all pending changes to the data store.                                           | 
 
 Several methods include overloads, which have been merged here for simplicity.  
+
+> ⚠️ The bulk methods marked _EF Plus Enterprise_ (`AddManyBulkAsync`, `UpdateManyBulkAsync` and `DeleteManyBulkAsync` taking entities or keys) require a paid 
+**[Z.EntityFramework.Plus](https://entityframework-plus.net/)** license.  
 
 One of the most useful parameters is `includeDepth`, which overrides the globally configured include depth and determines how many levels of [Include Annotations](#include-annotation) 
 are applied in a query. This allows you to map complex entity models with related entities, while also controlling how much of the entity graph is loaded. Sometimes you may want 
@@ -602,7 +600,7 @@ identity logic through a single, consistent repository.
 | `SignOutAsync`                          | Login                | userId, appId                                 | Signs out the currently authenticated user and removes any associated refresh tokens.                                |
 | `IsEmailAddressTakenAsync`              | Sign Up              | emailAddress                                  | Checks whether the specified email address is already registered. Returns true if taken.                             |
 | `IsPhoneNumberTakenAsync`               | Sign Up              | phoneNumber                                   | Checks whether the specified phone number is already registered. Returns true if taken.                              |
-| `GetPasswordOptionsAsync`               | Sign Up              | -                                              | Retrieves the password configuration options for the identity system, if available.                                  |
+| `GetPasswordOptionsAsync`               | Sign Up              | -                                             | Retrieves the password configuration options for the identity system, if available.                                  |
 | `SignUpAsync<TUser>`                    | Sign Up              | signUp                                        | Registers a new user with the specified sign-up information. Returns the created user entity.                        |
 | `SignUpExternalAsync<TUser>`            | Sign Up              | signUpExternal                                | Registers a new user using external login provider information. Returns the created user entity.                     |
 | `GetIdentityUserAsync`                  | User                 | id                                            | Retrieves the identity user by its identifier. Throws if the user is not found.                                      |
@@ -655,15 +653,15 @@ identity logic through a single, consistent repository.
 | `ValidateApiKeyAsync`                   | Api Keys             | validateApiKey                                | Validates a provided API key and returns its associated record if valid; otherwise null.                             |
 | `EditApiKeyAsync`                       | Api Keys             | apiKeyId, editApiKey                          | Updates the name or metadata of an existing API key. Returns the updated API key or null.                            |
 | `RevokeApiKeyAsync`                     | Api Keys             | apiKeyId, revokeApiKey                        | Revokes an API key, marking it as inactive. Returns the updated API key or null.                                     |
-| `GetAllApiKeyClaims`                    | Api Key Claims       | identityUser, transientRoles, transientClaims | Retrieves all claims of an api key, including role-based and optional transient claims.                                  |
-| `GetRoleClaimAsync`                     | Api Key Claims       | roleId, getClaim                          | Retrieves a specific claim of an api key by claim type.                                                                  |
-| `GetRoleClaimsAsync`                    | Api Key Claims       | roleId                                        | Retrieves all claims of an api key by apikeyId.                                                                           |
-| `GetRoleClaimsAsync`                    | Api Key Claims       | identityRole                                  | Retrieves all claims of a api key instance.                                                                             |
-| `AssignRoleClaimAsync`                  | Api Key Claims       | roleId, assignClaim                           | Assigns a claim to an api key.                                                                                           |
-| `ReplaceRoleClaimAsync`                 | Api Key Claims       | roleId, replaceClaim                          | Replaces an existing claim of an api key with a new value.                                                               |
-| `AssignOrReplaceRoleClaimAsync`         | Api Key Claims       | roleId, assignOrReplaceClaim                  | Assigns a claim to an api key or replaces it if it already exists.                                                       |
-| `RemoveRoleClaimAsync`                  | Api Key Claims       | roleId, removeClaim                           | Removes a claim from an api key.                                                                                         |
-| `GetRolesAsync`                         | Roles                | -                                              | Retrieves all roles in the system.                                                                                   |
+| `GetAllApiKeyClaims`                    | Api Key Claims       | identityUser, transientRoles, transientClaims | Retrieves all claims of an api key, including role-based and optional transient claims.                              |
+| `GetRoleClaimAsync`                     | Api Key Claims       | roleId, getClaim                              | Retrieves a specific claim of an api key by claim type.                                                              |
+| `GetRoleClaimsAsync`                    | Api Key Claims       | roleId                                        | Retrieves all claims of an api key by apikeyId.                                                                      |
+| `GetRoleClaimsAsync`                    | Api Key Claims       | identityRole                                  | Retrieves all claims of a api key instance.                                                                          |
+| `AssignRoleClaimAsync`                  | Api Key Claims       | roleId, assignClaim                           | Assigns a claim to an api key.                                                                                       |
+| `ReplaceRoleClaimAsync`                 | Api Key Claims       | roleId, replaceClaim                          | Replaces an existing claim of an api key with a new value.                                                           |
+| `AssignOrReplaceRoleClaimAsync`         | Api Key Claims       | roleId, assignOrReplaceClaim                  | Assigns a claim to an api key or replaces it if it already exists.                                                   |
+| `RemoveRoleClaimAsync`                  | Api Key Claims       | roleId, removeClaim                           | Removes a claim from an api key.                                                                                     |
+| `GetRolesAsync`                         | Roles                | -                                             | Retrieves all roles in the system.                                                                                   |
 | `CreateRoleAsync`                       | Roles                | roleName                                      | Creates a new role. Returns the created role.                                                                        |
 | `DeleteRoleAsync`                       | Roles                | roleName                                      | Deletes an existing role.                                                                                            |
 | `GetRoleClaimAsync`                     | Role Claims          | roleId, getClaim                              | Retrieves a specific claim of a role by claim type.                                                                  |
@@ -698,6 +696,8 @@ await repository.ExecuteInTransactionAsync(async ct =>
 ```
 
 The action runs through the data provider's retry strategy, so it may run more than once and must be safe to repeat.  
+
+If a transaction is already open on the context, the action joins it instead of starting a new one. It runs once, and the outer transaction decides whether everything is committed.  
 
 ## Cache
 Currently, Nano does not support data caching.  

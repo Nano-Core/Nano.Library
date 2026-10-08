@@ -232,8 +232,8 @@ so a tester doesn't have to go hunting for it elsewhere:
 ## .Prerequisites folder
 
 Sometimes this app's own collection needs test data that only a *different* application can
-create — Api.Platform's Postman collection can't test anything before a real, finalized User
-exists, but Api.Platform itself has no signup of its own; a Public API's read-only reference data
+create — a Public API's Postman collection can't test anything before a real, finalized User
+exists, but that Public API itself has no signup of its own; a Public API's read-only reference data
 (Currencies, Product Categories) may have no Create endpoint in that app at all. When this
 happens, don't just note it in a description and leave the tester to go run a different
 collection by hand first — add a `.Prerequisites` folder (the leading dot sorts it first in
@@ -241,8 +241,8 @@ Postman's sidebar, ahead of Auth) with the minimum requests needed to unblock th
 own flow.
 
 - **Target the actual owning application directly, never a composing Public API.** A Public API
-  (Api.Admin, Api.Platform) has no data of its own — it's always some internal service
-  (`Svc.Accounts`, `Svc.Assets`, etc.) that actually owns the entity, per AGENTS.md's Public API vs
+  has no data of its own — it's always some internal service
+  that actually owns the entity, per AGENTS.md's Public API vs
   internal service section. Go straight there, not through another Public API's composed endpoint.
   Use `http://{{host}}:<port>` with that service's literal host port, read from the nested service
   block in this app's own `.docker/docker-compose.yml` (each nested service is mapped to a unique

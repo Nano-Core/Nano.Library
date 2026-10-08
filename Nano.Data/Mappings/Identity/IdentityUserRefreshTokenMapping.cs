@@ -18,11 +18,9 @@ public class IdentityUserRefreshTokenMapping<TIdentity> : BaseEntityIdentityMapp
     /// Configures the entity using the <see cref="EntityTypeBuilder{TEntity}"/>.
     /// </summary>
     /// <param name="builder">The EF Core entity type builder.</param>
-    public override void Configure(EntityTypeBuilder<IdentityUserRefreshToken<TIdentity>> builder)
+    protected override void ConfigureEntity(EntityTypeBuilder<IdentityUserRefreshToken<TIdentity>> builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
-
-        base.Configure(builder);
 
         builder
             .ToTable(TableNames.IDENTITY_USER_REFRESH_TOKEN);

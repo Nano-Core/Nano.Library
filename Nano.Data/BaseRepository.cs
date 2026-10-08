@@ -1202,6 +1202,13 @@ public abstract class BaseRepository<TContext, TIdentity> : IRepository
     {
         ArgumentNullException.ThrowIfNull(action);
 
+        if (this.dbContext.Database.CurrentTransaction != null)
+        {
+            await action(cancellationToken);
+
+            return;
+        }
+
         var executionStrategy = this.dbContext.Database
             .CreateExecutionStrategy();
 

@@ -1947,6 +1947,25 @@ explicit about, since it changes what an action's body actually does:
   either as a custom method on an entity controller or a bare `BaseController` action. Only ever called by a
   Public API (or another internal service) via its Api Client — never exposed directly to untrusted clients.
 
+⚠ **Complicated logic always belongs in the internal service, not in the Public API.** A Public API action stays
+simple: fetch then act (a get, then an edit), or check then act (a lookup or an ownership check, then a create,
+edit or delete). A check on the request, or on what the action just fetched, that rejects with a
+`BadRequestException` before acting is part of that and stays in the Public API (for example rejecting a request that
+allows no login method, or a duplicate found by a lookup). Complicated rules, a decision made from which other rows exist, or a combined result or flags built
+from several calls are one custom method on the owning service, exposed through its own Api Client method, and the
+Public API only maps what it returns. That is exactly the case the [Core Principle](#core-principle--built-in-before-custom)
+allows a custom endpoint for. Combining calls to different services is the Public API's job. The service then
+enforces and reports a rule from one place, so a response or a button can never say yes where the service would
+say no.
+
+Best practice: a service action that changes something returns the data the caller needs next (for example the
+finished overview), so the Public API never makes a second call just to fetch it after the action.
+
+⚠ **Controllers never share logic with each other.** A controller must not call another controller's helper, and
+two controllers must not each carry a copy of the same private method. In an internal service put shared logic in
+a repository extension method (an `IRepository` extension in the app's `Extensions/` folder) that every controller
+calls.
+
 ⚠ **`BaseEntityUserController` and `BaseAuthController` (persistent auth) are internal-service-only features —
 never add them to an app playing the Public API role, even though nothing technically stops it.** Unlike a
 plain Data/Storage/Eventing provider (above, allowed as a deliberate exception), this combination is never an
@@ -2083,10 +2102,8 @@ public class MyEntity : BaseEntity
 ```csharp
 public class MyEntityMapping : BaseEntityMapping<MyEntity>
 {
-    public override void Configure(EntityTypeBuilder<MyEntity> builder)
+    protected override void ConfigureEntity(EntityTypeBuilder<MyEntity> builder)
     {
-        base.Configure(builder);
-
         builder.Property(x => x.Name).IsRequired().HasMaxLength(128);
         builder.Property(x => x.NameNormalized).IsRequired().HasMaxLength(128);
 
@@ -2278,7 +2295,7 @@ Controller `///` comments feed the public Swagger, so keep them short and safe t
 - The controller class `<summary>` says what the controller is for in 5-8 words (`Manages saved reports and how they are shared.`), not just the entity name (`Reports.`).
 - A brief rule or condition is fine when it helps the caller and is not sensitive.
 - No implementation details or other internals: no other service or application names, method names, or internal rules.
-- Never put `///` on private or internal members.
+- Never put `///` on private or internal members, in a controller or anywhere else in the code.
 
 #### Request Validation
 
@@ -2850,10 +2867,9 @@ Each entity gets a matching `IEntityTypeConfiguration<TEntity>`-style mapping cl
 ```csharp
 public class MyEntityMapping : BaseEntityMapping<MyEntity>
 {
-    public override void Configure(EntityTypeBuilder<MyEntity> builder)
+    protected override void ConfigureEntity(EntityTypeBuilder<MyEntity> builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
-        base.Configure(builder);   // always first — wires soft-delete filter + CreatedAt/IsDeleted indexes
 
         builder.Property(x => x.Name).HasMaxLength(128).IsRequired();
         builder.HasIndex(x => x.Name);
@@ -2864,25 +2880,37 @@ public class MyEntityMapping : BaseEntityMapping<MyEntity>
 
 | Base class                          | Derives from                              | Adds                                                                 |
 | --------------------------------------- | ------------------------------------------- | ---------------------------------------------------------------------------- |
-| `BaseMapping<TEntity>`                    | `IEntityTypeConfiguration<TEntity>`            | Nothing — the root; only entities with **no** `Id` skip everything below it. |
+| `BaseMapping<TEntity>`                    | `IEntityTypeConfiguration<TEntity>`            | The root: runs Nano's inherited configuration, then your `ConfigureEntity`, which is `abstract` here (a mapping deriving from it directly must implement it; every base class below provides an empty default). Adds nothing itself; only entities with **no** `Id` skip everything below it. |
 | `BaseEntityIdentityMapping<TEntity,TIdentity>` | `BaseMapping<TEntity>`                    | `HasKey(Id)` + a value generator (`GuidValueGenerator` for `Guid`; a generic `ValueGenerator<TIdentity>` type otherwise — verify this actually works for your chosen non-`Guid` identity type before relying on it). |
 | `BaseEntityMapping<TEntity>` / `<TEntity,TIdentity>` | `BaseEntityIdentityMapping<...>`     | Soft-delete query filter (`IsDeleted == 0`), `CreatedAt` (auto-generated on add, ignored after save, indexed), `IsDeleted` (default `0`, indexed). |
 | `BaseEntityUserMapping<TEntity>` / `<TEntity,TIdentity>` | `BaseEntityIdentityMapping<...>` (not `BaseEntityMapping`) | Same `CreatedAt`/`IsDeleted` config as above, **plus** a query filter requiring `IdentityUser.IsActive`, **plus** a required 1:1 relationship to `IdentityUser` with cascade delete. |
 | `BaseEntityViewMapping<TEntity>`           | `BaseMapping<TEntity>`                       | `ToView(typeof(TEntity).Name).HasNoKey()` — maps to a SQL view by entity type name, no key at all. |
 
-⚠ Always call `base.Configure(builder)` **first** in an override — every behavior in the table above depends on
-it running before your own configuration.
+⚠ Override `ConfigureEntity`, never `Configure` — `Configure` is not `virtual`, so overriding it is a compile error
+(CS0506). Nano applies everything in the table above itself, before it calls `ConfigureEntity`, so there is no
+`base` call to make (or forget), and your configuration always runs after Nano's defaults. A mapping with nothing to
+add can be an empty class (when it derives from one of the base classes below `BaseMapping<TEntity>`).
+
+⚠ Declare each `HasIndex(...)` directly beneath the mapping of the property it indexes, not collected at the end
+of `ConfigureEntity` (a composite index goes beneath the last of its properties to be mapped). Never write a
+single-column `HasIndex` on a foreign key property: EF Core already creates an index for every foreign key, and
+skips it when a composite or unique index already starts with that property.
+
+⚠ Don't map a foreign key property on its own (`builder.Property(x => x.ParentId).IsRequired()`): the relationship's
+`.HasForeignKey(...)` and `.IsRequired()` already configure it. And never leave `.WithMany()`/`.WithOne()` empty:
+give the principal entity the inverse navigation (collection or reference) and name it in the relationship, so both
+ends are explicit.
 
 #### Auto-discovery mechanics
 
 `BaseDbContext<TIdentity>.OnModelCreating` calls `modelBuilder.MapEntities<TIdentity>()`, which reflects the
 entry assembly for every non-abstract, non-generic class deriving `BaseMapping<TEntity>` — **a raw
 `IEntityTypeConfiguration<T>` not derived from `BaseMapping<T>` is not picked up.** For each one found, it
-instantiates and calls `Configure`, then unconditionally applies two automatic index adjustments to every mapped
-entity:
+instantiates and calls `Configure` (Nano's inherited configuration, then your `ConfigureEntity`), then
+unconditionally applies two automatic index adjustments to every mapped entity:
 
 - **Every unique index gets renamed** to a canonical `UX_{table}_{col1}_{col2}...` database name, regardless of
-  what name (if any) you gave it in `Configure`.
+  what name (if any) you gave it in `ConfigureEntity`.
 - **If the entity implements `IEntitySoftDeletable`**, every unique index that doesn't already include
   `IsDeleted` (and isn't just the primary key) is rebuilt to add `IsDeleted` as an extra composite column — this
   is the actual mechanism behind [Soft Delete](#soft-delete)'s "unique indexes are adjusted automatically" rule.
@@ -2975,7 +3003,8 @@ the matching capability interface from [Data Models](#data-models):
 `Data:Repository:UseAutoSave` (default `true`) governs whether each mutating call commits immediately. To make
 several repository calls atomic, wrap them in `Repository.ExecuteInTransactionAsync(async ct => { ... }, ct)` — every
 call inside commits together or rolls back together, even with `UseAutoSave: true`. It runs through the provider's
-retry strategy, so the action may run more than once and must be safe to repeat. Alternatively, set `UseAutoSave:
+retry strategy, so the action may run more than once and must be safe to repeat. If a transaction is already open on
+the context, the action joins it (runs once, the outer transaction decides the outcome). Alternatively, set `UseAutoSave:
 false` and call `Repository.SaveChangesAsync()` once yourself at the end (one save, no explicit transaction).
 
 ⚠ `AddAndGetAsync`/`UpdateAndGetAsync` **always** save regardless of `UseAutoSave` — they need the row persisted
@@ -3181,7 +3210,7 @@ response.
 ### Triggers
 
 Code-level hooks around save operations — not SQL triggers. Built on the external `EntityFrameworkCore.Triggers`
-package; register them inside a [Data Mapping](#data-mappings)'s `Configure(builder)`, not in the entity itself.
+package; register them inside a [Data Mapping](#data-mappings)'s `ConfigureEntity(builder)`, not in the entity itself.
 
 | Trigger         | Timing  | `TEntity` requires  |
 | ------------------- | ------- | ------------------------ |
@@ -3209,18 +3238,17 @@ internal static class MyEntityTriggers
 
 public class MyEntityMapping : BaseEntityMapping<MyEntity>
 {
-    public override void Configure(EntityTypeBuilder<MyEntity> builder)
+    protected override void ConfigureEntity(EntityTypeBuilder<MyEntity> builder)
     {
-        base.Configure(builder);
         builder.OnInserting(MyEntityTriggers.Inserting);
     }
 }
 ```
 
-⚠ **Use a static field/method, not `x => { ... }` written inline in `Configure`.** Registration is deduplicated
+⚠ **Use a static field/method, not `x => { ... }` written inline in `ConfigureEntity`.** Registration is deduplicated
 by delegate equality against a process-wide, per-entity-type registry (`Triggers<TEntity>` is a **static** event,
 shared across every `DbContext` instance in the app, not scoped per instance) — an inline lambda is a new
-delegate reference every time `Configure` runs, defeating the dedup if the model is ever built more than once
+delegate reference every time `ConfigureEntity` runs, defeating the dedup if the model is ever built more than once
 and silently double-registering the trigger. A static field/method is always the same delegate reference, so
 `AddOnce` correctly registers it exactly once.
 

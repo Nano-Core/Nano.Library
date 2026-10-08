@@ -13,13 +13,17 @@ namespace Nano.Data.Mappings;
 public abstract class BaseEntityViewMapping<TEntity> : BaseMapping<TEntity>
     where TEntity : BaseEntityView
 {
-    /// <inheritdoc />
-    public override void Configure(EntityTypeBuilder<TEntity> builder)
+    internal override void ConfigureBase(EntityTypeBuilder<TEntity> builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
         builder
             .ToView(typeof(TEntity).Name)
             .HasNoKey();
+    }
+
+    /// <inheritdoc />
+    protected override void ConfigureEntity(EntityTypeBuilder<TEntity> builder)
+    {
     }
 }

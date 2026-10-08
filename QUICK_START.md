@@ -248,18 +248,15 @@ public class MyEntity : BaseEntity
 ```csharp
 public class MyEntityMapping : BaseEntityMapping<MyEntity>
 {
-    public override void Configure(EntityTypeBuilder<MyEntity> builder)
+    protected override void ConfigureEntity(EntityTypeBuilder<MyEntity> builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
-
-        base.Configure(builder);
 
         builder
             .Property(x => x.Name);
     }
 }
 ```
-> ⚠️ Always ensure you call `base.Configure(builder)`, otherwise inherited Nano properties may not function correctly.
 
 More advanced uses of Nano entity models are also available, including support for user entities used with 
 **[Data Identity](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.Data/README.md#identity)** features, as well as mapping database views as read-only entities.  
@@ -423,7 +420,7 @@ public class MyEntitysController(ILogger<MyEntitysController> logger,IRepository
     // Custom Actions
 }
 ```
-> ⚠️ The controller name must be the **pluralized entity name** (`MyEntity` → `MyEntitysController`) — the route segment is derived from it.
+> ⚠️ The controller name must be the **pluralized entity name** (`MyEntity` → `MyEntitysController`): the route segment is derived from it.
 
 The `MyEntityQueryCriteria` defines the criteria used for the query action contract of the entity controller. It specifies how entities can be filtered, sorted, and retrieved, 
 and is defined as follows.
@@ -454,7 +451,7 @@ public class MyEntityQueryCriteria : BaseQueryCriteria
 ```
 
 Controllers can later be consumed by other applications through the **[Nano Api Clients](https://github.com/Nano-Core/Nano.Library/blob/master/Nano.App/README.md#api-clients)**. To do this, 
-create an implementation that derives from `BaseApiClient` and include it—along with the relevant entity models—in the consuming application. This provides a simple and consistent 
+create an implementation that derives from `BaseApiClient` and include it, along with the relevant entity models, in the consuming application. This provides a simple and consistent 
 way to connect to the service and use its entity functionality.
 
 #### Console-based applications

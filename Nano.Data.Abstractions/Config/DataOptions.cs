@@ -10,9 +10,6 @@ namespace Nano.Data.Abstractions.Config;
 /// </summary>
 public class DataOptions
 {
-    /// <summary>
-    /// Gets the configuration section name for data options.
-    /// </summary>
     internal static string SectionName => "Data";
 
     /// <summary>

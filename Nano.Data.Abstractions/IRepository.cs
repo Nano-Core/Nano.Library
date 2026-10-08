@@ -1039,6 +1039,7 @@ public interface IRepository : IDisposable
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
     /// <remarks>
     /// Honors the provider's retry strategy, so <paramref name="action"/> may run more than once and must be safe to repeat.
+    /// When a transaction is already open on the context, <paramref name="action"/> joins it: it runs once, and the outer transaction decides whether it is committed.
     /// </remarks>
     Task ExecuteInTransactionAsync(Func<CancellationToken, Task> action, CancellationToken cancellationToken = default);
 

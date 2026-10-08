@@ -2323,7 +2323,7 @@ When everything is configured and registered, the following endpoints becomes av
 | `/{entity}s/create/reload`     | POST          | entity                           | creator | Creates a single model instance and retrieves it with included navigations.  |
 | `/{entity}s/create/edit`       | POST          | entity                           | creator | Creates or edits (upsert) a single model instance.                           |
 | `/{entity}s/create/many`       | POST          | entities                         | creator | Creates multiple model instances.                                            |
-| `/{entity}s/create/many/bulk`  | POST          | entities                         | creator | Creates multiple model instances in bulk.                                    |
+| `/{entity}s/create/many/bulk`  | POST          | entities                         | creator | Creates multiple model instances in bulk. Requires EF Plus Enterprise.       |
 | `/{entity}s/{id}/details`      | GET           | id, includeDepth                 | reader  | Gets a single entity by its identifier.                                      |
 | `/{entity}s/details/many`      | GET, POST     | ids, includeDepth                | reader  | Gets multiple entities by their identifiers.                                 |
 | `/{entity}s/index`             | GET, POST     | query, includeDepth              | reader  | Gets all entities matching the specified query.                              |
@@ -2333,12 +2333,12 @@ When everything is configured and registered, the following endpoints becomes av
 | `/{entity}s/edit`              | PUT, POST     | entity                           | editor  | Edits a single model instance.                                               |
 | `/{entity}s/edit/reload`       | PUT, POST     | entity                           | editor  | Edits a single model instance and retrieves it with included navigations.    |
 | `/{entity}s/edit/many`         | PUT, POST     | entities                         | editor  | Edits multiple model instances.                                              |
-| `/{entity}s/edit/many/bulk`    | PUT, POST     | entities                         | editor  | Edits multiple model instances in bulk.                                      |
+| `/{entity}s/edit/many/bulk`    | PUT, POST     | entities                         | editor  | Edits multiple model instances in bulk. Requires EF Plus Enterprise.         |
 | `/{entity}s/edit/query`        | PUT, POST     | update-query, criteria           | editor  | Edits entities that match the specified criteria.                            |
 | `/{entity}s/edit/query/bulk`   | PUT, POST     | update-query, criteria           | editor  | Edits entities that match the specified criteria in bulk (batch).            |
 | `/{entity}s/{id}/delete`       | POST, DELETE  | id                               | deleter | Deletes a single entity by its identifier.                                   |
 | `/{entity}s/delete/many`       | POST, DELETE  | ids                              | deleter | Deletes multiple entities by their identifiers.                              |
-| `/{entity}s/delete/many/bulk`  | POST, DELETE  | ids                              | deleter | Deletes multiple entities by their identifiers in bulk.                      |
+| `/{entity}s/delete/many/bulk`  | POST, DELETE  | ids                              | deleter | Deletes multiple entities by their identifiers in bulk. Requires EF Plus Enterprise. |
 | `/{entity}s/delete/query`      | POST, DELETE  | criteria                         | deleter | Deletes entities matching the specified criteria.                            |
 | `/{entity}s/delete/query/bulk` | POST, DELETE  | criteria                         | deleter | Deletes entities matching the specified criteria in bulk (batch).            |
 

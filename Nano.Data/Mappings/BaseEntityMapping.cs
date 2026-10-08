@@ -8,16 +8,7 @@ namespace Nano.Data.Mappings;
 
 /// <inheritdoc />
 public abstract class BaseEntityMapping<TEntity> : BaseEntityMapping<TEntity, Guid>
-    where TEntity : BaseEntityReadOnly<Guid>
-{
-    /// <inheritdoc />
-    public override void Configure(EntityTypeBuilder<TEntity> builder)
-    {
-        ArgumentNullException.ThrowIfNull(builder);
-
-        base.Configure(builder);
-    }
-}
+    where TEntity : BaseEntityReadOnly<Guid>;
 
 /// <summary>
 /// Base mapping class for EF Core entities.
@@ -29,15 +20,11 @@ public abstract class BaseEntityMapping<TEntity, TIdentity> : BaseEntityIdentity
     where TEntity : BaseEntityReadOnly<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
-    /// <summary>
-    /// Configures the EF Core model for <typeparamref name="TEntity"/>.
-    /// </summary>
-    /// <param name="builder">The <see cref="EntityTypeBuilder{TEntity}"/> used to configure the entity.</param>
-    public override void Configure(EntityTypeBuilder<TEntity> builder)
+    internal override void ConfigureBase(EntityTypeBuilder<TEntity> builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        base.Configure(builder);
+        base.ConfigureBase(builder);
 
         builder
             .HasQueryFilter(x => x.IsDeleted == 0L);

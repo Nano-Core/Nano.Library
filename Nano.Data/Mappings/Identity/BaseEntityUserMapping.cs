@@ -8,16 +8,7 @@ namespace Nano.Data.Mappings.Identity;
 
 /// <inheritdoc />
 public abstract class BaseEntityUserMapping<TEntity> : BaseEntityUserMapping<TEntity, Guid>
-    where TEntity : BaseEntityUser
-{
-    /// <inheritdoc />
-    public override void Configure(EntityTypeBuilder<TEntity> builder)
-    {
-        ArgumentNullException.ThrowIfNull(builder);
-
-        base.Configure(builder);
-    }
-}
+    where TEntity : BaseEntityUser;
 
 /// <summary>
 /// Configures the EF Core mapping for <see cref="BaseEntityUser{TIdentity}"/> entities.
@@ -29,15 +20,11 @@ public abstract class BaseEntityUserMapping<TEntity, TIdentity> : BaseEntityIden
     where TEntity : BaseEntityUser<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
-    /// <summary>
-    /// Configures the entity using the <see cref="EntityTypeBuilder{TEntity}"/>.
-    /// </summary>
-    /// <param name="builder">The EF Core entity type builder.</param>
-    public override void Configure(EntityTypeBuilder<TEntity> builder)
+    internal override void ConfigureBase(EntityTypeBuilder<TEntity> builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
-        base.Configure(builder);
+        base.ConfigureBase(builder);
 
         builder
             .HasQueryFilter(x => x.IsDeleted == 0L && x.IdentityUser.IsActive);
