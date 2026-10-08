@@ -2102,10 +2102,8 @@ public class MyEntity : BaseEntity
 ```csharp
 public class MyEntityMapping : BaseEntityMapping<MyEntity>
 {
-    public override void Configure(EntityTypeBuilder<MyEntity> builder)
+    protected override void ConfigureEntity(EntityTypeBuilder<MyEntity> builder)
     {
-        base.Configure(builder);
-
         builder.Property(x => x.Name).IsRequired().HasMaxLength(128);
         builder.Property(x => x.NameNormalized).IsRequired().HasMaxLength(128);
 
@@ -2869,10 +2867,9 @@ Each entity gets a matching `IEntityTypeConfiguration<TEntity>`-style mapping cl
 ```csharp
 public class MyEntityMapping : BaseEntityMapping<MyEntity>
 {
-    public override void Configure(EntityTypeBuilder<MyEntity> builder)
+    protected override void ConfigureEntity(EntityTypeBuilder<MyEntity> builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
-        base.Configure(builder);   // always first — wires soft-delete filter + CreatedAt/IsDeleted indexes
 
         builder.Property(x => x.Name).HasMaxLength(128).IsRequired();
         builder.HasIndex(x => x.Name);
@@ -2883,17 +2880,19 @@ public class MyEntityMapping : BaseEntityMapping<MyEntity>
 
 | Base class                          | Derives from                              | Adds                                                                 |
 | --------------------------------------- | ------------------------------------------- | ---------------------------------------------------------------------------- |
-| `BaseMapping<TEntity>`                    | `IEntityTypeConfiguration<TEntity>`            | Nothing — the root; only entities with **no** `Id` skip everything below it. |
+| `BaseMapping<TEntity>`                    | `IEntityTypeConfiguration<TEntity>`            | The root: runs Nano's inherited configuration, then your `ConfigureEntity`, which is `abstract` here (a mapping deriving from it directly must implement it; every base class below provides an empty default). Adds nothing itself; only entities with **no** `Id` skip everything below it. |
 | `BaseEntityIdentityMapping<TEntity,TIdentity>` | `BaseMapping<TEntity>`                    | `HasKey(Id)` + a value generator (`GuidValueGenerator` for `Guid`; a generic `ValueGenerator<TIdentity>` type otherwise — verify this actually works for your chosen non-`Guid` identity type before relying on it). |
 | `BaseEntityMapping<TEntity>` / `<TEntity,TIdentity>` | `BaseEntityIdentityMapping<...>`     | Soft-delete query filter (`IsDeleted == 0`), `CreatedAt` (auto-generated on add, ignored after save, indexed), `IsDeleted` (default `0`, indexed). |
 | `BaseEntityUserMapping<TEntity>` / `<TEntity,TIdentity>` | `BaseEntityIdentityMapping<...>` (not `BaseEntityMapping`) | Same `CreatedAt`/`IsDeleted` config as above, **plus** a query filter requiring `IdentityUser.IsActive`, **plus** a required 1:1 relationship to `IdentityUser` with cascade delete. |
 | `BaseEntityViewMapping<TEntity>`           | `BaseMapping<TEntity>`                       | `ToView(typeof(TEntity).Name).HasNoKey()` — maps to a SQL view by entity type name, no key at all. |
 
-⚠ Always call `base.Configure(builder)` **first** in an override — every behavior in the table above depends on
-it running before your own configuration.
+⚠ Override `ConfigureEntity`, never `Configure` — `Configure` is not `virtual`, so overriding it is a compile error
+(CS0506). Nano applies everything in the table above itself, before it calls `ConfigureEntity`, so there is no
+`base` call to make (or forget), and your configuration always runs after Nano's defaults. A mapping with nothing to
+add can be an empty class (when it derives from one of the base classes below `BaseMapping<TEntity>`).
 
 ⚠ Declare each `HasIndex(...)` directly beneath the mapping of the property it indexes, not collected at the end
-of `Configure` (a composite index goes beneath the last of its properties to be mapped). Never write a
+of `ConfigureEntity` (a composite index goes beneath the last of its properties to be mapped). Never write a
 single-column `HasIndex` on a foreign key property: EF Core already creates an index for every foreign key, and
 skips it when a composite or unique index already starts with that property.
 
@@ -2907,11 +2906,11 @@ ends are explicit.
 `BaseDbContext<TIdentity>.OnModelCreating` calls `modelBuilder.MapEntities<TIdentity>()`, which reflects the
 entry assembly for every non-abstract, non-generic class deriving `BaseMapping<TEntity>` — **a raw
 `IEntityTypeConfiguration<T>` not derived from `BaseMapping<T>` is not picked up.** For each one found, it
-instantiates and calls `Configure`, then unconditionally applies two automatic index adjustments to every mapped
-entity:
+instantiates and calls `Configure` (Nano's inherited configuration, then your `ConfigureEntity`), then
+unconditionally applies two automatic index adjustments to every mapped entity:
 
 - **Every unique index gets renamed** to a canonical `UX_{table}_{col1}_{col2}...` database name, regardless of
-  what name (if any) you gave it in `Configure`.
+  what name (if any) you gave it in `ConfigureEntity`.
 - **If the entity implements `IEntitySoftDeletable`**, every unique index that doesn't already include
   `IsDeleted` (and isn't just the primary key) is rebuilt to add `IsDeleted` as an extra composite column — this
   is the actual mechanism behind [Soft Delete](#soft-delete)'s "unique indexes are adjusted automatically" rule.
@@ -3211,7 +3210,7 @@ response.
 ### Triggers
 
 Code-level hooks around save operations — not SQL triggers. Built on the external `EntityFrameworkCore.Triggers`
-package; register them inside a [Data Mapping](#data-mappings)'s `Configure(builder)`, not in the entity itself.
+package; register them inside a [Data Mapping](#data-mappings)'s `ConfigureEntity(builder)`, not in the entity itself.
 
 | Trigger         | Timing  | `TEntity` requires  |
 | ------------------- | ------- | ------------------------ |
@@ -3239,18 +3238,17 @@ internal static class MyEntityTriggers
 
 public class MyEntityMapping : BaseEntityMapping<MyEntity>
 {
-    public override void Configure(EntityTypeBuilder<MyEntity> builder)
+    protected override void ConfigureEntity(EntityTypeBuilder<MyEntity> builder)
     {
-        base.Configure(builder);
         builder.OnInserting(MyEntityTriggers.Inserting);
     }
 }
 ```
 
-⚠ **Use a static field/method, not `x => { ... }` written inline in `Configure`.** Registration is deduplicated
+⚠ **Use a static field/method, not `x => { ... }` written inline in `ConfigureEntity`.** Registration is deduplicated
 by delegate equality against a process-wide, per-entity-type registry (`Triggers<TEntity>` is a **static** event,
 shared across every `DbContext` instance in the app, not scoped per instance) — an inline lambda is a new
-delegate reference every time `Configure` runs, defeating the dedup if the model is ever built more than once
+delegate reference every time `ConfigureEntity` runs, defeating the dedup if the model is ever built more than once
 and silently double-registering the trigger. A static field/method is always the same delegate reference, so
 `AddOnce` correctly registers it exactly once.
 

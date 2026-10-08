@@ -16,8 +16,7 @@ public abstract class BaseEntityIdentityMapping<TEntity, TIdentity> : BaseMappin
     where TEntity : BaseEntityIdentity<TIdentity>
     where TIdentity : IEquatable<TIdentity>
 {
-    /// <inheritdoc />
-    public override void Configure(EntityTypeBuilder<TEntity> builder)
+    internal override void ConfigureBase(EntityTypeBuilder<TEntity> builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
 
@@ -31,5 +30,10 @@ public abstract class BaseEntityIdentityMapping<TEntity, TIdentity> : BaseMappin
                 typeof(TIdentity) == typeof(Guid)
                     ? typeof(GuidValueGenerator)
                     : typeof(ValueGenerator<TIdentity>));
+    }
+
+    /// <inheritdoc />
+    protected override void ConfigureEntity(EntityTypeBuilder<TEntity> builder)
+    {
     }
 }

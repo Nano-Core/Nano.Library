@@ -161,11 +161,9 @@ the split layout — mappings are EF Core-only, never part of the shared API cli
 ```csharp
 public class <Entity>Mapping : BaseEntityMapping<<Entity>>
 {
-    public override void Configure(EntityTypeBuilder<<Entity>> builder)
+    protected override void ConfigureEntity(EntityTypeBuilder<<Entity>> builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
-
-        base.Configure(builder);
 
         builder
             .Property(x => x.Name);
@@ -173,9 +171,10 @@ public class <Entity>Mapping : BaseEntityMapping<<Entity>>
 }
 ```
 
-- **Always call `base.Configure(builder)`** before your own configuration — omitting it
-  silently breaks inherited Nano behavior (soft delete, audit, etc.). This is the single
-  most common mistake when writing a mapping by hand.
+- **Override `ConfigureEntity`, never `Configure`.** `Configure` is not `virtual` (overriding it is
+  compile error CS0506); Nano applies its inherited behavior (soft delete, audit, etc.) itself
+  before calling `ConfigureEntity`, so there is no `base` call to make. Everything the mapping
+  configures goes in `ConfigureEntity`.
 - **Configure every one of the entity's own properties explicitly — including navigations and
   collections — never rely on EF's conventions to fill in what isn't written down.** An implicit,
   convention-inferred relationship is exactly the kind of mistake that's invisible until it's a
@@ -256,7 +255,7 @@ public class <Entity>Mapping : BaseEntityMapping<<Entity>>
 - **Index every property the entity is queried or sorted by** — one `HasIndex(...)` in the mapping for each
   property File 3's query criteria filters on, and each property an ordering (`Order.By`) or a keyword
   search reaches, declared directly beneath the mapping of the property it indexes, not collected at the end
-  of `Configure` (a composite index goes beneath the last of its properties to be mapped, after that
+  of `ConfigureEntity` (a composite index goes beneath the last of its properties to be mapped, after that
   property's relationship block if it is a foreign key). Foreign keys already get an index from EF's
   conventions, so never write a single-column `HasIndex` on a foreign key property, and none at all when a
   composite index or unique index already starts with it;

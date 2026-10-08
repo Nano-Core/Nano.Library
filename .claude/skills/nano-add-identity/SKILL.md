@@ -107,9 +107,8 @@ convert, in which case its existing properties carry over as-is; don't ask for t
   configures the required 1:1 relationship to the underlying `IdentityUser` row and an
   `IsActive` query filter, per AGENTS.md's Data Mappings table. **If converting an existing
   entity** (step 3), convert its existing mapping file the same way — just the base class;
-  keep every custom `Configure(...)` statement already in it, still calling
-  `base.Configure(builder)` first. **If creating fresh**, same `base.Configure(builder)`-first
-  rule as a normal mapping.
+  keep every custom statement already in its `ConfigureEntity(...)` as it is. **If creating
+  fresh**, same shape as a normal mapping (a `ConfigureEntity` override, no `base` call).
 - **Query criteria** (API/Web only): exactly as the entity-scaffold skill's File 3 — nothing
   identity-specific here.
 - **Controller** (API/Web only, `Controllers/<Entity>sController.cs`): derive from

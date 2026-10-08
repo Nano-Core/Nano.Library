@@ -14,11 +14,9 @@ public class AuditEntryPropertyMapping<TIdentity> : BaseEntityIdentityMapping<Au
     where TIdentity : IEquatable<TIdentity>
 {
     /// <inheritdoc />
-    public override void Configure(EntityTypeBuilder<AuditEntryProperty<TIdentity>> builder)
+    protected override void ConfigureEntity(EntityTypeBuilder<AuditEntryProperty<TIdentity>> builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
-
-        base.Configure(builder);
 
         builder
             .ToTable(TableNames.AUDIT_PROPERTIES);

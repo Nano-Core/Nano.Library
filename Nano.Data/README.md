@@ -424,16 +424,12 @@ in the database and allow you to customize Entity Framework behavior.
 ```csharp
 public class MyEntityMapping : BaseEntityMapping<MyEntity>
 {
-    public override void Configure(EntityTypeBuilder<MyEntity> builder)
+    protected override void ConfigureEntity(EntityTypeBuilder<MyEntity> builder)
     {
-        base.Configure(builder);
-
         // Add Entity Framework mappings here.
     }
 }
 ```
-
-> ⚠️ Always call `base.Configure(builder);` in your data mappings to ensure Nano functions correctly.  
 
 Nano automatically applies all data mappings, so there is no need to manually register them. Only non-abstract, non-generic mapping classes are automatically 
 detected and applied.  
@@ -446,10 +442,8 @@ as for regular entity models.
 ```csharp
 public class MyEntityUserMapping : BaseEntityUserMapping<MyEntityUser>
 {
-    public override void Configure(EntityTypeBuilder<MyEntityUser> builder)
+    protected override void ConfigureEntity(EntityTypeBuilder<MyEntityUser> builder)
     {
-        base.Configure(builder);
-
         // Add Entity Framework mappings here.
     }
 }
