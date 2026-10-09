@@ -2,8 +2,8 @@
 
 	<ItemGroup>
 		<PackageReference Include="Asp.Versioning.Http" Version="10.2.3" />
-		<PackageReference Include="DynamicExpression" Version="10.0.5" />
-		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.22.0" />
+		<PackageReference Include="DynamicExpression" Version="10.0.6" />
+		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.23.0" />
 	</ItemGroup>
 
 	<ItemGroup>
