@@ -89,6 +89,16 @@ public class AuthExternalGoogleRepository(GoogleOptions options, HttpClient http
         var payload = await GoogleJsonWebSignature
             .ValidateAsync(idToken, settings);
 
+        if (payload.Email == null)
+        {
+            throw new NullReferenceException(nameof(payload.Email));
+        }
+
+        if (!payload.EmailVerified)
+        {
+            throw new UnauthorizedException("The email address of the Google account is not verified.");
+        }
+
         return new ExternalAuthenticationData
         {
             Id = payload.Subject,

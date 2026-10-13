@@ -1871,6 +1871,8 @@ Refreshable if the frontend requests it.
 |  `Google.ClientSecret`     | string | null     | Required. Google Client Secret.     |
 |  `Google.Scopes`           | array  | []       | OAuth Scopes.                       |
 
+Nano only accepts a Google sign-in whose email address Google reports as verified (`email_verified`), and rejects it with `401` otherwise.
+
 ```json
 "App": {
   "Authentication": {
@@ -1944,6 +1946,11 @@ The `Scopes` must include `openid` (and should include `profile` and `email`). N
 `refresh_token` from the token response without it. The same scope must also be requested in the frontend's own sign-in redirect below, since consent for it is granted once, 
 at that initial step.
 
+Nano only accepts a Microsoft sign-in whose `id_token` has an `email` claim and `xms_edov` (email domain owner verified) set to true, and rejects it with `401` otherwise. Personal Microsoft accounts need no `xms_edov`: Microsoft verifies their email itself.
+The app registration must request `xms_edov` as an optional claim in its `id_token`, since Microsoft does not verify the email of a work or school account and omits the claim by default.
+The app registration also sets `--requested-access-token-version 2`, which Microsoft requires when the audience allows personal Microsoft accounts and which is
+harmless for the other audiences.
+
 Which accounts can sign in is controlled by the Entra ID app registration's `--sign-in-audience`, decided once when the app registration is created. It also determines what 
 `TenantId` must hold at runtime, since Nano interpolates it straight into the token endpoint URL (`https://login.microsoftonline.com/{TenantId}/oauth2/v2.0/token`):
 
@@ -1998,6 +2005,7 @@ env:
     $env:SECRET_DISPLAY_NAME = $env:APP_DISPLAY_NAME + "-secret-" + (Get-Date -Format "yyyyMMddHHmmss");
     $env:AUTH_MICROSOFT_SIGNIN_AUDIENCE = "AzureADMyOrg";
     $env:AUTH_MICROSOFT_TENANT_ID = $env:AZURE_TENANT_ID;
+    $env:AUTH_MICROSOFT_OPTIONAL_CLAIMS = '{"idToken":[{"name":"xms_edov","essential":false}]}';
     $env:AUTH_MICROSOFT_CLIENT_ID = az ad app list --display-name $env:APP_DISPLAY_NAME --query "[0].appId" -o tsv;
 
     if (-not $env:AUTH_MICROSOFT_CLIENT_ID) 
@@ -2005,6 +2013,8 @@ env:
         az ad app create `
             --display-name $env:APP_DISPLAY_NAME `
             --sign-in-audience $env:AUTH_MICROSOFT_SIGNIN_AUDIENCE `
+            --requested-access-token-version 2 `
+            --optional-claims $env:AUTH_MICROSOFT_OPTIONAL_CLAIMS `
             --web-redirect-uris $env:AUTH_MICROSOFT_REDIRECT_URI;
 
         $env:AUTH_MICROSOFT_CLIENT_ID = az ad app list --display-name $env:APP_DISPLAY_NAME --query "[0].appId" -o tsv;
@@ -2014,6 +2024,8 @@ env:
         az ad app update `
             --id $env:AUTH_MICROSOFT_CLIENT_ID `
             --sign-in-audience $env:AUTH_MICROSOFT_SIGNIN_AUDIENCE `
+            --requested-access-token-version 2 `
+            --optional-claims $env:AUTH_MICROSOFT_OPTIONAL_CLAIMS `
             --web-redirect-uris $env:AUTH_MICROSOFT_REDIRECT_URI;
     }
 
