@@ -1620,7 +1620,7 @@ what the client sends:
 | Provider    | Flow          | Client sends                              | Credentials come from                                                                    |
 | ----------- | ------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------ |
 | `Facebook`  | `ImplicitFlow`  | `AccessToken` — the user access token from Facebook's client-side Login SDK, passed straight through and validated server-side via the Graph API's `debug_token` endpoint. | Meta for Developers app (developers.facebook.com), `AppId`/`AppSecret`. |
-| `Google`    | `AuthCodeFlow`  | `Code`/`CodeVerifier`/`RedirectUri` — the server exchanges the authorization code for tokens itself (see `AuthExternalGoogleRepository`), same shape as Microsoft. `Scopes` must include `openid` (and should include `profile`/`email`) so the token response's `id_token` carries the `sub`/`name`/`email` claims Nano reads via `GoogleJsonWebSignature.ValidateAsync` — the `access_token` is not used for identity, only as the stored `ExternalToken`. | Google Cloud Console OAuth client (`ClientId`/`ClientSecret`).           |
+| `Google`    | `AuthCodeFlow`  | `Code`/`CodeVerifier`/`RedirectUri` — the server exchanges the authorization code for tokens itself (see `AuthExternalGoogleRepository`), same shape as Microsoft. `Scopes` must include `openid` (and should include `profile`/`email`) so the token response's `id_token` carries the `sub`/`name`/`email` claims Nano reads via `GoogleJsonWebSignature.ValidateAsync` — the `access_token` is not used for identity, only as the stored `ExternalToken`. Nano only accepts a Google sign-in whose email Google reports as verified (`email_verified`), and rejects it with `401` otherwise. | Google Cloud Console OAuth client (`ClientId`/`ClientSecret`).           |
 | `Microsoft` | `AuthCodeFlow`  | `Code`/`CodeVerifier`/`RedirectUri` — the server exchanges the authorization code for tokens itself (see `AuthExternalMicrosoftRepository`). `Scopes` must include `openid` (and should include `profile`/`email`) so the token response's `id_token` carries the `oid`/`name`/`email` claims Nano reads — the `access_token` is not used for identity, only as the stored `ExternalToken`. Include `offline_access` by default — most apps want refresh support, and requesting it doesn't force any single login to use it (see `IsRefreshable` below) — but the same scope must also be requested in the client-side authorize request, since consent for it is granted once, at that initial redirect. | A Microsoft Entra ID (Azure AD) app registration (`TenantId`/`ClientId`/`ClientSecret`). |
 
 ⚠ **`Scopes` is inert on the backend for Facebook — it's a frontend-only concern there.**
@@ -1654,6 +1654,23 @@ CLI/API path worth scripting for either. Microsoft is the exception: an Entra ID
 secret, which needs periodic rotation) can be fully scripted with the Azure CLI, so use the `nano-add-authentication-microsoft`
 skill for that provider instead of configuring it by hand — it wires up the app registration and a self-rotating
 client secret as a CI step.
+
+⚠ **A Microsoft work or school account's `email` is not verified by Microsoft, unless the `xms_edov` claim says so.**
+In Entra ID the `email` attribute is set by the tenant's own administrator and nothing checks that they own the
+domain. With a sign-in audience that accepts any organization (`organizations`/`common`), anyone can create a tenant,
+give a user any email address, and sign in with it. So Nano only accepts a Microsoft sign-in when the `id_token`
+carries an `email` claim **and** `xms_edov` (email domain owner verified, true when the user's tenant has verified the
+email's domain) is true, and otherwise rejects it with `401`. A personal Microsoft account (its `tid` is Microsoft's
+personal-accounts tenant) is accepted without `xms_edov`, because Microsoft itself verifies the email of a personal
+account. There is no setting to turn this off. `xms_edov` is an optional claim, not part of the default token: the app
+registration must request it (the `nano-add-authentication-microsoft` skill does). A user whose account has no `email`
+(no mail address set) cannot sign in with Microsoft.
+
+An existing login is always matched on the Microsoft `oid`, never on the email. The email matters where an app uses it to
+decide who someone is: `signup/external/{providerName}` creates a new user with it, and so does any app code that claims
+an existing user by `EmailAddress` (for example an invited user). **Never link or claim an account by an external email
+address alone unless the provider verified it**; Nano's Microsoft provider guarantees that, but a custom
+`BaseAuthExternalRepository<TFlow>` must do the same itself.
 
 **Microsoft's `AuthCodeFlow` requires the frontend to redirect the user through Microsoft's own sign-in first, using
 PKCE** — Nano's backend only ever sees the resulting authorization code, never the user's Microsoft credentials:

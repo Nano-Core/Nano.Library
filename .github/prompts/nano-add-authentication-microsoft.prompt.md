@@ -53,6 +53,13 @@ convention for those the way this skill does for Microsoft.
    | Any org + personal Microsoft accounts | `AzureADandPersonalMicrosoftAccount` | literal `common` |
    | Personal Microsoft accounts only | `PersonalMicrosoftAccount` | literal `consumers` |
 
+   **Whichever audience is chosen, the app registration must also request the `xms_edov` optional claim**
+   in its `id_token` (the scripts below do this with `--optional-claims`). Microsoft does not verify the
+   `email` of a work or school account, so Nano only accepts a sign-in whose token has `email` and
+   `xms_edov` (email domain owner verified) set to true, and rejects it otherwise. Without the optional
+   claim every work or school sign-in of the app is rejected. Only personal Microsoft accounts need no claim
+   (all of them under `consumers`, and the personal ones under `common`): Nano accepts them because Microsoft verifies their email itself. See AGENTS.md's Authentication section for why.
+
    Default to `AzureADMyOrg` if the user has no specific need - it's the least-privilege choice for
    internal, single-tenant auth. Whatever is chosen, remind the user that the client-side code that
    starts the sign-in (MSAL.js or
@@ -136,10 +143,13 @@ $env:APP_DISPLAY_NAME = "{service-name}-app-development";
 $env:AUTH_MICROSOFT_REDIRECT_URI = "";
 $env:AUTH_MICROSOFT_SIGNIN_AUDIENCE = {SignInAudienceLiteral};
 $env:AUTH_MICROSOFT_TENANT_ID = {TenantIdLiteral};
+$env:AUTH_MICROSOFT_OPTIONAL_CLAIMS = '{"idToken":[{"name":"xms_edov","essential":false}]}';
 
 az ad app create `
     --display-name $env:APP_DISPLAY_NAME `
     --sign-in-audience $env:AUTH_MICROSOFT_SIGNIN_AUDIENCE `
+    --requested-access-token-version 2 `
+    --optional-claims $env:AUTH_MICROSOFT_OPTIONAL_CLAIMS `
     --web-redirect-uris $env:AUTH_MICROSOFT_REDIRECT_URI;
 
 $env:AUTH_MICROSOFT_CLIENT_ID = az ad app list --display-name $env:APP_DISPLAY_NAME --query "[0].appId" -o tsv;
@@ -159,6 +169,11 @@ $env:AUTH_MICROSOFT_CLIENT_SECRET = az ad app credential reset `
 - `{SignInAudienceLiteral}`/`{TenantIdLiteral}` are the exact same literals used in the CI step below
   - fill them in once, from step 4's table above, matching whatever was decided for this app. No
   switch statement here either, same reasoning as the CI step.
+- `--requested-access-token-version 2` is required by Microsoft when the audience allows personal Microsoft
+  accounts, and harmless for the other audiences, so it is always set, like the optional claims.
+- The optional claims JSON is passed as is by PowerShell 7.3 or later (the default for `pwsh` on the CI
+  runners). Windows PowerShell 5.1 strips the inner quotes, so run it in `pwsh`, or put the same JSON in a
+  file and pass `--optional-claims @file.json`.
 - `AUTH_MICROSOFT_REDIRECT_URI` is left empty in the snippet on purpose - the developer fills in
   their own local callback URL before running it. Don't fill in a guessed value.
 - After running it, the developer fills the three values into the keys the `.docker/.env` step above
@@ -206,6 +221,7 @@ Kubernetes step):
     $env:SECRET_DISPLAY_NAME = $env:APP_DISPLAY_NAME + "-secret-" + (Get-Date -Format "yyyyMMddHHmmss");
     $env:AUTH_MICROSOFT_SIGNIN_AUDIENCE = {SignInAudienceLiteral};
     $env:AUTH_MICROSOFT_TENANT_ID = {TenantIdLiteral};
+    $env:AUTH_MICROSOFT_OPTIONAL_CLAIMS = '{"idToken":[{"name":"xms_edov","essential":false}]}';
     $env:AUTH_MICROSOFT_CLIENT_ID = az ad app list --display-name $env:APP_DISPLAY_NAME --query "[0].appId" -o tsv;
 
     if (-not $env:AUTH_MICROSOFT_CLIENT_ID)
@@ -213,6 +229,8 @@ Kubernetes step):
         az ad app create `
             --display-name $env:APP_DISPLAY_NAME `
             --sign-in-audience $env:AUTH_MICROSOFT_SIGNIN_AUDIENCE `
+            --requested-access-token-version 2 `
+            --optional-claims $env:AUTH_MICROSOFT_OPTIONAL_CLAIMS `
             --web-redirect-uris $env:AUTH_MICROSOFT_REDIRECT_URI;
 
         $env:AUTH_MICROSOFT_CLIENT_ID = az ad app list --display-name $env:APP_DISPLAY_NAME --query "[0].appId" -o tsv;
@@ -222,6 +240,8 @@ Kubernetes step):
         az ad app update `
             --id $env:AUTH_MICROSOFT_CLIENT_ID `
             --sign-in-audience $env:AUTH_MICROSOFT_SIGNIN_AUDIENCE `
+            --requested-access-token-version 2 `
+            --optional-claims $env:AUTH_MICROSOFT_OPTIONAL_CLAIMS `
             --web-redirect-uris $env:AUTH_MICROSOFT_REDIRECT_URI;
     }
 
@@ -251,7 +271,8 @@ Kubernetes step):
 What this does, and why it's shaped this way:
 
 - **Idempotent app registration.** Looks the app up by display name first; creates it only if
-  missing, otherwise just keeps its redirect URI/audience in sync.
+  missing, otherwise just keeps its redirect URI/audience in sync. The `xms_edov` optional claim is set
+  on both paths, so an existing registration gets it on the next deploy.
 - **`AUTH_MICROSOFT_SIGNIN_AUDIENCE` and `AUTH_MICROSOFT_TENANT_ID` are each literals filled in once,
   at authoring time, not computed at runtime.** Only `AzureADMyOrg` uses the real tenant GUID
   (`$env:AZURE_TENANT_ID`, the workflow's own tenant) for `AUTH_MICROSOFT_TENANT_ID` - the other

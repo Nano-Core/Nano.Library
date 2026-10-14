@@ -48,7 +48,7 @@ public abstract class BaseIdentityRepository<TIdentity>(IOptionsMonitor<DataOpti
 
         if (identityUser == null)
         {
-            throw new NotFoundException(nameof(identityUser));
+            throw new UnauthorizedException();
         }
 
         var isLockedOut = await this.userManager

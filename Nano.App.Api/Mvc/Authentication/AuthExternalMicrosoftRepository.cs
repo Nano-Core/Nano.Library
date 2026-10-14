@@ -19,6 +19,8 @@ namespace Nano.App.Api.Mvc.Authentication;
 public class AuthExternalMicrosoftRepository(MicrosoftOptions options, HttpClient httpClient)
     : BaseAuthExternalRepository<AuthCodeFlow>(BuiltInExternalLogInProviderNames.MICROSOFT), IBuiltInAuthExternalRepository
 {
+    private const string PERSONAL_ACCOUNTS_TENANT_ID = "9188040d-6c67-4c5b-b112-36a304b66dad";
+
     private readonly MicrosoftOptions options = options ?? throw new ArgumentNullException(nameof(options));
     private readonly HttpClient httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
 
@@ -106,13 +108,28 @@ public class AuthExternalMicrosoftRepository(MicrosoftOptions options, HttpClien
         }
 
         var email = jwtToken.Payload
-            .Where(x => x.Key is "email" or "preferred_username")
+            .Where(x => x.Key == "email")
             .Select(x => x.Value?.ToString())
             .FirstOrDefault();
 
+        var isEmailVerified = jwtToken.Payload
+            .Where(x => x.Key == "xms_edov")
+            .Select(x => x.Value?.ToString())
+            .Any(x => string.Equals(x, "true", StringComparison.OrdinalIgnoreCase) || x == "1");
+
+        var isPersonalAccount = jwtToken.Payload
+            .Where(x => x.Key == "tid")
+            .Select(x => x.Value?.ToString())
+            .Any(x => string.Equals(x, PERSONAL_ACCOUNTS_TENANT_ID, StringComparison.OrdinalIgnoreCase));
+
         if (email == null)
         {
-            throw new NullReferenceException(nameof(email));
+            throw new UnauthorizedException("The Microsoft account has no email address.");
+        }
+
+        if (!isEmailVerified && !isPersonalAccount)
+        {
+            throw new UnauthorizedException("The email address of the Microsoft account is not verified.");
         }
 
         return new ExternalAuthenticationData
