@@ -124,7 +124,7 @@ public class AuthExternalMicrosoftRepository(MicrosoftOptions options, HttpClien
 
         if (email == null)
         {
-            throw new NullReferenceException(nameof(email));
+            throw new UnauthorizedException("The Microsoft account has no email address.");
         }
 
         if (!isEmailVerified && !isPersonalAccount)

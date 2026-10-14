@@ -57,8 +57,8 @@ convention for those the way this skill does for Microsoft.
    in its `id_token` (the scripts below do this with `--optional-claims`). Microsoft does not verify the
    `email` of a work or school account, so Nano only accepts a sign-in whose token has `email` and
    `xms_edov` (email domain owner verified) set to true, and rejects it otherwise. Without the optional
-   claim every work or school sign-in of the app is rejected. Personal Microsoft accounts (the `common` and
-   `consumers` audiences) need no claim: Nano accepts them because Microsoft verifies their email itself. See AGENTS.md's Authentication section for why.
+   claim every work or school sign-in of the app is rejected. Only personal Microsoft accounts need no claim
+   (all of them under `consumers`, and the personal ones under `common`): Nano accepts them because Microsoft verifies their email itself. See AGENTS.md's Authentication section for why.
 
    Default to `AzureADMyOrg` if the user has no specific need — it's the least-privilege choice for
    internal, single-tenant auth. Whatever is chosen, remind the user that the client-side code that

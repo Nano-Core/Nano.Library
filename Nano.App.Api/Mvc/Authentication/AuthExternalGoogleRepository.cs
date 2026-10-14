@@ -91,7 +91,7 @@ public class AuthExternalGoogleRepository(GoogleOptions options, HttpClient http
 
         if (payload.Email == null)
         {
-            throw new NullReferenceException(nameof(payload.Email));
+            throw new UnauthorizedException("The Google account has no email address.");
         }
 
         if (!payload.EmailVerified)
