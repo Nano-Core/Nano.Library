@@ -3,14 +3,14 @@
 	<ItemGroup>
 		<PackageReference Include="Azure.Identity" Version="1.21.0" />
 		<PackageReference Include="EntityFrameworkCore.Triggers" Version="1.2.3" />
-		<PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="10.0.12" />
-		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.12" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.12">
+		<PackageReference Include="Microsoft.AspNetCore.DataProtection.EntityFrameworkCore" Version="10.0.13" />
+		<PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="10.0.13" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.13">
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="10.0.12" />
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.12" />
-		<PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="10.105.8.1" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="10.0.13" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.13" />
+		<PackageReference Include="Z.EntityFramework.Plus.EFCore" Version="10.105.9" />
 	</ItemGroup>
 
 	<ItemGroup>
