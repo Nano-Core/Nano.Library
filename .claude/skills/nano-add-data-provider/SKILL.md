@@ -105,6 +105,11 @@ in `Development` so `dotnet ef` commands from a local shell still work; the dock
 service name wouldn't resolve outside the compose network at all. Use step 6's derived database
 name for the connection string's `Database=`/equivalent value.
 
+For PostgreSQL, add `GSS Encryption Mode=Disable` to every connection string (this local one, and the
+ones in the Staging/Production steps below). Npgsql otherwise tries Kerberos/GSS encryption first, and
+the .NET Docker images have no `libgssapi_krb5`, so the app logs `Cannot load library
+libgssapi_krb5.so.2` at start-up. These apps do not use Kerberos, so disabling it loses nothing.
+
 ⚠ Add only the chosen provider's connection string, active. Don't add the other providers'
 connection strings as commented-out alternatives — a project commits to exactly one provider, and
 commented dead alternatives for providers it doesn't use are clutter, not documentation. If a
@@ -338,7 +343,7 @@ Provisioning that server is out of this skill's scope.
        $env:SQL_USER = az postgres flexible-server microsoft-entra-admin list -g $env:AZURE_GROUP_DATABASE -s $env:SQL_SERVER --query "[0].principalName" -o tsv;
        $env:SQL_TOKEN = az account get-access-token --resource-type oss-rdbms --query accessToken -o tsv;
 
-       $env:DATA__CONNECTIONSTRING = "Host=$env:SQL_HOST;Port=$env:SQL_PORT;Database=$env:SQL_NAME;Username=$env:SQL_USER;Password=$env:SQL_TOKEN;SSL Mode=Require;Trust Server Certificate=true";
+       $env:DATA__CONNECTIONSTRING = "Host=$env:SQL_HOST;Port=$env:SQL_PORT;Database=$env:SQL_NAME;Username=$env:SQL_USER;Password=$env:SQL_TOKEN;SSL Mode=Require;Trust Server Certificate=true;GSS Encryption Mode=Disable";
 
        & "/opt/ef-tools/$env:DOTNET_EF_TOOLS_VERSION/dotnet-ef" database update `
            --no-build `
@@ -374,7 +379,7 @@ Provisioning that server is out of this skill's scope.
        az postgres flexible-server execute -n $env:SQL_SERVER -u $env:SQL_USER -p $env:SQL_TOKEN -d $env:SQL_NAME --file-path $env:GRANTS_SQL_PATH;
        if ($LastExitCode -ne 0) { throw "error"; };
 
-       $env:SQL_CONNECTIONSTRING = "Host=$env:SQL_HOST;Port=$env:SQL_PORT;Database=$env:SQL_NAME;Username=$env:IDENTITY_NAME;SSL Mode=Require;Trust Server Certificate=true";
+       $env:SQL_CONNECTIONSTRING = "Host=$env:SQL_HOST;Port=$env:SQL_PORT;Database=$env:SQL_NAME;Username=$env:IDENTITY_NAME;SSL Mode=Require;Trust Server Certificate=true;GSS Encryption Mode=Disable";
        echo "SQL_CONNECTIONSTRING=$env:SQL_CONNECTIONSTRING" >> $env:GITHUB_ENV;
    ```
 
