@@ -88,9 +88,11 @@ Add the data configuration to `appsettings.json`.
 ```json
 "Data": {
   "StartupAction": "Migrate",
-  "ConnectionString": "Host=host.docker.internal;Port=5432;Database=nanoDb;Username=sa;Password=myPassword_123"
+  "ConnectionString": "Host=host.docker.internal;Port=5432;Database=nanoDb;Username=sa;Password=myPassword_123;GSS Encryption Mode=Disable"
 }
 ```
+
+`GSS Encryption Mode=Disable` stops Npgsql from trying Kerberos/GSS encryption first. The .NET Docker images have no `libgssapi_krb5`, so without it the app logs `Cannot load library libgssapi_krb5.so.2` at start-up. Apps that do not use Kerberos lose nothing by disabling it.
 
 ## Docker Compose
 Add PostgreSQL as a service dependency in `docker-compose.yml`.  
@@ -201,7 +203,7 @@ Additionally, these steps ensure database migrations are applied and the applica
     $env:SQL_USER = az postgres flexible-server microsoft-entra-admin list -g $env:AZURE_GROUP_DATABASE -s $env:SQL_SERVER --query "[0].principalName" -o tsv;
     $env:SQL_TOKEN = az account get-access-token --resource-type oss-rdbms --query accessToken -o tsv;
 
-    $env:DATA__CONNECTIONSTRING = "Host=$env:SQL_HOST;Port=$env:SQL_PORT;Database=$env:SQL_NAME;Username=$env:SQL_USER;Password=$env:SQL_TOKEN;SSL Mode=Require;Trust Server Certificate=true";
+    $env:DATA__CONNECTIONSTRING = "Host=$env:SQL_HOST;Port=$env:SQL_PORT;Database=$env:SQL_NAME;Username=$env:SQL_USER;Password=$env:SQL_TOKEN;SSL Mode=Require;Trust Server Certificate=true;GSS Encryption Mode=Disable";
 
     & "/opt/ef-tools/$env:DOTNET_EF_TOOLS_VERSION/dotnet-ef" database update `
         --no-build `
@@ -263,7 +265,7 @@ Additionally, these steps ensure database migrations are applied and the applica
         throw "error";
     };
 
-    $env:SQL_CONNECTIONSTRING = "Host=$env:SQL_HOST;Port=$env:SQL_PORT;Database=$env:SQL_NAME;Username=$env:IDENTITY_NAME;SSL Mode=Require;Trust Server Certificate=true";
+    $env:SQL_CONNECTIONSTRING = "Host=$env:SQL_HOST;Port=$env:SQL_PORT;Database=$env:SQL_NAME;Username=$env:IDENTITY_NAME;SSL Mode=Require;Trust Server Certificate=true;GSS Encryption Mode=Disable";
     echo "SQL_CONNECTIONSTRING=$env:SQL_CONNECTIONSTRING" >> $env:GITHUB_ENV;
 ```
 

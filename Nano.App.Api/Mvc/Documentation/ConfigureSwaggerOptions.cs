@@ -48,6 +48,15 @@ internal class ConfigureSwaggerOptions(IOptionsMonitor<ApiOptions> apiOptions, I
             .EnableAnnotations(true, true);
 
         options
+            .SupportNonNullableReferenceTypes();
+
+        options
+            .NonNullableReferenceTypesAsRequired();
+
+        options
+            .UseAllOfToExtendReferenceSchemas();
+
+        options
             .CustomSchemaIds(y => y.GetFriendlyName());
 
         options
@@ -82,9 +91,6 @@ internal class ConfigureSwaggerOptions(IOptionsMonitor<ApiOptions> apiOptions, I
             .SchemaFilter<EnumsFilter>();
 
         options
-            .SchemaFilter<RequestIgnoreSchemaFilter>();
-
-        options
             .DocumentFilter<RemoveVersionsRoutesFilter>();
 
         options
@@ -92,6 +98,9 @@ internal class ConfigureSwaggerOptions(IOptionsMonitor<ApiOptions> apiOptions, I
 
         options
             .OperationFilter<ReplaceIdentityResponseTypeGenericFilter>();
+
+        options
+            .OperationFilter<RequestUserOperationFilter>();
     }
 
 

@@ -1355,6 +1355,10 @@ When documentation is enabled in the configuration, the API's web-based document
 
 When configuring a strict CSP policy, add the following style hash: `"sha256-RL3ie0nH+Lzz2YNqQN83mnU0J1ot4QL7b99vMdIX99w="` to ensure Swagger UI images and icons render correctly.  
 
+The documentation describes the API as it is, so a client can be generated from it without changing the file:
+- A property is `nullable` only when it is nullable in the code. This includes nullable enums, which are `allOf` the enum with `nullable: true`.
+- A property is `required` when it is not nullable, a value type such as a number, a bool or an enum included, or when it is marked `[Required]` or `required`. This is the same in a response and in a request body.
+
 > 📖 Learn more about **[Swashbuckle.AspNetCore](https://github.com/domaindrivendev/Swashbuckle.AspNetCore)**.  
 
 Try it out yourself using the **[Api.Documentation](https://github.com/Nano-Core/Nano.Lessons/blob/master/Api.Documentation)** example.  
