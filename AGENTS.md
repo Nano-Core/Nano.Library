@@ -1415,6 +1415,11 @@ Enables the Swagger UI at `/docs`.
 }
 ```
 
+The OpenAPI file describes the API exactly as the code is, so a client (such as one generated with `orval`) is generated straight from it and the file is **never edited by hand or patched**. If the file is wrong, the code is fixed:
+- `nullable` is set only for a property that is nullable in the code, a nullable enum included (`allOf` the enum, with `nullable: true`).
+- In a **response**, every property that is not nullable is `required`.
+- In a **request body**, a property is `required` when it is marked `[Required]` or `required`, or is a non-nullable reference type. A value type (number, bool, enum) has a default and is optional.
+
 ⚠ When using a strict CSP, add style hash `sha256-RL3ie0nH+Lzz2YNqQN83mnU0J1ot4QL7b99vMdIX99w=` — otherwise
 Swagger UI's icons/images fail to render.
 
