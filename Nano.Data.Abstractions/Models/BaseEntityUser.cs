@@ -28,10 +28,9 @@ public abstract class BaseEntityUser<TIdentity> : BaseEntity<TIdentity>, IEntity
 {
     /// <summary>
     /// The associated identity user.
-    /// Marked with <see cref="IncludeAttribute"/> for EF include and <see cref="SwaggerRequestIgnoreAttribute"/> to ignore during requests.
+    /// Marked with <see cref="IncludeAttribute"/> for EF include.
     /// </summary>
     [Include]
     [ValidateNever]
-    [SwaggerRequestIgnore]
     public virtual IdentityUserEx<TIdentity> IdentityUser { get; set; } = null!;
 }

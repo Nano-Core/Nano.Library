@@ -2859,7 +2859,7 @@ IEntitySoftDeletable         : IEntityDeletable, redeclares IsDeleted   (opt-in)
 | `BaseEntityDeletable` / `<TIdentity>`              | `IEntityDeletable` only                | |
 | `BaseEntityCreatableAndUpdatable` / `<TIdentity>`   | Create + update, no delete             | |
 | `BaseEntityCreatableAndDeletable` / `<TIdentity>`   | Create + delete, no update             | For entities only ever added and removed, such as a join row between two entities. |
-| `BaseEntityUser` / `<TIdentity>`                   | Update + delete (`IEntityUser<TIdentity>`) | Adds `IdentityUser` (`IdentityUserEx<TIdentity>`), tagged `[Include]` + `[ValidateNever]` + `[SwaggerRequestIgnore]` — always eager-loaded, never validated as input, never shown in Swagger request bodies. See [Identity](#identity). |
+| `BaseEntityUser` / `<TIdentity>`                   | Update + delete (`IEntityUser<TIdentity>`) | Adds `IdentityUser` (`IdentityUserEx<TIdentity>`), tagged `[Include]` + `[ValidateNever]` — always eager-loaded and never validated as input. Swagger documents a user request body as a separate `{Name}Request` schema without `IdentityUser`, so a client can not send it. See [Identity](#identity). |
 | `BaseEntityView`                                   | None — bare `IEntity`, no `Id`/`IsDeleted`/`CreatedAt` at all | Non-generic only. For entities mapped to a SQL view — you define every property yourself, including any identifier. |
 | `BaseEntityIdentity` / `<TIdentity>`                | `Id` only, nothing else                | For advanced cases that don't want the built-in `IsDeleted`/`CreatedAt` — implement whichever capability interface (`IEntityCreatable`, `IEntityWritable`, etc.) yourself to restore the operations you need. |
 

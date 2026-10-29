@@ -91,9 +91,6 @@ internal class ConfigureSwaggerOptions(IOptionsMonitor<ApiOptions> apiOptions, I
             .SchemaFilter<EnumsFilter>();
 
         options
-            .SchemaFilter<RequestIgnoreSchemaFilter>();
-
-        options
             .SchemaFilter<RequiredResponsePropertiesSchemaFilter>();
 
         options
@@ -104,6 +101,9 @@ internal class ConfigureSwaggerOptions(IOptionsMonitor<ApiOptions> apiOptions, I
 
         options
             .OperationFilter<ReplaceIdentityResponseTypeGenericFilter>();
+
+        options
+            .OperationFilter<RequestUserOperationFilter>();
     }
 
 

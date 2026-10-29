@@ -26,6 +26,7 @@
 	    <PackageReleaseNotes>
 			- Updated NuGets
 			- Swagger: nullable and required now follow the code, so a client can be generated from it without patching
+			- Swagger: a request body of a user is documented as a separate {Name}Request schema without IdentityUser, and SwaggerRequestIgnoreAttribute is removed
 		</PackageReleaseNotes>
 		<RepositoryType>git</RepositoryType>
 	    <RepositoryBranch>master</RepositoryBranch>
