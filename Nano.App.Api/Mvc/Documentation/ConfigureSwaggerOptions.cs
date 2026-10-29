@@ -91,9 +91,6 @@ internal class ConfigureSwaggerOptions(IOptionsMonitor<ApiOptions> apiOptions, I
             .SchemaFilter<EnumsFilter>();
 
         options
-            .SchemaFilter<RequiredResponsePropertiesSchemaFilter>();
-
-        options
             .DocumentFilter<RemoveVersionsRoutesFilter>();
 
         options
