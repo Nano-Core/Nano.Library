@@ -2074,7 +2074,7 @@ public class MyEntityQueryCriteria : BaseQueryCriteria
     public override IList<CriteriaExpression> GetExpressions()
     {
         var expressions = base.GetExpressions();
-        var expression = expressions.FirstOrDefault() ?? new CriteriaExpression();
+        var expression = expressions.First();
 
         if (!string.IsNullOrEmpty(this.Name))
         {
