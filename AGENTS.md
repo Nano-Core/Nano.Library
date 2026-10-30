@@ -2212,6 +2212,14 @@ filter by a property on a **collection navigation**, wrap the nested property in
 expression.GreaterThan("Orders[Total]", 100m);   // x.Orders.Any(o => o.Total > 100)
 ```
 
+A negated operation (`NotEqual`, `NotIn`, `NotContains`) on a collection path means **no element matches**, it compiles to
+`!x.Orders.Any(...)` with the positive operation inside. Use it to leave out rows that have a related row, such as the
+users who are not in an organization:
+
+```csharp
+expression.NotEqual("OrganizationScopes[OrganizationId]", organizationId);   // !x.OrganizationScopes.Any(s => s.OrganizationId == organizationId)
+```
+
 ##### Ordering and pagination
 
 `Ordering` (`IQuery.Order`) — `By` (default `"Id"`, supports the same dotted-path navigation as criteria
