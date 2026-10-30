@@ -25,8 +25,7 @@
 	    <Description>This package is part of the Nano Library, a set of reusable .NET libraries for building microservice applications. Nano addresses common non-business concerns such as logging, persistence, messaging, validation, and documentation, while remaining fully configurable and extensible, so applications can stay focused on business logic. See https://github.com/Nano-Core/Nano.Library for details.</Description>
 	    <PackageReleaseNotes>
 			- Updated NuGets
-			- Swagger: nullable and required now follow the code, so a client can be generated from it without patching
-			- Swagger: a request body of a user is documented as a separate {Name}Request schema without IdentityUser, and SwaggerRequestIgnoreAttribute is removed
+			- Updated AGENTS.md
 		</PackageReleaseNotes>
 		<RepositoryType>git</RepositoryType>
 	    <RepositoryBranch>master</RepositoryBranch>

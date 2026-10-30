@@ -258,7 +258,7 @@ public class MyUserController(ILogger<MyUserController> logger, MyApi myApi, MyO
 | Attribute   | Purpose                                                                                                       |
 | ------------- | ------------------------------------------------------------------------------------------------------------------ |
 | `[Route(Order = n)]`  | Positional route-template substitution (`{n}` placeholders in the action's route string, filled in `Order` sequence). |
-| `[Query]`             | Querystring parameter (scalar types); optional `Name` override.                                                       |
+| `[Query]`             | Querystring parameter: a scalar, a list of scalars, or an object (sent as `Name.Property=value`, such as `Paging.Number=2`); optional `Name` override. |
 | `[Body]`              | The JSON request body (one complex object).                                                                           |
 | `[Form]`              | A `multipart/form-data` field — scalar, or `IFormFile`/`FileInfo`/`FileStream`/`Stream`/`NamedStream`; complex objects need `[FromFormBody]` server-side. Mutually exclusive with `[Body]`. |
 | `[Header(Name=..., ValuePrefix=...)]` | An HTTP header key/value.                                                                              |
@@ -296,6 +296,8 @@ public class SetMyFileRequest : BaseRequest
 
 3. Add a method to the client, calling `InvokeAsync<TRequest>` (no response) or `InvokeAsync<TRequest, TResponse>`
    (typed response — use `NamedStream` or `Stream` for file downloads).
+
+**Paging a custom request**: give it one `[Query] public virtual Pagination? Paging { get; set; }` and have the client method set `Paging = paging`. It is sent as `Paging.Number`, `Paging.Count` and `Paging.Skip`, and the action binds it with `[FromQuery] Pagination? paging`, so `Skip` is kept. Never copy `Number` and `Count` into two scalar properties, that drops `Skip`.
 
 **Controller resolution**: if a request doesn't set `this.Controller` explicitly in its constructor, it's
 inferred as the pluralized `TResponse` type name (e.g. `IEnumerable<MyEntity>` → `MyEntities`). Set it explicitly
@@ -2210,6 +2212,14 @@ filter by a property on a **collection navigation**, wrap the nested property in
 
 ```csharp
 expression.GreaterThan("Orders[Total]", 100m);   // x.Orders.Any(o => o.Total > 100)
+```
+
+A negated operation (`NotEqual`, `NotIn`, `NotContains`) on a collection path means **no element matches**, it compiles to
+`!x.Orders.Any(...)` with the positive operation inside. Use it to leave out rows that have a related row, such as the
+users who are not in an organization:
+
+```csharp
+expression.NotEqual("OrganizationScopes[OrganizationId]", organizationId);   // !x.OrganizationScopes.Any(s => s.OrganizationId == organizationId)
 ```
 
 ##### Ordering and pagination
