@@ -294,14 +294,14 @@ public class <Entity>QueryCriteria : BaseQueryCriteria
                 .StartsWith(nameof(<Entity>.NameNormalized), this.Name.ToUpper());
         }
 
-        expressions
-            .Add(expression);
-
         return expressions;
     }
 }
 ```
 
+- `base.GetExpressions()` already returns a list holding one `CriteriaExpression`, so add the conditions to
+  that first expression and return the list as it is. Never `Add` that same expression again, it would be
+  combined with itself. Only `Add` a new `CriteriaExpression` for a separate group that is AND-ed in.
 - Only add filter properties for fields that make sense to search/filter by — don't
   mechanically add one filter per scalar property on the entity.
 - Every filter property must be `virtual` and nullable.

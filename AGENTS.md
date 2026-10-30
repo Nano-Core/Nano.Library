@@ -2081,11 +2081,14 @@ public class MyEntityQueryCriteria : BaseQueryCriteria
             expression.StartsWith(nameof(MyEntity.Name), this.Name);
         }
 
-        expressions.Add(expression);
         return expressions;
     }
 }
 ```
+
+`base.GetExpressions()` already returns a list holding one `CriteriaExpression`, so the conditions go on that first
+expression and the list is returned as it is. Never `Add` that same expression again: the list is AND-ed, so it would
+be combined with itself. Only `Add` a new `CriteriaExpression` for a separate group (see [Combining criteria](#combining-criteria--sequential-not-grouped)).
 
 Built on the [DynamicExpression](https://github.com/vivet/DynamicExpression) library — criteria properties are
 compiled into LINQ expressions against the entity, not hand-written `Where` clauses.

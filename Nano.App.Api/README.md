@@ -2297,9 +2297,6 @@ public class MyEntityQueryCriteria : BaseQueryCriteria
                 .StartsWith("Name", this.Name);
         }
 
-        expressions
-            .Add(expression);
-
         return expressions;
     }
 }
