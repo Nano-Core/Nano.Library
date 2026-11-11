@@ -1970,16 +1970,10 @@ explicit about, since it changes what an action's body actually does:
   either as a custom method on an entity controller or a bare `BaseController` action. Only ever called by a
   Public API (or another internal service) via its Api Client — never exposed directly to untrusted clients.
 
-⚠ **Complicated logic always belongs in the internal service, not in the Public API.** A Public API action stays
-simple: fetch then act (a get, then an edit), or check then act (a lookup or an ownership check, then a create,
-edit or delete). A check on the request, or on what the action just fetched, that rejects with a
-`BadRequestException` before acting is part of that and stays in the Public API (for example rejecting a request that
-allows no login method, or a duplicate found by a lookup). Complicated rules, a decision made from which other rows exist, or a combined result or flags built
-from several calls are one custom method on the owning service, exposed through its own Api Client method, and the
-Public API only maps what it returns. That is exactly the case the [Core Principle](#core-principle--built-in-before-custom)
-allows a custom endpoint for. Combining calls to different services is the Public API's job. The service then
-enforces and reports a rule from one place, so a response or a button can never say yes where the service would
-say no.
+⚠ **Where a rule lives depends on who it applies to.** A Public API action stays simple: fetch then act (a get, then an edit), or check then act (a lookup or an ownership check, then a create, edit or delete).
+- **A rule that must hold for every caller belongs in the internal service**, because the service is the one place all callers pass through. That is any rule about the data itself (a name must be unique, a tenant must keep one domain, an inactive tenant cannot get a domain), however simple it is, and any rule that needs a decision from which other rows exist or a combined result built from several calls. It is one custom method (or an override of the generic action) on the owning service, exposed through its own Api Client method, and the Public API only maps what it returns. That is exactly the case the [Core Principle](#core-principle--built-in-before-custom) allows a custom endpoint for. The service then enforces and reports the rule from one place, so a response or a button can never say yes where the service would say no, and a second Public API gets the rule for free.
+- **A rule that is specific to one Public API stays in that Public API**: a policy of that audience or that surface (the back office may not change a tenant's own roles, a request must allow at least one login method), checked with a `BadRequestException` before acting. Combining calls to different services is also the Public API's job.
+- **Test:** if another Public API or service calling the same service would need the same rule, it is not specific to this Public API, so it moves to the service. A check shared by several of one Public API's controllers is an Api Client extension method, never a copy.
 
 Best practice: a service action that changes something returns the data the caller needs next (for example the
 finished overview), so the Public API never makes a second call just to fetch it after the action.
@@ -3378,9 +3372,10 @@ type — there's no per-entity message contract.
   `AddNanoEventing<TProvider>()` was never called, the SaveChanges interceptor never attaches — no error, no
   event, ever. Easy to miss in local testing.
 - With RabbitMQ specifically: all entity events (across every entity type, every app) flow through **one shared
-  fanout exchange**, differentiated only by which **queue** a subscriber binds (named after the entity
-  `TypeName`) — the exchange itself doesn't filter by routing key. A subscriber whose local model doesn't
-  recognize an incoming `TypeName` throws inside the handler rather than silently ignoring it.
+  direct exchange** (a message published or subscribed with a routing key uses a direct exchange). A publisher sends
+  each event with the entity `TypeName` as the routing key, and an app binds one **queue** for each `[Subscribe]` entity (named after the app
+  and the entity, shared by its replicas) with that `TypeName` as the key. An app therefore gets each event of the
+  entities it subscribes to once, and never the events of other entities, including the ones it owns itself.
 - Deletes carry no `Data` — only `Id`/`TypeName`/`State`.
 - `Modified` events where nothing in the publish paths actually changed are suppressed — no event, no bus
   traffic, for unrelated field updates.
@@ -3563,9 +3558,11 @@ and shouldn't be handed as many concurrent messages as the app-wide default.
 ⚠ `BaseEventHandler<TEvent>` implementations **must be non-generic** — a handler class that is itself an open
 generic type is silently skipped during discovery.
 
-With RabbitMQ, the exchange name is derived from `TEvent`'s type name (a fanout exchange — every bound queue
-receives every message published to it, regardless of routing key), and the queue name is derived from the
-consuming app + `TEvent` + routing key. Share the message contract as a referenced project or NuGet between
+With RabbitMQ, the exchange name is derived from `TEvent`'s type name (a fanout exchange when no routing key is
+used, so every bound queue receives every message published to it, and a direct exchange when a routing key is used,
+so a queue only receives the messages published with the key it is bound with), and the queue name is derived from the
+consuming app + `TEvent` + routing key. A publisher and its handlers must use a routing key together or not at all, since
+they declare the same exchange and it can only have one type. Share the message contract as a referenced project or NuGet between
 publisher and subscriber to keep the shape in sync — there's no schema negotiation.
 
 ---

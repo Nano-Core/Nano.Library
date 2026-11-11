@@ -238,9 +238,13 @@ Client call happens inside the same action.
 `<Feature>` is always the **route name of the controller that hosts the action** (its class name without
 `Controller`, e.g. a controller named `FooBarsController` uses `FooBars`), for both `Requests/` and
 `Responses/`. One folder per controller; never group DTOs by another axis (a shared `Common/` folder, or a
-folder named after a sub-entity the controller also serves). A DTO used by several controllers lives in the
-folder of the controller that returns it, or is duplicated per controller if each needs its own shape. A
-request/response in a folder that doesn't match its controller is a defect: move it and fix the namespace
+folder named after a sub-entity the controller also serves). A DTO used by several controllers is never shared
+across folders. Put the shared members in an `abstract` base class named `Base<Name>Request` or
+`Base<Name>Response`, placed in the root of `Requests/` or `Responses/`, and give each controller its own
+derived class, uniquely named (for example `Foo<Name>Response`), in its own folder. The base class
+initializes its own properties in its (protected) constructors; the derived class only calls `base(...)` and
+adds the properties that are specific to that controller. A DTO used by one controller needs no base class.
+A request/response in a folder that doesn't match its controller is a defect: move it and fix the namespace
 and `using`s.
 
 ```csharp

@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using EasyNetQ;
+using EasyNetQ.Topology;
 using Microsoft.Extensions.DependencyInjection;
 using Nano.Common.Extensions;
 using Nano.Eventing.Abstractions;
@@ -12,8 +13,8 @@ namespace Nano.Eventing.RabbitMq;
 /// <summary>
 /// RabbitMQ implementation of <see cref="IEventing"/> using EasyNetQ.
 /// <para>
-///     Provides a publish/subscribe pattern using fanout exchanges, durable quorum queues,
-///     optional routing keys, and message prefetching. Automatically binds exchanges to queues
+///     Provides a publish/subscribe pattern using fanout exchanges, or direct exchanges when a routing key is used,
+///     durable quorum queues, optional routing keys, and message prefetching. Automatically binds exchanges to queues
 ///     and invokes <see cref="IEventingHandler{TMessage}"/> callbacks when messages are received.
 /// </para>
 /// </summary>
@@ -41,8 +42,8 @@ public sealed class RabbitMqEventing : IEventing
         var name = typeof(TMessage)
             .GetFriendlyName();
 
-        var exchange = await this.bus.Advanced
-            .ExchangeDeclareAsync(name, ExchangeType.Fanout, cancellationToken: cancellationToken)
+        var exchange = await this
+            .DeclareExchangeAsync(name, routing, cancellationToken)
             .ConfigureAwait(false);
 
         var message = new Message<TMessage>(body);
@@ -72,8 +73,8 @@ public sealed class RabbitMqEventing : IEventing
             }, cancellationToken)
             .ConfigureAwait(false);
 
-        var exchange = await this.bus.Advanced
-            .ExchangeDeclareAsync(name, ExchangeType.Fanout, cancellationToken: cancellationToken)
+        var exchange = await this
+            .DeclareExchangeAsync(name, routing, cancellationToken)
             .ConfigureAwait(false);
 
         await this.bus.Advanced
@@ -111,6 +112,18 @@ public sealed class RabbitMqEventing : IEventing
     }
 
 
+    private async Task<Exchange> DeclareExchangeAsync(string name, string? routing, CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(name);
+
+        var exchangeType = string.IsNullOrEmpty(routing)
+            ? ExchangeType.Fanout
+            : ExchangeType.Direct;
+
+        return await this.bus.Advanced
+            .ExchangeDeclareAsync(name, exchangeType, cancellationToken: cancellationToken)
+            .ConfigureAwait(false);
+    }
     private static string GetQueueName(string name, string? routing = null)
     {
         ArgumentNullException.ThrowIfNull(name);
