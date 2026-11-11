@@ -15,6 +15,7 @@ jobs:
     permissions:
       contents: write
       packages: write
+      id-token: write
     concurrency:
       group: ${{ github.repository }}
       cancel-in-progress: false
@@ -41,6 +42,13 @@ jobs:
               throw "Tests Failed";
           };
 
+      - name: NuGet Login (Trusted Publishing)
+        if: github.ref == 'refs/heads/master'
+        id: nuget-login
+        uses: NuGet/login@8d196754b4036150537f80ac539e15c2f1028841 # v1.2.0
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
       - name: Pack and Push (NuGet.org)
         if: github.ref == 'refs/heads/master'
         shell: pwsh
@@ -54,7 +62,7 @@ jobs:
 
           dotnet nuget push "nupkgs/*.nupkg" `
               --source https://api.nuget.org/v3/index.json `
-              --api-key ${{ secrets.NUGET_APIKEY }} `
+              --api-key ${{ steps.nuget-login.outputs.NUGET_API_KEY }} `
               --skip-duplicate;
 
           if ($LastExitCode -ne 0)
