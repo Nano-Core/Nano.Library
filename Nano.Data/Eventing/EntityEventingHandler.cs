@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Nano.Common.Extensions;
 using Nano.Data.Abstractions.Eventing.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
@@ -18,6 +19,8 @@ namespace Nano.Data.Eventing;
 public sealed class EntityEventingHandler<TIdentity>(BaseDbContext<TIdentity> dbContext) : BaseEventHandler<EntityEvent>
     where TIdentity : IEquatable<TIdentity>
 {
+    private const int MAX_ATTEMPTS = 2;
+
     private readonly BaseDbContext<TIdentity> dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
 
     /// <inheritdoc />
@@ -43,19 +46,42 @@ public sealed class EntityEventingHandler<TIdentity>(BaseDbContext<TIdentity> db
             throw new NullReferenceException(nameof(propertyId));
         }
 
+        for (var attempt = 1; ; attempt++)
+        {
+            try
+            {
+                await this.ApplyAsync(@event, type, propertyId, id, cancellationToken);
+
+                return;
+            }
+            catch (DbUpdateException) when (attempt < MAX_ATTEMPTS)
+            {
+                this.dbContext.ChangeTracker
+                    .Clear();
+            }
+        }
+    }
+
+
+    private async Task ApplyAsync(EntityEvent @event, Type type, PropertyInfo propertyId, object id, CancellationToken cancellationToken)
+    {
+        var existingEntity = await this.dbContext
+            .FindAsync(type, [id], cancellationToken);
+
         switch (@event.State)
         {
             case "Added":
+            case "Modified":
             {
-                var existingEntity = await this.dbContext
-                    .FindAsync(type, [id], cancellationToken);
-
                 if (existingEntity != null)
                 {
-                    SetEntityEventProperties(@event, type, existingEntity);
+                    if (@event.State == "Modified")
+                    {
+                        SetEntityEventProperties(@event, type, existingEntity);
 
-                    this.dbContext
-                        .Update(existingEntity);
+                        this.dbContext
+                            .Update(existingEntity);
+                    }
 
                     break;
                 }
@@ -77,36 +103,16 @@ public sealed class EntityEventingHandler<TIdentity>(BaseDbContext<TIdentity> db
 
                 break;
             }
-            case "Modified":
-            {
-                var entityModified = await this.dbContext
-                    .FindAsync(type, [id], cancellationToken);
-
-                if (entityModified == null)
-                {
-                    throw new NullReferenceException(nameof(entityModified));
-                }
-
-                SetEntityEventProperties(@event, type, entityModified);
-
-                this.dbContext
-                    .Update(entityModified);
-
-                break;
-            }
 
             case "Deleted":
             {
-                var entityDeleted = await this.dbContext
-                    .FindAsync(type, [id], cancellationToken);
-
-                if (entityDeleted == null)
+                if (existingEntity == null)
                 {
                     break;
                 }
 
                 this.dbContext
-                    .Remove(entityDeleted);
+                    .Remove(existingEntity);
 
                 break;
             }
@@ -115,7 +121,6 @@ public sealed class EntityEventingHandler<TIdentity>(BaseDbContext<TIdentity> db
         await this.dbContext
             .SaveChangesAsync(cancellationToken);
     }
-
 
     private static void SetEntityEventProperties(EntityEvent @event, IReflect type, object entity)
     {
