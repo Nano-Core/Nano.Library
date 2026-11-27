@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Data.Interceptors.Helpers;
 
 namespace Nano.Data.Interceptors;

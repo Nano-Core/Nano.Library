@@ -1,4 +1,3 @@
-using EntityFrameworkCore.Triggers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -6,7 +5,7 @@ using Nano.Data.Abstractions.Eventing.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Data.Eventing.Extensions;
 using Nano.Data.Eventing.Models;
-using Nano.Data.Interceptors;
+using Nano.Data.Interceptors.Helpers;
 using Nano.Eventing.Abstractions;
 using System;
 using System.Collections.Generic;
