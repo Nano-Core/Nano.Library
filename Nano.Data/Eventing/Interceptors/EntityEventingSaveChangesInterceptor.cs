@@ -5,9 +5,11 @@ using Nano.Data.Abstractions.Eventing.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Data.Eventing.Extensions;
 using Nano.Data.Eventing.Models;
+using Nano.Data.Interceptors.Helpers;
 using Nano.Eventing.Abstractions;
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
@@ -16,11 +18,93 @@ using System.Threading.Tasks;
 namespace Nano.Data.Eventing.Interceptors;
 
 internal sealed class EntityEventingSaveChangesInterceptor(IEventing eventing)
-    : SaveChangesInterceptor
+    : SaveChangesInterceptor, IDbTransactionInterceptor
 {
     private readonly IEventing eventing = eventing ?? throw new ArgumentNullException(nameof(eventing));
 
     private readonly List<(Type Type, EntityEvent Event, object Entity)> pendingEvents = [];
+
+    private readonly List<EntityEvent> deferredEvents = [];
+
+    public ValueTask<InterceptionResult<DbTransaction>> TransactionStartingAsync(DbConnection connection, TransactionStartingEventData eventData, InterceptionResult<DbTransaction> result, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(connection);
+        ArgumentNullException.ThrowIfNull(eventData);
+
+        this.deferredEvents
+            .Clear();
+
+        return new ValueTask<InterceptionResult<DbTransaction>>(result);
+    }
+
+    public InterceptionResult<DbTransaction> TransactionStarting(DbConnection connection, TransactionStartingEventData eventData, InterceptionResult<DbTransaction> result)
+    {
+        ArgumentNullException.ThrowIfNull(connection);
+        ArgumentNullException.ThrowIfNull(eventData);
+
+        this.deferredEvents
+            .Clear();
+
+        return result;
+    }
+
+    public void TransactionCommitted(DbTransaction transaction, TransactionEndEventData eventData)
+    {
+        ArgumentNullException.ThrowIfNull(transaction);
+        ArgumentNullException.ThrowIfNull(eventData);
+
+        this.PublishDeferredEventsAsync()
+            .GetAwaiter()
+            .GetResult();
+    }
+
+    public async Task TransactionCommittedAsync(DbTransaction transaction, TransactionEndEventData eventData, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(transaction);
+        ArgumentNullException.ThrowIfNull(eventData);
+
+        await this.PublishDeferredEventsAsync(cancellationToken);
+    }
+
+    public void TransactionRolledBack(DbTransaction transaction, TransactionEndEventData eventData)
+    {
+        ArgumentNullException.ThrowIfNull(transaction);
+        ArgumentNullException.ThrowIfNull(eventData);
+
+        this.deferredEvents
+            .Clear();
+    }
+
+    public Task TransactionRolledBackAsync(DbTransaction transaction, TransactionEndEventData eventData, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(transaction);
+        ArgumentNullException.ThrowIfNull(eventData);
+
+        this.deferredEvents
+            .Clear();
+
+        return Task.CompletedTask;
+    }
+
+    public void TransactionFailed(DbTransaction transaction, TransactionErrorEventData eventData)
+    {
+        ArgumentNullException.ThrowIfNull(transaction);
+        ArgumentNullException.ThrowIfNull(eventData);
+
+        this.deferredEvents
+            .Clear();
+    }
+
+    public Task TransactionFailedAsync(DbTransaction transaction, TransactionErrorEventData eventData, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(transaction);
+        ArgumentNullException.ThrowIfNull(eventData);
+
+        this.deferredEvents
+            .Clear();
+
+        return Task.CompletedTask;
+    }
 
     public override InterceptionResult<int> SavingChanges(DbContextEventData eventData, InterceptionResult<int> result)
     {
@@ -171,6 +255,8 @@ internal sealed class EntityEventingSaveChangesInterceptor(IEventing eventing)
                             continue;
                         }
 
+                        UpdatedAtStamper.Stamp(rootEntry);
+
                         graphHydrator
                             .HydratePublish(rootEntry, plan.RootType, visited);
 
@@ -194,49 +280,129 @@ internal sealed class EntityEventingSaveChangesInterceptor(IEventing eventing)
         var lookup = entries
             .ToLookup(x => (Type: x.Entity.GetType(), Key: x.GetPrimaryKeyValue()), x => x);
 
+        var events = new List<EntityEvent>();
+
         try
         {
-            var tasks = this.pendingEvents
-                .Select(x =>
+            foreach (var pending in this.pendingEvents)
+            {
+                var entry = lookup[(pending.Type, pending.Event.Id)].FirstOrDefault();
+
+                if (pending.Event.State is "Added" or "Modified")
                 {
-                    var key = (x.Type, x.Event.Id);
-                    var entry = lookup[key].FirstOrDefault();
-
-                    switch (x.Event.State)
+                    if (entry == null)
                     {
-                        case "Added":
-                        case "Modified":
-                            if (entry == null)
-                            {
-                                return Task.CompletedTask;
-                            }
-
-                            var accessors = entityEventingModel.Accessors
-                                .Get(x.Type);
-
-                            foreach (var accessor in accessors)
-                            {
-                                x.Event.Data[accessor.Name] = accessor.Accessor(entry.Entity);
-                            }
-
-                            break;
-
-                        case "Deleted":
-                            break;
+                        continue;
                     }
 
-                    return this.eventing
-                        .PublishAsync(x.Event, x.Event.TypeName, cancellationToken);
-                });
+                    var accessors = entityEventingModel.Accessors
+                        .Get(pending.Type);
 
-            await Task.WhenAll(tasks);
+                    foreach (var accessor in accessors)
+                    {
+                        pending.Event.Data[accessor.Name] = accessor.Accessor(entry.Entity);
+                    }
+
+                    if (entry.Metadata.FindProperty(nameof(IEntityReadOnly<Guid>.UpdatedAt)) != null)
+                    {
+                        var updatedAt = (DateTimeOffset)entry.Property(nameof(IEntityReadOnly<Guid>.UpdatedAt)).CurrentValue!;
+
+                        pending.Event.UpdatedAt = UpdatedAtStamper.Truncate(updatedAt);
+                    }
+                }
+
+                events
+                    .Add(pending.Event);
+            }
         }
         finally
         {
             this.pendingEvents.Clear();
         }
+
+        if (dbContext.Database.CurrentTransaction != null)
+        {
+            this.deferredEvents
+                .AddRange(events);
+
+            return;
+        }
+
+        await this.SendEventsAsync(events, cancellationToken);
+    }
+    private async Task PublishDeferredEventsAsync(CancellationToken cancellationToken = default)
+    {
+        var events = Coalesce(this.deferredEvents);
+
+        this.deferredEvents
+            .Clear();
+
+        await this.SendEventsAsync(events, cancellationToken);
+    }
+    private async Task SendEventsAsync(IEnumerable<EntityEvent> events, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(events);
+
+        foreach (var entityEvent in events)
+        {
+            await this.eventing
+                .PublishAsync(entityEvent, entityEvent.TypeName, cancellationToken);
+        }
     }
 
+    private static List<EntityEvent> Coalesce(IReadOnlyList<EntityEvent> events)
+    {
+        ArgumentNullException.ThrowIfNull(events);
+
+        var result = new List<EntityEvent>();
+        var indexes = new Dictionary<(string TypeName, object Id), int>();
+
+        foreach (var entityEvent in events)
+        {
+            var key = (entityEvent.TypeName, entityEvent.Id);
+
+            if (!indexes.TryGetValue(key, out var index))
+            {
+                indexes[key] = result.Count;
+                result.Add(entityEvent);
+
+                continue;
+            }
+
+            var previous = result[index];
+
+            if (previous.State == "Deleted")
+            {
+                indexes[key] = result.Count;
+                result.Add(entityEvent);
+
+                continue;
+            }
+
+            if (entityEvent.State == "Deleted")
+            {
+                if (previous.State == "Added")
+                {
+                    result[index] = null!;
+                    indexes.Remove(key);
+                }
+                else
+                {
+                    result[index] = entityEvent;
+                }
+
+                continue;
+            }
+
+            result[index] = previous.State == "Added"
+                ? new EntityEvent(entityEvent.Id, entityEvent.TypeName, "Added", entityEvent.UpdatedAt) { Data = entityEvent.Data }
+                : entityEvent;
+        }
+
+        return result
+            .Where(x => x != null)
+            .ToList();
+    }
     private static string[] GetChangedProperties(EntityEntry entry, IReadOnlyCollection<ReversePlan> reversePlans)
     {
         ArgumentNullException.ThrowIfNull(entry);
@@ -284,4 +450,4 @@ internal sealed class EntityEventingSaveChangesInterceptor(IEventing eventing)
             _ => throw new ArgumentOutOfRangeException(nameof(entry.Entity), entry.Entity, "Argument out of range.")
         };
     }
-}
+}

@@ -2846,7 +2846,7 @@ used throughout [Controllers](#controllers) and [Repositories](#repositories):
 ```
 IEntity
  └─ IEntityIdentity<TIdentity>            → Id
-     └─ IEntityReadOnly<TIdentity>        → + IsDeleted, CreatedAt   (every base class below has this)
+     └─ IEntityReadOnly<TIdentity>        → + IsDeleted, CreatedAt, UpdatedAt  (every base class below has this)
 IEntityCreatable / IEntityUpdatable / IEntityDeletable      (capability markers, no members)
 IEntityCreatableAndUpdatable = IEntityCreatable + IEntityUpdatable
 IEntityWritable              = IEntityCreatableAndUpdatable + IEntityDeletable
@@ -2859,7 +2859,7 @@ IEntitySoftDeletable         : IEntityDeletable, redeclares IsDeleted   (opt-in)
 | Base class                                  | Capability                     | Notes                                                                |
 | ---------------------------------------------- | ----------------------------------- | --------------------------------------------------------------------------- |
 | `BaseEntity` / `BaseEntity<TIdentity>`            | Full CRUD (`IEntityWritable`)          | `Id` auto-assigned (`Guid.NewGuid()`) in the constructor for the `Guid` variant. |
-| `BaseEntityReadOnly` / `<TIdentity>`               | None — `Id`/`IsDeleted`/`CreatedAt` only | ⚠ Not intended to be used directly; it's the common ancestor every other base class below derives from. |
+| `BaseEntityReadOnly` / `<TIdentity>`               | None — `Id`/`IsDeleted`/`CreatedAt`/`UpdatedAt` only | ⚠ Not intended to be used directly; it's the common ancestor every other base class below derives from. |
 | `BaseEntityCreatable` / `<TIdentity>`              | `IEntityCreatable` only                | |
 | `BaseEntityUpdatable` / `<TIdentity>`              | `IEntityUpdatable` only                | |
 | `BaseEntityDeletable` / `<TIdentity>`              | `IEntityDeletable` only                | |
@@ -3347,9 +3347,17 @@ public class MyEntity : BaseEntity
    graph in reverse to find the owning publish-root (`MyEntity`) and treats that as the changed entity — so
    editing a nested navigation still republishes the parent correctly.
 3. After the save commits, one `EntityEvent` per affected root is published — `Added`/`Modified`/`Deleted`, with
-   `Data` populated from the (possibly reloaded, to pick up DB-generated values) current values.
+   `Data` populated from the (possibly reloaded, to pick up DB-generated values) current values, and `UpdatedAt`
+   set to the entity's own `UpdatedAt`. Inside a transaction the events are held until the transaction commits (and
+   dropped on a rollback), and the events of one entity are merged into one: added and modified is one `Added` with
+   the final values, added and deleted is no event, modified and deleted is one `Deleted`.
 4. The subscriber's `EntityEventingHandler` matches `TypeName`, then: `Added`/`Modified` → find-by-id-or-create,
-   apply `Data`, save; `Deleted` → find-by-id and remove (no-op if already absent).
+   apply `Data`, save; `Deleted` → find-by-id and remove (no-op if already absent). An `Added` event never
+   changes an entity that exists. A `Modified` event is skipped when its `UpdatedAt` is not later than the
+   entity's own `UpdatedAt`, so a late event can't overwrite a newer one; otherwise the entity takes the event's
+   `UpdatedAt`.
+5. A failed save (for example a foreign key to a row of another entity whose event has not arrived yet) is retried
+   after 0.5, 2 and 5 seconds, then the message goes to the broker's error queue.
 
 #### Wire format
 
@@ -3359,6 +3367,7 @@ public sealed class EntityEvent(object id, string typeName, string state)
     public object Id { get; init; }
     public string TypeName { get; set; }              // simple class name — the routing discriminator
     public string State { get; set; }                  // "Added" | "Modified" | "Deleted"
+    public DateTimeOffset? UpdatedAt { get; set; }     // the version of the event, empty for "Deleted"
     public Dictionary<string, object?> Data { get; set; } = new();
 }
 ```
@@ -3377,6 +3386,10 @@ type — there's no per-entity message contract.
   and the entity, shared by its replicas) with that `TypeName` as the key. An app therefore gets each event of the
   entities it subscribes to once, and never the events of other entities, including the ones it owns itself.
 - Deletes carry no `Data` — only `Id`/`TypeName`/`State`.
+- **Ordering.** Events of the same entity are ordered by `UpdatedAt`, which Nano sets on every save of every entity
+  (always later than the previous value). Events of *different* entities are not ordered against each other, so a
+  replica with a foreign key to another replica relies on the retries above. A row that is hard deleted leaves
+  nothing to compare with, so a `Modified` event that arrives after its `Deleted` event creates the row again.
 - `Modified` events where nothing in the publish paths actually changed are suppressed — no event, no bus
   traffic, for unrelated field updates.
 - Only entities implementing `IEntityIdentity<TIdentity>` with `TIdentity` of `int`, `long`, `Guid`, or `string`

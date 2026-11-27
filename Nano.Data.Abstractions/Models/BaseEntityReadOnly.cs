@@ -30,4 +30,8 @@ public abstract class BaseEntityReadOnly<TIdentity> : BaseEntityIdentity<TIdenti
     /// <inheritdoc />
     [Required]
     public virtual DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+
+    /// <inheritdoc />
+    [Required]
+    public virtual DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
 }

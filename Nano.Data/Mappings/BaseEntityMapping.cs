@@ -39,6 +39,11 @@ public abstract class BaseEntityMapping<TEntity, TIdentity> : BaseEntityIdentity
             .HasIndex(x => x.CreatedAt);
 
         builder
+            .Property(x => x.UpdatedAt)
+            .ValueGeneratedOnAdd()
+            .IsRequired();
+
+        builder
             .Property(y => y.IsDeleted)
             .HasDefaultValue(0L)
             .IsRequired();
