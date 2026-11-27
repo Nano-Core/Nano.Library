@@ -24,7 +24,8 @@ internal static class DbContextOptionsBuilderExtensions
             .ConfigureLazyLoading(options)
             .ConfigureEceptionTranslator(serviceProvider)
             .ConfigureEntityEventing(serviceProvider)
-            .ConfigureSoftDelete();
+            .ConfigureSoftDelete()
+            .ConfigureUpdatedAt();
 
         TProvider.Configure(builder, options);
 
@@ -99,6 +100,15 @@ internal static class DbContextOptionsBuilderExtensions
 
         builder
             .AddInterceptors(new SoftDeleteSaveChangesInterceptor());
+
+        return builder;
+    }
+    private static DbContextOptionsBuilder ConfigureUpdatedAt(this DbContextOptionsBuilder builder)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+
+        builder
+            .AddInterceptors(new UpdatedAtSaveChangesInterceptor());
 
         return builder;
     }

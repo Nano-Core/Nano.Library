@@ -19,7 +19,7 @@ namespace Nano.Data.Eventing;
 public sealed class EntityEventingHandler<TIdentity>(BaseDbContext<TIdentity> dbContext) : BaseEventHandler<EntityEvent>
     where TIdentity : IEquatable<TIdentity>
 {
-    private const int MAX_ATTEMPTS = 2;
+    private static readonly TimeSpan[] retryDelays = [TimeSpan.FromSeconds(0.5), TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(5)];
 
     private readonly BaseDbContext<TIdentity> dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
 
@@ -46,7 +46,7 @@ public sealed class EntityEventingHandler<TIdentity>(BaseDbContext<TIdentity> db
             throw new NullReferenceException(nameof(propertyId));
         }
 
-        for (var attempt = 1; ; attempt++)
+        for (var attempt = 0; ; attempt++)
         {
             try
             {
@@ -54,10 +54,12 @@ public sealed class EntityEventingHandler<TIdentity>(BaseDbContext<TIdentity> db
 
                 return;
             }
-            catch (DbUpdateException) when (attempt < MAX_ATTEMPTS)
+            catch (DbUpdateException) when (attempt < retryDelays.Length)
             {
                 this.dbContext.ChangeTracker
                     .Clear();
+
+                await Task.Delay(retryDelays[attempt], cancellationToken);
             }
         }
     }
@@ -75,9 +77,10 @@ public sealed class EntityEventingHandler<TIdentity>(BaseDbContext<TIdentity> db
             {
                 if (existingEntity != null)
                 {
-                    if (@event.State == "Modified")
+                    if (@event.State == "Modified" && !IsOutdated(@event, type, existingEntity))
                     {
                         SetEntityEventProperties(@event, type, existingEntity);
+                        SetEntityEventUpdatedAt(@event, type, existingEntity);
 
                         this.dbContext
                             .Update(existingEntity);
@@ -97,6 +100,7 @@ public sealed class EntityEventingHandler<TIdentity>(BaseDbContext<TIdentity> db
                     .SetValue(entityAdded, id);
 
                 SetEntityEventProperties(@event, type, entityAdded);
+                SetEntityEventUpdatedAt(@event, type, entityAdded);
 
                 await this.dbContext
                     .AddAsync(entityAdded, cancellationToken);
@@ -122,6 +126,41 @@ public sealed class EntityEventingHandler<TIdentity>(BaseDbContext<TIdentity> db
             .SaveChangesAsync(cancellationToken);
     }
 
+    private static bool IsOutdated(EntityEvent @event, IReflect type, object entity)
+    {
+        ArgumentNullException.ThrowIfNull(@event);
+        ArgumentNullException.ThrowIfNull(type);
+        ArgumentNullException.ThrowIfNull(entity);
+
+        var property = type
+            .GetProperty(nameof(IEntityReadOnly<>.UpdatedAt), BindingFlags.Public | BindingFlags.Instance);
+
+        if (property == null || !@event.UpdatedAt.HasValue)
+        {
+            return false;
+        }
+
+        var current = (DateTimeOffset)property.GetValue(entity)!;
+
+        return @event.UpdatedAt.Value <= current;
+    }
+    private static void SetEntityEventUpdatedAt(EntityEvent @event, IReflect type, object entity)
+    {
+        ArgumentNullException.ThrowIfNull(@event);
+        ArgumentNullException.ThrowIfNull(type);
+        ArgumentNullException.ThrowIfNull(entity);
+
+        var property = type
+            .GetProperty(nameof(IEntityReadOnly<>.UpdatedAt), BindingFlags.Public | BindingFlags.Instance);
+
+        if (property == null || !property.CanWrite || !@event.UpdatedAt.HasValue)
+        {
+            return;
+        }
+
+        property
+            .SetValue(entity, @event.UpdatedAt.Value);
+    }
     private static void SetEntityEventProperties(EntityEvent @event, IReflect type, object entity)
     {
         ArgumentNullException.ThrowIfNull(@event);

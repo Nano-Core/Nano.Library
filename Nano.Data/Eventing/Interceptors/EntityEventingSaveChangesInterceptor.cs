@@ -6,6 +6,7 @@ using Nano.Data.Abstractions.Eventing.Models;
 using Nano.Data.Abstractions.Models.Abstractions;
 using Nano.Data.Eventing.Extensions;
 using Nano.Data.Eventing.Models;
+using Nano.Data.Interceptors;
 using Nano.Eventing.Abstractions;
 using System;
 using System.Collections.Generic;
@@ -255,6 +256,8 @@ internal sealed class EntityEventingSaveChangesInterceptor(IEventing eventing)
                             continue;
                         }
 
+                        UpdatedAtStamper.Stamp(rootEntry);
+
                         graphHydrator
                             .HydratePublish(rootEntry, plan.RootType, visited);
 
@@ -299,6 +302,13 @@ internal sealed class EntityEventingSaveChangesInterceptor(IEventing eventing)
                     foreach (var accessor in accessors)
                     {
                         pending.Event.Data[accessor.Name] = accessor.Accessor(entry.Entity);
+                    }
+
+                    if (entry.Metadata.FindProperty(nameof(IEntityReadOnly<Guid>.UpdatedAt)) != null)
+                    {
+                        var updatedAt = (DateTimeOffset)entry.Property(nameof(IEntityReadOnly<Guid>.UpdatedAt)).CurrentValue!;
+
+                        pending.Event.UpdatedAt = UpdatedAtStamper.Truncate(updatedAt);
                     }
                 }
 
@@ -386,7 +396,7 @@ internal sealed class EntityEventingSaveChangesInterceptor(IEventing eventing)
             }
 
             result[index] = previous.State == "Added"
-                ? new EntityEvent(entityEvent.Id, entityEvent.TypeName, "Added") { Data = entityEvent.Data }
+                ? new EntityEvent(entityEvent.Id, entityEvent.TypeName, "Added", entityEvent.UpdatedAt) { Data = entityEvent.Data }
                 : entityEvent;
         }
 

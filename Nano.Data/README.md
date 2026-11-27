@@ -333,6 +333,7 @@ your model automatically includes several built-in properties.
 | ------------- | --------------- | ----------------------------------------------------------------------------------------------- |
 | `Id`          | TIdentity       | The primary key of the model. _Automatically assigned for new instances._                       |
 | `CreatedAt`   | DateTimeOffset  | The timestamp when the model was created. _Automatically set to `UtcNow` for new instances._    |
+| `UpdatedAt`   | DateTimeOffset  | The timestamp of the last change. _Set on every save, always later than the previous value, and defaults to the current time in the database._ |
 | `IsDeleted`   | long            | Used only when **[Soft Delete](#soft-delete)** is enabled. _Defaults to 0._                     |
 
 ```csharp
@@ -873,6 +874,8 @@ public class MyEntity : DefaultEntity
     public string Name { get; set; }
 }
 ```
+
+Events are published after the transaction commits, so a rolled back change never reaches a subscriber, and the events of one entity within a transaction are merged into one event. Every entity has an `UpdatedAt`, which Nano sets on every save, and an event carries it as its version. A subscriber skips a `Modified` event that is not later than the `UpdatedAt` of its own entity, so a late event can not overwrite a newer one, and an `Added` event never changes an entity that already exists. Events of different entities are not ordered against each other, so when a save fails, for example because the row it references has not arrived yet, the handler retries after 0.5, 2 and 5 seconds before the message goes to the error queue.
 
 > 💡 Entity eventing can also be applied to identity-based models, enabling seamless synchronization of identity data across applications. For example, a `User` entity can 
 publish properties such as `IdentityUser.Email` or `IdentityUser.Phone`, allowing downstream services like email or SMS systems to subscribe and receive all required data upfront. 

@@ -6,7 +6,7 @@ namespace Nano.Data.Abstractions.Eventing.Models;
 /// <summary>
 /// Represents an event related to an entity within the system.
 /// </summary>
-public sealed class EntityEvent(object id, string typeName, string state)
+public sealed class EntityEvent(object id, string typeName, string state, DateTimeOffset? updatedAt = null)
 {
     /// <summary>
     /// Gets or sets the unique identifier of the entity.
@@ -22,6 +22,11 @@ public sealed class EntityEvent(object id, string typeName, string state)
     /// Gets or sets the current state of the entity for the event.
     /// </summary>
     public string State { get; init; } = state ?? throw new ArgumentNullException(nameof(state));
+
+    /// <summary>
+    /// Gets or sets the UTC timestamp of the last change of the entity, as the version of the event. A subscriber skips an event that is not later than the one it has applied. Empty for a deleted event.
+    /// </summary>
+    public DateTimeOffset? UpdatedAt { get; set; } = updatedAt;
 
     /// <summary>
     /// Gets or sets additional data related to the event as key-value pairs.

@@ -21,4 +21,11 @@ public interface IEntityReadOnly<TIdentity> : IEntityIdentity<TIdentity>
     /// </summary>
     [Required]
     DateTimeOffset CreatedAt { get; set; }
+
+    /// <summary>
+    /// Gets or sets the UTC timestamp of the last change of the entity.
+    /// Set on every save, and always later than the previous value of the same entity. It is the version of an entity event, so a subscriber can skip an event that is older than what it already has.
+    /// </summary>
+    [Required]
+    DateTimeOffset UpdatedAt { get; set; }
 }
